@@ -146,8 +146,7 @@ db_multirow -extend { add_url move_url remove_url user_url } \
     lappend cast_roles $role_id
 }
 
-set role_options [workflow::role::get_options -id_values
-  -workflow_id $case(workflow_id)]
+set role_options [workflow::role::get_options -id_values -workflow_id $case(workflow_id)]
 set uncast_role_options [list]
 foreach role_option $role_options {
     if { [lsearch -exact $cast_roles [lindex $role_option 1]] == -1 } {
