@@ -7,5 +7,5 @@
 <p></p>
 
 <a href="." class="action">Back to simulation list</a>
-
+<p>TODO: don't show initial task on this list
 

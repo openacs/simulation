@@ -19,3 +19,4 @@
 </if>
 
 <p>TODO: how can a player access completed cases?</p>
+<P>TODO: in admin mode, show all adminned cases

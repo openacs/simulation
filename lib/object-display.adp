@@ -12,3 +12,5 @@
     <a href="@edit_url@" class="button">Edit</a>
   </p>
 </if>
+<p>TODO: edit_url shouldn't show up if user doesn't have permission to
+  edit object

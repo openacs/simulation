@@ -13,7 +13,11 @@ simulation::include_contract {
     }
 }
 
+# TODO: finish.  if case id is nil, check that adminplayer_p is true.  if not, fail.
+# if admin is true, ...
+
 set package_id [ad_conn package_id]
+set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
 
 if { [exists_and_not_null case_id] } {
     set user_roles [workflow::case::get_user_roles -case_id $case_id]

@@ -6,7 +6,9 @@
   <li>Archive
   <li>About this simulation
 </ul>
-
+<p>TODO: link Archive to "portfolio" of all objects this actor owns
+  (since the actor is specific to role and case, these are objects in the same case)
+<p>TODO: Link "about this simulation" to something
 <h4>Your Role<if @roles:rowcount@ gt 1>s</if></h4>
 
 <ul>

@@ -10,6 +10,7 @@ simulation::include_contract {
     }
 }
 
+# TODO: add link to simplay/case for each case
 set package_id [ad_conn package_id]
 
 set elements {

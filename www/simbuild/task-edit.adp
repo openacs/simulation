@@ -4,4 +4,5 @@
   <property name="focus">task.pretty_name</property>
 
 <formtemplate id="task"></formtemplate>
-
+TODO: If there are no states, show a message "This task cannot be
+fully developed because its workflow has no states" and link to add states
