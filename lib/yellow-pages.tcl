@@ -62,8 +62,10 @@ db_multirow -extend {view_url} objects select_objects "
           sl.item_id,
           sl.description
      from sim_locationsx sl,
+          cr_items ci,
           acs_object_types ot
     where sl.in_directory_p = 't'
+      and ci.live_revision = sl.revision_id
       and ot.object_type = sl.object_type
    UNION
    select sc.object_id,
@@ -75,8 +77,10 @@ db_multirow -extend {view_url} objects select_objects "
           sc.item_id,
           sc.description
      from sim_charactersx sc,
+          cr_items ci,
           acs_object_types ot
     where sc.in_directory_p = 't'
+      and ci.live_revision = sc.revision_id
       and ot.object_type = sc.object_type
 
     [template::list::orderby_clause -orderby -name "objects"]
