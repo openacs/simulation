@@ -141,10 +141,10 @@ ad_proc -public simulation::template::edit {
         }
 
         if { [info exists edit_array(suggested_duration)] } {
-            if { [empty_string_p $edit_array($col)] } {
-                lappend set_clauses "$col = null"
+            if { [empty_string_p $edit_array(suggested_duration)] } {
+                lappend set_clauses "suggested_duration = null"
             } else {
-                lappend set_clauses "$col = (interval '$edit_array($col)')"
+                lappend set_clauses "suggested_duration = (interval '$edit_array(suggested_duration)')"
             }
             
             set parties $edit_array(suggested_duration)
