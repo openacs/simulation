@@ -7,6 +7,6 @@ ad_page_contract {
     workflow_id:integer
 }
 
-set spec [workflow::fsm::generate_spec -workflow_id $workflow_id] 
+set spec [simulation::template::generate_spec -workflow_id $workflow_id] 
 
 ns_return 200 text/plain [util::array_list_spec_pretty $spec]
