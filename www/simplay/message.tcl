@@ -12,7 +12,7 @@ ad_page_contract {
 
 simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
 
-# TODO (1h): Message should have parent_id be the object of the case, just like the workflow-case-log comments do
+# TODO (1h): Lars. Message should have parent_id be the object of the case, just like the workflow-case-log comments do
 
 set page_title "Message"
 set context [list [list "." "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] $page_title]

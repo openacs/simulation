@@ -4,11 +4,18 @@ ad_page_contract {
     workflow_id:integer
 }
 
-# TODO (.5h): Dynamically change "Neither invited nor mandatory" to "Can self-enroll", or "Not participating" depending on the enrollment_type (open/closed)
-
 permission::require_write_permission -object_id $workflow_id
 
 simulation::template::get -workflow_id $workflow_id -array sim_template
+
+switch $sim_template(enroll_type) {
+    "closed" {
+        set neither_label "Not participating"
+    }
+    "open" {
+        set neither_label "Can self-enroll"
+    }    
+}
 
 set group_admin_url [export_vars -base "[subsite::get_element -element url]admin/group-types/one" { { group_type group } }]
 
@@ -77,7 +84,7 @@ template::list::create \
         n_users {
             label "\# Users"
             display_eval {[lc_numeric $n_users]}
-            html { align right }
+            html { align center }
         }
         invited_p {
             label "Invited"
@@ -94,7 +101,7 @@ template::list::create \
             html { align center }
         }
         neither {
-            label "Neither invited nor mandatory"
+            label $neither_label
             display_template {                
                   <input name="__group_@participants.group_id@" value="neither" type="radio" <if @participants.group_radio@ eq "neither">checked="checked"</if>>
             }

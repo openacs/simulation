@@ -620,7 +620,6 @@ ad_proc -private simulation::template::sweeper {} {
         and case_start < current_timestamp
     }]    
     foreach simulation_id $simulations_to_start {
-        ns_log Notice "pm debug starting simulation $simulation_id"
         start -workflow_id $simulation_id
     }    
 
