@@ -22,7 +22,7 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
                       [list label $role_pretty_name] \
                       [list options $eligible_groups]
                  ]
-    lappend form [list group_${role_id}:integer [list label "In groups of"] [list value 1] [list html size="2"]]
+    lappend form [list group_${role_id}:integer [list label "In groups of"] [list value 1] [list html {size 2}]]
 }
 
 ad_form \
