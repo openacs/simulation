@@ -35,10 +35,13 @@ aa_register_case simulation__generate_xml {
     aa_run_with_teardown \
         -rollback \
         -test_code {
-            # Requiring a simulation package at /simulation
-            # TODO: this is restrictive, can we improve?
-            array set simulation_node [site_node::get_from_url -url "/simulation"]
-            set package_id $simulation_node(package_id)
+            # Assuming at least one package instance of the simulation package. We
+            # pick the instance created first for testing
+            set package_id [db_string first_package_id {
+                select min(package_id)
+                from apm_packages
+                where package_key = 'simulation'
+            }]
 
             # Save file_path value
             set old_file_path [simulation::object::xml::file_path $package_id]
@@ -70,24 +73,21 @@ aa_register_case simulation__generate_xml {
             set item_id [db_nextval acs_object_id_seq]
             set parent_id [bcms::folder::get_id_by_package_id -package_id $package_id]
             set content_type "sim_location"
+            set attributes [list [list on_map_p t]]
+            set test_item_name "__temporary_test_item__"
             set item_id [bcms::item::create_item \
                          -item_id $item_id \
-                         -item_name "__temporary_test_item__" \
+                         -item_name $test_item_name \
                          -parent_id $parent_id \
                          -content_type $content_type \
                          -storage_type "text"]
             set revision_id [bcms::revision::add_revision \
                                  -item_id $item_id \
-                                 -title "__Temporary test item"]
+                                 -title "__Temporary test item" \
+                                 -additional_properties $attributes]
             bcms::revision::set_revision_status \
                 -revision_id $revision_id \
                 -status "live"
-            # TODO: how do I set this through a Tcl API?
-            db_dml set_on_map_p {
-                update sim_locations
-                set on_map_p = 't'
-                where home_id = :revision_id
-            }
 
             # Re-generate file
             array unset result
@@ -96,6 +96,23 @@ aa_register_case simulation__generate_xml {
             # Check return values
             aa_equals "should write file after change" $result(wrote_file_p) "1"
             aa_equals "should not return errors when writing after change" $result(errors) ""
+
+            # Parse the generated file and do some basic checking
+            set xml_doc [template::util::read_file $test_file_path]
+            set tree [xml_parse -persist $xml_doc]
+            set root_node [xml_doc_get_first_node $tree]
+            set root_tag_name "objects"
+            set object_tag_name "object"
+            aa_equals "checking root tag" [xml_node_get_name $root_node] $root_tag_name
+            set found_object_p 0
+            foreach object_node [xml_node_get_children_by_name $root_node $object_tag_name] {
+                set url_content [xml_get_child_node_content_by_path $object_node { url }]
+                if { [regexp "$test_item_name\$" $url_content] } {
+                    set found_object_p 1
+                }
+            }
+            aa_equals "We found an object with name $test_item_name" $found_object_p 1
+            #aa_log "$xml_doc"
 
             # Reset the file_path parameter value
             parameter::set_value \
