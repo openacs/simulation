@@ -1,7 +1,7 @@
 <master>
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
-  
+
 <center>
 (this is just a mockup)
 <table width="60%">
@@ -61,5 +61,5 @@
 </center>
 
 <p>
-  <a href="simulation-casting-2">Create and cast cases</a>
+  <a href="map-tasks?workflow_id=@workflow_id@">Map to tasks</a>
 </p>

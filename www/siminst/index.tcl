@@ -1,8 +1,8 @@
 ad_page_contract {
-    List active simulations.
+    The index page for SimInst
 }
 
-set page_title "Template Instantiation"
+set page_title "SimInst"
 set context [list $page_title]
 set package_id [ad_conn package_id]
 
@@ -36,9 +36,9 @@ set elements {
         orderby min_number_of_human_roles
     }
     instantiate {
+        link_url_col inst_url
         display_template {
-            "Instantiate"
-            link_url_col inst_url
+            Start mapping process
         }
     }
 }
@@ -53,6 +53,7 @@ template::list::create \
 # avail_templates multirow
 #---------------------------------------------------------------------
 
+# TODO: number_of_roles, min_number_of_human_roles
 db_multirow -extend {inst_url} avail_templates select_avail_templates "
 select workflow_id,
        suggested_duration,
@@ -62,8 +63,8 @@ select workflow_id,
   from sim_simulations ss,
        workflows w
  where ss.simulation_id = w.workflow_id
-   and w.package_key = :package_id
+   and w.object_id = :package_id
    and ready_p = 't'
 " {
-    set inst_url [export_vars -base "simulation-edit" { simulation_id }]
+    set inst_url [export_vars -base "map-characters" { workflow_id }]
 }
