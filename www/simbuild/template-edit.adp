@@ -38,7 +38,7 @@
           </div>
         </div>
       </td>
-      <td>
+      <td valign="top">
         <div class="portlet">
           <a name="roles"><h2>Roles</h2></a>
           <div class="portlet-body">
