@@ -8,5 +8,5 @@
 <p> TODO A (.5h): form element to set timeouts. Radio buttons to pick "No time limit/Use time limit". Input field for "Trigger after" x, where x>0, and x is translated by PG's interval conversion stuff, so you can say '1 day'.
  </p>
 
-<p>TODO: Allow multiple recipients (replace recipient dropdown with checkbox</p>
+<p>TODO A (.5h): Allow multiple recipients (replace recipient dropdown with checkbox</p>
 
