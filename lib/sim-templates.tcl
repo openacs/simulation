@@ -71,6 +71,10 @@ switch $size {
             task_count {
                 label "Tasks"
             }
+            sim_type {
+                label "Ready"
+                display_eval {[ad_decode $sim_type "ready_template" "Yes" "No"]}
+            }
             delete {
                 sub_class narrow
                 display_template {
@@ -111,6 +115,7 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
     select w.workflow_id,
            w.pretty_name as name,
            'placeholder' as description,
+           ss.sim_type,
            (select p.first_names || ' ' || p.last_name
               from persons p
              where p.person_id = a.creation_user) as created_by,
