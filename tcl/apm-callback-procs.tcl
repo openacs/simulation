@@ -85,7 +85,7 @@ ad_proc -private simulation::apm::setup_permission_groups {
             "City Admins" {sim_set_map_p sim_object_writer}
             "Actors" {}
         } {
-            set permission_group_id [group::new -group_name $group_name]
+            set permission_group_id [group::new -group_name $group_name -context_id $subsite_package_id]
 
             # Make permission group a child of the parent group
             relation_add composition_rel $parent_group_id $permission_group_id
