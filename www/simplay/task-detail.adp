@@ -39,4 +39,10 @@
   </p>
 </if>
 
+<if @received_attachments@ not nil>
+  <p>
+    Attachments in received message: @received_attachments;noquote@
+  </p>
+</if>
+
 <formtemplate id="@form_id@"></formtemplate>

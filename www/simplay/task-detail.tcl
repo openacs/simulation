@@ -9,6 +9,7 @@ ad_page_contract {
     {return_url ""}
     subject:optional
     body:optional    
+    received_message_item_id:optional
 }
 
 # FIXME: I am exporting the enabled_action_id list as the string variable enabled_action_ids in 
@@ -37,12 +38,30 @@ if { [llength $enabled_action_id] == 1 } {
         set return_url [export_vars -base tasks { case_id role_id }]
     }
 
-    if { ![info exists body] } {
+    if { [info exists body] } {
+        # We have a prepopulated body. This means we are responding to a message (see else clause below)
+        # Display a listing of any attachments in the message being responded to
+        set attachments_set_list [bcms::item::list_related_items \
+                                      -revision live \
+                                      -item_id $received_message_item_id \
+                                      -relation_tag attachment \
+                                      -return_list]
+
+        set received_attachments ""
+        foreach attachment_set $attachments_set_list {
+            set object_url [simulation::object::content_url -name [ns_set get $attachment_set name]]
+            set object_title [ns_set get $attachment_set title]
+            set mime_type [ns_set get $attachment_set mime_type]
+            append received_attachments "<a href=\"$object_url\">$object_title</a> ($mime_type)<br>"
+        }
+        
+    } else {
         # If this is a message task (with recipients) and its recipients have previously executed a message task
         # that put us in the current state then we consider this a response and we prepopulate the message
         # subject and body with text from the message being responded to. 
-        if {[db_0or1row select_triggering_message_id {
-            select sm.from_role_id,
+        if {[db_0or1row select_received_message {
+            select sm.item_id as received_message_item_id,
+                   sm.from_role_id,
                    sm.to_role_id,
                    sm.creation_date,
                    cr.title as subject,
@@ -80,7 +99,7 @@ Subject: $subject
 
 [ad_html_text_convert -from $mime_type -to "text/plain" $triggering_body]"
 
-            ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body bulk_p}]
+            ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body bulk_p received_message_item_id}]
         }    
     }
 
