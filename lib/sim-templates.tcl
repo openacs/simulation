@@ -53,7 +53,7 @@ switch $size {
                 }
             }
             name {
-                label "Name"
+                label "Template Name"
                 orderby upper(ot.pretty_name)
                 link_url_col view_url
             }

@@ -6,6 +6,9 @@
 <formtemplate id="object"></formtemplate>
 TODO: Show on map should be read-only unless user has "sim_set_map_p"
 priv on package_id
+<p>TODO: modify content field to allow uploading of non-text documents
+(word, etc), after which point content field should display as a
+hyperlink and a delete button (applies to all types)
 <p>TODO: suppress HTML cut-paste text for stylesheets
 <p>TODO: default Show in Directory to No
 <p>TODO: "Associated with 1" should say "Associated With"

@@ -50,3 +50,14 @@ complete.  Should include:
 <li>missing dates (link to tab 3)
 <li>groups that aren't cast to any roles (link to tab 6)
 </ul>
+<p>TODO: make sure that we are generating all of the notifications
+that we should:
+<li>When a user is enrolled, if casting type is open or group, send a
+notification with a link to the casting page
+<li>When a user is invited, send a link to the enrollment page
+<li>When simulation notification date is reached, send an email saying
+that the simulation will start at date X.  Include a link to
+simplay/about-sim (?? this requires case id)
+<li>When the simulation starts, send an email with a link to simplay
+with case_id
+</ul>

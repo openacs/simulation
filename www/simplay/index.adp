@@ -22,3 +22,4 @@
 </if>
 
 <p>TODO: how can a player access completed cases?</p>
+<P>TODO: all of simplay should require role_id</p>

@@ -5,6 +5,7 @@ ad_page_contract {
 }
 
 # TODO: finish implementing description field (I cut-paste from template-edit.tcl and may have left out stuff)
+# TODO: pre-populate the description with the template description
 
 simulation::template::get -workflow_id $workflow_id -array sim_template
 
@@ -27,6 +28,7 @@ ad_form -export { workflow_id } -name simulation -form {
         {html {cols 60 rows 8}}
         {help_text "This description is visible to users during enrollment."}
     }
+
 } -edit_request {
     set description [template::util::richtext::create $simulation(description) $simulation(description_mime_type)]
 } -on_request {
@@ -43,7 +45,7 @@ ad_form -export { workflow_id } -name simulation -form {
     # Default values
     set one_month [expr 3600*24*31]
 
-    # TODO: provide more sensible default dates?
+    # TODO: B: provide more sensible default dates?  1 week, 2 weeks, start date + suggested duration
     if { [empty_string_p $send_start_note_date] } {
         set send_start_note_date [clock format [expr [clock seconds] + 2*$one_month] -format "%Y-%m-%d"]
     }

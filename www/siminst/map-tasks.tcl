@@ -14,7 +14,7 @@ ad_form \
         {workflow_id:integer(hidden) {value $workflow_id}}
     }
 
-set prop_options [simulation::object::get_object_type_options -object_type "sim_prop"]
+set prop_options [simulation::object::get_object_type_options -object_type "sim_prop" -null_label "--Not Yet Selected--"]
 
 set actions [list]
 

@@ -4,12 +4,11 @@ ad_page_contract {
     workflow_id:integer
 }
 
+# TODO: implement the enrollment type and optional enrollment date fields from simulation-enrollment.tcl
 
 simulation::template::get -workflow_id $workflow_id -array sim_template
 
 set group_admin_url [export_vars -base "[subsite::get_element -element url]admin/group-types/one" { { group_type group } }]
-
-
 
 set permission_group_name [simulation::permission_group_name]
 
@@ -80,10 +79,9 @@ template::list::create \
                 </else>
             }
             html { align center }
-            hide_p {[ad_decode $sim_template(enroll_type) "closed" 1 0]}
         }
         auto_enroll_p {
-            label "Auto-Enroll"
+            label "Mandatory Participation"
             display_template {
                 <if @participants.auto_enroll_p@ true>
                   <input name="__auto_enroll_@participants.group_id@" value="t" type="checkbox" checked>
@@ -95,7 +93,6 @@ template::list::create \
             html { align center }
         }
     }
-
 #                <formwidget id="auto_enroll_@participants.group_id@">
 
 wizard submit simulation -buttons { back next }

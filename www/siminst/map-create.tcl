@@ -14,14 +14,14 @@ set context [list [list "." "SimInst"] $page_title]
 set old_name [workflow::get_element -workflow_id $workflow_id -element pretty_name]
 acs_user::get -user_id $user_id -array user_array
 
-set name_default "New Simulation from template $old_name"
+set name_default "New Simulation based on $old_name"
 
 ad_form \
     -name template \
     -export { workflow_id } \
     -form {
         {pretty_name:text
-            {label "Template name"}
+            {label "Simulation name"}
             {value $name_default}
             {html {size 60}}
             {help_text "Please choose a new name for your new simulation"}

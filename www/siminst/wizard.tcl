@@ -9,12 +9,11 @@ ad_page_contract {
 permission::require_write_permission -object_id $workflow_id
 
 wizard create siminst -steps {
-    1 -label "Roles" -url "map-characters"
-    2 -label "Tasks" -url "map-tasks"
-    3 -label "Settings" -url "simulation-edit"
-    4 -label "Enrollment" -url "simulation-enrollment"
-    5 -label "Participants" -url "simulation-participants"
-    6 -label "Casting" -url "simulation-casting-3"
+    1 -label "Settings" -url "simulation-edit"
+    2 -label "Roles" -url "map-characters"
+    3 -label "Tasks" -url "map-tasks"
+    4 -label "Participants" -url "simulation-participants"
+    5 -label "Casting" -url "simulation-casting-3"
 } -params {
     workflow_id
 }
@@ -24,12 +23,11 @@ wizard set_finish_url [export_vars -base "simulation-casting" { workflow_id }]
 # TODO: B: Refactor wizard so that it uses titles from child pages if this next section are blank
 
 array set title {
-    1 "Assign Characters to Roles"
-    2 "Populate Tasks"
-    3 "Simulation Settings"
-    4 "Define Enrollment"
-    5 "Select Participants"
-    6 "Define Casting Rules"
+    1 "Simulation Settings"
+    2 "Assign Characters to Roles"
+    3 "Populate Tasks"
+    4 "Select Participants"
+    5 "Define Casting Rules"
 }
 
 wizard set_param workflow_id $workflow_id

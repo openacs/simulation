@@ -13,11 +13,11 @@ set package_id [ad_conn package_id]
 #set eligible_groups [simulation::casting_groups -workflow_id $workflow_id]
 
 ad_form -export { workflow_id } -name simulation -form {
-    {enroll_type:text(radio)
+    {enroll_type:text(checkbox)
         {label "Enrollment type"}
-        {options {{"By invitation only" closed} {Open open}}}
+        {options {{"Allow self-enrollment" closed}}}
             {html {onChange "javascript:acs_FormRefresh('simulation');"}}
-        {help_text "With <b>Open</b> enrollment, any user can join during the enrollment period.  You can still directly enroll users and send invitations.  <br><b>By Invitation Only</b> prevents users from joining unless invited; you can still directly enroll users. "}
+        {help_text "If self-enrollment is allowed, this simulation will be publicly listed on the Simulation home page and anybody can enroll themself."}
     }
     {enroll_start:date,to_sql(ansi),from_sql(ansi),optional
         {label "Enrollment start date"}

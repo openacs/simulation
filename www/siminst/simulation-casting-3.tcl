@@ -8,6 +8,9 @@ ad_page_contract {
     workflow_id:integer
 }
 
+# TODO: auto-check all boxes
+# TODO: if enroll-type is open, show all groups from the subsite in each role
+
 set page_title "Set user casting rules"
 set context [list [list "." "SimInst"] $page_title]
 
@@ -15,8 +18,9 @@ set form [list]
 
 lappend form {casting_type:text(radio)
     {label "Casting type"}
-    {options {{Automatic auto} {Group group} {Open open}}}
+    {options {{"Participants are <b>automatically</b> assigned cases and roles" auto} {"Participants choose their own cases" group} {"Participants choose cases and roles" open}}}
     {section "Casting type"}
+    {help_text "If participants have not selected groups or roles by the simulation start time, they are automatically assigned.  TODO: implement this"}
 }
 
 
@@ -37,7 +41,7 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     }
 
     lappend form [list parties_${role_id}:text(checkbox),multiple,optional \
-                      [list label "Cast <b>\$role_${role_id}_pretty_name</b> from these groups"] \
+                      [list label "Cast <b>\$role_${role_id}_pretty_name</b> only from these groups"] \
                       {options $eligible_groups} \
                       [list section "\$role_${role_id}_pretty_name"]
                      ]

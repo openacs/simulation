@@ -25,7 +25,7 @@ template::list::create \
     -no_data "No templates are ready for mapping" \
     -elements {
         pretty_name {
-            label "Template"
+            label "Templates Ready for Use"
             orderby upper(w.pretty_name)
         }
         suggested_duration {
@@ -37,13 +37,8 @@ template::list::create \
             orderby number_of_roles
             html { align center }
         }
-        min_number_of_human_roles {
-            label "Min \# of players"
-            orderby min_number_of_human_roles
-            html { align center }
-        }
         map {
-            label "Begin"
+            label ""
             link_url_col map_url
             display_template {
                 Begin Development
@@ -58,10 +53,7 @@ select workflow_id,
        pretty_name,
        (select count(*)
         from workflow_roles
-        where workflow_id = w.workflow_id) as number_of_roles,
-       (select count(*)
-        from workflow_roles
-        where workflow_id = w.workflow_id) as min_number_of_human_roles
+        where workflow_id = w.workflow_id) as number_of_roles
   from sim_simulations ss,
        workflows w
  where ss.simulation_id = w.workflow_id
