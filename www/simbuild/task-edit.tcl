@@ -26,9 +26,11 @@ ad_page_contract {
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
 
+set num_sub_actions 0
+
 if { ![ad_form_new_p -key action_id] } {
     simulation::action::get -action_id $action_id -array task_array
-
+    
     set workflow_id $task_array(workflow_id)
 
     # Message tasks have a recipient; upload document tasks ("normal") have no recipient
@@ -40,6 +42,14 @@ if { ![ad_form_new_p -key action_id] } {
     
     set trigger_type $task_array(trigger_type)
     set parent_action_id $task_array(parent_action_id)
+
+    if { [lsearch -exact { workflow parallel dynamic } $trigger_type] != -1 } {
+        set num_sub_actions [db_string num_sub_actions { 
+            select count(*) 
+            from   workflow_actions 
+            where  parent_action_id = :action_id
+        }]
+    }
 }
 
 workflow::get -workflow_id $workflow_id -array sim_template_array
@@ -124,7 +134,8 @@ ad_form -extend -name task -form {
         {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
     }
     {trigger_type:text(radio)
-        {label "Trigger Type"}
+        {label {[ad_decode $num_sub_actions 0 "Trigger Type" "Trigger Type<br>(Cannot edit because<br>task has child tasks)"]}}
+        {mode {[ad_decode $num_sub_actions 0 "" "display"]}}
         {options { 
             { "User task" user } 
             { "Automatic timer" time } 
@@ -279,6 +290,7 @@ ad_form -extend -name task -edit_request {
     # Check that pretty_name is unique
     set unique_p [workflow::action::pretty_name_unique_p \
                       -workflow_id $workflow_id \
+                      -parent_action_id $parent_action_id \
                       -action_id $action_id \
                       -pretty_name $pretty_name]
     

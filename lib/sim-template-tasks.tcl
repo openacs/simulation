@@ -83,16 +83,16 @@ lappend elements name {
     link_url_col {[ad_decode $display_mode edit view_url ""]}
 }
 
-lappend elements assigned_name { 
-    label "<br />Assignee"
-    link_url_col assigned_role_edit_url
-}
-
 lappend elements trigger_type { 
     label "<br />Type"
     display_eval {[string totitle $trigger_type] [ad_decode $num_subactions "" "" "($num_subactions subtasks)"]}
     link_url_col add_child_action_url
     link_html { title "Edit subtasks" }
+}
+
+lappend elements assigned_name { 
+    label "<br />Assignee"
+    link_url_col assigned_role_edit_url
 }
 
 lappend elements delete {

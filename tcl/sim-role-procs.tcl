@@ -211,7 +211,9 @@ ad_proc -public simulation::role::get_element {
 }
 
 ad_proc -private simulation::role::get_ids {
+    {-all:boolean}
     {-workflow_id:required}
+    {-parent_action_id {}}
 } {
     Get the IDs of all the roles in the right order.
 
@@ -221,7 +223,7 @@ ad_proc -private simulation::role::get_ids {
 
     @author Lars Pind (lars@collaboraid.biz)
 } {
-    return [workflow::role::get_ids -workflow_id $workflow_id]
+    return [workflow::role::get_ids -all=$all_p -workflow_id $workflow_id -parent_action_id $parent_action_id]
 }
 
 ad_proc -private simulation::role::generate_spec {

@@ -287,7 +287,9 @@ ad_proc -private simulation::action::generate_spec {
 }
 
 ad_proc -public simulation::action::get_ids {
+    {-all:boolean}
     {-workflow_id:required}
+    {-parent_action_id {}}
 } {
     Get the action_id's of all the actions in the workflow.
     
@@ -297,7 +299,7 @@ ad_proc -public simulation::action::get_ids {
 
     @author Lars Pind (lars@collaboraid.biz)
 } {
-    return [workflow::action::fsm::get_ids -workflow_id $workflow_id]
+    return [workflow::action::fsm::get_ids -all=$all_p -workflow_id $workflow_id -parent_action_id $parent_action_id]
 }
 
 ad_proc -public simulation::action::get_element {

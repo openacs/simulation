@@ -106,6 +106,7 @@ ad_form -extend -name state -form {
     # Check that pretty_name is unique
     set unique_p [workflow::state::fsm::pretty_name_unique_p \
                       -workflow_id $workflow_id \
+                      -parent_action_id $parent_action_id \
                       -state_id $state_id \
                       -pretty_name $pretty_name]
     
