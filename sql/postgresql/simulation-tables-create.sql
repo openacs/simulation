@@ -87,13 +87,23 @@ create table sim_tasks (
                                         on delete cascade
                                         constraint sim_tasks_pk
                                         primary key,
-    recipient           integer         constraint sim_tasks_recipient_fk
-                                        references workflow_roles
-                                        on delete cascade,
     attachment_num      integer         default 0
 );
 
 comment on table sim_tasks is 'A 1-1 extension of workflow_actions.  Each record is a task that a role must perform, possibly upon another role.';
+
+create table sim_task_recipients (
+        task_id         integer         constraint sim_task_recipients_tid_fk
+                                        references sim_tasks(task_id)
+                                        on delete cascade,
+        recipient       integer         constraint sim_task_recipients_rid_fk
+                                        references workflow_roles(role_id)
+                                        on delete cascade,
+        constraint sim_task_recipients_pk
+        primary key(task_id, recipient)
+);
+
+comment on table sim_task_recipients is 'Each record is a recipient for a task. This table allows each task to have 0 or more recipients';
 
 create table sim_task_object_map (
     task_id             integer         constraint stom_fk

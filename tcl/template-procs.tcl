@@ -69,7 +69,7 @@ ad_proc -public simulation::template::edit {
             set insert_names [list]
             set insert_values [list]
 
-            # Handle columns in the sim_tasks table
+            # Handle columns in the sim_simulations table
             foreach attr { 
                 sim_type suggested_duration
                 enroll_type casting_type
@@ -146,7 +146,7 @@ ad_proc -public simulation::template::edit {
                            -workflow_id $workflow_id \
                            -array row]
 
-        # sim_tasks row
+        # sim_simulations row
         switch $operation {
             insert {
                 lappend insert_names simulation_id

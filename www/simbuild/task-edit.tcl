@@ -33,7 +33,7 @@ if { ![ad_form_new_p -key action_id] } {
         set task_type "workflow"
     } else {
         # Message tasks have a recipient; upload document tasks ("normal") have no recipient
-        if { ![empty_string_p $task_array(recipient_role)] } {
+        if { ![empty_string_p $task_array(recipient_roles)] } {
             set task_type "message"
         } else {
             set task_type "normal"
@@ -104,9 +104,9 @@ ad_form \
             {label "Assignee"}
             {options $role_options_with_null}
         }
-        {recipient_role:text(select),optional
-            {label "Recipient"}
-            {options $role_options_with_null}
+        {recipient_roles:text(checkbox),optional,multiple
+            {label "Recipients"}
+            {options $role_options}
         }
         {child_workflow_id:integer(select),optional
             {label "Child workflow"}
@@ -177,27 +177,27 @@ ad_form -extend -name task -edit_request {
 
     foreach elm { 
         pretty_name pretty_past_tense new_state_id 
-        assigned_role recipient_role
+        assigned_role recipient_roles
         attachment_num
         child_workflow_id
     } {
         set $elm $task_array($elm)
     }
-    
+
     switch $task_type {
         message {
             element set_properties task assigned_role -widget select
-            element set_properties task recipient_role -widget select
+            element set_properties task recipient_roles -widget checkbox
             element set_properties task child_workflow_id -widget hidden
         }
         normal {
             element set_properties task assigned_role -widget select
-            element set_properties task recipient_role -widget hidden
+            element set_properties task recipient_roles -widget hidden
             element set_properties task child_workflow_id -widget hidden
         }
         workflow {
             element set_properties task assigned_role -widget hidden
-            element set_properties task recipient_role -widget hidden
+            element set_properties task recipient_roles -widget hidden
             element set_properties task child_workflow_id -widget select
             
             foreach { child_short_name elm } $task_array(child_role_map) {
@@ -212,28 +212,28 @@ ad_form -extend -name task -edit_request {
 
     set task_type "message"
     element set_properties task child_workflow_id -widget hidden
-} -on_refresh {
+} -on_refresh {    
     switch $task_type {
         message {
             element set_properties task assigned_role -widget select
-            element set_properties task recipient_role -widget select
+            element set_properties task recipient_roles -widget checkbox
             element set_properties task child_workflow_id -widget hidden
         }
         normal {
             element set_properties task assigned_role -widget select
-            element set_properties task recipient_role -widget hidden
+            element set_properties task recipient_roles -widget hidden
             element set_properties task child_workflow_id -widget hidden
         }
         workflow {
             element set_properties task assigned_role -widget hidden
-            element set_properties task recipient_role -widget hidden
+            element set_properties task recipient_roles -widget hidden
             element set_properties task child_workflow_id -widget select
         }
     }
 
     set focus {}
 } -on_submit {
-    
+
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 
@@ -244,11 +244,11 @@ ad_form -extend -name task -edit_request {
             set child_workflow_id {}
         }
         normal {
-            set recipient_role {}
+            set recipient_roles {}
             set child_workflow_id {}
         }
         workflow {
-            set recipient_role {}
+            set recipient_roles {}
 
             # we have:
             # element parent_role__asker = lawyer
@@ -270,7 +270,7 @@ ad_form -extend -name task -edit_request {
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
         new_state_id 
-        recipient_role attachment_num
+        recipient_roles attachment_num
         child_workflow_id child_role_map
     } {
         set row($elm) [set $elm]

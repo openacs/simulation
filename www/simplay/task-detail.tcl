@@ -17,10 +17,10 @@ simulation::action::get -action_id $action_id -array action
 set page_title $action(pretty_name)
 set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] [list [export_vars -base tasks { case_id role_id }] "Tasks"] $page_title]
 
-set action(recipient_role) ""
+set action(recipients) [list 110 111]
 
-if { ![empty_string_p $action(recipient_role)] } {
-    # We have a recipient role - use message form
+if { ![empty_string_p $action(recipients)] } {
+    # We have recipient roles - use message form
 
     if { ![empty_string_p $action(assigned_role_id)] } {
         set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $action(assigned_role_id)]
@@ -43,7 +43,7 @@ if { ![empty_string_p $action(recipient_role)] } {
             {sender_name:text(inform),optional
                 {label "From"}
             }
-            {recipient_name:text(inform),optional
+            {recipient_names:text(inform),optional
                 {label "To"}
             }
             {subject:text
@@ -80,9 +80,12 @@ if { ![empty_string_p $action(recipient_role)] } {
                 append documents "<a href=\"$object_url\">$object_title</a><br>"
             }
 
-            if { ![empty_string_p $action(recipient)] } {
-                set recipient_name [simulation::role::get_element -role_id $action(recipient) -element pretty_name]
+            set recipient_list [list]
+            foreach recipient_id $action(recipients) {
+                lappend recipient_list [simulation::role::get_element -role_id $recipient_id -element pretty_name]
             }
+            set recipient_names [join $recipient_list ", "]
+
             if { ![empty_string_p $action(assigned_role_id)] } {
                 simulation::role::get -role_id $action(assigned_role_id) -array sender_role
                 set sender_name $sender_role(pretty_name)
@@ -99,15 +102,17 @@ if { ![empty_string_p $action(recipient_role)] } {
                 -action_id $action_id \
                 -comment $body_text \
                 -comment_mime_type $body_mime_type
-        
-            simulation::message::new \
-                -from_role_id $action(assigned_role_id) \
-                -to_role_id $action(recipient) \
-                -case_id $case_id \
-                -subject $subject \
-                -body $body_text \
-                -body_mime_type $body_mime_type \
-                -attachments $attachments
+
+            foreach recipient_id $action(recipients) {
+                simulation::message::new \
+                    -from_role_id $action(assigned_role_id) \
+                    -to_role_id $recipient_id \
+                    -case_id $case_id \
+                    -subject $subject \
+                    -body $body_text \
+                    -body_mime_type $body_mime_type \
+                    -attachments $attachments
+                }   
             }
 
             ad_returnredirect [export_vars -base tasks { case_id role_id }]
@@ -116,7 +121,7 @@ if { ![empty_string_p $action(recipient_role)] } {
 
     set focus "action.subject"
 } else {
-    # No recipient role - use upload document form
+    # No recipient roles - use upload document form
 
     set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
 

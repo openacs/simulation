@@ -77,9 +77,9 @@ lappend elements assigned_name {
     link_url_col assigned_role_edit_url
 }
 
-lappend elements recipient_name { 
-    label "<br />Recipient"
-    link_url_col recipient_role_edit_url
+lappend elements recipient_count { 
+    label "<br />Number of recipients"
+    html { align center } \
 }
 
 lappend elements task_type { 
@@ -89,7 +89,7 @@ lappend elements task_type {
           <a href="@tasks.child_workflow_url@">@tasks.child_workflow_pretty@</a>
         </if>
         <else>
-          <if @tasks.recipient_name@ not nil>Message</if>
+          <if @tasks.recipient_count@ gt 0>Message</if>
           <else>Document</else>
         </else>
     }
@@ -162,7 +162,7 @@ template::list::create \
 #-------------------------------------------------------------
 
 set extend [list]
-lappend extend edit_url view_url delete_url assigned_role_edit_url recipient_role_edit_url child_workflow_url up_url down_url
+lappend extend edit_url view_url delete_url assigned_role_edit_url child_workflow_url up_url down_url
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -193,13 +193,13 @@ db_multirow -extend $extend tasks select_tasks "
     select wa.action_id,
            wa.pretty_name,
            wa.assigned_role,
-           st.recipient as recipient_role,
+           (select count(*)
+            from sim_task_recipients str
+            where str.task_id = wa.action_id
+           ) as recipient_count,
            (select pretty_name 
               from workflow_roles
              where role_id = wa.assigned_role) as assigned_name,
-           (select pretty_name 
-              from workflow_roles
-             where role_id = st.recipient) as recipient_name,
            wa.sort_order,
            wa.always_enabled_p,
            wfa.new_state,
@@ -211,7 +211,6 @@ db_multirow -extend $extend tasks select_tasks "
             from   workflows
             where  workflow_id = wa.child_workflow_id) as child_workflow_pretty
       from workflow_actions wa left outer join
-           sim_tasks st on (st.task_id = wa.action_id) left outer join
            workflow_fsm_actions wfa on (wfa.action_id = wa.action_id)
      where wa.workflow_id = :workflow_id
        and not exists (select 1
@@ -228,8 +227,6 @@ db_multirow -extend $extend tasks select_tasks "
 
     set assigned_role_edit_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
-    set recipient_role_edit_url \
-        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $recipient_role } }]
     
     set child_workflow_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { { workflow_id $child_workflow_id } }]

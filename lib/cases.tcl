@@ -15,12 +15,10 @@ set package_id [ad_conn package_id]
 set elements {
     pretty_name {
         label "Simulation"
-        orderby upper(w.pretty_name)
         link_url_eval {[export_vars -base [ad_conn package_url]simplay/case { case_id role_id }]}
     }
     label {
         label "Case"
-        orderby upper(w.pretty_name)
     }
     role_pretty {
         label "Role"
@@ -68,5 +66,5 @@ db_multirow cases select_cases "
        and wc.case_id = wcrpm.case_id
        and sc.sim_case_id = wc.object_id
        and w.workflow_id = wc.workflow_id
-[template::list::orderby_clause -orderby -name "cases"]
+     order by w.pretty_name, sc.label
 "

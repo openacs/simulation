@@ -73,20 +73,24 @@ ad_proc -public simulation::action::edit {
     # Parse column values
     switch $operation {
         insert - update {
-            # Special-case: array entry recipient_role (short_name) and recipient (state_id) -- DB column is recipient (state_id)
-            if { [info exists row(recipient_role)] } {
-                if { [info exists row(role)] } {
-                    error "You cannot supply both recipient_role (takes short_name) and recipient (takes state_id)"
+            # Special-case: array entry recipient_roles (short_name) and recipients (role_id)
+            if { [info exists row(recipient_roles)] } {
+                if { [info exists row(recipients)] } {
+                    error "You cannot supply both recipient_roles (takes short_name) and recipient (takes role_id)"
                 }
-                if { [empty_string_p $row(recipient_role)] } {
-                    set row(recipient) [db_null]
+                if { [empty_string_p $row(recipient_roles)] } {
+                    set row(recipients) [db_null]
                 } else {
                     # Get role_id by short_name
-                    set row(recipient) [workflow::role::get_id \
-                                            -workflow_id $workflow_id \
-                                            -short_name $row(recipient_role)]
+                    foreach recipient_short_name $row(recipient_roles) {
+                        lappend row(recipients) [workflow::role::get_id \
+                                                     -workflow_id $workflow_id \
+                                                     -short_name $recipient_short_name]
+                    }
                 }
-                unset row(recipient_role)
+                set local_relation(recipients) $row(recipients)
+                unset row(recipient_roles)
+                unset row(recipients)
             }
 
             set update_clauses [list]
@@ -95,7 +99,7 @@ ad_proc -public simulation::action::edit {
 
             # Handle columns in the sim_tasks table
             foreach attr { 
-                recipient attachment_num
+                attachment_num
             } {
                 if { [info exists row($attr)] } {
                     set varname attr_$attr
@@ -154,6 +158,24 @@ ad_proc -public simulation::action::edit {
                 # Handled through cascading delete
             }
         }
+
+        if {[string equal $operation "update"] || [string equal $operation "insert"]} {
+                if { [info exists local_relation(recipients)] } {
+                    db_dml delete_old_recipients {
+                        delete from sim_task_recipients
+                        where task_id = :action_id
+                    }
+
+                    foreach recipient_id $local_relation(recipients) {
+                        db_dml insert_recipient {
+                            insert into sim_task_recipients
+                              (task_id, recipient)
+                            values
+                              (:action_id, :recipient_id)
+                        }
+                    }
+                }
+        }
         
         if { !$internal_p } {
             workflow::definition_changed_handler -workflow_id $workflow_id
@@ -185,14 +207,24 @@ ad_proc -public simulation::action::get {
     }
     
     db_1row select_action {
-        select recipient, 
-               (select short_name 
-                from   workflow_roles 
-                where  role_id = recipient) as recipient_role,
-               attachment_num
+        select attachment_num
         from   sim_tasks
         where  task_id = :action_id
     } -column_array local_row
+
+    set local_row(recipients) {}
+    set local_row(recipient_roles) {}
+    db_foreach recipient_roles {
+        select wr.role_id,
+               wr.short_name
+        from sim_task_recipients str,
+             workflow_roles wr
+        where str.task_id = :action_id
+          and str.recipient = wr.role_id
+    } {
+        lappend local_row(recipients) $role_id
+        lappend local_row(recipient_roles) $short_name
+    }
 
     array set row [array get local_row]
 }
@@ -228,7 +260,7 @@ ad_proc -private simulation::action::generate_spec {
 
     # Get local spec, remove unwanted entries
     get -action_id $action_id -array local_row -local_only
-    array unset local_row recipient
+    array unset local_row recipients
     
     # Copy local stuff in over the parent stuff
     array set row [array get local_row]

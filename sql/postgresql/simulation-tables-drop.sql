@@ -4,6 +4,7 @@
 
 --drop independent tables
 drop table sim_party_sim_map;
+drop table sim_task_recipients;
 drop table sim_tasks;
 drop table sim_role_party_map;
 drop table sim_roles;

@@ -77,7 +77,7 @@ ad_proc -public simulation::role::edit {
             set insert_names [list]
             set insert_values [list]
 
-            # Handle columns in the sim_tasks table
+            # Handle columns in the sim_roles table
             foreach attr { 
                 character_id users_per_case
             } {

@@ -12,12 +12,9 @@ ad_page_contract {
 set package_id [ad_conn package_id]
 set num_of_tasks [db_string task_count "
 select count(*) 
-  from workflow_actions wa,
-       sim_tasks st
- where st.task_id = wa.action_id
-   and wa.assigned_role = :role_id
-    or st.recipient = :role_id
-   "
+  from workflow_actions wa
+ where wa.assigned_role = :role_id
+"
                   ]
 workflow::role::get -role_id $role_id -array role_array
 set name $role_array(pretty_name)
