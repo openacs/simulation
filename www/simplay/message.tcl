@@ -31,6 +31,8 @@ foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
 
 set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $role_id]
 
+set document_upload_url [export_vars -base document-upload {case_id role_id {return_url {[ad_return_url]}}}]
+
 set action [form::get_action message]
 
 

@@ -76,6 +76,14 @@ lappend elements up {
         </if>
     }
 }
+lappend elements copy {
+    hide_p {[ad_decode $display_mode edit 0 1]}
+    sub_class narrow
+    link_url_col copy_url
+    display_template {
+        <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
+    }
+}
 
 lappend elements name { 
     label "<br />Name"
@@ -167,7 +175,7 @@ template::list::create \
 #-------------------------------------------------------------
 
 set extend [list]
-lappend extend edit_url view_url delete_url assigned_role_edit_url up_url down_url add_child_action_url
+lappend extend edit_url view_url delete_url assigned_role_edit_url up_url down_url add_child_action_url copy_url
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -223,7 +231,8 @@ db_multirow -extend $extend tasks select_tasks "
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]} }]
     set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]}}]
     set delete_url \
-        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url [ad_return_url]} }]
+        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url "[ad_return_url]\#tasks"} }]
+    set copy_url [export_vars -base task-copy { action_id {return_url "[ad_return_url]\#tasks"} }]
 
     set assigned_role_edit_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]

@@ -1044,7 +1044,6 @@ ad_proc -public simulation::template::generate_spec {
         actions "simulation::action"
         states "workflow::state::fsm"
     }}
-    {-deep:boolean}
 } {
     Generate a spec for a workflow in array list style.
     
@@ -1057,8 +1056,7 @@ ad_proc -public simulation::template::generate_spec {
     set spec [workflow::generate_spec \
                   -workflow_id $workflow_id \
                   -workflow_handler $workflow_handler \
-                  -handlers $handlers \
-                  -deep=$deep_p]
+                  -handlers $handlers]
 
     simulation::template::get -workflow_id $workflow_id -array simulation
     
@@ -1107,7 +1105,6 @@ ad_proc -public simulation::template::clone {
     {-package_key {}}
     {-object_id {}}
     {-array {}}
-    {-deep:boolean}
     {-workflow_handler "simulation::template"}
 } {
     Clones an existing simulation template. The clone must belong to either a package key or an object id.
@@ -1133,7 +1130,6 @@ ad_proc -public simulation::template::clone {
     } 
     
     set workflow_id [workflow::clone \
-                         -deep=$deep_p \
                          -workflow_id $workflow_id \
                          -package_key $package_key \
                          -object_id $object_id \
