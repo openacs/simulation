@@ -1,5 +1,5 @@
 ad_page_contract {
-    This page shows the full action, message, and document history of
+    This page shows the full task, message, and document history of
     a simulation case.
 
     @author Peter Marklund
