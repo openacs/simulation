@@ -102,6 +102,9 @@ if { [string equal $size "long"] } {
 	    label "Description"
 	    orderby r.description
 	}
+        item_id {
+            label "Object ID"
+        }
     }]
 }
 
