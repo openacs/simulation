@@ -8,6 +8,9 @@ ad_page_contract {
     {deep_p:boolean "f"}
 }
 
+set page_title "Template Specifiaction"
+set context [list [list "." "SimBuild"] [list [export_vars -base template-edit { workflow_id }] "Template"] $page_title] 
+
 set spec [simulation::template::generate_spec -workflow_id $workflow_id -deep=[template::util::is_true $deep_p]]
 
-ns_return 200 text/plain [util::array_list_spec_pretty $spec]
+set spec [util::array_list_spec_pretty $spec]

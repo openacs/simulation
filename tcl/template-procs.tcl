@@ -1064,6 +1064,7 @@ ad_proc -public simulation::template::new_from_spec {
         upvar 1 $array row
         set array row
     } 
+
     return [workflow::new_from_spec \
                 -package_key $package_key \
                 -object_id $object_id \
