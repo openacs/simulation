@@ -6,9 +6,10 @@ simulation::include_contract {
     @cvs-id $Id$
 } {
     case_id {}
+    role_id {}
 }
 
-set upload_url [export_vars -base document-upload { case_id }]
+set upload_url [export_vars -base document-upload { case_id role_id  }]
 
 if { [exists_and_not_null case_id] } {
     set user_roles [workflow::case::get_user_roles -case_id $case_id]

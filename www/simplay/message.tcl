@@ -4,7 +4,6 @@ ad_page_contract {
     item_id:integer,optional
     case_id:integer
     role_id:integer
-    sender_role_id:integer,optional
     recipient_role_id:integer,optional,multiple
     subject:optional
     body_text:optional
@@ -19,30 +18,21 @@ set package_id [ad_conn package_id]
 
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
 
-set from_role_options [list]
-foreach one_role_id [workflow::case::get_user_roles -case_id $case_id] {
-    lappend from_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
-}
-
-# First sender role selected by default
-if { ![exists_and_not_null sender_role_id] } {
-    set sender_role_id [lindex [lindex $from_role_options 0] 1]
-}
-
 set all_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-    lappend all_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
+    set pretty_name [workflow::role::get_element -role_id $one_role_id -element pretty_name]
+    lappend all_role_options [list $pretty_name $one_role_id]
 }
 
 set to_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
     # A role cannot send message to himself
-    if { ![exists_and_equal sender_role_id $one_role_id] } {
+    if { ![exists_and_equal role_id $one_role_id] } {
         lappend to_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
     }
 }
 
-set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $sender_role_id]
+set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $role_id]
 
 set action [form::get_action message]
 
@@ -54,7 +44,6 @@ if { [string equal $action "reply"] } {
         -array content
 
     set recipient_role_id $content(from_role_id)
-    set sender_role_id $content(to_role_id)
     set subject "Re: $content(title)"
     set body_text "
 
@@ -68,38 +57,63 @@ Subject: $content(title)
 [ad_html_text_convert -from $content(mime_type) -to "text/plain" $content(text)]"
     set body_mime_type "text/plain"
 
-    ad_returnredirect [export_vars -base [ad_conn url] { case_id sender_role_id recipient_role_id subject body_text body_mime_type }]
+    ad_returnredirect [export_vars -base [ad_conn url] { case_id role_id recipient_role_id subject body_text body_mime_type }]
 }
 
 set form_mode [ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"]
+
+set focus "message.recipient_role_id"
+
+set sender_role_id $role_id
 
 ad_form \
     -name message \
     -edit_buttons { { Send ok } } \
     -actions { { Reply reply } } \
-    -export { case_id } \
+    -export { case_id role_id } \
     -mode $form_mode \
     -form {
+        {item_id:key}
         {sender_role_id:text(select)
             {label "From"}
-            {html {onChange "javascript:acs_FormRefresh('message');"}}
+            {mode display}
             {options $all_role_options}
         }
     }
 
-if { [llength $from_role_options] > 1 } {
-    set focus "message.sender_role_id"
+if { [ad_form_new_p -key item_id] } {
+    if { [llength $to_role_options] == 1 } {
+        set recipient_role_id [lindex [lindex $to_role_options 0] 1]
+
+        ad_form -extend -name message -form {
+            {recipient_role_id_inform:text(inform)
+                {label "To"}
+                {value {[lindex [lindex $to_role_options 0] 0]}}
+            }
+            {recipient_role_id:integer(hidden)
+                {value {[lindex [lindex $to_role_options 0] 1]}}
+            }
+        }
+    } else {
+        ad_form -extend -name message -form {
+            {recipient_role_id:integer(checkbox),multiple
+                {label "To"}
+                {options $to_role_options}
+            }
+        }
+    }
 } else {
-    set sender_role_id [lindex [lindex $from_role_options 0] 1]
-    set focus "message.recipient_role_id"
+    ad_form -extend -name message -form {
+        {recipient_role_id:integer(checkbox),multiple
+            {label "To"}
+            {options $to_role_options}
+        }
+    }
 }
 
+
+
 ad_form -extend -name message -form {
-    {item_id:key}
-    {recipient_role_id:integer(checkbox),multiple
-        {label "To"}
-        {options $to_role_options}
-    }
     {subject:text
         {label "Subject"}
         {html {size 80}}
@@ -142,13 +156,6 @@ ad_form -extend -name message -new_request {
         set body [template::util::richtext::create $body_text $body_mime_type]
         set focus "message.body"
     }
-
-    if { [llength $from_role_options] == 1 } {
-        set sender_role_id [lindex [lindex $from_role_options 0] 1]
-        element set_properties message sender_role_id -mode display
-    } else {
-        element set_properties message sender_role_id -options $from_role_options
-    }
 } -edit_request {
     
     item::get_content \
@@ -182,7 +189,10 @@ ad_form -extend -name message -new_request {
             set object_url [simulation::object::url -name [ns_set get $attachment_set name]]
             set object_title [ns_set get $attachment_set title]
             append attachments "<a href=\"$object_url\">$object_title</a><br>"
-        }        
+        }
+        if { [llength $attachments_set_list] == 0 } {
+            element set_properties message attachments -widget hidden
+        }
     }
 
 } -on_submit {
@@ -209,3 +219,8 @@ ad_form -extend -name message -new_request {
     ad_returnredirect [export_vars -base case { case_id role_id }]
     ad_script_abort
 }
+
+if { ![ad_form_new_p -key item_id] } {
+    element set_properties message recipient_role_id -options $all_role_options
+}
+

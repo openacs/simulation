@@ -14,14 +14,12 @@
 
   <h3>All Messages</h3>
 
-  <include src="/packages/simulation/lib/messages" user_id="@user_id@"></include>
+  <include src="/packages/simulation/lib/messages" user_id="@user_id@">
   <p></p>
 
   <h3>All Tasks</h3>
 
-  <include src="/packages/simulation/lib/tasks" user_id="@user_id@"></include>
+  <include src="/packages/simulation/lib/tasks" user_id="@user_id@">
   <p></p>
 
 </if>
-
-<P>TODO (1h): all of simplay should require role_id</p>
