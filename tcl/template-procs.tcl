@@ -655,7 +655,7 @@ ad_proc -public simulation::template::start {
     }
 
     # Notify users enrolled in the simulation
-    db_foreach select_enrolled_users {
+    set enrolled_users [db_list_of_lists select_enrolled_users {
             select distinct cu.user_id,
                    cu.email,
                    cu.first_names || ' ' || cu.last_name as user_name
@@ -664,7 +664,13 @@ ad_proc -public simulation::template::start {
             where spsm.simulation_id = :workflow_id
              and spsm.type = 'enrolled'
              and spsm.party_id = cu.user_id
-    } {
+    }]
+
+    foreach user_item $enrolled_users {
+        set user_id [lindex $user_item 0]
+        set email [lindex $user_item 1]
+        set user_name [lindex $user_item 2]        
+        
         # TODO: check that link to enrollment page is correct
         set package_id [ad_conn package_id]
         set simplay_url \
