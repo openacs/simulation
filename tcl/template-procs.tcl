@@ -810,32 +810,38 @@ ad_proc -public simulation::template::clone {
 ad_proc -public simulation::template::get_inst_state {
     -workflow_id:required
 } {
-    Get the instantiation state of a simulation template.
+    Get information about which tab urls in the instantiation wizard
+    have been completed.
 
-    States:
+    @return An array with the following keys (urls) and values either 0 or 1:
 
     <ul>
-      <li>none
-      <li>roles_complete
-      <li>tasks_complete
-      <li>settings_complete
-      <li>enrollment_complete
-      <li>participants_complete
-      <li>casting
-      <li>has_cases
+        simulation-edit
+        map-characters
+        map-tasks
+        simulation-participants
+        simulation-casting-3
     </ul>
 } {
-    simulation::template::get -workflow_id $workflow_id -array sim_template
+    simulation::template::get -workflow_id $workflow_id -array sim_template    
     
     # TODO (1.5h): Refactor this and the corresponding wizard.tcl/adp page
     # What we really need to know is whether each step is complete
     # They're all independent of each other, except for casting, which is dependent on participants.
 
+    foreach tab [get_wizard_tabs] {
+        set tab_complete_p($tab) 0
+    }
+
     switch $sim_template(sim_type) {
         dev_sim {
-            set state "none"
+
+            # 1. Settings
+            if { ![empty_string_p $sim_template(case_start)] && ![empty_string_p $sim_template(send_start_note_date)] } {
+                set tab_complete_p(simulation-edit) 1
+            }
             
-            # 1. Roles
+            # 2. Roles
             set role_empty_count [db_string role_empty_count {
                 select count(*) 
                 from   sim_roles sr,
@@ -845,40 +851,28 @@ ad_proc -public simulation::template::get_inst_state {
                 and    character_id is null
             }]
             if { $role_empty_count == 0 } {
-                set state "roles_complete"
+                set tab_complete_p(map-characters) 1
+            } 
 
-                # 2. Tasks
-                set prop_empty_count [db_string prop_empty_count {
-                    select sum((select count(*) from sim_task_object_map where task_id = wa.action_id) - st.attachment_num)
-                    from   sim_tasks st,
-                           workflow_actions wa
-                    where  st.task_id = wa.action_id
-                    and    wa.workflow_id = :workflow_id
-                }]
-                
-                if { $prop_empty_count == 0 } {
-                    set state "tasks_complete"
+            # 3. Tasks
+            set prop_empty_count [db_string prop_empty_count {
+                select sum((select count(*) from sim_task_object_map where task_id = wa.action_id) - st.attachment_num)
+                from   sim_tasks st,
+                       workflow_actions wa
+                where  st.task_id = wa.action_id
+                and    wa.workflow_id = :workflow_id
+            }]                
+            if { $prop_empty_count == 0 } {
+                set tab_complete_p(map-tasks) 1
+            } 
 
-                    if { ![empty_string_p $sim_template(case_start)] && ![empty_string_p $sim_template(send_start_note_date)] } {
-                        set state "settings_complete"
-
-                        if { ![empty_string_p $sim_template(enroll_type)] && 
-                             (![string equal $sim_template(enroll_type) "open"] || 
-                              (![empty_string_p $sim_template(enroll_start)] && ![empty_string_p $sim_template(enroll_end)])) } {
-                            set state "enrollment_complete"
-
-                            set num_parties [db_string num_parties { select count(*) from sim_party_sim_map where simulation_id = :workflow_id }]
-
-                            if { $num_parties > 0 } {
-                                set state "participants_complete"
-                            }
-                        }
-                    }
-                }
-            }
+            # 4. Participants
+            set num_parties [db_string num_parties { select count(*) from sim_party_sim_map where simulation_id = :workflow_id}]
+            if { [string equal $sim_template(enroll_type) "open"] || $num_parties > 0 } {
+                set tab_complete_p(simulation-participants) 1
+            } 
         }
         casting_sim {
-            set state "casting"
             
             set n_cases [db_string select_n_cases {
                 select count(*)
@@ -887,29 +881,61 @@ ad_proc -public simulation::template::get_inst_state {
             }]
 
             if { $n_cases > 0 } {
-                set state "has_cases"
-            }
+                set tab_complete_p(simulation-casting-3) 1
+            } 
         }
     }
     
-    return $state
+    return [array get tab_complete_p]
+}
+
+ad_proc -public simulation::template::get_wizard_tabs {} {
+    Return a list with the url:s (page script names) of the pages
+    in the instantiation wizard. 
+
+    @author Peter Marklund
+} {
+    return {
+        simulation-edit
+        map-characters
+        map-tasks
+        simulation-participants
+        participants_complete
+        simulation-casting-3
+    }
 }
 
 ad_proc -public simulation::template::get_state_pretty {
     -state:required
 } {
     Get pretty version of state.
+
+    @see simulation::template::get_inst_state
 } {
-    array set pretty {
-        none                   "Not started"
-        roles_complete         "Roles completed"
-        tasks_complete         "Tasks completed"
-        settings_complete      "Settings completed"
-        enrollment_complete    "Enrollment completed"
-        participants_complete  "Participants completed"
+    array set state_array $state
+
+    ns_log Notice "pm debug state=$state"
+
+    array set states_pretty {
+        simulation-edit          "Not started"
+        map-characters           "Settings completed"
+        map-tasks                "Roles completed"
+        simulation-participants  "Tasks completed"
+        participants_complete    "Participants completed"
+        simulation-casting-3     "Casting begun"
+    }
+    
+    set next_index 0
+    foreach url [get_wizard_tabs] {
+        if { $state_array($url) } {
+            ns_log Notice "pm debug setting next_url $url"
+            incr next_index
+        } else {
+            break
+        }
     }
 
-    return $pretty($state)
+    return $states_pretty([lindex [get_wizard_tabs] $next_index])
 }
 
 ad_proc -public simulation::template::pretty_name_unique_p {

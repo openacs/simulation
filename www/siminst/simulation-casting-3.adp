@@ -14,7 +14,6 @@
 </p>
 
 <formtemplate id="actors"></formtemplate>
-<P>TODO: (0.1h) Show total number of users per case
 
     <p>In <b>Automatic</b> casting, only
 
@@ -44,37 +43,50 @@
 
 </else>
 
-<p>TODO: (0.5h) if enroll-type is open, show all groups from the subsite in
-each role
-
-<p> TODO: (2h) Make sure rule for checking each tab is correct</p>
-<p> TODO: (3h) put a warning next to the finish button for any incomplete
-requirements, using the same tests we use to determine if tabs are
-complete.  Should include:
-
-Warnings:
-<ul>
-<li>missing attachments
-</ul>
-
-Don't show wizard button if any of these are true:
-<ul>
-<li>missing dates
-<li>any invited or enrolled groups that aren't cast to any roles
-</ul>
+<P>
+  TODO: B: (1h) Show total number of users per case. Javascript. Lars?
+</p>
 
 <p>
-TODO: B: finish button should appear on every tab
+  TODO: (2h) Make sure rule for checking each tab is correct
+</p>
+
+<p> 
+  TODO: (3h) put a warning next to the finish button for any incomplete
+  requirements, using the same tests we use to determine if tabs are
+  complete.  Should include:
+
+  Warnings:
+  <ul>
+  <li>missing attachments
+  </ul>
+
+  Don't show wizard button if any of these are true:
+  <ul>
+  <li>missing dates
+  <li>any invited or enrolled groups that aren't cast to any roles
+  </ul>
+</p>
+
+<p>
+  TODO: B: finish button should appear on every tab
 </p>
  
-<p>TODO: (8h) make sure that we are generating all of the notifications
-that we should:
-<ul>
-<li>When a user is enrolled, if casting type is open or group, send a
-notification with a link to the casting page (on finish button)
-<li>When a user is invited, send a link to the enrollment page (on finish button)
-<li>When simulation notification date is reached, send an email saying
-that the simulation will start at date X.  Include the description.
-<li>When the simulation starts, send an email with a link to simplay
-with case_id
-</ul>
+<p>
+  TODO: (8h) make sure that we are generating all of the notifications
+  that we should:
+
+  <ul>
+  <li>When a user is enrolled, if casting type is open or group, send a
+  notification with a link to the casting page (on finish button)
+  <li>When a user is invited, send a link to the enrollment page (on finish button)
+  <li>When simulation notification date is reached, send an email saying
+  that the simulation will start at date X.  Include the description.
+  <li>When the simulation starts, send an email with a link to simplay
+  with case_id
+  </ul>
+</p>
+
+<p>
+  TODO: A: Some data needs to be read only if you return to the wizard after you've clicked the finish button. Test this.
+</p>

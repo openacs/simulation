@@ -80,6 +80,8 @@ ad_form -export { workflow_id } -name simulation -form {
     if { [empty_string_p $case_end] } {
         set case_end [clock format [expr [clock seconds] + 2*$one_week + $default_duration] -format "%Y-%m-%d"]
     }
+    # TODO: B: (0.5h) Offer sensible defaults for enroll_start and enroll_end. 
+    # Couldn't get it to work in the on_refresh block. Lars?
     if { [empty_string_p $enroll_start] } {
         set enroll_start [clock format [expr [clock seconds] + 1*$one_week] -format "%Y-%m-%d"]
     }
@@ -91,6 +93,14 @@ ad_form -export { workflow_id } -name simulation -form {
 
     # Date validation
     set error_p 0
+    # All dates need to be in the future
+    foreach date_var {send_start_note_date case_start case_end enroll_start enroll_end} {
+        if { [clock scan [set $date_var]] < [clock seconds] } {
+            template::form::set_error simulation $date_var "The date needs to be in the future"
+            set error_p 1                            
+        }        
+    }
+
     if { [clock scan $send_start_note_date] > [clock scan $case_start] } {
         template::form::set_error simulation send_start_note_date "Send start note date must be before simulation start date"
         set error_p 1                            

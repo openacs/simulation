@@ -10,6 +10,8 @@ ad_page_contract {
 
 permission::require_write_permission -object_id $workflow_id
 
+simulation::template::get -workflow_id $workflow_id -array sim_template
+
 set page_title "Set user casting rules"
 set context [list [list "." "SimInst"] $page_title]
 
@@ -22,8 +24,14 @@ lappend form {casting_type:text(radio)
     {help_text "If participants have not selected groups or roles by the simulation start time, they are automatically assigned."}
 }
 
+if { [string equal $sim_template(enroll_type) "closed"] } {
+    # Closed enrollment so offer only invited or auto_enroll groups
+    set eligible_groups [simulation::casting_groups -mapped_only -workflow_id $workflow_id]
+} else {
+    # Open enrollment, meaning anybody can sign up, so offer all subsite groups
+    set eligible_groups [simulation::casting_groups -workflow_id $workflow_id]
+}
 
-set eligible_groups [simulation::casting_groups -mapped_only -workflow_id $workflow_id]
 set num_groups [llength $eligible_groups]
 
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {

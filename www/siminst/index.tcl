@@ -112,6 +112,7 @@ db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url si
     set map_roles_url [export_vars -base "${base_url}siminst/map-characters" { workflow_id }]
     set sim_tasks_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
+    # TODO: getting the states here will not scale well (executes a handful queries for every template listed)
     set state [simulation::template::get_inst_state -workflow_id $workflow_id]
     set state_pretty [simulation::template::get_state_pretty -state $state]
 }
