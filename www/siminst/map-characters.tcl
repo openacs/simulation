@@ -32,9 +32,12 @@ set character_options [db_list_of_lists character_options {
     select sc.title,
            sc.item_id
     from   sim_charactersx sc,
+           cr_items ci,
            acs_objects ao
     where  sc.item_id = ao.object_id
-      and  (sc.in_directory_p = 't' or ao.creation_user = :user_id)
+    and    ci.item_id = sc.item_id 
+    and    ci.live_revision = sc.object_id
+    and    (sc.in_directory_p = 't' or ao.creation_user = :user_id)
     order by sc.title
 }]
 
