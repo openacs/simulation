@@ -54,6 +54,13 @@ ad_proc -public simulation::template::edit {
             array set row [array get org_row]
         }
     }
+    switch $operation {
+        insert {
+            if { ![exists_and_not_null row(sim_type)] } {
+                set row(sim_type) "dev_template"
+            }
+        }
+    }
 
     # Parse column values
     switch $operation {
