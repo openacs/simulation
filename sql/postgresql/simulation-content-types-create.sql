@@ -261,7 +261,7 @@ select content_type__register_relation_type (
 ----------------------------------------------------------------------
 -- sim_message
 ----------------------------------------------------------------------
--- # TODO: conststrain to_role_id and from_role_id
+-- # TODO: foreign constraints for to_role_id and from_role_id
 
 select content_type__create_type(
     'sim_message',                 -- content_type
@@ -312,4 +312,41 @@ select content_type__register_relation_type (
     'attachment',                  -- relation_tag
     0,                            -- min_n
     10                            -- max_n
+);
+
+----------------------------------------------------------------------
+-- sim_case
+----------------------------------------------------------------------
+-- # TODO: foreign constraint for workflow_id
+
+select content_type__create_type(
+    'sim_case',                 -- content_type
+    'content_revision',            -- supertype
+    'Sim Case',                 -- pretty_name,
+    'Sim Cases',                -- pretty_plural
+    'sim_cases',                -- table_name
+    'case_id',                  -- id_column
+    null                           -- name_method
+);
+
+select content_type__create_attribute(
+    'sim_case',                    -- content_type
+    'workflow_id',                 -- attribute_name
+    'integer',                     -- datatype
+    'Workflow',                    -- pretty_name
+    'Workflows',                   -- pretty_plural
+    1,                             -- sort_order
+    null,                          -- default_value
+    'integer'                      -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_case',                    -- content_type
+    'sort_order',                  -- attribute_name
+    'integer',                     -- datatype
+    'Sort order',                  -- pretty_name
+    'Sort orders',                 -- pretty_plural
+    2,                             -- sort_order
+    null,                          -- default_value
+    'integer'                      -- column_spec
 );
