@@ -12,8 +12,9 @@ set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
 
-set case_list [db_list case_count {
-      select distinct wc.case_id
+set case_list [db_list_of_lists case_count {
+      select distinct wc.case_id,
+             wcrpm.role_id
       from workflow_cases wc,
            workflow_case_role_party_map wcrpm
      where wcrpm.party_id = :user_id
@@ -21,6 +22,7 @@ set case_list [db_list case_count {
 }]
 
 if { [llength $case_list] == 1 } {
-    ad_returnredirect [export_vars -base case { {case_id {[lindex $case_list 0]}} }]
+    set first_item [lindex $case_list 0]
+    ad_returnredirect [export_vars -base case { {case_id {[lindex $first_item 0]}} {role_id {[lindex $first_item 1]}} }]
     ad_script_abort
 }
