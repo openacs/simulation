@@ -4,6 +4,295 @@
 # @author Peter Marklund
 
 namespace eval ::twt::simulation {}
+namespace eval ::twt::simulation::setup {}
+namespace eval ::twt::simulation::test {}
+
+##############################
+#
+# ::twt::simulation::setup procs
+#
+##############################
+
+ad_proc ::twt::simulation::setup::users_and_groups {} {
+
+    ::twt::log_section "Login site-wide admin"
+    ::twt::user::login_site_wide_admin
+
+    ::twt::log_section "Add demo users to system"
+    for {set i 1} {$i <= 20} {incr i} {
+        ::twt::simulation::add_user -first_names Demo -last_name "User $i"
+    }    
+
+    ::twt::log_section "Add demo groups"
+    for {set i 1} {$i <= 5} {incr i} {
+        do_request "/admin/group-types/one?group_type=group"
+        link follow ~u "parties/new"
+
+        field find ~n group.group_name
+        field fill "Demo group $i"
+        form submit
+    }
+    
+    ::twt::log_section "Add demo users to groups"
+    for {set i 1} {$i <= 5} {incr i} {
+        
+        set add_user_url [::twt::simulation::add_user_to_group_url -group_name "Demo group $i"]
+
+        for {set user_count [expr ($i - 1)*4 + 1]} {$user_count <= [expr $i*4]} {incr user_count} {
+            ::twt::simulation::add_user_to_group -add_user_url $add_user_url -user_name "Demo User $user_count"
+        }
+    }
+
+    ::twt::log_section "Create a demo user in each permission group"
+    foreach group_name {
+        "Sim Admins"
+        "Template Authors"
+        "Case Authors"
+        "Service Admins"
+        "City Admins"
+        "Actors"
+    } {
+        set first_names [::twt::simulation::permission_user_first_names $group_name]
+        set last_name [::twt::simulation::permission_user_last_name $group_name]
+        ::twt::simulation::add_user -first_names $first_names -last_name $last_name
+
+        ::twt::simulation::add_user_to_group -group_name $group_name -user_name "$first_names $last_name"
+    }
+}
+
+ad_proc ::twt::simulation::setup::citybuild_objects {} {
+
+    # Do this as the city build user to make sure he has sufficient permissions
+    ::twt::log_section "Login city admin"
+    ::twt::user::login [::twt::simulation::permission_user_email "City Admins"]
+
+    ::twt::log_section "Create an image object"
+    do_request /simulation/citybuild
+    link follow ~u object-edit
+    form find ~n object
+    field find ~n content_type
+    field select2 ~v image
+    field find ~n __refreshing_p
+    field fill 1
+    form submit    
+    field find ~n title
+    field fill "New Jersey Lawyers"
+    field find ~n description
+    field fill "New Jersey Lawyers and Consumers"
+    field find ~n content_file
+    field fill [::twt::config::serverroot]/packages/simulation/test/new-jersey-lawyer-logo.gif
+    form submit
+
+    ::twt::log_section "Create characters for Elementary private law"
+    array set characters [::twt::simulation::data::characters]
+    foreach character_name [array names characters] {
+        ::twt::simulation::add_object -type character -title $character_name
+    }
+
+    ::twt::log_section "Create characters for Legislative Drafting"
+    array set characters_ld [::twt::simulation::data::characters_ld]
+    foreach character_name [array names characters_ld] {
+        ::twt::simulation::add_object -type character -title $character_name
+    }
+
+    ::twt::log_section "Create properties"
+    array set characters_ld [::twt::simulation::data::properties]
+    foreach property_name [array names properties] {
+        ::twt::simulation::add_object -type sim_prop -title $property_name
+    }
+}
+
+ad_proc ::twt::simulation::setup::elementary_private_law_template {} {
+
+    # Do this as the template author to make sure he has sufficient permissions
+    ::twt::log_section "Login template author"
+    ::twt::user::login [::twt::simulation::permission_user_email "Template Authors"]
+
+    set template_name "Elementary Private Law"
+    ::twt::log_section "Create $template_name simulation template"
+    ::twt::simulation::add_template -template_name $template_name
+
+    ::twt::log_section "Create roles for template"
+    ::twt::simulation::add_roles_to_template \
+        -template_name $template_name \
+        -characters_list [::twt::simulation::data::characters]
+
+    ::twt::log_section "Add tasks to template"
+    ::twt::simulation::add_tasks_to_template \
+        -template_name $template_name \
+        -tasks_list [::twt::simulation::data::tasks]
+}
+
+ad_proc ::twt::simulation::setup::legislative_drafting_template {} {
+
+    # Do this as the sim admin to make sure he has sufficient permissions
+    ::twt::log_section "Login sim admin"
+    ::twt::user::login [::twt::simulation::permission_user_email "Sim Admins"]
+
+    set template_name "Legislative Drafting"
+    ::twt::log_section "Create $template_name simulation template"
+    ::twt::simulation::add_template -template_name $template_name
+
+    ::twt::log_section "Create roles for template"
+    ::twt::simulation::add_roles_to_template \
+        -template_name $template_name \
+        -characters_list [::twt::simulation::data::characters_ld]
+
+    ::twt::log_section "Add tasks to template"
+    ::twt::simulation::add_tasks_to_template \
+        -template_name $template_name \
+        -tasks_list [::twt::simulation::data::tasks_ld]
+}
+
+ad_proc ::twt::simulation::setup::tilburg_template_from_spec {} {
+
+    # Do this as the template author to make sure he has sufficient permissions
+    ::twt::log_section "Login template author"
+    ::twt::user::login [::twt::simulation::permission_user_email "Template Authors"]
+
+    ::twt::log_section "Create a template from a spec"
+    do_request /simulation/simbuild/template-load
+    field fill "Template loaded from spec" ~n pretty_name
+    field fill [::twt::simulation::data::tilburg_template_spec] ~n spec
+    form submit
+}
+
+##############################
+#
+# ::twt::simulation::test procs
+#
+##############################
+
+ad_proc ::twt::simulation::test::permissions_anonymous {} {
+
+    ::twt::log_section "Permission testing with anonymous user"
+    ::twt::user::logout
+
+    # The anonymous user can access the index page with the flash map
+    ::twt::simulation::assert_page_accessible /simulation
+
+    # TODO: Should see a list of all simulation open for enrollment
+
+    # The anonymous user can access an object view page
+    ::twt::simulation::assert_page_accessible /simulation/object/motorhome
+
+    # The anonymous user can not access any of the four modules
+    foreach disallowed_url {simplay siminst simbuild citybuild} {
+        do_request /simulation/$disallowed_url
+        if { ![regexp {/register/} $::tclwebtest::url] } {
+            error "Anonymous user was not redirected to login page for url $disallowed_url"
+        }
+    }
+}
+
+ad_proc ::twt::simulation::test::permissions_city_admin {} {
+
+    set group_name "City Admins"
+    ::twt::log_section "Permission testing for $group_name user"
+    ::twt::user::login [::twt::simulation::permission_user_email $group_name]
+
+    # city admin can access index page
+    ::twt::simulation::assert_page_accessible /simulation
+
+    # can access citybuild
+    ::twt::simulation::assert_page_accessible /simulation/citybuild
+
+    # can create, edit on_map_p, and delete object
+    ::twt::simulation::create_edit_delete_property
+
+    # can not build or instantiate templates
+    foreach module {simbuild siminst} {
+        ::twt::simulation::assert_page_not_accessible /simulation/$module
+    }
+}
+
+ad_proc ::twt::simulation::test::permissions_sim_admin {} {
+
+    set group_name "Sim Admins"
+    ::twt::log_section "Permission testing for $group_name user"
+    ::twt::user::login [::twt::simulation::permission_user_email $group_name]
+
+    # can do anything within the package
+    # including the on_map_p attribute
+
+    # We've already done some testing with the sim admin in the template setup
+
+    # Access each module
+    foreach module {citybuild simbuild siminst simplay} {
+        ::twt::simulation::assert_page_accessible /simulation/$module
+    }
+    
+    # Set the on_map_p attribute
+    ::twt::simulation::create_edit_delete_property
+}
+
+ad_proc ::twt::simulation::test::permissions_template_author {} {
+
+    set group_name "Template Authors"
+    ::twt::log_section "Permission testing for $group_name user"
+    ::twt::user::login [::twt::simulation::permission_user_email $group_name]
+
+    # read/create templates, only own templates
+    # cannot edit other people's templates
+    
+    # TODO: can do anything in siminst
+
+    # Access each module
+    foreach module {citybuild simbuild siminst simplay} {
+        ::twt::simulation::assert_page_accessible /simulation/$module
+    }
+
+    # TODO: cannot see case logs
+}
+
+ad_proc ::twt::simulation::test::permissions_case_author {} {
+
+    set group_name "Case Authors"
+    ::twt::log_section "Permission testing for $group_name user"
+    ::twt::user::login [::twt::simulation::permission_user_email $group_name]
+
+    # cannot access modules: simbuild
+    foreach module {simbuild} {
+        ::twt::simulation::assert_page_not_accessible /simulation/$module
+    }
+    foreach module {citybuild siminst simplay} {
+        ::twt::simulation::assert_page_accessible /simulation/$module
+    }
+
+    # TODO: can see case logs
+
+    # cannot set on_map_p attribute
+}
+
+ad_proc ::twt::simulation::test::permissions_service_admin {} {
+
+    set group_name "Service Admins"
+    ::twt::log_section "Permission testing for $group_name user"
+    ::twt::user::login [::twt::simulation::permission_user_email $group_name]
+
+    # can add users
+
+    # TODO: can make users eligible for enrollment
+}
+
+ad_proc ::twt::simulation::test::permissions_actor {} {
+
+    set group_name "Actors"
+    ::twt::log_section "Permission testing for $group_name user"
+    ::twt::user::login [::twt::simulation::permission_user_email $group_name]
+
+    # TODO: participate in the simulation in simplay
+
+    foreach module {citybuild simbuild siminst} {
+        ::twt::simulation::assert_page_not_accessible /simulation/$module
+    }
+}
+
+##############################
+#
+# ::twt::simulation helper procs
+#
+##############################
 
 ad_proc ::twt::simulation::get_object_short_name { name } {
     set short_name [string tolower $name]
@@ -140,140 +429,6 @@ ad_proc ::twt::simulation::add_user_to_group {
     form submit    
 }
 
-ad_proc ::twt::simulation::get_template_spec {} {
-    return "simulatie_tilburg {
-    description {Use case 1 template from Leiden team.}
-    description_mime_type text/enhanced
-    object_type acs_object
-    package_key simulation
-    pretty_name {
-        Simulation Tilburg
-    }
-    roles {
-        lawyer {
-            pretty_name Lawyer
-        }
-        client {
-            pretty_name Client
-        }
-        other_lawyer {
-            pretty_name {
-                Other lawyer
-            }
-        }
-        other_client {
-            pretty_name {
-                Other client
-            }
-        }
-        mentor {
-            pretty_name Mentor
-        }
-        secretary {
-            pretty_name Secretary
-        }
-    }
-    actions {
-        initialize {
-            initial_action_p t
-            new_state started
-            pretty_name Initialize
-            attachment_num 0
-        }
-        ask_client {
-            assigned_role lawyer
-            assigned_states started
-            new_state open
-            pretty_name {
-                Ask client
-            }
-            attachment_num 1
-            recipient_role client
-        }
-        ask_client_for_more_information {
-            assigned_role lawyer
-            enabled_states open
-            pretty_name {Ask Client for more information}
-            attachment_num 1
-            recipient_role client
-        }
-        consult_lawyer {
-            assigned_role lawyer
-            enabled_states open
-            pretty_name {
-                Consult lawyer
-            }
-            attachment_num 1
-            recipient_role other_lawyer
-        }
-        visit_the_library {
-            assigned_role lawyer
-            enabled_states open
-            pretty_name {Visit the library}
-            attachment_num 0
-            recipient_role lawyer
-        }
-        consult_mentor {
-            assigned_role lawyer
-            enabled_states open
-            pretty_name {
-                Consult mentor
-            }
-            attachment_num 1
-            recipient_role mentor
-        }
-        mentor_intervenes {
-            assigned_role mentor
-            enabled_states open
-            pretty_name {
-                Mentor intervenes
-            }
-            attachment_num 1
-            recipient_role lawyer
-        }
-        consult_secretary {
-            assigned_role lawyer
-            enabled_states open
-            pretty_name {
-                Consult secretary
-            }
-            attachment_num 1
-            recipient_role secretary
-        }
-        write_legal_advice {
-            assigned_role lawyer
-            assigned_states open
-            new_state written
-            pretty_name {Write legal advice}
-            attachment_num 1
-            recipient_role secretary
-        }
-        correct_spell_check_etc {
-            assigned_role secretary
-            enabled_states written
-            new_state done
-            pretty_name {Correct, spell-check, etc.}
-            attachment_num 1
-            recipient_role client
-        }
-    }
-    states {
-        started {
-            pretty_name Started
-        }
-        open {
-            pretty_name Open
-        }
-        written {
-            pretty_name Written
-        }
-        done {
-            pretty_name Done
-        }
-    }
-}"
-}
-
 ad_proc ::twt::simulation::add_template {
     {-template_name:required}
 } {
@@ -285,9 +440,9 @@ ad_proc ::twt::simulation::add_template {
 
 ad_proc ::twt::simulation::add_roles_to_template {
     {-template_name:required}
-    {-character_array:required}
+    {-characters_list:required}
 } {
-    upvar $character_array characters
+    array set characters $characters_list
 
     ::twt::simulation::visit_template_page $template_name 
     link follow ~u role-edit
@@ -303,9 +458,9 @@ ad_proc ::twt::simulation::add_roles_to_template {
 
 ad_proc ::twt::simulation::add_tasks_to_template {
     {-template_name:required}
-    {-task_array:required}
+    {-tasks_list:required}
 } {
-    upvar $task_array tasks
+    array set tasks $tasks_list
 
     ::twt::simulation::visit_template_page $template_name 
 
@@ -358,4 +513,29 @@ ad_proc ::twt::simulation::page_accessible_p {url} {
     return [expr [string equal [response status] 200] && \
                 [regexp $url [response url]] && \
                 ![regexp "Permission Denied" [response body]]]
+}
+
+ad_proc ::twt::simulation::create_edit_delete_property {} {
+
+    set object_title "Test property"
+    ::twt::simulation::add_object -type sim_prop -title $object_title
+
+    # can edit on_map_p attribute of object
+    do_request /simulation/citybuild
+    link follow ~c $object_title
+    link follow ~u object-edit
+    regexp {item%5fid=([0-9]+)} [response url] match item_id
+    form find ~n object
+    field find ~n attr__sim_prop__on_map_p
+    field select2 ~v t
+    form submit
+    if { [regexp "Permission Denied" [response body]] } {
+        error "Got permission denied when editing on_map_p of an object"
+    }
+
+    # can delete object    
+    do_request "/simulation/citybuild/object-delete?confirm_p=1&item_id=$item_id"
+    if { [regexp "Permission Denied" [response body]] } {
+        error "Got permission denied when deleting an object"
+    }
 }
