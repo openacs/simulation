@@ -19,32 +19,6 @@
   <div class="general-message">You cannot submit this form until you have submitted all forms on the previous tabs.</div>
 </if>
 
-    <p>In <b>Automatic</b> casting, only
-
-    users from these groups will be assigned to the roles.  All user
-
-    from all selected groups will be cast.  If all users for one rol
-
-    are cast before all users for another role are cast, you will b
-
-    cast as many times as needed to fill out the cases.  (You ca
-
-    change casting assignments <a href="">here</a>.
-
-    <p>In <b>Group</b> casting, users can choose which case to join
-
-    Users are still restricted by group/role limits set below (e.g.
-
-    if each case requires three users from group X and two from grou
-
-    Y, the fourth user from group X to try to join will b
-
-    rejected.). 
-
-    <p>In <b>Open</b> casting, users can choose which case and role t
-
-    join, subject to the restrictions below
-
 </else>
 
 <P>

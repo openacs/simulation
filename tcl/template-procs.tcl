@@ -709,8 +709,8 @@ ad_proc -public simulation::template::cast {
 } {
     # Get the list of all enrolled and uncast users
     set users_to_cast [db_list users_to_cast {
-            select distinct spsm.party_id,
-            from sim_party_sim_map spsm,
+            select distinct spsm.party_id
+            from sim_party_sim_map spsm
             where spsm.simulation_id = :workflow_id
              and spsm.type = 'enrolled'
              and not exists (select 1
@@ -725,8 +725,8 @@ ad_proc -public simulation::template::cast {
     # Get the subset of enrolled and uncast users that are not in any of
     # the role groups
     set users_to_cast_not_in_groups [db_list users_to_cast_not_in_groups {
-            select distinct spsm.party_id,
-            from sim_party_sim_map spsm,
+            select distinct spsm.party_id
+            from sim_party_sim_map spsm
             where spsm.simulation_id = :workflow_id
              and spsm.type = 'enrolled'
              and not exists (select 1
@@ -779,8 +779,8 @@ ad_proc -public simulation::template::cast {
 
     # First do user-role assignments in any existing simulation cases
     set current_cases [db_list select_current_cases {
-        select wc.case_id,
-        from workflow_cases wc,
+        select wc.case_id
+        from workflow_cases wc
         where wc.workflow_id = :workflow_id
     }]
     foreach case_id $current_cases {
@@ -790,7 +790,7 @@ ad_proc -public simulation::template::cast {
             -role_names_array role_short_name \
             -groups_array group_members \
             -users_var users_to_cast \
-            -users_var_not_in_groups users_to_cast_not_in_groups
+            -users_not_in_groups_var users_to_cast_not_in_groups
     }
     
     # If there are users left to cast, create new cases for them and repeat the same
@@ -814,7 +814,7 @@ ad_proc -public simulation::template::cast {
             -role_names_array role_short_name \
             -groups_array group_members \
             -users_var users_to_cast \
-            -users_var_not_in_groups users_to_cast_not_in_groups
+            -users_not_in_groups_var users_to_cast_not_in_groups
     }
 }
 
@@ -886,9 +886,9 @@ ad_proc -private simulation::template::cast_users_in_case {
                 # Remove the user from the group member list
                 set group_members($group_id) [lreplace $group_members($group_id) 0 0]
 
-                # Remove the user from the users_to_cast_list
-                set cast_list_index [lsearch -exact $users_to_cast_list $user_id]
-                set users_to_cast [lreplace $user_to_cast $cast_list_index $cast_list_index]
+                # Remove the user from the users_to_cast list
+                set cast_list_index [lsearch -exact $users_to_cast $user_id]
+                set users_to_cast [lreplace $users_to_cast $cast_list_index $cast_list_index]
 
             } else {
                 # There is no group mapped to the role with a user that hasn't been cast
@@ -902,9 +902,9 @@ ad_proc -private simulation::template::cast_users_in_case {
                     # Remove user from the not-in-group list
                     set users_to_cast_not_in_groups [lreplace $users_to_cast_not_in_gruops 0 0]                        
 
-                    # Remove the user from the users_to_cast_list
-                    set cast_list_index [lsearch -exact $users_to_cast_list $user_id]
-                    set users_to_cast [lreplace $user_to_cast $cast_list_index $cast_list_index]
+                    # Remove the user from the users_to_cast list
+                    set cast_list_index [lsearch -exact $users_to_cast $user_id]
+                    set users_to_cast [lreplace $users_to_cast $cast_list_index $cast_list_index]
 
                 } else {
                     # No more users to cast, resort to the logged in user (admin)

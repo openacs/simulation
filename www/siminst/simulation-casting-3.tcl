@@ -148,7 +148,10 @@ ad_form \
                 }
         }
 
-        set uncast_mapped_groups [db_list uncast_mapped_groups_count "
+        if { [string equal $sim_template(enroll_type) "closed"] || [empty_string_p $sim_template(enroll_type)] } {
+            # In closed enrollment we require the admin to map all groups to roles
+
+            set uncast_mapped_groups [db_list uncast_mapped_groups_count "
             select g.group_name
             from sim_party_sim_map spsm,
                  groups g
@@ -162,9 +165,10 @@ ad_form \
                               and srpm.party_id = spsm.party_id
                            )
         "]
-        if { [llength $uncast_mapped_groups] > 0 } {
-            template::form::set_error actors parties_$role_id "The following groups are not mapped to any roles: [join $uncast_mapped_groups ", "]."
-            break
+            if { [llength $uncast_mapped_groups] > 0 } {
+                template::form::set_error actors parties_$role_id "The following groups are not mapped to any roles: [join $uncast_mapped_groups ", "]."
+                break
+            }
         }
 
         simulation::template::enroll_and_invite_users -workflow_id $workflow_id
