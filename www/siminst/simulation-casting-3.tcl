@@ -24,7 +24,7 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
                       [list label \$role_${role_id}_pretty_name] \
                       [list options $eligible_groups]
                  ]
-    lappend form [list users_per_case_${role_id}:integer [list label "Target number of users for this group per case"] [list value 1] [list html {size 2}]]
+    lappend form [list users_per_case_${role_id}:integer [list label "Target number of users for this role per case"] [list value 1] [list html {size 2}]]
 }
 
 ad_form \
