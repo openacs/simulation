@@ -8,7 +8,7 @@ ad_page_contract {
     workflow_id:integer
 }
 
-set page_title "Map user groups to roles"
+set page_title "Set user casting rules"
 set context [list [list "." "SimInst"] $page_title]
 
 set form [list]
@@ -21,6 +21,7 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     set role_${role_id}_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
 
     lappend form [list parties_${role_id}:text(checkbox),multiple \
+                      [list help_text "Only users in these groups can be cast in this role"] \
                       [list label \$role_${role_id}_pretty_name] \
                       [list options $eligible_groups]
                  ]
