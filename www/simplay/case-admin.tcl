@@ -1,6 +1,7 @@
 ad_page_contract {
-    This page allows admins to see all the roles in a simulation case and the user
-    playing each role. It also shows an action history for the simulation.
+    This page allows admins to see all the roles in a simulation case and the
+    user playing each role. It also shows an action history for the
+    simulation.
 } {
     case_id:integer
     {assigned_only_p 0}
@@ -9,18 +10,19 @@ ad_page_contract {
 }
 
 set package_id [ad_conn package_id]
-permission::require_permission -object_id $package_id -privilege sim_adminplayer
+permission::require_permission -object_id $package_id \
+  -privilege sim_adminplayer
 
 simulation::case::get -case_id $case_id -array case
 
-set title "Administer $case(label)"
-set context [list [list . "SimPlay"] $title]
+set title [_ simulation.lt_Administer_caselabel]
+set context [list [list . [_ simulation.SimPlay]] $title]
 set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set elements {
     role {
-        label "Role"
+        label {[_ simulation.Role]}
         link_url_eval {[export_vars -base case { case_id role_id }]}
     }    
     role_action {
@@ -29,52 +31,55 @@ set elements {
         }
     }
     user_name {
-        label "User"
+        label {[_ simulation.User]}
         link_url_col user_url
     }
     user_actions {
         label ""
         display_template {
-            <a href="@roles.move_url@" class="button">Move user</a> <a href="@roles.remove_url@" class="button">Remove user</a>
+          <a href="@roles.move_url@" class="button">[_ simulation.Move_user]</a> \
+          <a href="@roles.remove_url@" class="button">[_ simulation.Remove_user] </a>
         }
     }
     max_n_users {
-        label "Target # users"
+        label {[_ simulation.Target__users]}
         html { align center }
     }
     assigned_action {
-        label "Assigned action"
+        label {[_ simulation.Assigned_action]}
         hide_p {[expr !$assigned_only_p]}
     }
     portfolio {
-        label "Portfolio"
+        label {[_ simulation.Portfolio]}
         display_template {
             @roles.num_documents@ documents
         }
-        link_url_eval {[export_vars -base case-admin-portfolio { case_id role_id }]}
+        link_url_eval {[export_vars -base case-admin-portfolio \
+                        { case_id role_id }]}
         html { align center }
     }
     messages {
-        label "Messages"
+        label {[_ simulation.Messages]}
         display_template {
             @roles.num_messages@ messages
         }
-        link_url_eval {[export_vars -base case-admin-messages { case_id role_id }]}
+        link_url_eval {[export_vars -base case-admin-messages \
+                        { case_id role_id }]}
         html { align center }
     }
 }
 
 template::list::create \
     -name roles \
-    -no_data "There are no roles or users in this simulation case" \
+    -no_data [_ simulation.lt_There_are_no_roles_or] \
     -elements $elements \
     -pass_properties { case_id } \
     -filters {
         assigned_only_p {
-            label "Display"
+            label {[_ simulation.Display]}
             values {
-                {"All" 0}
-                {"Roles with actions only" 1}
+                {{[_ simulation.All]} 0}
+                {{[_ simulation.lt_Roles_with_actions_on]} 1}
             }
             default_value 0
         }
@@ -102,7 +107,8 @@ if { $assigned_only_p } {
 }
 
 set cast_roles [list]
-db_multirow -extend { add_url move_url remove_url user_url } roles select_case_info "
+db_multirow -extend { add_url move_url remove_url user_url } \
+  roles select_case_info "
     select wr.role_id,
            wr.pretty_name as role,
            cu.user_id,
@@ -153,12 +159,13 @@ ad_form -name add_user \
     -export { case_id } \
     -form {
         {role_id:integer(select)
-            {label "Role"}
+            {label {[_ simulation.Role]}}
             {options {$uncast_role_options}}
         }        
     }
 
 
-set case_delete_url [export_vars -base case-delete { case_id { return_url [ad_return_url] } }]
+set case_delete_url [export_vars -base case-delete \
+  { case_id { return_url [ad_return_url] } }]
 
 set full_history_url [export_vars -base case-history { case_id }]

@@ -10,18 +10,22 @@ ad_page_contract {
 simulation::case::get -case_id $case_id -array case
 acs_user::get -user_id $user_id -array user
 
-set page_title "Choose new roles for user $user(name)"
-set context [list [list . "SimPlay"] [list [export_vars -base case-admin { case_id }] "Administer $case(label)"] $page_title]
+set page_title [_ simulation.lt_Choose_new_roles_for]
+set context [list [list . [_ simulation.SimPlay]] \
+                  [list [export_vars -base case-admin { case_id }]
+                    [_ simulation.lt_Administer_caselabel]]
+                  $page_title]
 
 workflow::case::get -case_id $case_id -array case
 
-set role_options [workflow::role::get_options -id_values -workflow_id $case(workflow_id)]
+set role_options [workflow::role::get_options \
+  -id_values -workflow_id $case(workflow_id)]
 
 ad_form \
     -name new_roles \
     -form {
         {roles:integer(checkbox),multiple
-            {label "Roles"}
+            {label {[_ simulation.Roles]}}
             {options {$role_options}}
         }
     } \

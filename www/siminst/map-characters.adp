@@ -1,12 +1,12 @@
 <p>
-  Select from existing characters in the Yellow Pages, or 
-  <a href="../citybuild/object-edit?content_type=sim_character">add new characters</a> and refresh
-  this page.  
+  #simulation.lt_Select_from_existing# 
+  <a href="../citybuild/object-edit?content_type=sim_character">#simulation.add_new_characters#</a> #simulation.lt_and_refresh__this_pag#  
 </p>
 
 <formtemplate id="characters"></formtemplate>
 
 <p>
-  <b>Template Description</b>: @description;noquote@
+  <b>#simulation.Template_Description#</b>: @description;noquote@
 </p>
+
 

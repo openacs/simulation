@@ -4,3 +4,4 @@
   <property name="focus">clone.pretty_name</property>
 
 <include src="/packages/simulation/lib/template-clone" workflow_id="@workflow_id@" />
+

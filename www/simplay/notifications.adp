@@ -4,9 +4,9 @@
 
 <table cellspacing="1" cellpadding="3" class="bt_listing">
   <tr class="bt_listing_header">
-    <th colspan="2">Notifications for</th>
-    <th>Subscribe</th>
-    <th>Unsubscribe</th>
+    <th colspan="2">#simulation.Notifications_page_notification_type_header#</th>
+    <th>#simulation.Subscribe#</th>
+    <th>#simulation.Unsubscribe#</th>
   </tr>
   <multiple name="notifications">
     <if @notifications.rownum@ odd>
@@ -28,14 +28,15 @@
       </td>
       <td class="bt_listing">
         <if @notifications.subscribed_p@ false>
-          <a href="@notifications.url@" title="@notifications.title@">Subscribe</a>
+          <a href="@notifications.url@" title="@notifications.title@">#simulation.Subscribe#</a>
         </if>
       </td>
       <td class="bt_listing">
         <if @notifications.subscribed_p@ true>
-          <a href="@notifications.url@" title="@notifications.title@">Unsubscribe</a>
+          <a href="@notifications.url@" title="@notifications.title@">#simulation.Unsubscribe#</a>
         </if>
       </td>
     </tr>
   </multiple>
 </table>
+

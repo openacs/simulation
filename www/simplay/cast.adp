@@ -4,24 +4,28 @@
 
 <if @already_cast_p@>
   <p>
-    You are already cast in the following roles:
+    #simulation.lt_You_are_already_cast#
   </p>
  
   <listtemplate name="cast_info"></listtemplate></p>
   
   <p>
-    Below is a listing of all roles in the simulation.
+    #simulation.lt_Below_is_a_listing_of#
   </p>
 
 </if>
 <else>
   <p>
-    Select which case <if @simulation.casting_type@ eq "open">and
-    role</if> to join, or create a new case for yourself.  If you do not
-    select a case <if @simulation.casting_type@ eq "open">and role</if>
-    to join, you will be automatically assigned to a case <if
-    @simulation.casting_type@ eq "open">and role</if> when the
-    simulation begins.
+    <if @simulation.casting_type@ eq "open">
+
+    #simulation.lt_Select_which_case_and_role_to_join#
+
+    </if>
+    <else>
+
+    #simulation.lt_Select_which_case_to_join#
+
+    </else>
   </p>
 
 </else>
@@ -30,6 +34,7 @@
 
 <if @join_new_case_url@ not nil>
   <ul class="action-links">
-    <li><a href="@join_new_case_url@">Be the first user in a new case</a></li>
+    <li><a href="@join_new_case_url@">#simulation.lt_Be_the_first_user_in#</a></li>
   </ul>
 </if>
+

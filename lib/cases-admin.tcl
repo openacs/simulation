@@ -15,12 +15,12 @@ set user_id [auth::get_user_id]
 
 set elements {
     label {
-        label "Case"
+        label {[_ simulation.Case]}
         orderby upper(w.pretty_name)
         link_url_eval {[export_vars -base [ad_conn package_url]simplay/case-admin { case_id }]}
     }
     pretty_name {
-        label "Simulation"
+        label {[_ simulation.Simulation]}
         orderby upper(w.pretty_name)
     }
 }
@@ -28,7 +28,7 @@ set elements {
 template::list::create \
     -name cases \
     -multirow cases \
-    -no_data "You are not administering any active simulation cases." \
+    -no_data [_ simulation.lt_You_are_not_administe] \
     -elements $elements 
 
 db_multirow cases select_cases "

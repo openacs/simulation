@@ -12,5 +12,5 @@ permission::require_permission -object_id [ad_conn package_id] -privilege sim_ad
 
 simulation::template::get -workflow_id $workflow_id -array simulation
 
-set page_title "Your Tasks in Simulation $simulation(pretty_name)"
-set context [list [list . "SimPlay"] $page_title]
+set page_title [_ simulation.lt_Your_Tasks_in_Simulat]
+set context [list [list . [_ simulation.SimPlay]] $page_title]

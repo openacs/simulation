@@ -12,8 +12,8 @@ ad_page_contract {
 
 simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
 
-set page_title "Message"
-set context [list [list "." "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] $page_title]
+set page_title [_ simulation.Message]
+set context [list [list "." [_ simulation.SimPlay]] [list [export_vars -base case { case_id role_id }] [_ simulation.Case]] $page_title]
 set package_id [ad_conn package_id]
 
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
@@ -43,7 +43,7 @@ if { [string equal $action "reply"] } {
         -array content
 
     set recipient_role_id $content(from_role_id)
-    set subject "Re: $content(title)"
+    set subject "[_ simulation.Re] $content(title)"
     set body_text "
 
 
@@ -73,7 +73,7 @@ ad_form \
     -form {
         {item_id:key}
         {sender_role_id:text(select)
-            {label "From"}
+            {label {[_ simulation.From]}}
             {mode display}
             {options $all_role_options}
         }
@@ -83,7 +83,7 @@ if { [ad_form_new_p -key item_id] } {
     if { [llength $to_role_options] == 1 } {
         ad_form -extend -name message -form {
             {recipient_role_id_inform:text(inform)
-                {label "To"}
+                {label {[_ simulation.To]}}
                 {value {[lindex [lindex $to_role_options 0] 0]}}
             }
             {recipient_role_id:integer(hidden)
@@ -93,7 +93,7 @@ if { [ad_form_new_p -key item_id] } {
     } else {
         ad_form -extend -name message -form {
             {recipient_role_id:integer(checkbox),multiple
-                {label "To"}
+                {label {[_ simulation.To]}}
                 {options $to_role_options}
             }
         }
@@ -101,7 +101,7 @@ if { [ad_form_new_p -key item_id] } {
 } else {
     ad_form -extend -name message -form {
         {recipient_role_id:integer(checkbox),multiple
-            {label "To"}
+            {label {[_ simulation.To]}}
             {options $to_role_options}
         }
     }
@@ -111,11 +111,11 @@ if { [ad_form_new_p -key item_id] } {
 
 ad_form -extend -name message -form {
     {subject:text
-        {label "Subject"}
+        {label {[_ simulation.Subject]}}
         {html {size 80}}
     }
     {body:richtext
-        {label "Body"}
+        {label {[_ simulation.Body]}}
         {html {cols 60 rows 20}}
     }
 }
@@ -133,7 +133,7 @@ if { [llength $attachment_options] > 0 } {
         # display mode - show a list of attached documents
         ad_form -extend -name message -form {
             {attachments:text(inform),optional
-                {label "Attachments"}
+                {label {[_ simulation.Attachments]}}
             }
         }
     }
@@ -190,8 +190,9 @@ ad_form -extend -name message -new_request {
         set attachments ""
         foreach attachment_set $attachments_set_list {
             set object_url [simulation::object::content_url -name [ns_set get $attachment_set name]]
-            set object_title [ns_set get $attachment_set title]
-            append attachments "<a href=\"$object_url\">$object_title</a> ($content(mime_type))<br>"
+            set object_title [ns_set get $attachment_set title].
+            set mime_type [ns_set get $attachment_set mime_type]
+            append attachments "<a href=\"$object_url\">$object_title</a> ($mime_type)<br>"
         }
         if { [llength $attachments_set_list] == 0 } {
             element set_properties message attachments -widget hidden

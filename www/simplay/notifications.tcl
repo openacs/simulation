@@ -8,26 +8,35 @@ ad_page_contract {
 simulation::case::get -case_id $case_id -array case
 set case_url [export_vars -base case { case_id role_id }]
 
-set page_title "Notifications"
-set context [list [list "." "SimPlay"] [list $case_url $case(label)] $page_title]
+set page_title [_ simulation.Notifications]
+set context [list [list . [_ simulation.SimPlay]] [list $case_url $case(label)] $page_title]
 
+set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
 set return_url [ad_return_url]
 
 multirow create notifications url label title subscribed_p
 
-foreach type { 
-    workflow_assignee simplay_message
-} {
+set types {workflow_assignee simplay_message}
+
+set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
+if { $adminplayer_p } {
+    lappend types workflow
+}
+
+foreach type $types {
     switch $type {
         workflow_assignee {
-            set pretty_name "all tasks you're assigned to"
+            set pretty_name [_ simulation.lt_all_tasks_youre_assig]
         }
         simplay_message {
-            set pretty_name "all messages you receive"
+            set pretty_name [_ simulation.lt_all_messages_you_rece]
+        }
+        workflow {
+            set pretty_name [_ simulation.lt_All_tasks_in_the_simu]
         }
         default {
-            error "Unknown type"
+            error [_ simulation.Unknown_type]
         }
     }
 
@@ -57,7 +66,7 @@ foreach type {
         multirow append notifications \
             $url \
             [string totitle $pretty_name] \
-            [ad_decode $subscribed_p 1 "Unsubscribe from $pretty_name" "Subscribe to $pretty_name"] \
+            [ad_decode $subscribed_p 1 [_ simulation.lt_Unsubscribe_from_pret] "Subscribe to %pretty_name%"] \
             $subscribed_p
     }
 }

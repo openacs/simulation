@@ -78,24 +78,15 @@ ad_proc -public simulation::message::new {
         }
         workflow::case::get -case_id $case_id -array case
         workflow::get -workflow_id $case(workflow_id) -array workflow
-        set notif_subject "\[SimPlay\] New message in simulation $workflow(pretty_name): $subject"
+
+        # I18N message variables:
+        set simulation_name $workflow(pretty_name)
         set package_id [ad_conn package_id]
         set simplay_url \
             [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay" { workflow_id }]
-        set notif_body "You have just received the following message in simulation $workflow(pretty_name):
 
------------------------------------------------------
-subject: $subject
-
-body:
-
-$body
------------------------------------------------------
-
-Please visit $simplay_url to continue playing the simulation.
-
-Thank you.
-"
+        set notif_subject [_ simulation.message_notificaiton_email_subject]
+        set notif_body [_ simulation.message_notification_email_body]
 
         notification::new \
             -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
@@ -107,4 +98,49 @@ Thank you.
     }
     
     return $item_id
+}
+
+ad_proc -public simulation::message::exclude_task_messages_sql {} {
+    Return a SQL where clause that will exclude received messages that will
+    be responded to with an assigned task instead of by sending a message. The
+    need for this query arises because we don't want ask info type message to show up both in
+    the message list and the task list. Instead they should show up only in the task list.
+
+    The clause uses the bind variable role_id and assumes sm_messagesx to be in the from clause
+    aliased as sm.
+
+    NOTE: This proc is currently not used since Leiden expressed in a discussion that they want all 
+          messages to show up after all (even though I warned them that
+          some users may respond to a message thinking this will execute the task, but it won't, thus ending up sending
+          two messages when they figure out they have to click on the task).
+
+    @author Peter Marklund
+} {
+    return "(sm.entry_id is null or not (
+                                      -- The whole expression in the not parenthesis is true if there is an assigned action
+                                      -- responding to the message in which case the message shouldnt show up in the message list
+
+                                      -- message is associated with an action that put us in the current state
+                                      sm.entry_id in (select max(wcl.entry_id)
+                                                 from workflow_case_log wcl,
+                                                      workflow_fsm_actions wfa,
+                                                      workflow_case_fsm wcf,
+                                                      sim_messagesx sm2
+                                                 where wcl.case_id = sm.case_id
+                                                   and wcl.action_id = wfa.action_id
+                                                   and wcf.case_id = wcl.case_id
+                                                   and wfa.new_state = wcf.current_state
+                                                   and sm2.entry_id = wcl.entry_id
+                                                   and sm2.to_role_id = :role_id
+                                                       )
+                                       and
+                                       -- There is an assigned action with a recipient being sender of the message
+                                       exists (select 1 
+                                             from workflow_case_assigned_actions wcaa,
+                                                  sim_task_recipients str
+                                             where wcaa.case_id = sm.case_id
+                                             and wcaa.role_id = :role_id
+                                             and str.task_id = wcaa.action_id
+                                             and str.recipient = sm.from_role_id)
+                                      ))"
 }

@@ -8,7 +8,7 @@
     <singleton-p>f</singleton-p>
     <auto-mount>simulation</auto-mount>
 
-    <version name="1.0.0b2" url="http://openacs.org/repository/download/apm/simulation-1.0.0b2.apm">
+    <version name="1.0.0b4" url="http://openacs.org/repository/download/apm/simulation-1.0.0b4.apm">
         <owner url="mailto:team@collaboraid.biz">Collaboraid ApS</owner>
         <summary>Workflow-based task simulator.  Build scenario
         templates in which various roles must complete tasks such as
@@ -18,7 +18,7 @@
         www.rechtenonline.nl.</summary>
         <release-date>2004-01-30</release-date>
 
-        <provides url="simulation" version="1.0.0b2"/>
+        <provides url="simulation" version="1.0.0b4"/>
         <requires url="bcms" version="0.2"/>
         <requires url="workflow" version="2.0.0b3"/>
         <requires url="acs-mail-lite" version="0.2a"/>

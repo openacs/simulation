@@ -11,8 +11,10 @@ ad_page_contract {
 
 simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
 
-set page_title "Upload new document to portfolio"
-set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] $page_title]
+set page_title [_ simulation.lt_Upload_new_document_t]
+set context [list [list . [_ simulation.SimPlay]] \
+                   [list [export_vars -base case { case_id role_id }] [_ simulation.Case]] \
+                   $page_title]
 
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
 

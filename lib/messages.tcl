@@ -27,7 +27,7 @@ set adminplayer_p [permission::permission_p -object_id $package_id -privilege si
 
 if { ![exists_and_not_null case_id] || ![exists_and_not_null role_id] } {
     if { !$adminplayer_p } {
-        error "You must supply both case_id and role_id"
+        error [_ simulation.lt_You_must_supply_both]
     } else {
         set mode "admin"
     }
@@ -37,29 +37,29 @@ if { ![exists_and_not_null case_id] || ![exists_and_not_null role_id] } {
 
 set elements {
     from {
-        label "From"
+        label {[_ simulation.From]}
     }
     to {
-        label "To"
+        label {[_ simulation.To]}
     }
     subject {
         link_url_col message_url
-        label "Subject"
+        label {[_ simulation.Subject]}
     }
     creation_date {
-        label "Received"
+        label {[_ simulation.Received]}
         display_col creation_date_pretty
     }
     attachment_count {
-        label "Attachments"
+        label {[_ simulation.Attachments]}
         html { align center }
     }
     case_label {
-        label "Case"
+        label {[_ simulation.Case]}
         hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
     sim_name {
-        label "Simulation"
+        label {[_ simulation.Simulation]}
         hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
 }
@@ -69,14 +69,14 @@ set extend { message_url creation_date_pretty }
 if { $show_body_p } {
     lappend elements body
     lappend elements {
-        label "Body"
+        label {[_ simulation.Body]}
     }
 
     lappend extend body
 }
 
 if { [exists_and_not_null case_id] && [exists_and_not_null role_id] } {
-    set actions [list "Send new message" [export_vars -base message { case_id role_id }] {}]
+    set actions [list [_ simulation.Send_new_message] [export_vars -base message { case_id role_id }] {}]
 } else {
     set actions [list]
 }
@@ -84,7 +84,7 @@ if { [exists_and_not_null case_id] && [exists_and_not_null role_id] } {
 template::list::create \
     -name messages \
     -multirow messages \
-    -no_data "No messages." \
+    -no_data [_ simulation.No_messages] \
     -actions $actions \
     -elements $elements
 

@@ -9,6 +9,6 @@ ad_page_contract {
 
 simulation::case::get -case_id $case_id -array case
 
-set page_title "Full History for $case(label)"
-set context [list [list . "SimPlay"] $page_title]
+set page_title [_ simulation.lt_Full_History_for_case]
+set context [list [list . [_ simulation.SimPlay]] $page_title]
 

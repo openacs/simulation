@@ -11,14 +11,14 @@ set user_id [ad_conn user_id]
 template::list::create \
     -name simulations \
     -multirow simulations \
-    -no_data "You don't have any tasks." \
+    -no_data [_ simulation.lt_You_dont_have_any_tas] \
     -elements {
         pretty_name {
-            label "Simulation"
+            label {[_ simulation.Simulation]}
             link_url_col simulation_url
         }
         number_of_tasks {
-            label "Number of tasks"
+            label {[_ simulation.Number_of_tasks]}
             html {align center}
         }
     }

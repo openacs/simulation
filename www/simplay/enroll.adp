@@ -3,10 +3,10 @@
   <property name="context">@context;noquote@</property>
 
 <p>
-  You have been enrolled in "@simulation.pretty_name@".  The simulation will
-  begin on @simulation.case_start@ and you will be notified by email at this time.
+  #simulation.lt_You_have_been_enrolle#
 </p>
 
 <p>
-  Thank you!
+  #simulation.Thank_you#
 </p>
+

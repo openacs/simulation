@@ -9,6 +9,7 @@ ad_page_contract {
     {return_url ""}
     subject:optional
     body:optional    
+    received_message_item_id:optional
 }
 
 # FIXME: I am exporting the enabled_action_id list as the string variable enabled_action_ids in 
@@ -34,15 +35,33 @@ if { [llength $enabled_action_id] == 1 } {
     set common_enabled_action_ids [list [list $enabled_action_id $case_id]]
 
     if { [empty_string_p $return_url] } {
-        set return_url [export_vars -base tasks { case_id role_id }]
+        set return_url [export_vars -base case { case_id role_id }]
     }
 
-    if { ![info exists body] } {
+    if { [info exists body] && [info exists received_message_item_id] } {
+        # We have a prepopulated body. This means we are responding to a message (see else clause below)
+        # Display a listing of any attachments in the message being responded to
+        set attachments_set_list [bcms::item::list_related_items \
+                                      -revision live \
+                                      -item_id $received_message_item_id \
+                                      -relation_tag attachment \
+                                      -return_list]
+
+        set received_attachments ""
+        foreach attachment_set $attachments_set_list {
+            set object_url [simulation::object::content_url -name [ns_set get $attachment_set name]]
+            set object_title [ns_set get $attachment_set title]
+            set mime_type [ns_set get $attachment_set mime_type]
+            append received_attachments "<a href=\"$object_url\">$object_title</a> ($mime_type)<br>"
+        }
+        
+    } else {
         # If this is a message task (with recipients) and its recipients have previously executed a message task
         # that put us in the current state then we consider this a response and we prepopulate the message
         # subject and body with text from the message being responded to. 
-        if {[db_0or1row select_triggering_message_id {
-            select sm.from_role_id,
+        if {[db_0or1row select_received_message {
+            select sm.item_id as received_message_item_id,
+                   sm.from_role_id,
                    sm.to_role_id,
                    sm.creation_date,
                    cr.title as subject,
@@ -69,8 +88,10 @@ if { [llength $enabled_action_id] == 1 } {
                                  )
               and sm.case_id = :case_id
         }] } {
-            set subject "Re: $subject"
-            set body "
+            # Only refresh form with prepopulated subject and body if this is not a submit
+            if { ![string equal action [ns_set iget [rp_getform] form:id]] } {
+                set subject "Re: $subject"
+                set body "
 
 -----Original Message-----
 From: [workflow::role::get_element -role_id $from_role_id -element pretty_name]
@@ -80,7 +101,8 @@ Subject: $subject
 
 [ad_html_text_convert -from $mime_type -to "text/plain" $triggering_body]"
 
-            ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body bulk_p}]
+                ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body bulk_p received_message_item_id}]
+            }
         }    
     }
 
@@ -133,7 +155,10 @@ Subject: $subject
 }
 
 set page_title $action(pretty_name)
-set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] [list [export_vars -base tasks { case_id role_id }] "Tasks"] $page_title]
+set context [list [list . [_ simulation.SimPlay]] \
+            [list [export_vars -base case { case_id role_id }] [_ simulation.Case]] \
+            [list [export_vars -base tasks { case_id role_id }] [_ simulation.Tasks]] \
+            $page_title]
 set documents_pre_form ""
 
 set document_upload_url [export_vars -base document-upload {case_id role_id {return_url {[ad_return_url]}}}]
@@ -154,31 +179,31 @@ if { ![empty_string_p $action(recipients)] } {
     ad_form -name $form_id -edit_buttons { { Send ok } } -export { case_id role_id {enabled_action_ids $enabled_action_id} bulk_p} \
         -form {
             {pretty_name:text(inform)
-                {label "Task"}
+                {label {[_ simulation.Task]}}
             }
             {description:richtext,optional
-                {label "Description"}
+                {label {[_ simulation.Description]}}
                 {mode display}
             }
             {documents:text(inform),optional
-                {label "Documents"}
+                {label {[_ simulation.Documents]}}
             }
             {sender_name:text(inform),optional
-                {label "From"}
+                {label {[_ simulation.From]}}
             }
             {recipient_names:text(inform),optional
-                {label "To"}
+                {label {[_ simulation.To]}}
             }
             {subject:text
-                {label "Subject"}
+                {label {[_ simulation.Subject]}}
                 {html {size 80}}
             }
             {body:richtext
-                {label "Body"}
+                {label {[_ simulation.Body]}}
                 {html {cols 60 rows 20}}
             }
             {attachments:integer(checkbox),multiple,optional
-                {label "Attachments"}
+                {label {[_ simulation.Attachments]}}
                 {options $attachment_options}
             }        
         } -on_request {
@@ -238,7 +263,7 @@ if { ![empty_string_p $action(recipients)] } {
             
             ad_returnredirect $return_url
             ad_script_abort
-        }
+    }
 
     set focus "action.subject"
 } else {
@@ -248,8 +273,11 @@ if { ![empty_string_p $action(recipients)] } {
 
     set form_id document
 
-    ad_form -name $form_id -export { case_id role_id workflow_id {enabled_action_ids $enabled_action_id} bulk_p} -html {enctype multipart/form-data} \
-        -form [concat {{pretty_name:text(inform) {label "Task"}}} [simulation::ui::forms::document_upload::form_block]] \
+    ad_form -name $form_id \
+        -export { case_id role_id workflow_id {enabled_action_ids $enabled_action_id} bulk_p} \
+        -html {enctype multipart/form-data} \
+        -form [concat {{pretty_name:text(inform) {label {[_ simulation.Task]}}}} \
+           [simulation::ui::forms::document_upload::form_block]] \
         -on_request {
             set pretty_name $action(pretty_name)
             set documents_pre_form [simulation::ui::forms::document_upload::documents_element_value $action_id]
@@ -260,10 +288,11 @@ if { ![empty_string_p $action(recipients)] } {
                 foreach one_action $common_enabled_action_ids {
                     set case_id [lindex $one_action 1]
 
+                    set document [lindex $document_file 0]
                     set entry_id [workflow::case::action::execute \
                                   -case_id $case_id \
                                   -action_id $action_id \
-                                  -comment "Document [lindex $document_file 0] uploaded" \
+                                  -comment [_ simulation.lt_Document_document_upl] \
                                   -comment_mime_type "text/plain"]
 
                     simulation::ui::forms::document_upload::insert_document \

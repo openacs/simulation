@@ -1,7 +1,7 @@
 ad_page_contract {
-    Page allows users to cast themselves in simulations with casting type open or group.
-    For casting type group the user can only choose the case to be in. If casting type
-    is open he/she can also choose role.
+    Page allows users to cast themselves in simulations with casting type open
+    or group.  For casting type group the user can only choose the case to be
+    in. If casting type is open he/she can also choose role.
 
     @author Peter Marklund
 } {
@@ -18,42 +18,34 @@ set enrolled_p [simulation::template::user_enrolled_p -workflow_id $workflow_id]
 if { !$enrolled_p } {
     set enroll_now_text ""
     if { [string equal $simulation(enroll_type) "open"] } {
-        set enroll_now_text "<a href=\"[export_vars -base enroll { workflow_id }]\">Click here</a> to enroll now."
+        set link_target [export_vars -base enroll { workflow_id }]
+        set enroll_now_text [_ simulation.lt_a_hreflink_targetClic]
     }
 
         ad_return_forbidden \
-                "Not enrolled in simulation \"$simulation(pretty_name)\"" \
-                "<blockquote>
-  We are sorry, but since you are not enrolled in simulation \"$simulation(pretty_name)\" you can not choose case or role in it. $enroll_now_text
-</blockquote>"
+                [_ simulation.lt_Not_enrolled_in_simul] \
+                [_ simulation.lt_blockquoteWe_are_sorr_5]
         ad_script_abort
 }
 
 # Check self casting is allowed
 if { [string equal $simulation(casting_type) "auto"] } {
         ad_return_forbidden \
-                "You will be automatically cast in \"$simulation(pretty_name)\"" \
-                "<blockquote>
-The simulation \"$simulation(pretty_name)\" is configured to use automatic casting. This means that a simulation case and simulation role will be chosen
-automatically for you right before the simulation starts. You will be notified by email. 
-
-<p>
-  Thank you!
-</p>
-</blockquote>"
+                [_ simulation.lt_You_will_be_automatic] \
+                [_ simulation.lt_blockquoteThe_simulat]
         ad_script_abort    
 }
 
 template::list::create \
     -name cast_info \
     -multirow cast_info \
-    -no_data "You are not cast in any roles yet" \
+    -no_data [_ simulation.lt_You_are_not_cast_in_a] \
     -elements {
         case_name {
-            label "Case"
+            label {[_ simulation.Case]}
         }
         role_name {
-            label "Role"
+            label {[_ simulation.Role]}
         }
     }
 
@@ -74,42 +66,51 @@ db_multirow cast_info cast_info {
 set already_cast_p [expr ${cast_info:rowcount} > 0]
 
 if { !$already_cast_p } {
-    set page_title "Join a Case in Simulation \"$simulation(pretty_name)\""
+    set page_title [_ simulation.lt_Join_a_Case_in_Simula_1]
 } else {
-    set page_title "User castings in simulation \"$simulation(pretty_name)\""
+    set page_title [_ simulation.lt_User_castings_in_simu]
 }
-set context [list [list "." "SimPlay"] $page_title]
+set context [list [list "." [_ simulation.SimPlay]] $page_title]
 
 
 template::list::create \
     -name roles \
     -multirow roles \
-    -no_data "There are no cases in this simulation yet" \
+    -no_data [_ simulation.lt_There_are_no_cases_in] \
     -elements {
         case_pretty {
-            label "Case"
+            label {[_ simulation.Case]}
         }
         case_action {
             display_template {
-                <if @roles.can_join_case_p@ and @roles.join_case_url@ ne ""><a href="@roles.join_case_url@" class="button">join case</a></if>
+                <if @roles.can_join_case_p@ and @roles.join_case_url@ ne "">
+                  <a href="@roles.join_case_url@" class="button">[_ simulation.join_case]</a>
+                </if>
             }
         }
         role_name {
-            label "Role"
+            label {[_ simulation.Role]}
         }
         role_action {
             display_template {
-                <if @roles.can_join_role_p@ and @roles.join_role_url@ ne ""><a href="@roles.join_role_url@" class="button">join role</a></if>
+                <if @roles.can_join_role_p@ and @roles.join_role_url@ ne "">
+                  <a href="@roles.join_role_url@" class="button">[_ simulation.join_role]</a>
+                </if>
             }
         }
         n_users {
-            label "# Users"
+            label {[_ simulation._Users]}
             display_template {
-                <if @roles.n_users@ gt 0><a href="@roles.users_url@">@roles.n_users@</a></if><else>@roles.n_users@</else>
+                <if @roles.n_users@ gt 0>
+                  <a href="@roles.users_url@">@roles.n_users@</a>
+                </if>
+                <else>
+                  @roles.n_users@
+                </else>
             }
         }
         max_n_users {
-            label "Max # users"
+            label {[_ simulation.Max__users]}
         }
     }
 
@@ -142,8 +143,12 @@ db_multirow -extend { can_join_role_p join_case_url join_role_url users_url } ro
       and wr.workflow_id = :workflow_id
       order by sc.label, wr.pretty_name
 } {
-    # User can join a case if there is at least one role in the case that the user can join
-    # User can join a role if he is in a group mapped to the role and there are empty spots for the role    
+    # User can join a case if there is at least one role in the case that the
+    # user can join
+
+    # User can join a role if he is in a group mapped to the role and there are
+    # empty spots for the role    
+
     if { $is_mapped_p && [expr $max_n_users - $n_users] > 0 } {
         set can_join_role_p 1
         set can_join_case_p_array($case_id) 1

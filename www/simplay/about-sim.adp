@@ -2,5 +2,5 @@
   <property name="title">@title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-<h3>Description</h3>
+<h3>#simulation.Description#</h3>
 @description;noquote@

@@ -4,7 +4,7 @@ ad_page_contract {
     {case_id:integer ""}
 }
 
-set title "SimPlay"
+set title [_ simulation.SimPlay]
 set context [list $title]
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]

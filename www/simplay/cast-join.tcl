@@ -1,6 +1,7 @@
 ad_page_contract {
-    This script will cast a user in a simulation case. If role id is provided the user
-    will be cast in that role. If case_id is not provided a new case will be created.
+    This script will cast a user in a simulation case. If role id is provided
+    the user will be cast in that role. If case_id is not provided a new case
+    will be created.
 
     @author Peter Marklund
 } {
@@ -11,7 +12,8 @@ ad_page_contract {
 
 # We need either case_id or workflow_id
 if { [empty_string_p $workflow_id] && [empty_string_p $case_id] } {
-    ad_return_error "Missing parameters" "Either of the HTTP parameters workflow_id and case_id must be provided. Please contact the system administrator about this error."
+    ad_return_error "Missing parameters" \
+    [_ simulation.lt_Either_of_the_HTTP_pa]
     ad_script_abort
 }
 
@@ -25,14 +27,14 @@ simulation::template::get -workflow_id $workflow_id -array simulation
 # We require the user to be enrolled
 auth::require_login
 set user_id [ad_conn user_id]
-set enrolled_p [simulation::template::user_enrolled_p -workflow_id $workflow_id]
-# Begin a series of checks and abort with an error message on the first failure
+set enrolled_p [simulation::template::user_enrolled_p \
+               -workflow_id $workflow_id]
+# Begin a series of checks and abort with an error message on the
+# first failure
 if { !$enrolled_p } {
         ad_return_forbidden \
-                "Not enrolled in simulation \"$simulation(pretty_name)\"" \
-                "<blockquote>
-  We are sorry, but since you are not enrolled in simulation \"$simulation(pretty_name)\" you can not choose case or role in it.
-</blockquote>"
+                [_ simulation.lt_Not_enrolled_in_simul] \
+                [_ simulation.lt_blockquoteWe_are_sorr]
         ad_script_abort
 }
 
@@ -42,12 +44,8 @@ if { ![empty_string_p $role_id] } {
     # Check that user is allowed to cast himself in a role
     if { ![string equal $simulation(casting_type) "open"] } {
         ad_return_forbidden \
-                "Cannot choose role in \"$simulation(pretty_name)\"" \
-                "<blockquote>
-  We are sorry, but simulation \"$simulation(pretty_name)\" does not allow users to choose role (casting type is not open). This message means the system is not operating correctly. Please contact the system administrator.
-
-Thank you!
-</blockquote>"
+                [_ simulation.lt_Cannot_choose_role_in] \
+                [_ simulation.lt_blockquoteWe_are_sorr_1]
         ad_script_abort
     }
 
@@ -58,12 +56,8 @@ Thank you!
     if { $n_empty_spots <= "0" } {
         simulation::role::get -role_id $role_id -array role
         ad_return_forbidden \
-                "No empty slots in role \"$role(pretty_name)\"" \
-                "<blockquote>
-  We are sorry, but there are no empty seats in role \"$role(pretty_name)\" in case \"$case(label)\" of simulation \"$simulation(pretty_name)\". This message means the system is not operating correctly. Please contact the system administrator.
-
-Thank you!
-</blockquote>"
+                [_ simulation.lt_No_empty_slots_in_rol] \
+                [_ simulation.lt_blockquoteWe_are_sorr_2]
         ad_script_abort        
     }
 
@@ -71,12 +65,8 @@ Thank you!
     if { ![simulation::template::user_mapped_to_role_p -workflow_id $workflow_id -role_id $role_id] } {
         simulation::role::get -role_id $role_id -array role
         ad_return_forbidden \
-                "Not allowed to cast in role \"$role(pretty_name)\"" \
-                "<blockquote>
-  We are sorry, but you are not in the group of users that can be cast in role \"$role(pretty_name)\" in case \"$case(label)\" of simulation \"$simulation(pretty_name)\". This message means the system is not operating correctly. Please contact the system administrator.
-
-Thank you!
-</blockquote>"
+                [_ simulation.lt_Not_allowed_to_cast_i] \
+                [_ simulation.lt_blockquoteWe_are_sorr_3]
         ad_script_abort
     }
 } else {
@@ -84,12 +74,8 @@ Thank you!
 
     if { [string equal $simulation(casting_type) "auto"] } {
         ad_return_forbidden \
-                "Cannot choose case in \"$simulation(pretty_name)\"" \
-                "<blockquote>
-  We are sorry, but simulation \"$simulation(pretty_name)\" does not allow users to choose case (casting type is auto). This message means the system is not operating correctly. Please contact the system administrator.
-
-Thank you!
-</blockquote>"
+                [_ simulation.lt_Cannot_choose_case_in] \
+                [_ simulation.lt_blockquoteWe_are_sorr_4]
         ad_script_abort
     }
 
@@ -141,15 +127,15 @@ Thank you!
 
     if { [empty_string_p $role_id] } {
         # We weren't able to find a role with empty slots
-        ad_return_error "No available roles" "We couldn't find any roles that you could join in case \"$case(label)\" of simulation \"$simulation(pretty_name)\". You would need to join a new case. Select your administrator about this.
-
-Thank you!"
+        ad_return_error [_ simulation.No_available_roles] \
+                        [_ simulation.lt_We_couldnt_find_any_r]
         ad_script_abort
     }
 }
 
-# We now know the user is authorized to cast himself and we have a role to cast him to
-# so carry out the casting.
+# We now know the user is authorized to cast himself and we have a role to cast
+# him to so carry out the casting.
+
 set role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
 set assign_array($role_short_name) [list $user_id]
 workflow::case::role::assign \

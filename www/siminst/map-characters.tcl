@@ -52,7 +52,7 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
 
 ad_form -extend -name characters -form {
   {show_contacts_p:boolean(radio),optional
-    {label "Should we these contacts?"}
+    {label "Should we show these contacts?"}
     {options {{"Show contacts" t} {"Don't show contacts" f}}}
   }
 }

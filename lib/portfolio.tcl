@@ -22,11 +22,11 @@ if { [exists_and_not_null case_id] } {
 template::list::create \
     -name documents \
     -multirow documents \
-    -no_data "There are no documents." \
-    -actions [list "Upload a document" $upload_url] \
+    -no_data [_ simulation.lt_There_are_no_document] \
+    -actions [list [_ simulation.Upload_a_document] $upload_url] \
     -elements {
         document_title {
-            label "Document"
+            label {[_ simulation.Document]}
             link_url_col document_url
         }        
     } 

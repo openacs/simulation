@@ -11,17 +11,20 @@ simulation::case::get -case_id $case_id -array case
 workflow::role::get -role_id $role_id -array role
 workflow::get -workflow_id $case(workflow_id) -array workflow
 
-set page_title "Users playing role $role(pretty_name) in case $case(label)"
+set page_title [_ simulation.lt_Users_playing_role_ro]
 set cast_url [export_vars -base cast { {workflow_id $case(workflow_id)} }]
-set context [list [list "." "SimPlay"] [list $cast_url "Join a Case in Simulation \"$workflow(pretty_name)\""] $page_title]
+set context [list [list "." [_ simulation.SimPlay]]
+                  [list $cast_url
+                    [_ simulation.lt_Join_a_Case_in_Simula]]
+                  $page_title]
 
 template::list::create \
     -name users \
     -multirow users \
-    -no_data "There are no users playing the role" \
+    -no_data [_ simulation.lt_There_are_no_users_pl] \
     -elements {
         user_link {
-            label "User"
+            label {[_ simulation.User]}
             display_template {
                 @users.user_link;noquote@
             }
