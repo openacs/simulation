@@ -7,6 +7,8 @@ ad_page_contract {
     item_id:optional
     {bulk_p 0}
     {return_url ""}
+    subject:optional
+    body:optional    
 }
 
 # FIXME: I am exporting the enabled_action_id list as the string variable enabled_action_ids in 
@@ -33,6 +35,42 @@ if { !$bulk_p } {
 
     if { [empty_string_p $return_url] } {
         set return_url [export_vars -base tasks { case_id role_id }]
+    }
+
+    if { ![info exists body] } {
+        if {[db_0or1row select_triggering_message_id {
+            select sm.from_role_id,
+                   sm.to_role_id,
+                   sm.creation_date,
+                   cr.title as subject,
+                   cr.content as triggering_body,
+                   cr.mime_type as mime_type
+            from sim_messagesx sm,
+                 cr_revisions cr
+            where sm.message_id = cr.revision_id
+              and sm.entry_id = (select max(wcl.entry_id)
+                                 from workflow_case_log wcl,
+                                      workflow_fsm_actions wfa,
+                                      workflow_case_fsm wcf
+                                 where wcl.case_id = sm.case_id
+                                 and wcl.action_id = wfa.action_id
+                                 and wcf.case_id = wcl.case_id
+                                 and wfa.new_state = wcf.current_state)
+              and sm.case_id = :case_id
+        }] } {
+            set subject "Re: $subject"
+            set body "
+
+-----Original Message-----
+From: [workflow::role::get_element -role_id $from_role_id -element pretty_name]
+Sent: [lc_time_fmt $creation_date "%x %X"]
+To: [workflow::role::get_element -role_id $to_role_id -element pretty_name]
+Subject: $subject
+
+[ad_html_text_convert -from $mime_type -to "text/plain" $triggering_body]"
+
+            ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body}]
+        }    
     }
 
 } else {
@@ -128,6 +166,15 @@ if { ![empty_string_p $action(recipients)] } {
                 {options $attachment_options}
             }        
         } -on_request {
+
+            if { [info exists body] } {
+                if { ![info exists body_mime_type] } {
+                    set body_mime_type "text/enhanced"
+                }
+                set body [template::util::richtext::create $body $body_mime_type]
+                set focus "action.body"
+            }
+
             set pretty_name $action(pretty_name)
             set description [template::util::richtext::create $action(description) $action(description_mime_type)]
 
