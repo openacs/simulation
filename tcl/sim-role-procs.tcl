@@ -168,8 +168,7 @@ ad_proc -public simulation::role::get {
     }
 
     db_1row select_sim_role {
-        select role_id,
-               character_id
+        select character_id
         from   sim_roles
         where  role_id = :role_id
     } -column_array local_row
