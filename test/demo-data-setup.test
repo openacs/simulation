@@ -27,6 +27,10 @@ if { [catch {
         "C of Lawfirm Y"   "Secretary firm Y"
         "Portal"           "Library"          
     }
+    array set properties {
+        "Demo Property 1" "Demo Property 1"
+        "Demo Property 2" "Demo Property 2"
+    }
     array set tasks {
         "Ask information from Bernadette" {assigned_role "Her lawyer" recipient_role "Bernadette"}
         "Ask information from MOTORHOME" {assigned_role "Her lawyer" recipient_role "MOTORHOME"}
@@ -114,6 +118,11 @@ if { [catch {
     ::twt::log_section "Create characters"
     foreach character_name [array names characters] {
         ::twt::simulation::add_object -type character -title $character_name
+    }
+
+    ::twt::log_section "Create properties"
+    foreach property_name [array names properties] {
+        ::twt::simulation::add_object -type sim_prop -title $property_name
     }
 
     ::twt::log_section "Create simulation template"
