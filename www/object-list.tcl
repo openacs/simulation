@@ -5,6 +5,7 @@ ad_page_contract {
 } {
     parent_id:optional
     {orderby "title,asc"}
+    {type:optional}
 }
 
 set page_title "Objects"

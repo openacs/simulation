@@ -2,6 +2,18 @@
 -- @creation-date 2003-10-14
 -- @cvs-id $Id$
 
+-- sim_stylesheet
+-- a chunk of css stylesheet
+
+select content_type__create_type(
+    'sim_stylesheet',              -- content_type
+    'content_revision',            -- supertype
+    'Stylesheet',                  -- pretty_name,
+    'Stylesheets',                 -- pretty_plural
+    'sim_stylesheets',             -- table_name
+    'stylesheet_id',                     -- id_column
+    null                           -- name_method
+);
 
 -- sim_character
 
@@ -18,15 +30,13 @@ select content_type__create_type(
 select content_type__create_attribute(
     'sim_character',               -- content_type
     'stylesheet',                  -- attribute_name
-    'text',                        -- datatype
+    'integer',                     -- datatype
     'Stylesheet',                  -- pretty_name
     'Stylesheets',                 -- pretty_plural
     1,                             -- sort_order
     null,                          -- default_value
-    'text'                         -- column_spec
+    'integer constraint sim_char_stylesheet_fk references sim_stylesheets(stylesheet_id)'                          -- column_spec
 );
-
-
 
 -- sim_prop
 
@@ -41,17 +51,15 @@ select content_type__create_type(
 );
 
 select content_type__create_attribute(
-    'sim_prop',                    -- content_type
+    'sim_prop',               -- content_type
     'stylesheet',                  -- attribute_name
-    'text',                        -- datatype
+    'integer',                     -- datatype
     'Stylesheet',                  -- pretty_name
     'Stylesheets',                 -- pretty_plural
     1,                             -- sort_order
     null,                          -- default_value
-    'text'                         -- column_spec
+    'integer constraint sim_char_stylesheet_fk references sim_stylesheets(stylesheet_id)'                          -- column_spec
 );
-
-
 
 
 -- sim_home
@@ -99,13 +107,14 @@ select content_type__create_attribute(
     'text'                         -- column_spec
 );
 
+
 select content_type__create_attribute(
     'sim_home',                    -- content_type
     'stylesheet',                  -- attribute_name
-    'text',                        -- datatype
+    'integer',                     -- datatype
     'Stylesheet',                  -- pretty_name
     'Stylesheets',                 -- pretty_plural
     4,                             -- sort_order
     null,                          -- default_value
-    'text'                         -- column_spec
+    'integer constraint sim_char_stylesheet_fk references sim_stylesheets(stylesheet_id)'                          -- column_spec
 );

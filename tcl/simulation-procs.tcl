@@ -7,7 +7,20 @@ ad_library {
 }
 
 namespace eval simulation {}
+namespace eval simulation::object_type {}
+
+ad_proc -public simulation::object_type::get_options {
+} {
+    Generate a list of object types formatted as an option list for form-builder's widgets.
+} {
+    set sim_types { sim_character sim_prop sim_home }
+
+    return [db_list_of_lists object_types "
+        select ot.pretty_name,
+               ot.object_type
+          from acs_object_types ot
+         where ot.object_type in ('[join $sim_types "','"]')
+    "]
+}
 
 
-
-# Lars: Nothing here yet, keeping it in case we want to add something

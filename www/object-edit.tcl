@@ -5,25 +5,55 @@ ad_page_contract {
     @cvs-id $Id$
 } {
     item_id:integer,optional
-    parent_id:integer,optional
-    content_type:optional
-} -validate {
-    not_item_id {
-        if { ![exists_and_not_null item_id] } {
-            if { ![exists_and_not_null parent_id] } {
-                ad_complain "parent_id is required"
-            }
-            if { ![exists_and_not_null content_type] } {
-                ad_complain "content_type is required"
-            }
-        }
-    }
+    {parent_id:integer {[bcms::folder::get_id_by_package_id -parent_id 0]}}
+    {content_type {sim_prop}}
 }
+
+#TODO: object type should be non-editable for non-new things
+
+#---------------------------------------------------------------------
+# Determine if we are in edit mode or display mode
+#---------------------------------------------------------------------
+# this is prototype code to correct for get_action's apparent
+# unreliability
+
+#set mode [template::form::get_action sim_template]
+#if { ![exists_and_not_null workflow_id]} {
+#    set mode "add"
+#} else {
+#    # for now, use edit mode in place of display mode
+#    #    set mode "display"
+#    set mode "edit"
+#}
+
+if { ![ad_form_new_p -key item_id] } {
+    # Get data for existing object
+    array set item_info [bcms::item::get_item -item_id $item_id -revision live]
+    item::get_revision_content $item_info(revision_id)
+    set content_type $item_info(content_type)
+    set page_title "Edit Sim Object"
+} else {
+    set page_title "Create Sim Object"
+}
+set context [list [list "object-list" "Sim Objects"] $page_title]
+
+
+######################################################################
+#
+# object
+#
+# A form for editing and viewing sim objects
+#
+######################################################################
 
 ad_form -name object -cancel_url object-list -form {
     {item_id:key}
-    {content_type:text(hidden)}
     {parent_id:integer(hidden),optional}
+    {content_type:text(radio)
+        {label "Type"}
+        {options {[simulation::object_type::get_options]}}
+        {mode "display"}
+    }
     {title:text
         {label "Title"}
         {html {size 50}}
@@ -40,22 +70,12 @@ ad_form -name object -cancel_url object-list -form {
     }
 }
 
-if { ![ad_form_new_p -key item_id] } {
-    # Get data for existing object
-    array set item_info [bcms::item::get_item -item_id $item_id -revision live]
-    item::get_revision_content $item_info(revision_id)
-    set content_type $item_info(content_type)
-    set page_title "Edit Object"
-} else {
-    set object_type_pretty [db_string pretty { select pretty_name from acs_object_types where object_type = :content_type }]
-    set page_title "Create $object_type_pretty"
-}
-set context [list [list "object-list" "Objects"] $page_title]
-
 
 #####
 #
 # Content edit/upload method
+#
+# Add a form widget appropriate for the content attribute of the object type
 #
 #####
 
@@ -87,6 +107,8 @@ if { [info exists content_method($content_type)] } {
 #####
 #
 # Dynamic attributes for the content type
+#
+# Look up the other attributes for this content type and put them on the form
 #
 #####
 

@@ -6,10 +6,8 @@ ad_page_contract {
 } -properties {
 }
 
-# fake the multirow for active objects
-multirow create cases case_id case_name task_count
-multirow append cases 1 "Case One" 0
-multirow append cases 1 "Case Two" 2
+
+multirow cases 
 
 template::list::create \
     -name cases \
@@ -24,5 +22,4 @@ template::list::create \
 	    orderby task_count
 	}
     }
-
 
