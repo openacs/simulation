@@ -21,7 +21,7 @@ set in_two_and_a_half_months_date [clock format [expr [clock seconds] + 3*3600*2
 set in_three_months_date [clock format [expr [clock seconds] + 3*3600*24*31] -format "%Y %m %d"]
 set in_four_months_date [clock format [expr [clock seconds] + 4*3600*24*31] -format "%Y %m %d"]
 
-set eligible_groups [simulation::groups_eligible_for_casting]
+set eligible_groups [simulation::casting_groups -workflow_id $workflow_id]
 
 ad_form -export { workflow_id } -name simulation -form {
     {enroll_start:date,optional

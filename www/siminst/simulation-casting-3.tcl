@@ -14,7 +14,7 @@ set context [list [list "." "SimInst"] $page_title]
 # Loop over all workflow roles and append the actor and "in groups of" widgets to the form
 set form [list]
 
-set eligible_groups [simulation::groups_eligible_for_casting]
+set eligible_groups [simulation::casting_groups -enrolled_only -workflow_id $workflow_id]
 
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     set role_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
@@ -44,7 +44,7 @@ ad_form \
         # Validation
         # Make sure the number of users per case does not exceed the number of users
         # in each group
-        array set groups [simulation::groups_eligible_for_casting_with_counts]
+        array set groups [simulation::casting_groups_with_counts -enrolled_only -workflow_id $workflow_id]
         set error_p 0
         foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
             set group_size [set group_$role_id]

@@ -134,9 +134,16 @@ ad_proc simulation::get_object_options {
     }]
 }
 
-ad_proc simulation::groups_eligible_for_casting {} {
-    Return a list of groups eligible for enrollment and invitation
-    for the current simulation package.
+ad_proc simulation::casting_groups {
+    {-workflow_id:required}
+    {-enrolled_only:boolean}
+} {
+    Return a list of groups eligible for enrollment and casting for a given
+    workflow.
+
+    @param workflow_id   The id of the workflow to get casting groups for.
+    @param enrolled_only Provide this switch to only get groups selected for 
+                         auto enrollment.
 
     @return A list of lists, with label-id pairs, suitable to be passed
             as the options attribute of a form builder select widget.
@@ -146,7 +153,7 @@ ad_proc simulation::groups_eligible_for_casting {} {
     set options_list [list]
 
     # We only want the label and the id, i.e. strip off the count
-    array set groups [groups_eligible_for_casting_with_counts]
+    array set groups [casting_groups_with_counts -enrolled_only=$enrolled_only_p -workflow_id $workflow_id]
     foreach group_id [array names groups] {
         lappend options_list [list "[lindex $groups($group_id) 0] ([lindex $groups($group_id) 1] users)" $group_id]
     }
@@ -154,9 +161,16 @@ ad_proc simulation::groups_eligible_for_casting {} {
     return $options_list
 }
 
-ad_proc simulation::groups_eligible_for_casting_with_counts {} {
-    Return a list of groups eligible for enrollment and invitation
-    for the current simulation package.
+ad_proc simulation::casting_groups_with_counts {
+    {-workflow_id:required}
+    {-enrolled_only:boolean}
+} {
+    Return a list of groups eligible for enrollment and casting for a given
+    workflow.
+
+    @param workflow_id   The id of the workflow to get casting groups for.
+    @param enrolled_only Provide this switch to only get groups selected for 
+                         auto enrollment.
 
     @return An array lists on the format
             [list group_id1 [list group_name1 n_users1] group_id2 [list group_name2 n_users2] ...]
@@ -174,8 +188,14 @@ with label-id pairs, suitable to be passed
                               -package_id $closest_subsite(package_id)]
 
     # Get all groups related to (children of) the subsite group (only one level down)
+    set enrollment_clause [ad_decode $enrolled_only_p "0" "" "and  exists (select 1
+                       from sim_party_sim_map
+                       where party_id = g.group_id
+                         and simulation_id = :workflow_id
+                         and type = 'auto-enroll'
+                       )"]
     set groups_list [list]
-    db_foreach subsite_group_options {
+    db_foreach subsite_group_options "
         select g.group_name,
                g.group_id,
                (select count(*)
@@ -194,7 +214,8 @@ with label-id pairs, suitable to be passed
                        where pamm.party_id = g.group_id
                          and pamm.member_id = u.user_id
                       )
-    } {
+          $enrollment_clause
+    " {
         lappend groups_list $group_id [list $group_name $n_users]
     }
 
