@@ -82,6 +82,7 @@ db_multirow -extend { message_url creation_date_pretty } messages select_message
     and    pamm.member_id = :user_id
     and    wcrmp.party_id = pamm.party_id
     and    wcrmp.case_id = sm.case_id
+    and    wcrmp.role_id = sm.to_role_id
     and    wc.case_id = sm.case_id
     and    sc.sim_case_id = wc.object_id
     and    w.workflow_id = wc.workflow_id
