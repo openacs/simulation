@@ -130,7 +130,7 @@ ad_proc -public simulation::role::edit {
                     db_dml update_role "
                         update sim_roles
                         set    [join $update_clauses ", "]
-                        where  task_id = :role_id
+                        where  role_id = :role_id
                     "
                 }
             }
