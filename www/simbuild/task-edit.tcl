@@ -7,6 +7,7 @@ ad_page_contract {
     {workflow_id:integer ""}
     action_id:integer,optional
     parent_action_id:integer,optional
+    return_url:optional
 } -validate {
     workflow_id_or_task_id {
         if { ![exists_and_not_null workflow_id] &&
@@ -96,7 +97,7 @@ if { ![empty_string_p [ns_queryget task_type]] } {
 
 ad_form \
     -name task \
-    -export { workflow_id } \
+    -export { workflow_id return_url } \
     -edit_buttons [list \
                        [list \
                             [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_finish]] \
@@ -336,6 +337,9 @@ ad_form -extend -name task -edit_request {
                        -action_id $action_id \
                        -array row]
 
-    ad_returnredirect [export_vars -base "template-edit" -anchor "tasks" { workflow_id }]
+    if { ![exists_and_not_null return_url] } {
+        set return_url [export_vars -base "template-edit" -anchor "tasks" { workflow_id }] 
+    } 
+    ad_returnredirect $return_url
     ad_script_abort
 }

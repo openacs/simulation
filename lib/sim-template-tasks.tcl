@@ -10,6 +10,9 @@ simulation::include_contract {
         allowed_values {edit display}
         default_value display
     }
+    parent_action_id {
+        default_value {}
+    }
 }
 
 set package_id [ad_conn package_id]
@@ -35,7 +38,7 @@ switch $display_mode {
 #-------------------------------------------------------------
 
 if { $display_mode == "edit"} {
-    set list_actions [list "Add a Task" [export_vars -base task-edit {workflow_id} ] {}]
+    set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url [ad_return_url] } }] {}]
 } else {
     set list_actions [list]
 }
@@ -77,16 +80,11 @@ lappend elements assigned_name {
     link_url_col assigned_role_edit_url
 }
 
-lappend elements add_child_action { 
-    label {}
-    display_template {<if @tasks.add_child_action_url@ not nil><img src="/resources/acs-subsite/Add16.gif" height="16" width="16" border="0"></if>}
-    link_url_col add_child_action_url
-    link_html { title "Add child task" }
-}
-
 lappend elements trigger_type { 
     label "<br />Type"
-    display_eval {[string totitle $trigger_type]}
+    display_eval {[string totitle $trigger_type] [ad_decode $num_subactions "" "" "($num_subactions subtasks)"]}
+    link_url_col add_child_action_url
+    link_html { title "Edit subtasks" }
 }
 
 lappend elements delete {
@@ -200,10 +198,12 @@ db_multirow -extend $extend tasks select_tasks "
            (select pretty_name
             from   workflow_fsm_states
             where  state_id = wfa.new_state) as new_state_pretty,
-           wa.trigger_type
+           wa.trigger_type,
+           (select count(*) from workflow_actions where parent_action_id = wa.action_id) as num_subactions
       from workflow_actions wa left outer join
            workflow_fsm_actions wfa on (wfa.action_id = wa.action_id)
      where wa.workflow_id = :workflow_id
+     and   wa.parent_action_id [ad_decode $parent_action_id "" "is null" "= :parent_action_id"]
      order by wa.sort_order
 " {
     incr counter
@@ -241,8 +241,11 @@ db_multirow -extend $extend tasks select_tasks "
 
     switch $trigger_type {
         workflow - parallel - dynamic {
-            set add_child_action_url [export_vars -base task-edit { workflow_id { parent_action_id $action_id } }]
-    }
+            set add_child_action_url [export_vars -base task-details { action_id }]
+        }
+        default {
+            set num_subactions {}
+        }
     }
 
     lappend actions $action_id
