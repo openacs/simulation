@@ -23,7 +23,7 @@ if { ![ad_form_new_p -key item_id] } {
 } else {
     set page_title "Create Sim Object"
 }
-set context [list [list "object-list" "Sim Objects"] $page_title]
+set context [list [list "." "CityBuild"] $page_title]
 
 ######################################################################
 #
@@ -34,7 +34,7 @@ set context [list [list "object-list" "Sim Objects"] $page_title]
 ######################################################################
 #TODO: content_type should be changable in new mode
 
-ad_form -name object -cancel_url object-list -html {enctype multipart/form-data} -form {
+ad_form -name object -cancel_url "." -html {enctype multipart/form-data} -form {
     {item_id:key}
     {parent_id:integer(hidden),optional}
 }
@@ -696,7 +696,7 @@ ad_form -extend -name object -new_request {
     }
     
 } -after_submit {
-    ad_returnredirect object-list
+    ad_returnredirect "."
     ad_script_abort
 }
 

@@ -38,7 +38,7 @@ set package_id [ad_conn package_id]
 # role form
 #---------------------------------------------------------------------
 
-ad_form -name role -cancel_url sim-template-list -form {
+ad_form -name role -cancel_url index -form {
     {role_id:key}
     {workflow_id:integer(hidden),optional}
     {name:text

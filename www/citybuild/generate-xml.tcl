@@ -5,7 +5,7 @@ ad_page_contract {
 }
 
 set page_title "Generation of Map XML file"
-set context [list [list object-list "Object List"] $page_title]
+set context [list [list "." "CityBuild"] $page_title]
 
 array set result [simulation::object::xml::generate_file -package_id [ad_conn package_id]]
 

@@ -8,7 +8,7 @@ ad_page_contract {
     {type:optional}
 }
 
-set page_title "Sim Objects"
+set page_title "CityBuild"
 set context [list $page_title]
 set package_id [ad_conn package_id]
 set admin_p [permission::permission_p -object_id $package_id -privilege admin]

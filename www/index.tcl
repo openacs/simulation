@@ -102,7 +102,7 @@ db_multirow  -extend { view_url } object_count object_count_select "
         or content_type like 'stylesheet'
      group by content_type
 " {
-    set view_url [export_vars -base "object-list" { type }]
+    set view_url [export_vars -base "citybuild/" { type }]
 }
 
 
@@ -154,5 +154,5 @@ db_multirow -extend { view_url } sim_template_count sim_template_count_query "
     select count(workflow_id) as count
       from workflows w
 " {
-    set view_url [export_vars -base "sim-template-list"]
+    set view_url [export_vars -base "simbuild/"]
 }

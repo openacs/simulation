@@ -1,10 +1,13 @@
 <master src="/packages/simulation/www/map-master">
 <div style="margin: 4px; background: lightgray; border: 1px solid black;">
-<h3><a href="simplay/">SIMPLAY</a></h3>
-Your live cases:
-<listtemplate name="active_cases"></listtemplate></p>
-Available simulations
-<table class="list" cellpadding="3" cellspacing="1">
+  <h3><a href="simplay/">SimPlay</a></h3>
+
+  Your live cases:
+
+  <listtemplate name="active_cases"></listtemplate></p>
+
+  Available simulations
+  <table class="list" cellpadding="3" cellspacing="1">
       <tr class="list-header">
           <th class="list">
                 Simulation
@@ -23,19 +26,26 @@ Available simulations
             </tr>
   </table>
 </div>
+
 <div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid black;">
-<h3><a href="directory">YELLOW PAGES</a></h3>
+  <h3><a href="yellow-pages">Yellow Pages</a></h3>
+
+    Todo...
 </div>
+
 <div style="margin: 4px; padding: 4px; border: 1px solid black;">
-<h3><a href="citybuild/">CITYBUILD</a></h3>
-<include src="/packages/simulation/lib/sim-objects" size="short" display_mode="display">
+  <h3><a href="citybuild/">CityBuild</a></h3>
+
+  <include src="/packages/simulation/lib/sim-objects" size="short" display_mode="display">
 </div>
-<div style="margin: 4px; padding: 4px; border: 1px solid
-black;">
-<h3><a href="simbuild/">SIMBUILD</a></h3>
-<include src="/packages/simulation/lib/sim-templates" size="short" display_mode="display">
+
+<div style="margin: 4px; padding: 4px; border: 1px solid black;">
+  <h3><a href="simbuild/">SimBuild</a></h3>
+
+  <include src="/packages/simulation/lib/sim-templates" size="short" display_mode="display">
 </div>
+
 <div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid
 black;">
-<h3><a href="siminst/">SIMINST</a></h3>
+  <h3><a href="siminst/">SimInst</a></h3>
 </div>
