@@ -6,6 +6,4 @@
   You have deleted template "@template_name@".
 </p>
 
-<p>
-  <b>&raquo;</b> <a href="@template_list_url@">Return to template list page</a>
-</p>
+<a href="@template_list_url@" class="action">Return to template list page</a>

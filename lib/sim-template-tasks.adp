@@ -4,3 +4,5 @@
   <formwidget id="formbutton:ok">
 </formtemplate>
 
+<p>TODO: B: Allow reordering of roles, tasks, states.</p>
+
