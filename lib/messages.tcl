@@ -116,7 +116,6 @@ db_multirow -extend $extend messages select_messages "
            sim_cases sc
     where  cr.revision_id = sm.message_id
     and    wc.case_id = sm.case_id
-    [ad_decode $role_id "" "" "and [simulation::message::exclude_task_messages_sql]"]
     [ad_decode $role_id "" "" "and    (sm.to_role_id = :role_id or sm.from_role_id = :role_id)"]
     and    wc.case_id = sm.case_id
     and    sc.sim_case_id = wc.object_id

@@ -109,6 +109,11 @@ ad_proc -public simulation::message::exclude_task_messages_sql {} {
     The clause uses the bind variable role_id and assumes sm_messagesx to be in the from clause
     aliased as sm.
 
+    NOTE: This proc is currently not used since Leiden expressed in a discussion that they want all 
+          messages to show up after all (even though I warned them that
+          some users may respond to a message thinking this will execute the task, but it won't, thus ending up sending
+          two messages when they figure out they have to click on the task).
+
     @author Peter Marklund
 } {
     return "(sm.entry_id is null or not (

@@ -29,7 +29,6 @@ set message_count [db_string message_count_sql "
       from sim_messagesx sm
      where (sm.to_role_id = :role_id or sm.from_role_id = :role_id)
        and sm.case_id = :case_id
-       and [simulation::message::exclude_task_messages_sql]
 "]
 set messages_url [export_vars -base ${section_uri}messages { case_id role_id }]
 
