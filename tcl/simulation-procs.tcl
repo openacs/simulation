@@ -13,6 +13,10 @@ namespace eval simulation::template {}
 namespace eval simulation::character {}
 namespace eval simulation::role {}
 
+ad_proc -public simulation::package_key {} {
+    return simulation
+}
+
 ad_proc -public simulation::object_type::get_options {
 } {
     Generate a list of object types formatted as an option list for form-builder's widgets. foo.

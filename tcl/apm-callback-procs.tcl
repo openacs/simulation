@@ -8,6 +8,13 @@ ad_library {
 
 namespace eval simulation::apm {}
 
+ad_proc -private simulation::apm::after_install {} {
+    simulation::notification::xml_map::register
+}
+
+ad_proc -private simulation::apm::before_uninstall {} {
+    simulation::notification::xml_map::unregister
+}
 
 ad_proc -private simulation::apm::after_instantiate {
     {-package_id:required}
@@ -24,4 +31,3 @@ ad_proc -private simulation::apm::after_instantiate {
                        -context_id $package_id \
                        -content_types { sim_character sim_prop sim_location sim_stylesheet image }]
 }
-

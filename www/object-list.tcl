@@ -84,3 +84,9 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
 }
 
 set create_object_url [export_vars -base object-edit { parent_id }]
+
+set notification_widget [notification::display::request_widget \
+                             -type [simulation::notification::xml_map::type_short_name] \
+                             -object_id [ad_conn package_id] \
+                             -pretty_name [simulation::notification::xml_map::type_pretty_name] \
+                             -url "[ad_conn url]?[ad_conn query]"]
