@@ -34,8 +34,9 @@ set elements {
         message_url
         label "Subject"
     }
-    creation_date_pretty {
+    creation_date {
         label "Received"
+        display_col creation_date_pretty
     }
     attachment_count {
         label "Attachments"
@@ -56,7 +57,7 @@ template::list::create \
     -multirow messages \
     -no_data "You don't have any messages." \
     -actions [list "Send new message" [export_vars -base message { case_id }] {}] \
-    -elements $elements 
+    -elements $elements
 
 db_multirow -extend { message_url creation_date_pretty } messages select_messages "
     select distinct sm.message_id,
@@ -64,7 +65,8 @@ db_multirow -extend { message_url creation_date_pretty } messages select_message
            sm.title as subject,
            sc.label as case_label,
            w.pretty_name as sim_name,
-           to_char(creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date_ansi,
+           sm.creation_date,
+           to_char(sm.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date_ansi,
            (select fr.pretty_name
               from workflow_roles fr
              where fr.role_id = sm.from_role_id) as from,
@@ -91,6 +93,7 @@ db_multirow -extend { message_url creation_date_pretty } messages select_message
     and    sc.sim_case_id = wc.object_id
     and    w.workflow_id = wc.workflow_id
     [ad_decode [exists_and_not_null case_id] 1 "and sm.case_id = :case_id" ""]
+    order  by sm.creation_date desc
 " {
     set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { item_id case_id }]
     set creation_date_pretty [lc_time_fmt $creation_date_ansi "%x %X"]
