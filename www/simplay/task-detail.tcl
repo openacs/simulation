@@ -96,25 +96,23 @@ if { ![empty_string_p $action(recipients)] } {
             set body_mime_type [template::util::richtext::get_property "format" $body]
             
             db_transaction {
-    
-            workflow::case::action::execute \
-                -case_id $case_id \
-                -action_id $action_id \
-                -comment $body_text \
-                -comment_mime_type $body_mime_type
-
-            foreach recipient_id $action(recipients) {
-                simulation::message::new \
-                    -from_role_id $action(assigned_role_id) \
-                    -to_role_id $recipient_id \
-                    -case_id $case_id \
-                    -subject $subject \
-                    -body $body_text \
-                    -body_mime_type $body_mime_type \
-                    -attachments $attachments
+                workflow::case::action::execute \
+                    -enabled_action_id $enabled_action_id \
+                    -comment $body_text \
+                    -comment_mime_type $body_mime_type
+                
+                foreach recipient_id $action(recipients) {
+                    simulation::message::new \
+                        -from_role_id $action(assigned_role_id) \
+                        -to_role_id $recipient_id \
+                        -case_id $case_id \
+                        -subject $subject \
+                        -body $body_text \
+                        -body_mime_type $body_mime_type \
+                        -attachments $attachments
                 }   
             }
-
+            
             ad_returnredirect [export_vars -base tasks { case_id role_id }]
             ad_script_abort
         }

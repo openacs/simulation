@@ -29,16 +29,14 @@ if { ![ad_form_new_p -key action_id] } {
 
     set workflow_id $task_array(workflow_id)
 
-    if { ![empty_string_p $task_array(child_workflow_id)] } {
-        set task_type "workflow"
+    # Message tasks have a recipient; upload document tasks ("normal") have no recipient
+    if { ![empty_string_p $task_array(recipient_roles)] } {
+        set task_type "message"
     } else {
-        # Message tasks have a recipient; upload document tasks ("normal") have no recipient
-        if { ![empty_string_p $task_array(recipient_roles)] } {
-            set task_type "message"
-        } else {
-            set task_type "normal"
-        }
+        set task_type "normal"
     }
+    
+    set trigger_type $task_array(trigger_type)
 }
 
 workflow::get -workflow_id $workflow_id -array sim_template_array
@@ -58,6 +56,22 @@ set role_options [workflow::role::get_options -workflow_id $workflow_id]
 set role_options_with_null [concat [list [list "--None--" ""]] $role_options]
 
 set child_workflow_options [simulation::template::get_options]
+
+#---------------------------------------------------------------------
+# Logic to determine the current values of a few elements
+#---------------------------------------------------------------------
+
+if { ![empty_string_p [ns_queryget trigger_type]] } {
+    set trigger_type [ns_queryget trigger_type]
+} elseif { ![exists_and_not_null trigger_type] && [ad_form_new_p -key action_id] } {
+    set trigger_type "user"
+}
+if { ![empty_string_p [ns_queryget task_type]] } {
+    set task_type [ns_queryget task_type]
+} elseif { ![exists_and_not_null task_type] && [ad_form_new_p -key action_id] } {
+    set task_type "message"
+}
+
 
 ######################################################################
 #
@@ -91,12 +105,28 @@ ad_form \
             {html {size 50}}
             {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
         }
+        {trigger_type:text(radio)
+            {label "Trigger Type"}
+            {options { 
+                { "User task" user } 
+                { "Automatic" auto } 
+                { "Time" time } 
+                { "Message" message } 
+                { "Initial action" init } 
+                { "Workflow" workflow } 
+                { "Parallel" parallel } 
+                { "Dynamic parallel" dynamic } 
+            }}
+            {html {onChange "javascript:acs_FormRefresh('task');"}}
+        }
+    }
+if { [string equal $trigger_type "user"] } {
+    ad_form -extend -name task -form {
         {task_type:text(radio)
             {label "Task is complete when"}
             {options { 
                 { "Assignee sends message to recipient" message }
                 { "Assignee adds document to portfolio" normal } 
-                { "Child workflow is complete" workflow }
             }}
             {html {onChange "javascript:acs_FormRefresh('task');"}}
         }
@@ -104,36 +134,24 @@ ad_form \
             {label "Assignee"}
             {options $role_options_with_null}
         }
+    }
+} else {
+    ad_form -extend -name task -form { 
+        {task_type:text(hidden)} 
+        {assigned_role:text(hidden),optional}
+    }
+}
+
+if { [string equal $trigger_type "user"] && [string equal $task_type "message"] } {
+    ad_form -extend -name task -form {
         {recipient_roles:text(checkbox),optional,multiple
             {label "Recipients"}
             {options $role_options}
         }
-        {child_workflow_id:integer(select),optional
-            {label "Child workflow"}
-            {options $child_workflow_options}
-            {html {onChange "javascript:acs_FormRefresh('task');"}}
-        }
     }
-
-if { [string equal [element get_value task task_type] "workflow"] || \
-         ([empty_string_p [element get_value task task_type]] && [exists_and_equal task_type "workflow"]) } {
-    set child_workflow_id [element get_value task child_workflow_id]
-    if { [empty_string_p $child_workflow_id] } {
-        if { [exists_and_not_null task_array(child_workflow_id)] } {
-            set child_workflow_id $task_array(child_workflow_id)
-        } else {
-            set child_workflow_id [lindex [lindex $child_workflow_options 0] 1]
-        }
-    }
-    foreach role_id [workflow::get_roles -workflow_id $child_workflow_id] {
-        array unset role_array
-        workflow::role::get -role_id $role_id -array role_array
-        set role__${role_array(short_name)}__pretty_name $role_array(pretty_name)
-        ad_form -extend -name task -form \
-            [list [list parent_role__${role_array(short_name)}:text(select),optional \
-                       [list label "\$role__${role_array(short_name)}__pretty_name Role"] \
-                       {options $role_options} \
-                      ]]
+} else {
+    ad_form -extend -name task -form { 
+        {recipient_roles:text(hidden),optional}
     }
 }
 
@@ -175,62 +193,23 @@ ad_form -extend -name task -edit_request {
     permission::require_write_permission -object_id $workflow_id
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
 
+    # Removed: child_workflow_id
     foreach elm { 
         pretty_name pretty_past_tense new_state_id 
         assigned_role recipient_roles
-        attachment_num
-        child_workflow_id
+        attachment_num trigger_type
     } {
         set $elm $task_array($elm)
     }
 
-    switch $task_type {
-        message {
-            element set_properties task assigned_role -widget select
-            element set_properties task recipient_roles -widget checkbox
-            element set_properties task child_workflow_id -widget hidden
-        }
-        normal {
-            element set_properties task assigned_role -widget select
-            element set_properties task recipient_roles -widget hidden
-            element set_properties task child_workflow_id -widget hidden
-        }
-        workflow {
-            element set_properties task assigned_role -widget hidden
-            element set_properties task recipient_roles -widget hidden
-            element set_properties task child_workflow_id -widget select
-            
-            foreach { child_short_name elm } $task_array(child_role_map) {
-                set parent_role__${child_short_name} [lindex $elm 0]
-            }
-        }
-    }
 } -new_request {
     permission::require_write_permission -object_id $workflow_id
 
     set attachment_num 0
 
+    set trigger_type "user"
     set task_type "message"
-    element set_properties task child_workflow_id -widget hidden
 } -on_refresh {    
-    switch $task_type {
-        message {
-            element set_properties task assigned_role -widget select
-            element set_properties task recipient_roles -widget checkbox
-            element set_properties task child_workflow_id -widget hidden
-        }
-        normal {
-            element set_properties task assigned_role -widget select
-            element set_properties task recipient_roles -widget hidden
-            element set_properties task child_workflow_id -widget hidden
-        }
-        workflow {
-            element set_properties task assigned_role -widget hidden
-            element set_properties task recipient_roles -widget hidden
-            element set_properties task child_workflow_id -widget select
-        }
-    }
-
     set focus {}
 } -on_submit {
 
@@ -267,11 +246,11 @@ ad_form -extend -name task -edit_request {
         set pretty_past_tense $pretty_name
     }
 
+    # Removed: child_workflow_id child_role_map
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
         new_state_id 
-        recipient_roles attachment_num
-        child_workflow_id child_role_map
+        recipient_roles attachment_num trigger_type
     } {
         set row($elm) [set $elm]
     }

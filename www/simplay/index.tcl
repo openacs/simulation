@@ -22,7 +22,9 @@ set case_list [db_list_of_lists case_count {
 }]
 
 if { [llength $case_list] == 1 } {
-    set first_item [lindex $case_list 0]
-    ad_returnredirect [export_vars -base case { {case_id {[lindex $first_item 0]}} {role_id {[lindex $first_item 1]}} }]
-    ad_script_abort
+    set case_id [lindex [lindex $case_list 0] 0]
+    set role_id [lindex [lindex $case_list 0] 1]
+# TODO REMOVE
+#    ad_returnredirect [export_vars -base case { case_id role_id }]
+#    ad_script_abort
 }

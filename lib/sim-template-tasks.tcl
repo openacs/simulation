@@ -77,22 +77,9 @@ lappend elements assigned_name {
     link_url_col assigned_role_edit_url
 }
 
-lappend elements recipient_count { 
-    label "<br />Number of recipients"
-    html { align center } \
-}
-
-lappend elements task_type { 
+lappend elements trigger_type { 
     label "<br />Type"
-    display_template {
-        <if @tasks.child_workflow_pretty@ not nil>
-          <a href="@tasks.child_workflow_url@">@tasks.child_workflow_pretty@</a>
-        </if>
-        <else>
-          <if @tasks.recipient_count@ gt 0>Message</if>
-          <else>Document</else>
-        </else>
-    }
+    display_eval {[string totitle $trigger_type]}
 }
 
 lappend elements delete {
@@ -162,7 +149,7 @@ template::list::create \
 #-------------------------------------------------------------
 
 set extend [list]
-lappend extend edit_url view_url delete_url assigned_role_edit_url child_workflow_url up_url down_url
+lappend extend edit_url view_url delete_url assigned_role_edit_url up_url down_url
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -206,17 +193,10 @@ db_multirow -extend $extend tasks select_tasks "
            (select pretty_name
             from   workflow_fsm_states
             where  state_id = wfa.new_state) as new_state_pretty,
-           wa.child_workflow_id,
-           (select pretty_name
-            from   workflows
-            where  workflow_id = wa.child_workflow_id) as child_workflow_pretty
+           wa.trigger_type
       from workflow_actions wa left outer join
            workflow_fsm_actions wfa on (wfa.action_id = wa.action_id)
      where wa.workflow_id = :workflow_id
-       and not exists (select 1
-                         from workflow_initial_action ia
-                        where ia.workflow_id = wa.workflow_id
-                          and ia.action_id = wa.action_id)
      order by wa.sort_order
 " {
     incr counter
@@ -228,14 +208,6 @@ db_multirow -extend $extend tasks select_tasks "
     set assigned_role_edit_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
     
-    set child_workflow_url \
-        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { { workflow_id $child_workflow_id } }]
-
-    if { ![empty_string_p $child_workflow_id] } {
-        # No assignee when there's a child workflow
-        set assigned_name {}
-    }
-
     foreach state_id $states {
 
         if { [info exists enabled_in_state($action_id,$state_id)] } {

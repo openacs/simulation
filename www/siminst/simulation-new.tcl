@@ -49,11 +49,9 @@ select workflow_id,
         from workflow_roles
         where workflow_id = w.workflow_id) as number_of_roles,
        (select count(*)
-        from workflow_actions wa
+        from  workflow_actions wa
         where wa.workflow_id = w.workflow_id
-        and not exists (select 1
-                        from workflow_initial_action
-                        where action_id = wa.action_id)) as number_of_tasks
+        and   wa.trigger_type = 'user') as number_of_tasks
   from sim_simulations ss,
        workflows w
  where ss.simulation_id = w.workflow_id

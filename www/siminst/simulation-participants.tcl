@@ -4,6 +4,8 @@ ad_page_contract {
     workflow_id:integer
 }
 
+# TODO (.5h): Dynamically change "Neither invited nor mandatory" to "Can self-enroll", or "Not participating" depending on the enrollment_type (open/closed)
+
 permission::require_write_permission -object_id $workflow_id
 
 simulation::template::get -workflow_id $workflow_id -array sim_template
