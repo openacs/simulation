@@ -17,14 +17,6 @@ simulation::include_contract {
 
 set package_id [ad_conn package_id]
 
-switch $display_mode {
-    display {}
-
-    edit {
-	set add_task_url [export_vars -base "[apm_package_url_from_id $package_id]jsimbuild/task-edit" { workflow_id } ]
-    }
-}
-
 ##############################################################
 #
 # tasks
@@ -38,7 +30,7 @@ switch $display_mode {
 #-------------------------------------------------------------
 
 if { $display_mode == "edit"} {
-    set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url [ad_return_url] } }] {}]
+    set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url "[ad_return_url]\#tasks" } }] {}]
 } else {
     set list_actions [list]
 }
@@ -220,10 +212,10 @@ db_multirow -extend $extend tasks select_tasks "
      order by wa.sort_order
 " {
     incr counter
-    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]} }]
-    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]}}]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]\#tasks"} }]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]\#tasks"}}]
     set delete_url \
-        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url [ad_return_url]} }]
+        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url "[ad_return_url]\#tasks"} }]
 
     set assigned_role_edit_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
