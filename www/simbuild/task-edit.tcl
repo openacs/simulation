@@ -287,6 +287,10 @@ ad_form -extend -name task -edit_request {
     set focus {}
 } -on_submit {
 
+    if { [string equal $trigger_type "parallel"] } {
+        unset assigned_role
+    }
+
     # Check that pretty_name is unique
     set unique_p [workflow::action::pretty_name_unique_p \
                       -workflow_id $workflow_id \
