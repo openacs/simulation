@@ -7,4 +7,4 @@
 <p>TODO: (2h) Lars, modify content field to allow uploading of non-text documents
 (word, etc), after which point content field should display as a
 hyperlink and a delete button (applies to all types)
-<p>TODO: (0.1h) Lars "Associated with 1" should say "Associated With"
+

@@ -474,7 +474,7 @@ db_foreach select_relations {
         set elm_name "rel__${relation_tag}__$counter"
         lappend rel_elements $elm_name
 
-        if { $min_n == 1 && $max_n == 1 } {
+        if { $max_n == 1 } {
             set elm_label $label
         } else {
             set elm_label "$label $counter"
