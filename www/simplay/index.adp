@@ -3,9 +3,12 @@
   <property name="context">@context;noquote@</property>
 
 <include src="/packages/simulation/lib/cases" party_id="@user_id@"/>
-<p></p>
 
 <if @adminplayer_p@ true>
+
+  <h3>Cases in Simulations you Administer</h3>
+
+  <include src="/packages/simulation/lib/cases-admin"/>
 
   <h3>All Messages</h3>
 
@@ -19,4 +22,3 @@
 </if>
 
 <p>TODO: how can a player access completed cases?</p>
-<P>TODO: in admin mode, show all adminned cases

@@ -17,13 +17,10 @@
   <include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" display_mode="edit" >
   
 <p>
-TODO: Hide task table if there are no states, and show only "add a
-  state" link instead
-  <p>TODO: B: Allow reordering of roles, states, tasks.</p>
-  <p>TODO: Instead of initialize column and special task, UI should
-  show an "initial state" radio button.  The special initialize task should not
-  appear in this list.
-  <p>TODO: B: Better widget for suggested duration.</p>
+  <p>TODO: B: Allow reordering of roles, tasks.</p>
+  <p>TODO: Hide the init state and init task.  Auto-create and
+  maintain an init task pointing to the first state column.
+  <p>TODO: Allow reordering of state columns.
   <p>TODO: B: When Ready for Use Checkbox is in display (not edit)
   mode, show only the text "yes" or "no" instead of showing a disabled checkbox </p>
   <a class="action">TODO: If !ready_p, display "Mark this template ready for use" link</a>

@@ -5,7 +5,7 @@ that lets the user create a new prop and then return to this page,
 where the new prop is already set as the attachment.</p>
 
 <p>
-  TODO: (low priority) allow props to be embedded within description
+  TODO: C: allow props to be embedded within description
   body so that they will be displayed as links in simplay when user
   looks at task description
 </p>

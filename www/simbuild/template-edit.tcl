@@ -51,14 +51,17 @@ if { ![ad_form_new_p -key workflow_id] } {
 } else {
     ad_form -extend -name sim_template -form {
         {template_ready_p:boolean(hidden),optional
+            {help_text "Only templates marked Ready can be used in SimInst by Case Authors. TODO: this text doesn't appear??"}
             {value f}
         }
+
     }
 }
 
 ad_form -extend -name sim_template -form {
     {suggested_duration:text,optional
         {label "Suggested Duration"}
+        {help_text "Can be overridden when template is instantiated."}
     }
     {description:richtext(richtext),optional
         {label "Description"}

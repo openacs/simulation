@@ -16,7 +16,7 @@ ad_form -name load -edit_buttons [list [list "Load" ok]] -form {
     }
     {spec:text(textarea),nospell
         {label "Spec"}
-        {help_text {Copy and paste the specification here}}
+        {help_text {Copy and paste the specification here.  A specification is a plain-text file which can be generated when editing a template.}}
         {html {cols 80 rows 10}}
     }
 } -on_request {

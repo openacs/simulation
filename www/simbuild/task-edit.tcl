@@ -95,6 +95,12 @@ ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode 
     {description:richtext,optional
         {label "Task Description"}
         {html {cols 60 rows 8}}
+        {help_text "Suggested text; can be edited when template is instantiated."}
+    }
+    {attachment_num:integer(text)
+        {label "Number of attachments"}
+        {help_text "These are placeholders that are matched to props by the case author during SimInst"}
+        {html {size 2}}
     }
 }
 
@@ -109,6 +115,14 @@ foreach state_id [workflow::fsm::get_states -workflow_id $workflow_id] {
 }
 
 ad_form -extend -name task -form {
+    {new_state_id:integer(select),optional
+        {label "Next state"}
+        {options $state_options}
+        {help_text "After this task is completed, change the template's state."}
+    }
+}
+
+ad_form -extend -name task -form {
     {assigned_state_ids:text(checkbox),optional,multiple
         {label "Assigned<br>TODO: Find a better<br>way to show the<br>assigned/enabled states"}
         {options $enabled_options}
@@ -116,18 +130,6 @@ ad_form -extend -name task -form {
     {enabled_state_ids:text(checkbox),optional,multiple
         {label "Enabled"}
         {options $enabled_options}
-    }
-}
-
-ad_form -extend -name task -form {
-    {new_state_id:integer(select),optional
-        {label "New state"}
-        {options $state_options}
-    }
-    {attachment_num:integer(text)
-        {label "Number of attachments"}
-        {help_text "These are placeholders that are matched to props by the case author during SimInst"}
-        {html {size 2}}
     }
 } -edit_request {
     set workflow_id $task_array(workflow_id)
