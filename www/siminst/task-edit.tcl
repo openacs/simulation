@@ -8,15 +8,7 @@ ad_page_contract {
 
 set user_id [auth::require_login]
 
-workflow::action::fsm::get -action_id $action_id -array task_array
-
-# TODO: Move into simulation::action::get API
-db_1row select_recipient {
-    select recipient as recipient_role_id, attachment_num
-    from sim_tasks
-    where task_id = :action_id
-} -column_array task_array2
-array set task_array [array get task_array2]
+simulation::action::get -action_id $action_id -array task_array
 
 set workflow_id $task_array(workflow_id)
 permission::require_write_permission -object_id $workflow_id
@@ -71,8 +63,8 @@ ad_form -extend -name task -edit_request {
     set new_state_id $task_array(new_state_id)
     set attachment_num $task_array(attachment_num)
     
-    if { ![empty_string_p $task_array(recipient_role_id)] } {
-        set recipient_role [workflow::role::get_element -role_id $task_array(recipient_role_id) -element short_name]
+    if { ![empty_string_p $task_array(recipient)] } {
+        set recipient_role [workflow::role::get_element -role_id $task_array(recipient) -element short_name]
     } else {
         set recipient_role {}
     }
@@ -116,7 +108,7 @@ ad_form -extend -name task -edit_request {
             -workflow_id $task_array(workflow_id) \
             -array row
         
-        # TODO: The way we do this update is not very pretty: Delete all relations and re-add the new ones
+        # LOW PRIORITY TODO: The way we do this update is not very pretty: Delete all relations and re-add the new ones
         db_dml delete_all_relations {
             delete from sim_task_object_map
             where  task_id = :action_id
