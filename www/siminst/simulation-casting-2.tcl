@@ -27,7 +27,7 @@ ad_form -export { workflow_id } -name simulation -form {
     {enroll_type:text(radio)
         {label "Enrollment type"}
         {options {{"By invitation only" closed} {Open open}}}
-            {html {onChange "javascript:FormRefresh('simulation');"}}
+            {html {onChange "javascript:acs_FormRefresh('simulation');"}}
     }
     {enroll_start:date,to_sql(ansi),from_sql(ansi),optional
         {label "Enrollment start date"}

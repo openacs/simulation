@@ -1,8 +1,13 @@
-<p>
-  Pick which groups can be cast in which roles below.
-</p>
+<if @num_groups@ eq 0>
+  <div class="general-message">Please pick participants first.</div>
+</if>
+<else>
+  <p>
+    Pick which groups can be cast in which roles below.
+  </p>
+  <formtemplate id="actors"></formtemplate>
+</else>
 
-<formtemplate id="actors"></formtemplate>
 
 <p>
 TODO: Display the actor list and group size in parallel columns

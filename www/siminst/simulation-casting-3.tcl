@@ -21,15 +21,19 @@ lappend form {casting_type:text(radio)
 
 
 set eligible_groups [simulation::casting_groups -mapped_only -workflow_id $workflow_id]
+set num_groups [llength $eligible_groups]
 
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     set role_${role_id}_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
 
-    lappend form [list parties_${role_id}:text(checkbox),multiple,optional \
-                      [list label \$role_${role_id}_pretty_name] \
-                      {options $eligible_groups} \
-                      {section "Roles"}
-                     ]
+    if { $num_groups > 0 } {
+        lappend form [list parties_${role_id}:text(checkbox),multiple,optional \
+                          [list label \$role_${role_id}_pretty_name] \
+                          {options $eligible_groups} \
+                          {section "Roles"} \
+                         ]
+    }
+
     lappend form [list \
                       users_per_case_${role_id}:integer \
                       {label "Number of users per role"} \
