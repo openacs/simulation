@@ -15,6 +15,20 @@ ad_page_contract {
     }
 }
 
+# TODO: add functionality from mockups, including:
+# form element to set trigger-instantly mode
+# form element to "instantiate a child workflow and wait for it to complete"
+# form element for mapping roles for child workflow
+# form element to set timeouts
+# form element to add side effects
+# form element for bulk vs individual group assignment:
+#   when a group is mapped to a role in a sub-workflow, this can mean
+#     1) make one case, and assign the group as one party to the role,
+#     2) make one case per member of the group, and assign each member
+#        individually
+#   In case 2, figure out what to do if some roles are groups and others
+#   aren't.
+
 ######################################################################
 #
 # preparation
@@ -181,8 +195,8 @@ ad_form -extend -name task -form {
     # could be spoofed
     permission::require_write_permission -object_id $task_array(workflow_id)
 
-    # TODO IMPORTANT:
-    # Set short_name right -- or leave blank and have the workflow API construct a short_name
+    # TODO: Set short_name right,
+    # or leave blank and have the workflow API construct a short_name
 
     # TODO: enabled_states, assigned_states
     array unset row
