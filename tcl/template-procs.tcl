@@ -8,32 +8,9 @@ ad_library {
 
 namespace eval simulation::template {}
 
-ad_proc -public simulation::template::new {
-    {-pretty_name:required}
-    {-short_name {}}
-    {-sim_type "dev_template"}
-    {-suggested_duration ""}
-    {-package_key:required}
-    {-object_id:required}
-} {
-    Create a new simulation template.  TODO: need better tests for duration before passing it into the database.
-
-    @return The workflow_id of the created simulation.
-
-    @author Peter Marklund
-} {
-    # Wrapper for simulation::template::edit
-    
-    foreach elm { pretty_name short_name sim_type suggested_duration package_key object_id } {
-        set row($elm) [set $elm]
-    }
-    
-    set workflow_id [simulation::template::edit \
-                         -operation "insert" \
-                         -array row]
-                     
-    return $workflow_id
-}
+#----------------------------------------------------------------------
+# Basic Workflow API implementation
+#----------------------------------------------------------------------
 
 ad_proc -public simulation::template::edit {
     {-operation "update"}
@@ -216,64 +193,41 @@ ad_proc -public simulation::template::edit {
     return $workflow_id
 }
 
-
-ad_proc -public simulation::template::new_from_spec {
-    {-package_key {}}
-    {-object_id {}}
-    {-spec:required}
-    {-array {}}
+ad_proc -public simulation::template::get {
+    {-workflow_id:required}
+    {-array:required}
 } {
-    Create a new simulation template for a spec.
+    Return information about a simulation template.  This is a wrapper around 
+    workflow::get, supplementing it with the columns from sim_simulation.
 
-    @return The workflow_id of the created simulation.
+    @param workflow_id ID of simulation template.
+    @param array name of array in which the info will be returned
+                 Array will contain keys from the tables workflows and sim_simulations.
 
-    @author Lars Pind
+    @see simulation::template::get_parties
 } {
-    if { ![empty_string_p $array] } {
-        upvar 1 $array row
-        set array row
-    } 
+    upvar $array row
 
-    db_transaction {
+    workflow::get -array row -workflow_id $workflow_id
 
-        set workflow_id [workflow::fsm::new_from_spec \
-                             -package_key $package_key \
-                             -object_id $object_id \
-                             -spec $spec \
-                             -array $array]
-        
-        insert_sim \
-            -workflow_id $workflow_id
-    }
-
-    return $workflow_id
+    db_1row select_template {} -column_array local_row
+    array set row [array get local_row]
 }
 
-# TODO: Get rid of this -- still called from clone and new_from_spec
-ad_proc -private simulation::template::insert_sim {
+ad_proc -public simulation::template::delete {
     {-workflow_id:required}
-    {-sim_type "dev_template"}
-    {-suggested_duration {}}
 } {
-    Internal proc for inserting values into the sim_simulations
-    table that are set prior to a template being mapped.
-    
+    Delete a simulation template.
+
     @author Peter Marklund
 } {
-    set suggested_duration [string trim $suggested_duration]
-    if { [empty_string_p $suggested_duration] } {
-        db_dml new_sim {
-            insert into sim_simulations
-            (simulation_id, sim_type)
-            values (:workflow_id, :sim_type)
-        }
-    } else {
-        db_dml new_sim "
-        insert into sim_simulations
-        (simulation_id, sim_type, suggested_duration)
-        values (:workflow_id, :sim_type, interval '[db_quote $suggested_duration]')"
-    }
+    simulation::template::edit -workflow_id $workflow_id -operation delete
 }
+
+
+#----------------------------------------------------------------------
+# Additional API implementations
+#----------------------------------------------------------------------
 
 ad_proc -public simulation::template::delete_role_group_mappings {
     {-workflow_id}
@@ -320,85 +274,6 @@ ad_proc -public simulation::template::get_role_group_mappings {
     }
 }
  
-# TODO: Fix the cascading clone API situation
-ad_proc -public simulation::template::clone {
-    {-workflow_id:required}
-    {-package_key {}}
-    {-object_id {}}
-    {-array {}}
-} {
-    Create a new simulation template which is a clone of the template with
-    given id. The clone will be mapped to the package of the current request.
-
-    @param workflow_id The id of the template that you wish to clone.
-    @param pretty_name The pretty name of the clone you are creating.
-    
-    @return The id of the clone.
-
-    @author Peter Marklund
-} {
-    if { ![empty_string_p $array] } {
-        upvar 1 $array row
-        set array row
-    }
-
-    db_transaction {
-
-        # If we set object_id here and leave short_name unchanged we
-        # get a unique constraint violation
-        set clone_workflow_id [workflow::fsm::clone \
-                                   -workflow_id $workflow_id \
-                                   -package_key $package_key \
-                                   -object_id $object_id \
-                                   -array $array]
-        
-        # Add the role_id:s to the sim_roles table
-        set role_id_list [workflow::get_roles -workflow_id $clone_workflow_id]
-        foreach role_id $role_id_list {
-            db_dml insert_sim_role {
-                insert into sim_roles (role_id) values (:role_id)
-            }
-        }
-        
-        # Clone the values in the simulation table
-        simulation::template::get -workflow_id $workflow_id -array workflow
-
-        # Allow overriding of sim_type and duration
-        if { ![empty_string_p $array] } {
-            foreach name [array names row] {
-                set workflow($name) $row($name)
-            }
-        }
-
-        insert_sim \
-            -workflow_id $clone_workflow_id \
-            -sim_type $workflow(sim_type) \
-            -suggested_duration $workflow(suggested_duration)
-    }
-
-    return $clone_workflow_id
-}
-
-ad_proc -public simulation::template::get {
-    {-workflow_id:required}
-    {-array:required}
-} {
-    Return information about a simulation template.  This is a wrapper around 
-    workflow::get, supplementing it with the columns from sim_simulation.
-
-    @param workflow_id ID of simulation template.
-    @param array name of array in which the info will be returned
-                 Array will contain keys from the tables workflows and sim_simulations.
-
-    @see simulation::template::get_parties
-} {
-    upvar $array row
-
-    workflow::get -array row -workflow_id $workflow_id
-
-    db_1row select_template {} -column_array local_row
-    array set row [array get local_row]
-}
 
 ad_proc -public simulation::template::get_parties {
     {-workflow_id:required}
@@ -470,16 +345,6 @@ ad_proc -public simulation::template::ready_for_casting_p {
     }
 
     return [expr [string equal $role_empty_count 0] && [string equal $prop_empty_count 0]]
-}
-
-ad_proc -public simulation::template::delete {
-    {-workflow_id:required}
-} {
-    Delete a simulation template.
-
-    @author Peter Marklund
-} {
-    simulation::template::edit -workflow_id $workflow_id -operation delete
 }
 
 ad_proc -public simulation::template::associate_object {
@@ -633,6 +498,39 @@ ad_proc -public simulation::template::cast {
 }
 
 
+
+
+#----------------------------------------------------------------------
+# Simple workflow wrappers
+#----------------------------------------------------------------------
+
+ad_proc -public simulation::template::new {
+    {-pretty_name:required}
+    {-short_name {}}
+    {-sim_type "dev_template"}
+    {-suggested_duration ""}
+    {-package_key:required}
+    {-object_id:required}
+} {
+    Create a new simulation template.  TODO: need better tests for duration before passing it into the database.
+
+    @return The workflow_id of the created simulation.
+
+    @author Peter Marklund
+} {
+    # Wrapper for simulation::template::edit
+    
+    foreach elm { pretty_name short_name sim_type suggested_duration package_key object_id } {
+        set row($elm) [set $elm]
+    }
+    
+    set workflow_id [simulation::template::edit \
+                         -operation "insert" \
+                         -array row]
+                     
+    return $workflow_id
+}
+
 ad_proc -public simulation::template::generate_spec {
     {-workflow_id:required}
 } {
@@ -652,6 +550,71 @@ ad_proc -public simulation::template::generate_spec {
                       states workflow::state::fsm
                   }]
 
+    # TODO: Add sim_template attributes to the spec
+
     return $spec
 }
 
+ad_proc -public simulation::template::new_from_spec {
+    {-package_key {}}
+    {-object_id {}}
+    {-spec:required}
+    {-array {}}
+} {
+    Create new simulation template from a spec. Basically encodes the handlers to use.
+} {
+    # Wrapper for workflow::new_from_spec
+
+    if { ![empty_string_p $array] } {
+        upvar 1 $array row
+        set array row
+    } 
+    return [workflow::new_from_spec \
+                -package_key $package_key \
+                -object_id $object_id \
+                -spec $spec \
+                -array $array \
+                -workflow_handler "simulation::template" \
+                -handlers {
+                    roles simulation::role 
+                    states workflow::state::fsm
+                    actions simulation::action
+                }]
+}
+
+ad_proc -public simulation::template::clone {
+    {-workflow_id:required}
+    {-package_key {}}
+    {-object_id {}}
+    {-array {}}
+} {
+    Clones an existing simulation template. The clone must belong to either a package key or an object id.
+
+    @param object_id     The id of an ACS Object indicating the scope the workflow. 
+                         Typically this will be the id of a package type or a package instance
+                         but it could also be some other type of ACS object within a package, for example
+                         the id of a bug in the Bug Tracker application.
+
+    @param package_key   A package to which this workflow belongs
+
+    @param array         The name of an array in the caller's namespace. Values in this array will 
+                         override workflow attributes of the workflow being cloned.
+
+    @author Lars Pind (lars@collaboraid.biz)
+    @see workflow::new
+} {
+    # Wrapper for workflow::clone
+
+    if { ![empty_string_p $array] } {
+        upvar 1 $array row
+        set array row
+    } 
+    return [workflow::clone \
+                -workflow_id $workflow_id \
+                -package_key $package_key \
+                -object_id $object_id \
+                -array $array \
+                -workflow_handler simulation::template]
+
+    return $workflow_id
+}
