@@ -24,6 +24,7 @@ ad_form -name clone -export { workflow_id } -edit_buttons [list [list "Clone" ok
 } -on_submit {
     set new_workflow_array(pretty_name) $pretty_name
     set new_workflow_array(short_name) {}
+    set new_workflow_array(sim_type) {dev_template}
     
     simulation::template::clone \
         -workflow_id $workflow_id \
