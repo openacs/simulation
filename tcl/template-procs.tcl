@@ -778,6 +778,10 @@ ad_proc -public simulation::template::cast {
 
     @author Peter Marklund
 } {
+    # The admin is a special user who is only cast in roles that cannot be filled with non-admin users
+    # We don't include the admin user in the users to cast lists
+    set admin_user_id [admin_user_id -workflow_id $workflow_id]
+
     # Get the list of all enrolled and uncast users
     set users_to_cast [db_list users_to_cast {
             select distinct spsm.party_id
@@ -791,6 +795,7 @@ ad_proc -public simulation::template::cast {
                                and wcrpm.case_id = wc.case_id
                                and wc.workflow_id = :workflow_id
                              )
+             and spsm.party_id <> :admin_user_id
     }]
 
     # Get the subset of enrolled and uncast users that are not in any of
@@ -816,6 +821,7 @@ ad_proc -public simulation::template::cast {
                              and srpm.party_id = pamm.party_id
                              and pamm.member_id = spsm.party_id
                             )
+             and spsm.party_id <> :admin_user_id
     }]
 
     # Get the users in all of the role groups. Also get the short names of all of the roles
@@ -957,9 +963,7 @@ ad_proc -private simulation::template::cast_users_in_case {
                 # There is a role group with at least one user that hasn't been cast.
                 # Cast a random user from that group
                 set user_id [lindex $group_members($group_id) 0]
-                if { ![string equal $user_id $admin_user_id] } {
-                    lappend assignees $user_id
-                }
+                lappend assignees $user_id
 
                 # Remove the user from the group member list
                 set group_members($group_id) [lreplace $group_members($group_id) 0 0]
@@ -975,9 +979,7 @@ ad_proc -private simulation::template::cast_users_in_case {
                 if { [llength $users_to_cast_not_in_groups] > 0 } {
                     # Fill the role with a user not in any of the role groups
                     set user_id [lindex $users_to_cast_not_in_groups 0]
-                    if { ![string equal $user_id $admin_user_id] } {
-                        lappend assignees $user_id
-                    }
+                    lappend assignees $user_id
 
                     # Remove user from the not-in-group list
                     set users_to_cast_not_in_groups [lreplace $users_to_cast_not_in_groups 0 0]                        
