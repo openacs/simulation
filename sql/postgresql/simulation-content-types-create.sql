@@ -261,6 +261,7 @@ select content_type__register_relation_type (
 ----------------------------------------------------------------------
 -- sim_message
 ----------------------------------------------------------------------
+-- # TODO: conststrain to_role_id and from_role_id
 
 select content_type__create_type(
     'sim_message',                 -- content_type
@@ -285,10 +286,10 @@ select content_type__create_attribute(
 
 select content_type__create_attribute(
     'sim_message',                 -- content_type
-    'to_case_id',                  -- attribute_name
+    'from_role_id',                -- attribute_name
     'integer',                     -- datatype
-    'To case_id',                  -- pretty_name
-    'To case_ids',                 -- pretty_plural
+    'From role_id',                -- pretty_name
+    'From rase_ids',               -- pretty_plural
     2,                             -- sort_order
     null,                          -- default_value
     'integer'                      -- column_spec
@@ -296,22 +297,11 @@ select content_type__create_attribute(
 
 select content_type__create_attribute(
     'sim_message',                 -- content_type
-    'from_role_id',                -- attribute_name
+    'case_id',                  -- attribute_name
     'integer',                     -- datatype
-    'From role_id',                -- pretty_name
-    'From role_ids',               -- pretty_plural
+    'Case ID',                  -- pretty_name
+    'case IDs',                 -- pretty_plural
     3,                             -- sort_order
-    null,                          -- default_value
-    'integer'                      -- column_spec
-);
-
-select content_type__create_attribute(
-    'sim_message',                 -- content_type
-    'from_case_id',                -- attribute_name
-    'integer',                     -- datatype
-    'From case_id',                -- pretty_name
-    'From case_ids',               -- pretty_plural
-    1,                             -- sort_order
     null,                          -- default_value
     'integer'                      -- column_spec
 );
