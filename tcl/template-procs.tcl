@@ -11,7 +11,7 @@ namespace eval simulation::template {}
 ad_proc -public simulation::template::new {
     {-short_name:required}
     {-pretty_name:required}
-    {-ready_p "f"}
+    {-sim_type "dev_template"}
     {-suggested_duration ""}
     {-package_key:required}
     {-object_id:required}
@@ -22,8 +22,6 @@ ad_proc -public simulation::template::new {
 
     @author Peter Marklund
 } {
-    set ready_p [db_boolean [template::util::is_true $ready_p]]
-
     db_transaction {
         set short_name [util_text_to_url -replacement "_" $short_name]
 
@@ -35,7 +33,7 @@ ad_proc -public simulation::template::new {
         
         insert_sim \
             -workflow_id $workflow_id \
-            -ready_p $ready_p \
+            -sim_type $sim_type \
             -suggested_duration $suggested_duration
     }
 
@@ -44,7 +42,7 @@ ad_proc -public simulation::template::new {
 
 ad_proc -private simulation::template::insert_sim {
     {-workflow_id:required}
-    {-ready_p:required}
+    {-sim_type:required}
     {-suggested_duration:required}
 } {
     Internal proc for inserting values into the sim_simulations
@@ -56,14 +54,14 @@ ad_proc -private simulation::template::insert_sim {
     if { [empty_string_p $suggested_duration] } {
         db_dml new_sim {
             insert into sim_simulations
-            (simulation_id, ready_p)
-            values (:workflow_id, :ready_p)
+            (simulation_id, sim_type)
+            values (:workflow_id, :sim_type)
         }
     } else {
         db_dml new_sim "
         insert into sim_simulations
-        (simulation_id, ready_p, suggested_duration)
-        values ('$workflow_id', '$ready_p', interval '$suggested_duration')"            
+        (simulation_id, sim_type, suggested_duration)
+        values ('$workflow_id', '$sim_type', interval '$suggested_duration')"            
     }
 }
 
@@ -71,7 +69,7 @@ ad_proc -public simulation::template::edit {
     {-workflow_id:required}
     {-short_name:required}
     {-pretty_name:required}
-    {-ready_p "f"}
+    {-sim_type:required}
     {-suggested_duration ""}
     {-package_key:required}
     {-object_id:required}
@@ -82,9 +80,6 @@ ad_proc -public simulation::template::edit {
 
     @author Joel Aufrecht
 } {
-    if { ![exists_and_not_null ready_p] } {
-        set ready_p "f"
-    }
     db_transaction {
 
         # TODO: this should be in a new API call, workflow::edit
@@ -98,14 +93,14 @@ ad_proc -public simulation::template::edit {
         if { [empty_string_p $suggested_duration] } {
             db_dml edit_sim {
                 update sim_simulations
-                   set ready_p=:ready_p, 
+                   set sim_type=:sim_type, 
                        suggested_duration = null
                  where simulation_id=:workflow_id
             }
         } else {
             db_dml edit_sim "
                 update sim_simulations
-                   set ready_p=:ready_p, 
+                   set sim_type=:sim_type,
                        suggested_duration=(interval '$suggested_duration')
                  where simulation_id=:workflow_id
             "
@@ -199,7 +194,7 @@ ad_proc -public simulation::template::clone {
     get -workflow_id $workflow_id -array workflow
     insert_sim \
         -workflow_id $clone_workflow_id \
-        -ready_p $workflow(ready_p) \
+        -sim_type $workflow(sim_type) \
         -suggested_duration $workflow(suggested_duration)
 
     return $clone_workflow_id

@@ -10,7 +10,7 @@
                  w.package_key, 
                  w.object_type, 
                  s.suggested_duration,
-                 s.ready_p,
+                 s.sim_type,
                  s.enroll_type,
                  s.casting_type,
                  s.enroll_start,
