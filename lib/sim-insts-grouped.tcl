@@ -23,14 +23,14 @@ set admin_p [permission::permission_p -object_id $package_id -privilege admin]
 template::list::create \
     -name sims \
     -multirow sims \
-    -actions "{New Simulation From Template} $add_url" \
-    -no_data "You have no Simulations in Development or Casting" \
+    -actions "{[_ simulation.lt_New_Simulation_From_T]} $add_url" \
+    -no_data "[_ simulation.lt_You_have_no_Simulatio]" \
     -elements {
         status {
-            label "Status"
+            label "[_ simulation.Status]"
         }
         count {
-            label "Count"
+            label "[_ simulation.Count]"
         }
     }
 

@@ -79,9 +79,9 @@ db_multirow -extend { edit_url char_url delete_url up_url down_url } states sele
     set edit_url [export_vars -base "[ad_conn package_url]simbuild/state-edit" { state_id { return_url [ad_return_url] } }]
     set delete_url [export_vars -base "[ad_conn package_url]simbuild/state-delete" { state_id { return_url [ad_return_url] } }]
     if { $counter > 1 } {
-        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type state } state_id { direction up } { return_url [ad_return_url] } }]
+        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type state } state_id { direction up } { return_url [ad_return_url] } { parent_action_id $parent_action_id } }]
     }
-    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type state } state_id { direction down } { return_url [ad_return_url] } }]
+    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type state } state_id { direction down } { return_url [ad_return_url] } { parent_action_id $parent_action_id } }]
 }
 
 # Get rid of the last down_url

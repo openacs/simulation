@@ -34,6 +34,12 @@ if { ![ad_form_new_p -key state_id] } {
 
 workflow::get -workflow_id $workflow_id -array sim_template_array
 
+
+if { ![exists_and_not_null return_url] } {
+    set return_url [export_vars -base "template-edit" { workflow_id }] 
+} 
+
+
 if { ![ad_form_new_p -key state_id] } {
     set page_title "Edit State $state_array(pretty_name)"
 } else {
@@ -63,7 +69,8 @@ set role_options [workflow::role::get_options -workflow_id $workflow_id]
 
 ad_form \
     -name state \
-    -edit_buttons [list [list [ad_decode [ad_form_new_p -key state_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]] \
+    -cancel_url $return_url \
+    -edit_buttons [list [list [ad_decode [ad_form_new_p -key state_id] 1 [_ acs-kernel.common_OK] [_ acs-kernel.common_OK]] ok]] \
     -export { return_url } \
     -form {
     {state_id:key}
@@ -74,7 +81,7 @@ if { [exists_and_not_null parent_action_id] } {
         {parent_action_id:integer(select)
             {label "Parent task"}
             {mode display}
-            {options {[workflow::action::get_options -workflow_id $workflow_id]}}
+            {options {[workflow::action::get_options -all=1 -workflow_id $workflow_id]}}
         }
     }
 } else {
@@ -133,9 +140,10 @@ ad_form -extend -name state -form {
                       -workflow_id $workflow_id \
                       -array row]
 
-    if { ![exists_and_not_null return_url] } {
-        set return_url [export_vars -base "template-edit" { workflow_id }] 
-    } 
-    ad_returnredirect $return_url
+    # Let's mark this template edited
+    set sim_type "dev_template"
+
+    ad_returnredirect [export_vars -base "template-sim-type-update" { workflow_id sim_type return_url }]
+
     ad_script_abort
 }

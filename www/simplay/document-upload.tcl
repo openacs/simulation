@@ -25,12 +25,24 @@ foreach one_role_id [workflow::case::get_user_roles -case_id $case_id] {
 
 set focus "document.document_file"
 
+if { [exists_and_not_null document_file] && ![simulation::ui::forms::document_upload::check_mime -document_file $document_file] } {
+    simulation::ui::forms::document_upload::add_mime -document_file $document_file
+}
+
 ad_form -name document -export { case_id role_id workflow_id return_url } -html {enctype multipart/form-data} \
+    -cancel_url $return_url \
     -form [simulation::ui::forms::document_upload::form_block] \
-    -on_submit {
+    -validate {
+	{document_file 
+	    {[simulation::ui::forms::document_upload::check_mime -document_file $document_file]}
+	    "[_ simulation.lt_The_mime_type_of_your] [_ simulation.lt_Please_contact_______] 
+             (<a href='mailto:[ad_host_administrator]'>[ad_host_administrator]</a>)
+             [_ simulation.lt_if_you_think_youre_up]"
+	}
+    } -on_submit {
 
         simulation::ui::forms::document_upload::insert_document \
             $case_id $role_id $item_id $document_file $title
 
         ad_returnredirect $return_url
-    }
+    } 

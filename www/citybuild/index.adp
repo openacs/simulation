@@ -2,6 +2,8 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
+<div class="help-link"><a href="@help_url@">#simulation.CityBuild_Help#</a></div>
+
 <include src="/packages/simulation/lib/sim-objects" size="long" display_mode="edit" &="orderby" &="type">
 <p></p>
 

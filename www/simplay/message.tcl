@@ -16,17 +16,22 @@ set page_title [_ simulation.Message]
 set context [list [list "." [_ simulation.SimPlay]] [list [export_vars -base case { case_id role_id }] [_ simulation.Case]] $page_title]
 set package_id [ad_conn package_id]
 
+set return_url [export_vars -base case { case_id role_id }]
+
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
 
 set all_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-    set pretty_name [simulation::role::get_element -role_id $one_role_id -element character_title]
-    lappend all_role_options [list $pretty_name $one_role_id]
+    set character_title [simulation::role::get_element -role_id $one_role_id -element character_title]
+    set pretty_name [simulation::role::get_element -role_id $one_role_id -element pretty_name]
+    lappend all_role_options [list "$pretty_name ($character_title)" $one_role_id]
 }
 
 set to_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-        lappend to_role_options [list [simulation::role::get_element -role_id $one_role_id -element character_title] $one_role_id]
+    set character_title [simulation::role::get_element -role_id $one_role_id -element character_title]
+    set pretty_name [simulation::role::get_element -role_id $one_role_id -element pretty_name]
+        lappend to_role_options [list "$pretty_name ($character_title)" $one_role_id]
 }
 
 set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $role_id]
@@ -42,15 +47,22 @@ if { [string equal $action "reply"] } {
         -item_id $item_id \
         -array content
 
-    set recipient_role_id $content(from_role_id)
+    set sender_role_id $content(from_role_id)
     set subject "[_ simulation.Re] $content(title)"
+    set sender_pretty_name [simulation::role::get_element -role_id $sender_role_id -element pretty_name]
+    set sender_character_title [simulation::role::get_element -role_id $sender_role_id -element character_title]
+    set recipient_pretty_name [simulation::role::get_element -role_id $content(to_role_id) \
+				   -element pretty_name]
+    set recipient_character_title [simulation::role::get_element -role_id $content(to_role_id) \
+				   -element character_title]
     set body_text "
 
 
+
 -----Original Message-----
-From: [simulation::role::get_element -role_id $content(from_role_id) -element character_title]
+From: $sender_pretty_name ($sender_character_title)
 Sent: [lc_time_fmt $content(creation_date) "%x %X"]
-To: [simulation::role::get_element -role_id $content(to_role_id) -element character_title]
+To: $recipient_pretty_name ($recipient_character_title)
 Subject: $content(title)
 
 [ad_html_text_convert -from $content(mime_type) -to "text/plain" $content(text)]"
@@ -59,7 +71,9 @@ Subject: $content(title)
     ad_returnredirect [export_vars -base [ad_conn url] { case_id role_id recipient_role_id subject body_text body_mime_type }]
 }
 
-set form_mode [ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"]
+set form_new_p [ad_form_new_p -key item_id]
+
+set form_mode [ad_decode $form_new_p 1 "edit" "display"]
 
 set focus "message.recipient_role_id"
 
@@ -70,6 +84,7 @@ ad_form \
     -edit_buttons { { Send ok } } \
     -export { case_id role_id } \
     -mode $form_mode \
+    -cancel_url $return_url \
     -form {
         {item_id:key}
         {sender_role_id:text(select)
@@ -79,7 +94,7 @@ ad_form \
         }
     }
 
-if { [ad_form_new_p -key item_id] } {
+if { $form_new_p } {
     if { [llength $to_role_options] == 1 } {
         ad_form -extend -name message -form {
             {recipient_role_id_inform:text(inform)
@@ -120,8 +135,16 @@ ad_form -extend -name message -form {
     }
 }
 
-if { [llength $attachment_options] > 0 } {
-    if { ![string equal $form_mode "display"] } {
+if { !$form_new_p } {
+    set attachments_set_list [bcms::item::list_related_items \
+				  -revision live \
+				  -item_id $item_id \
+				  -relation_tag attachment \
+				  -return_list]
+}
+
+if { ![string equal $form_mode "display"] } {
+    if { [llength $attachment_options] > 0 } {
         # edit/new mode - show checkboxes        
         ad_form -extend -name message -form {
             {attachments:integer(checkbox),multiple,optional
@@ -130,19 +153,25 @@ if { [llength $attachment_options] > 0 } {
             }
         }
     } else {
-        # display mode - show a list of attached documents
-        ad_form -extend -name message -form {
-            {attachments:text(inform),optional
-                {label {[_ simulation.Attachments]}}
-            }
-        }
+	ad_form -extend -name message -form {
+	    {attachments:integer(hidden),optional}
+	}
     }
-
-} else {
+} elseif { [llength $attachments_set_list] > 0 } {
+    # display mode - show a list of attached documents
     ad_form -extend -name message -form {
-        {attachments:integer(hidden),optional}
+	{attachments:text(inform),optional
+	    {label {[_ simulation.Attachments]}}
+	}
+    }
+}  else {
+    # this is just to avoid ad_form freakin' out because it needs a
+    # field called attachments
+    ad_form -extend -name message -form {
+	{attachments:integer(hidden),optional}
     }
 }
+
 
 ad_form -extend -name message -new_request {
     if { [info exists body_text] } {
@@ -171,13 +200,6 @@ ad_form -extend -name message -new_request {
     } else {
         form set_properties message -actions { }
     }
-
-
-    set attachments_set_list [bcms::item::list_related_items \
-                                  -revision live \
-                                  -item_id $item_id \
-                                  -relation_tag attachment \
-                                  -return_list]
 
     if { ![string equal $form_mode "display"] } {
         # edit/new mode - set checkbox integer values
@@ -220,7 +242,7 @@ ad_form -extend -name message -new_request {
         }
     }
 
-    ad_returnredirect [export_vars -base case { case_id role_id }]
+    ad_returnredirect $return_url
     ad_script_abort
 }
 

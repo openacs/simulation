@@ -1,9 +1,11 @@
 
 simulation::template::get -workflow_id $workflow_id -array simulation
 
-set pretty_name "Clone of $simulation(pretty_name)"
+set pretty_name "Copy of $simulation(pretty_name)"
 
-ad_form -name clone -export { workflow_id } -edit_buttons [list [list "Clone" ok]] -form {
+ad_form -name clone \
+    -cancel_url [util_current_location][util_current_directory] \
+    -export { workflow_id } -edit_buttons [list [list "Clone" ok]] -form {
     {pretty_name:text
         {label "Name"}
         {html {size 50}}

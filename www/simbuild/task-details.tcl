@@ -25,7 +25,10 @@ workflow::get -workflow_id $workflow_id -array sim_template_array
 
 set page_title "Task $task_array(pretty_name)"
 
-set template_url [export_vars -base "template-edit" { workflow_id }]
+# Let's mark this template edited
+set sim_type "dev_template"
+
+set template_url [export_vars -base "template-sim-type-update" { workflow_id sim_type return_url }]
 
 set context [list [list "." "SimBuild"] [list $template_url "$sim_template_array(pretty_name)"] $page_title]
 

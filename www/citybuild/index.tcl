@@ -11,6 +11,9 @@ ad_page_contract {
 set page_title "CityBuild"
 set context [list $page_title]
 set package_id [ad_conn package_id]
+set package_url [ad_conn package_url]
+
+set help_url "${package_url}object/[parameter::get -package_id $package_id -parameter CityBuildHelpFile]"
 
 permission::require_permission -object_id $package_id -privilege sim_object_create
 

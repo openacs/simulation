@@ -556,6 +556,10 @@ ad_form -extend -name object -new_request {
         lappend attributes [list $attribute_name $value]
     }
 
+    if { [exists_and_not_null content_file] && ![simulation::ui::forms::document_upload::check_mime -document_file $content_file] } {
+	simulation::ui::forms::document_upload::add_mime -document_file $content_file
+    }
+
 } -new_data {
     
     # TODO B: For now, assume we are always using this to create global objects -- LARS: Not sure what to do on this

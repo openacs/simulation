@@ -5,7 +5,7 @@ ad_page_contract {
     @cvs-id $Id$
 } {
     {workflow_id:integer ""}
-    action_id:integer,optional
+    action_id:optional
     parent_action_id:integer,optional
     return_url:optional
 } -validate {
@@ -60,6 +60,11 @@ if { ![ad_form_new_p -key action_id] } {
 
     set page_title "Add Task to $sim_template_array(pretty_name)"
 }
+
+if { ![exists_and_not_null return_url] } {
+        set return_url [export_vars -base "template-edit" -anchor "tasks" { workflow_id }] 
+} 
+
 set context [list [list "." "SimBuild"] [list [export_vars -base "template-edit" { workflow_id }] "$sim_template_array(pretty_name)"] $page_title]
 
 #---------------------------------------------------------------------
@@ -100,9 +105,10 @@ if { ![empty_string_p [ns_queryget task_type]] } {
 ad_form \
     -name task \
     -export { workflow_id return_url } \
+    -cancel_url $return_url \
     -edit_buttons [list \
                        [list \
-                            [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_finish]] \
+                            [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_OK] [_ acs-kernel.common_OK]] \
                             ok]] \
     -form {
         {action_id:key}
@@ -114,7 +120,7 @@ if { [exists_and_not_null parent_action_id] } {
         {parent_action_id:integer(select)
             {label "Parent task"}
             {mode display}
-            {options {[workflow::action::get_options -workflow_id $workflow_id]}}
+            {options {[workflow::action::get_options -all=1 -workflow_id $workflow_id]}}
         }
     }
 } else {
@@ -181,25 +187,18 @@ if { [string equal $trigger_type "user"] && [string equal $task_type "message"] 
 
 
 switch $trigger_type {
-    user - message - workflow - parallel - dynamic {
+    user - message - workflow - parallel - dynamic - time  {
         ad_form -extend -name task -form { 
-            {timeout_hours:integer(text),optional
+            {timeout_hours:float(text),optional
                 {label "Timeout"}
                 {after_html "hours"}
-            }
-        }
-    }
-    time {
-        ad_form -extend -name task -form { 
-            {timeout_hours:integer(text)
-                {label "Timeout"}
-                {after_html "hours"}
+                {help_text "[_ simulation.lt_Duration_in_hours_dec]"}
             }
         }
     }
     default {
         ad_form -extend -name task -form { 
-            {timeout_hours:integer(hidden),optional}
+            {timeout_hours:float(hidden),optional}
         }
     }
 }
@@ -215,6 +214,16 @@ switch $trigger_type {
                 {help_text "Suggested text; can be edited when template is instantiated."}
             }
         }
+    }
+}
+
+if { [string equal $trigger_type "user"] && [string equal $task_type "message"] } {
+    ad_form -extend -name task -form {
+	{default_text:richtext,optional
+	    {label "Default Message"}
+	    {html {cols 60 rows 8}}
+	    {help_text "Suggested message; can be edited when template is instantiated."}
+	}	
     }
 }
 
@@ -261,7 +270,9 @@ set focus "task.pretty_name"
 ad_form -extend -name task -edit_request {
     set workflow_id $task_array(workflow_id)
     permission::require_write_permission -object_id $workflow_id
+
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
+    set default_text [template::util::richtext::create $task_array(default_text) $task_array(default_text_mime_type)]
 
     foreach elm { 
         pretty_name new_state_id 
@@ -273,7 +284,7 @@ ad_form -extend -name task -edit_request {
 
     set timeout_hours ""
     if { ![empty_string_p $task_array(timeout_seconds)] } {
-        set timeout_hours [expr $task_array(timeout_seconds) / 3600]
+        set timeout_hours [expr $task_array(timeout_seconds) / 3600.0]
     }
 
 } -new_request {
@@ -308,6 +319,11 @@ ad_form -extend -name task -edit_request {
         set description [template::util::richtext::get_property contents $description]
     }
 
+    if { [info exists default_text] } {
+        set default_text_mime_type [template::util::richtext::get_property format $default_text]
+        set default_text [template::util::richtext::get_property contents $default_text]
+    }
+
     switch $task_type {
         message {
         }
@@ -320,7 +336,7 @@ ad_form -extend -name task -edit_request {
 
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
-        new_state_id
+        new_state_id default_text default_text_mime_type
         recipient_roles attachment_num trigger_type parent_action_id
     } {
         if { [info exists $elm] } {
@@ -355,9 +371,11 @@ ad_form -extend -name task -edit_request {
                        -action_id $action_id \
                        -array row]
 
-    if { ![exists_and_not_null return_url] } {
-        set return_url [export_vars -base "template-edit" -anchor "tasks" { workflow_id }] 
-    } 
-    ad_returnredirect $return_url
+
+    # Let's mark this template edited
+    set sim_type "dev_template"
+    
+    ad_returnredirect [export_vars -base "template-sim-type-update" { workflow_id sim_type return_url }]
+
     ad_script_abort
 }

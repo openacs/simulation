@@ -167,3 +167,23 @@ ad_proc -public simulation::case::assert_user_may_play_role {
     }
     return 1
 }
+
+ad_proc -public simulation::case::complete_p {
+    {-case_id:required}
+} {
+    Checks if the case has been completed.
+
+    @param case_id     The ID of the case
+
+    @return            1 if the case has been completed, 0 otherwise
+
+    @author Jarkko Laine (jarkko@jlaine.net)
+} {
+    set num_enabled_actions [db_string select_num_enabled_actions {
+        select count(*)
+        from   workflow_case_enabled_actions
+        where  case_id = :case_id
+    }]
+
+    return [expr $num_enabled_actions == 0]
+}

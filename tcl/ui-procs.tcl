@@ -27,7 +27,10 @@ ad_proc -public simulation::ui::forms::document_upload::form_block {} {
     }
 }
 
-ad_proc -public simulation::ui::forms::document_upload::documents_element_value { action_id } {
+ad_proc -public simulation::ui::forms::document_upload::documents_element_value { 
+    {-content_p:boolean {0}}
+    action_id 
+} {
     Get a piece of HTML with links to documents for the documents form element.    
 } {
     set documents "<ul>"
@@ -44,8 +47,42 @@ ad_proc -public simulation::ui::forms::document_upload::documents_element_value 
         and    cr.revision_id = ci.live_revision
         order by m.order_n
     } {
-        set object_url [simulation::object::url \
-                            -name $object_name]
+	if { !$content_p } {
+	    set object_url [simulation::object::url \
+				-name $object_name]
+	} else {
+	    set object_url [simulation::object::content_url \
+				-name $object_name]
+	}
+        append documents "<li><a href=\"$object_url\">$object_title</a></li>"
+    }
+
+    append documents "</ul>"
+
+    return $documents
+}
+
+ad_proc -public simulation::ui::forms::document_upload::documents_element_value_content { 
+    action_id 
+} {
+    Get a piece of HTML with links to documents' content for the documents form element.    
+} {
+    set documents "<ul>"
+    
+    db_foreach documents {
+        select cr.title as object_title,
+        ci.name as object_name
+        from   sim_task_object_map m,
+        cr_items ci,
+        cr_revisions cr
+        where  m.task_id = :action_id
+        and    m.relation_tag = 'attachment'
+        and    ci.item_id = m.object_id
+        and    cr.revision_id = ci.live_revision
+        order by m.order_n
+    } {
+	set object_url [simulation::object::content_url \
+			    -name $object_name]
         append documents "<li><a href=\"$object_url\">$object_title</a></li>"
     }
 
@@ -102,4 +139,57 @@ ad_proc -public simulation::ui::forms::document_upload::insert_document {
             (:case_id, :item_id, :role_id, :relation_tag, :entry_id)
         }
     }
+}
+
+ad_proc -public simulation::ui::forms::document_upload::check_mime {
+    -document_file
+} {
+    Checks that the mime type of the given file can be found in the cr_mime_types
+    table. Using this avoids bombs later on in the upload process
+
+    @param document_file the file being uploaded
+
+    @author Jarkko Laine (jarkko@jlaine.net)
+} {
+    set upload_filename [template::util::file::get_property filename $document_file]
+    
+    if { ![exists_and_not_null mime_type] } {
+	set mime_type [template::util::file::get_property mime_type $document_file]
+    }
+
+    ns_log notice "check_mime(1): mime_type is <$mime_type>"
+
+    if { ![exists_and_not_null mime_type] } {
+	set mime_type [cr_filename_to_mime_type -create $upload_filename]
+    }
+    
+    ns_log notice "check_mime(2): mime_type is <$mime_type>"
+
+    set mime_count [db_string get_mime {
+	select count(*) from cr_mime_types where mime_type = :mime_type}]
+    
+    if { $mime_count > 0 } {
+	return 1
+    } else {
+	return 0
+    } 
+}
+
+ad_proc -public simulation::ui::forms::document_upload::add_mime {
+    -document_file
+} {
+    Tries to add the mime type of a file to cr_mime_types unless
+    it already exists there.
+
+    @param document_file the file being uploaded
+
+    @author Jarkko Laine (jarkko@jlaine.net)
+} {
+    set upload_filename [template::util::file::get_property filename $document_file]
+    set extension [string tolower [string trimleft [file extension $upload_filename] "."]]
+    set orig_mime_type [template::util::file::get_property mime_type $document_file]
+
+    ns_log notice "add_mime: mime_type is <$orig_mime_type>"
+
+    cr_create_mime_type -extension $extension -mime_type $orig_mime_type
 }

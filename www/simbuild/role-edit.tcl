@@ -58,7 +58,8 @@ ad_form -name role -form {
     set page_title "Edit Role template $pretty_name"
     set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
 
-} -new_request {
+} -cancel_url [export_vars -base "template-edit" { workflow_id }] \
+-new_request {
     permission::require_write_permission -object_id $workflow_id
     workflow::get -workflow_id $workflow_id -array sim_template_array
     set page_title "Add Role to $sim_template_array(pretty_name)"
@@ -87,7 +88,10 @@ ad_form -name role -form {
                      -workflow_id $workflow_id \
                      -array row]
 
-    ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
+    # Let's mark this template edited
+    set sim_type "dev_template"
+
+    ad_returnredirect [export_vars -base "template-sim-type-update" { workflow_id sim_type }]
     ad_script_abort
 }
 

@@ -11,6 +11,10 @@ namespace eval simulation::apm {}
 ad_proc -private simulation::apm::after_install {} {
     simulation::notification::xml_map::register
     simulation::notification::message::register
+
+    cr_create_mime_type -extension rtf -mime_type {text/rtf} -description "RTF - Rich Text Format"
+    cr_create_mime_type -extension ics -mime_type {text/calendar} -description "iCal Calendar"
+
 }
 
 ad_proc -private simulation::apm::before_uninstall {} {
@@ -81,7 +85,6 @@ ad_proc -private simulation::apm::setup_permission_groups {
             "Sim Admins" {sim_admin}
             "Template Authors" {sim_template_creator sim_inst sim_object_create}
             "Case Authors" {sim_inst sim_object_create sim_adminplayer}
-            "Service Admins" {}
             "City Admins" {sim_set_map_p sim_object_writer}
             "Actors" {}
         } {
@@ -95,10 +98,6 @@ ad_proc -private simulation::apm::setup_permission_groups {
                 permission::grant -party_id $permission_group_id -object_id $package_id -privilege $privilege
             }
 
-            # Grant subsite admin to the admin groups so that they can admin groups
-            if { [string equal $group_name "Sim Admins"] || [string equal $group_name "Service Admins"] } {
-                permission::grant -party_id $permission_group_id -object_id $subsite_package_id -privilege admin
-            } 
         }
         
         

@@ -5,6 +5,7 @@ simulation::include_contract {
     @creation-date 2003-11-12
     @cvs-id $Id$
 } {
+    sog_orderby { required_p 0 }
 }
 
 ######################################################################
@@ -32,7 +33,7 @@ if { ![exists_and_not_null parent_id] } {
 set add_url [export_vars -base "[ad_conn package_url]citybuild/object-edit" { parent_id }]
 
 if { $create_p } {
-    set actions "{Add an object} $add_url"
+    set actions "{[_ simulation.Add_an_object]} $add_url"
 } else {
     set actions ""
 }
@@ -41,11 +42,11 @@ if { $create_p } {
 # Set basic elements list
 set elements {
     pretty_name {
-        label "Type"
+        label "[_ simulation.Type]"
         orderby upper(ot.pretty_name)
     }
     count { 
-        label "Number"
+        label "[_ simulation.Number]"
         orderby count
     }
 }
@@ -55,6 +56,7 @@ template::list::create \
     -name objects \
     -multirow objects \
     -actions  $actions \
+    -orderby_name sog_orderby \
     -elements $elements 
 
 #---------------------------------------------------------------------

@@ -3,6 +3,7 @@ ad_page_contract {
 } {
     case_id:integer,notnull
     role_id:integer,notnull
+    portfolio_orderby:optional
 }
 
 simulation::case::assert_user_may_play_role \
@@ -14,10 +15,14 @@ set workflow_id [simulation::case::get_element -case_id $case_id \
 set simulation_name [simulation::template::get_element \
                       -workflow_id $workflow_id -element pretty_name]
 
-set title [_ simulation.simulation_name]
+set title [_ simulation.Session_Home]
 set context [list [list . [_ simulation.SimPlay]] $title]
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set messages_url [export_vars -base messages { case_id role_id }]
+
+if { ![exists_and_not_null portfolio_orderby] } {
+    set portfolio_orderby 0
+}

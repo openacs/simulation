@@ -3,6 +3,7 @@ ad_page_contract {
 } {
     case_id:integer
     role_id:integer
+    portfolio_orderby:optional
 }
 
 set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]
@@ -14,3 +15,7 @@ set context [list [list . [_ simulation.SimPlay]] [list [export_vars -base case 
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
+
+if { ![exists_and_not_null portfolio_orderby] } {
+    set portfolio_orderby 0
+}

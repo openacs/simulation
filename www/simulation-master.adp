@@ -5,11 +5,9 @@
   <if @focus@ not nil><property name="focus">@focus;noquote@</property></if>
 
 <property name="header_stuff">    
-  <link rel="stylesheet" type="text/css" href="resources/under-construction.css" media="all">
+  <link rel="stylesheet" type="text/css" href="@base_url@resources/under-construction.css" media="all">
   @header_stuff;noquote@
 </property>
 
 </if>
 <slave>
-
-

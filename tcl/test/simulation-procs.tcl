@@ -12,6 +12,7 @@ aa_register_case simulation__data_model {
     procs.
 } {
     aa_log [simulation::object::url -name "test_name"]
+    aa_log [simulation::object::url -name "test_name_2" -simplay 1]
     aa_log [simulation::object::content_url -name "test_name"]
 }
 

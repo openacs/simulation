@@ -9,6 +9,7 @@ simulation::include_contract {
         allowed_values {short long}
         default_value long
     }
+    sb_orderby { required_p 0 }
 }
 
 set package_id [ad_conn package_id]
@@ -17,22 +18,22 @@ set add_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/te
 set create_p [permission::permission_p -object_id $package_id -privilege sim_template_create]
 set package_admin_p [permission::permission_p -object_id $package_id -privilege admin]
 
-set actions [list "Add a template" $add_url {} \
-                 "Import a template" "[apm_package_url_from_id $package_id]simbuild/template-load" {}]
+set actions [list "[_ simulation.Add_a_template]" $add_url {} \
+                 "[_ simulation.Import_a_template]" "[apm_package_url_from_id $package_id]simbuild/template-load" {}]
 
 switch $size {
     short {
         set elements {
             name {
-                label "Template"
+                label "[_ simulation.Template]"
                 link_url_col edit_url
-                orderby upper(ot.pretty_name)
+                orderby upper(w.pretty_name)
             }
             role_count {
-                label "Roles"
+                label "[_ simulation.Roles]"
             }
             task_count {
-                label "Tasks"
+                label "[_ simulation.Tasks]"
             }
         }
     }
@@ -42,54 +43,54 @@ switch $size {
                 sub_class narrow
                 display_template {
                     <if @sim_templates.edit_p@>
-                    <a href="@sim_templates.edit_url@" title="Edit this template">
-                    <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
+                    <a href="@sim_templates.edit_url@" title="[_ simulation.Edit_this_template]">
+                    <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="[_ simulation.Edit]">
                     </a>
                     </if>
                 }
             }
             name {
-                label "Template Name"
-                orderby upper(ot.pretty_name)
+                label "[_ simulation.Template_Name]"
+                orderby upper(w.pretty_name)
                 link_url_col view_url
             }
             description {
-                label "Description"
-                orderby r.description
+                label "[_ simulation.Description]"
+                orderby description
                 display_template {@sim_templates.description;noquote@}
             }
             created_by {
-                label "Created by"
-                orderby r.createdby
+                label "[_ simulation.Created_by]"
+                orderby created_by
             }
             role_count {
-                label "Roles"
+                label "[_ simulation.Roles]"
             }
             task_count {
-                label "Tasks"
+                label "[_ simulation.Tasks]"
             }
             sim_type {
-                label "Ready"
+                label "[_ simulation.Ready]"
                 display_eval {[ad_decode $sim_type "ready_template" "Yes" "No"]}
             }
             copy {
                 sub_class narrow
                 display_template {
-                    <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
+                    <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="[_ simulation.Copy]">
                 }
                 link_url_col clone_url
-                link_html { title "Clone this template" }
+                link_html { title "[_ simulation.Clone_this_template]" }
             }
             delete {
                 sub_class narrow
                 link_url_col delete_url
                 link_html { 
-                    title "Delete this template" 
-                    onclick  "return confirm('Are you sure you want to delete template @sim_templates.name@?');"
+                    title "[_ simulation.Delete_this_template]" 
+                    onclick  "return confirm('[_ simulation.lt_Are_you_sure_you_want_2] @sim_templates.name@?');"
                 }
                 display_template { 
                     <if @sim_templates.edit_p@>
-                    <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
+                    <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="[_ simulation.Delete]">
                     </if>
                 }
             }
@@ -101,6 +102,7 @@ template::list::create \
     -name sim_templates \
     -multirow sim_templates \
     -actions $actions \
+    -orderby_name sb_orderby \
     -elements $elements
 
 
@@ -119,7 +121,7 @@ if { !$package_admin_p } {
 db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templates select_sim_templates "
     select w.workflow_id,
            w.pretty_name as name,
-           w.description,
+           w.description as description,
            w.description_mime_type,
            ss.sim_type,
            (select p.first_names || ' ' || p.last_name
@@ -143,9 +145,9 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
 " {
     set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
 
-    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { workflow_id }]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-sim-type-update" { workflow_id { sim_type "dev_template" } }]
 
-    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { workflow_id }]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-sim-type-update" { workflow_id { sim_type "dev_template" } }]
 
     set clone_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-clone" { workflow_id }]
 

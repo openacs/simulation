@@ -52,7 +52,7 @@ if { [llength $enabled_action_id] == 1 } {
             set object_url [simulation::object::content_url -name [ns_set get $attachment_set name]]
             set object_title [ns_set get $attachment_set title]
             set mime_type [ns_set get $attachment_set mime_type]
-            append received_attachments "<a href=\"$object_url\">$object_title</a> ($mime_type)<br>"
+            append received_attachments "<a href=\"$object_url\">$object_title</a> ($mime_type)<br />"
         }
         
     } else {
@@ -94,9 +94,9 @@ if { [llength $enabled_action_id] == 1 } {
                 set body "
 
 -----Original Message-----
-From: [workflow::role::get_element -role_id $from_role_id -element character_title]
+From: [simulation::role::get_element -role_id $from_role_id -element character_title]
 Sent: [lc_time_fmt $creation_date "%x %X"]
-To: [workflow::role::get_element -role_id $to_role_id -element character_title]
+To: [simulation::role::get_element -role_id $to_role_id -element character_title]
 Subject: $subject
 
 [ad_html_text_convert -from $mime_type -to "text/plain" $triggering_body]"
@@ -163,7 +163,13 @@ set documents_pre_form ""
 
 set document_upload_url [export_vars -base document-upload {case_id role_id {return_url {[ad_return_url]}}}]
 
-if { ![empty_string_p $action(recipients)] } {
+if { [empty_string_p $action(recipients)] } {
+    set message_p false
+} else {
+    set message_p true
+}
+
+if { $message_p } {
     # We have recipient roles - use message form
 
     if { !$bulk_p } {
@@ -176,7 +182,7 @@ if { ![empty_string_p $action(recipients)] } {
 
     set form_id action
 
-    ad_form -name $form_id -edit_buttons { { Send ok } } -export { case_id role_id {enabled_action_ids $enabled_action_id} bulk_p} \
+    ad_form -name $form_id -edit_buttons { { Send ok } } -cancel_url $return_url -export { case_id role_id {enabled_action_ids $enabled_action_id} bulk_p} \
         -form {
             {pretty_name:text(inform)
                 {label {[_ simulation.Task]}}
@@ -214,23 +220,37 @@ if { ![empty_string_p $action(recipients)] } {
                 }
                 set body [template::util::richtext::create $body $body_mime_type]
                 set focus "action.body"
-            }
+            } else {
+		if { ![empty_string_p $action(default_text)] } {
+		    set body [template::util::richtext::create $action(default_text) $action(default_text_mime_type)]
+		    set body_mime_type $action(default_text_mime_type)
+		}
+	    }
 
             set pretty_name $action(pretty_name)
             set description [template::util::richtext::create $action(description) $action(description_mime_type)]
 
-            set documents [simulation::ui::forms::document_upload::documents_element_value $action_id]
+            set documents [simulation::ui::forms::document_upload::documents_element_value_content \
+			       $action_id]
+
+	    # Let's tell users if there's no attachments instead of giving
+	    # them an empty <ul> pair.
+	    if { [string match "<ul></ul>" $documents] } {
+		set documents "<em>[_ simulation.no_attachments]</em>"
+	    }
+
             set documents_pre_form ""
 
             set recipient_list [list]
             foreach recipient_id $action(recipients) {
-                lappend recipient_list [simulation::role::get_element -role_id $recipient_id -element character_title]
+		simulation::role::get -role_id $recipient_id -array recipient_role
+                lappend recipient_list "$recipient_role(pretty_name) ($recipient_role(character_title))"
             }
             set recipient_names [join $recipient_list ", "]
 
             if { ![empty_string_p $action(assigned_role_id)] } {
                 simulation::role::get -role_id $action(assigned_role_id) -array sender_role
-                set sender_name $sender_role(character_title)
+                set sender_name "$sender_role(pretty_name) ($sender_role(character_title))"
             }        
         } -on_submit {
 
@@ -273,21 +293,30 @@ if { ![empty_string_p $action(recipients)] } {
 
     set form_id document
 
+    set documents_pre_form [simulation::ui::forms::document_upload::documents_element_value_content $action_id]
+    set documents_pre_form_empty_p [string match "<ul></ul>" $documents_pre_form]
+
     ad_form -name $form_id \
         -export { case_id role_id workflow_id {enabled_action_ids $enabled_action_id} bulk_p} \
+	-cancel_url $return_url \
         -html {enctype multipart/form-data} \
         -form [concat {{pretty_name:text(inform) {label {[_ simulation.Task]}}}} \
            [simulation::ui::forms::document_upload::form_block]] \
         -on_request {
             set pretty_name $action(pretty_name)
-            set documents_pre_form [simulation::ui::forms::document_upload::documents_element_value $action_id]
-
-        } -on_submit {
-
+        } -validate {
+	    {document_file 
+		{[simulation::ui::forms::document_upload::check_mime -document_file $document_file]}
+		"[_ simulation.lt_The_mime_type_of_your] [_ simulation.lt_Please_contact_______] 
+             (<a href='mailto:[ad_host_administrator]'>[ad_host_administrator]</a>)
+             [_ simulation.lt_if_you_think_youre_up]"
+	    }
+	} -on_submit {
+	    
             db_transaction {
                 foreach one_action $common_enabled_action_ids {
                     set case_id [lindex $one_action 1]
-
+		    
                     set document [lindex $document_file 0]
                     set entry_id [workflow::case::action::execute \
                                   -case_id $case_id \

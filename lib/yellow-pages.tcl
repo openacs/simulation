@@ -6,6 +6,10 @@ simulation::include_contract {
     @author Joel Aufrecht
     @creation-date 2003-11-12
     @cvs-id $Id$
+} {
+    yp_orderby { required_p 0 }
+    case_id { required_p 0 }
+    role_id { required_p 0 }
 }
 
 ######################################################################
@@ -22,17 +26,30 @@ ad_page_contract {
   search_terms:optional
 }
 
+if { ![exists_and_not_null search_terms] } {
+    set search_terms ""
+}
+
+set base_url [ad_conn urlv]
+
+set simplay 1
+if { [lsearch -exact $base_url "simplay"] == -1 } { 
+    set simplay 0
+}
+
+set cancel_url [export_vars -base "./yellow-pages" { case_id role_id }]
 
 ad_form -name search -form {
-    {search_terms:text,optional {label "Restrict to items matching word or phrase"}}
+    {search_terms:text,optional {label "[_ simulation.lt_Restrict_to_items_mat]"}}
+} -export { case_id role_id 
 } -validate {
         {search_terms
          {[string length $search_terms] >= 3}
-         "\"search_terms\" must be a string containing three or more characters"
+	 {[_ simulation.lt_search_terms_must_be_]}
         }
 } -method GET -on_submit {
     # foobar
-}
+} -cancel_url $cancel_url -cancel_label "[_ simulation.Clear_filter]"
 
 
 ######################################################################
@@ -45,18 +62,18 @@ ad_form -name search -form {
 # Set basic elements list
 set elements {
     object_type {
-        label "Type"
-        orderby upper(ot.pretty_name)
+        label "[_ simulation.Type]"
+        orderby object_type_pretty
         display_col object_type_pretty
     }
     title { 
-        label "Name"
-        orderby r.title
+        label "[_ simulation.Name]"
+        orderby title
         link_url_col view_url
     }
     description {
-        label "Description"
-        orderby r.description
+        label "[_ simulation.Description]"
+        orderby description
     }
 }
 
@@ -65,6 +82,8 @@ set elements {
 template::list::create \
     -name objects \
     -multirow objects \
+    -orderby_name yp_orderby \
+    -filters { role_id {} case_id {} search_terms {} } \
     -elements $elements 
 
 #---------------------------------------------------------------------
@@ -87,11 +106,11 @@ db_multirow -extend {view_url} objects select_objects "
    select sl.object_id,
           sl.object_type,
           ot.pretty_name as object_type_pretty,
-          sl.title,
+          sl.title as title,
           sl.mime_type,
           sl.name,
           sl.item_id,
-          sl.description
+          sl.description as description
      from sim_locationsx sl,
           cr_items ci,
           acs_object_types ot,
@@ -105,11 +124,11 @@ db_multirow -extend {view_url} objects select_objects "
    select sc.object_id,
           sc.object_type,
           ot.pretty_name as object_type_pretty,
-          sc.title,
+          sc.title as title,
           sc.mime_type,
           sc.name,
           sc.item_id,
-          sc.description
+          sc.description as description
      from sim_charactersx sc,
           cr_items ci,
           acs_object_types ot,
@@ -125,7 +144,11 @@ db_multirow -extend {view_url} objects select_objects "
     set description [string_truncate -len 200 $description]
     switch -glob $mime_type {
         text/* - {} {
-           set view_url [simulation::object::url -name $name]
+	    if { $simplay } {
+		set view_url [export_vars -base [simulation::object::url -name $name -simplay $simplay] { case_id role_id } ]
+	    } else {
+		set view_url [simulation::object::url -name $name]
+	    }
         }
         default {
             set view_url [simulation::object::content_url -name $name]

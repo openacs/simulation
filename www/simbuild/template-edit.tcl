@@ -111,6 +111,12 @@ ad_form -extend -name sim_template -form {
         break
     }
 
+    if { [string match $template_ready_p "t"] && ![simulation::template::check_init_p -workflow_id $workflow_id] } {
+	form set_error sim_template template_ready_p "This template or one of its subworkflows or parallel tasks is missing an initial action. You can't mark a template ready for use until you have added all required initial actions."
+	break
+
+    }
+
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 } -new_data {

@@ -19,18 +19,29 @@
         <release-date>2004-01-30</release-date>
 
         <provides url="simulation" version="1.0.0b4"/>
+        <requires url="acs-mail-lite" version="0.2a"/>
         <requires url="bcms" version="0.2"/>
         <requires url="workflow" version="2.0.0b3"/>
-        <requires url="acs-mail-lite" version="0.2a"/>
 
         <callbacks>
+            <callback type="before-unmount"  proc="simulation::apm::before_unmount"/>
+            <callback type="after-mount"  proc="simulation::apm::after_mount"/>
             <callback type="after-install"  proc="simulation::apm::after_install"/>
             <callback type="after-instantiate"  proc="simulation::apm::after_instantiate"/>
-            <callback type="after-mount"  proc="simulation::apm::after_mount"/>
-            <callback type="before-unmount"  proc="simulation::apm::before_unmount"/>
         </callbacks>
         <parameters>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="AvailabilityInfoFile"  default="rc-004" description="File name of the availability info page. The file must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="CityBuildHelpFile"  default="rc-008" description="Filename of the CityBuild help manual. A file with that name must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="ColophonFile"  default="rc-007" description="Filename of the colophon page. A file with that name must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="ContactInformationFile"  default="rc-006" description="Filename of the contact information page. A file with that name must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="MainHelpFile"  default="rc-005" description="The filename of the Main help file. A file with that name must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="MapHelpFile"  default="rc-001" description="Object name (and uri) of the help file for the Sieberdam map. Is used in Simulation home page and all other pages that display the map."/>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="MapXMLFilePath"  description="The full file path for the XML file with info about objects to be displayed on the simulation map (for example /var/www/simulation/map.xml). If left empty no XML file will be generated."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="SieberdamHistoryFile"  default="rc-002" description="Filename of the Sieberdam history. A file with that name must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="SieberdamRocsInfoFile"  default="rc-003" description="The file name of the Sieberdam/ROCS info file. The file with that filename must reside in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="SimBuildHelpFile"  default="rc-009" description="SimBuild help manual file name. A file with that name must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="SimInstHelpFile"  default="rc-010" description="The filename of the SimInst help manual. A file with that name must exist in the directory."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="SimPlayHelpFile"  default="rc-011" description="The filename of the SimPlay help manual. A file with that name must exist in the directory."/>
         </parameters>
 
     </version>
