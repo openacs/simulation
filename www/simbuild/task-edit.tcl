@@ -58,14 +58,10 @@ set role_options [workflow::role::get_options -workflow_id $workflow_id]
 # task form
 #---------------------------------------------------------------------
 
-ad_form -name task -edit_buttons [
-				  list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]
-    ] -form {
+
+ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]] -form {
     {action_id:key}
-    {workflow_id:integer(hidden)
-        {value $workflow_id}
-    }
-    {name:text
+    {pretty_name:text
         {label "Task Name"}
         {html {size 20}}
     }
@@ -81,10 +77,30 @@ ad_form -name task -edit_buttons [
         {label "Task Description"}
         {html {cols 60 rows 8}}
     }
-} -edit_request {
+}
+
+set enabled_options [list]
+foreach state_id [workflow::fsm::get_states -workflow_id $workflow_id] {
+    array unset state_array
+    workflow::state::fsm::get -state_id $state_id -array state_array
+    lappend enabled_options [list $state_array(pretty_name) $state_id]
+}
+
+ad_form -extend -name task -form {
+    {assigned_state_ids:text(checkbox),optional,multiple
+        {label "Assigned"}
+        {options $enabled_options}
+    }
+    {enabled_state_ids:text(checkbox),optional,multiple
+        {label "Enabled"}
+        {options $enabled_options}
+    }
+}
+
+ad_form -extend -name task -edit_request {
     set workflow_id $task_array(workflow_id)
     permission::require_write_permission -object_id $workflow_id
-    set name $task_array(pretty_name)
+    set pretty_name $task_array(pretty_name)
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
     set recipient_role_id [db_string select_recipient {
         select recipient
@@ -93,25 +109,34 @@ ad_form -name task -edit_buttons [
     }]
     set recipient_role [workflow::role::get_element -role_id $recipient_role_id -element short_name]
 
-   set assigned_role $task_array(assigned_role)
+    set assigned_role $task_array(assigned_role)
+
+    set assigned_state_ids $task_array(assigned_state_ids)
+    set enabled_state_ids $task_array(enabled_state_ids)
 } -new_request {
     permission::require_write_permission -object_id $workflow_id
 } -on_submit {
     
-    set description_content [template::util::richtext::get_property contents $description]
     set description_mime_type [template::util::richtext::get_property format $description]
+    set description [template::util::richtext::get_property contents $description]
 
 } -new_data {
     permission::require_write_permission -object_id $workflow_id
     # create the task
 
+    # TODO IMPORTANT:
+    # Set short_name right -- or leave blank and have the workflow API construct a short_name
+
     set action_id [workflow::action::fsm::new \
 		       -workflow_id $workflow_id \
-		       -short_name $name \
-		       -pretty_name $name \
+		       -pretty_name $pretty_name \
 		       -assigned_role $assigned_role \
 		       -description $description_content \
-		       -description_mime_type $description_mime_type]
+		       -description_mime_type $description_mime_type \
+                       -enabled_state_ids $enabled_state_ids \
+                       -assigned_state_ids $assigned_state_ids]
+
+    # TODO: enabled_states, assigned_states
 
     # TODO - put this stuff into simulation api and change previous call
     # and then add extra data for simulation
@@ -127,14 +152,21 @@ ad_form -name task -edit_buttons [
     # workflow_id, which is gotten from the form, because the workflow_id from the form 
     # could be spoofed
     permission::require_write_permission -object_id $task_array(workflow_id)
+
+    # TODO IMPORTANT:
+    # Set short_name right -- or leave blank and have the workflow API construct a short_name
+
+    # TODO: enabled_states, assigned_states
+    array unset row
+    foreach col { pretty_name assigned_role recipient_role description description_mime_type enabled_state_ids assigned_state_ids } {
+        set row($col) [set $col]
+    }
+    set row(short_name) {}
+
     simulation::action::edit \
         -action_id $action_id \
-        -short_name $name \
-        -pretty_name $name \
-        -assigned_role $assigned_role \
-        -recipient_role $recipient_role \
-	-description $description_content \
-	-description_mime_type $description_mime_type
+        -workflow_id $task_array(workflow_id) \
+        -array row
 
 } -after_submit {
     ad_returnredirect [export_vars -base "template-edit" { workflow_id }]

@@ -33,16 +33,6 @@ ad_proc -public simulation::template::new {
                              -package_key $package_key \
                              -object_id $object_id]
         
-        # TODO: this step should be rendered obsolete by updates to workflow
-        #       and then this step should be removed
-        # create a dummy action with initial action setting because
-        # workflow::get doesn't work on bare workflows
-        workflow::action::fsm::new \
-            -initial_action_p t \
-            -workflow_id $workflow_id \
-            -short_name "dummy action" \
-            -pretty_name "dummy action"
-
         insert_sim \
             -workflow_id $workflow_id \
             -ready_p $ready_p \

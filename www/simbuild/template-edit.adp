@@ -22,14 +22,6 @@
 
   <include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" display_mode="edit" >
 </if>
-<P>TODO: Allow sorting of roles, (states), tasks.</p>
 
-<p>MOCKUP: workflow matrix
-<table cellpadding=3 border=1 cellspacing=0>
-<tr><th></th><th>Talking to Client</th><th>Prepare Case</th><th>Submit
-Case</th><th><input type="submit" value="Add State"></th></tr>
-<tr><th>Ask information from Other Client</th><th>X</th><th></th><th></th></tr>
-<tr><th>Respond to Ask information </th><th>X</th><th></th><th></th></tr>
-<tr><th>INtervene</th><th>X</th><th>X</th><th>X</th></tr>
-<tr><th><input type="submit" value="add task"></th></tr>
-</table>
+<P>TODO: Allow sorting of roles, states, tasks.</p>
+
