@@ -766,7 +766,7 @@ ad_proc -public simulation::template::clone {
     # Special for simulation template:
     # If there is no initial-action, we create one now
     
-    set initial_action_id [workflow::get -workflow_id $workflow_id -element initial_action_id]
+    set initial_action_id [workflow::get_element -workflow_id $workflow_id -element initial_action_id]
     if { [empty_string_p $initial_action_id] } {
 
         set action_row(pretty_name) "Start"

@@ -20,6 +20,7 @@ set from_role_options [list]
 foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
     lappend from_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
 }
+
 # First sender role selected by default
 if { ![exists_and_not_null sender_role_id] } {
     set sender_role_id [lindex [lindex $from_role_options 0] 1]

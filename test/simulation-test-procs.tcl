@@ -6,6 +6,7 @@
 namespace eval ::twt::simulation {}
 namespace eval ::twt::simulation::setup {}
 namespace eval ::twt::simulation::test {}
+namespace eval ::twt::simulation::play {}
 
 ##############################
 #
@@ -102,6 +103,14 @@ ad_proc ::twt::simulation::setup::citybuild_objects {} {
     }
 }
 
+ad_proc ::twt::simulation::setup::all_templates {} {
+
+    ::twt::simulation::setup::elementary_private_law_template   
+    ::twt::simulation::setup::legislative_drafting_template
+    ::twt::simulation::setup::tilburg_template_from_spec    
+    # TODO: click the ready_p link for the templates
+}
+
 ad_proc ::twt::simulation::setup::elementary_private_law_template {} {
 
     # Do this as the template author to make sure he has sufficient permissions
@@ -152,9 +161,75 @@ ad_proc ::twt::simulation::setup::tilburg_template_from_spec {} {
 
     ::twt::log_section "Create a template from a spec"
     do_request /simulation/simbuild/template-load
-    field fill "Template loaded from spec" ~n pretty_name
+    set template_name "Template loaded from spec"
+    field fill $template_name ~n pretty_name
     field fill [::twt::simulation::data::tilburg_template_spec] ~n spec
     form submit
+
+    do_request /simulation/simbuild
+    link follow ~c $template_name
+    link follow ~u template-sim-type-update
+
+    ::twt::log_section "Login case author"
+    ::twt::user::login [::twt::simulation::permission_user_email "Case Authors"]
+    
+    ::twt::log_section "Instantiate the Tilburg template"
+    do_request /simulation/siminst/simulation-new
+    link follow ~u map-create
+    
+    form find ~n template
+    # Make name unique
+    set unique_name "New Simulation from Template loaded from spec [expr rand()]"
+    field fill $unique_name ~n pretty_name
+    form submit
+
+    # Wizard page 1
+    form find ~n characters
+    form submit
+
+    regexp {workflow_id=([0-9]+)} [response url] match workflow_id
+
+    # Wizard page 2
+    form find ~n tasks
+    form submit ~n next
+
+    # Wizard page 3
+    form find ~n simulation
+    form submit ~n next
+
+    # Enrollment (page 4)
+    form find ~n simulation
+    form submit ~n next
+
+    # Participants (page 5)
+    form find ~n simulation
+    field find ~n __auto_enroll ~t checkbox
+    field check
+    field find ~n __auto_enroll ~t checkbox
+    field check
+    field find ~n __auto_enroll ~t checkbox
+    field check
+    field find ~n __auto_enroll ~t checkbox
+    field check
+    form submit ~n next
+
+    # Wizard page 6
+    form find ~n actors
+    field find ~n parties_ ~t checkbox
+    field check
+    field find ~n parties_ ~t checkbox
+    field check
+    field find ~n parties_ ~t checkbox
+    field check
+    field find ~n parties_ ~t checkbox
+    field check
+    field find ~n parties_ ~t checkbox
+    field check
+    field find ~n parties_ ~t checkbox
+    field check
+    form submit ~n finish
+
+    do_request /simulation/siminst/simulation-start?workflow_id=$workflow_id
 }
 
 ##############################
@@ -162,6 +237,17 @@ ad_proc ::twt::simulation::setup::tilburg_template_from_spec {} {
 # ::twt::simulation::test procs
 #
 ##############################
+
+ad_proc ::twt::simulation::test::permissions_all {} {
+
+    ::twt::simulation::test::permissions_anonymous
+    ::twt::simulation::test::permissions_city_admin
+    ::twt::simulation::test::permissions_sim_admin
+    ::twt::simulation::test::permissions_template_author
+    ::twt::simulation::test::permissions_case_author
+    ::twt::simulation::test::permissions_service_admin
+    ::twt::simulation::test::permissions_actor
+}
 
 ad_proc ::twt::simulation::test::permissions_anonymous {} {
 
@@ -286,6 +372,62 @@ ad_proc ::twt::simulation::test::permissions_actor {} {
     foreach module {citybuild simbuild siminst} {
         ::twt::simulation::assert_page_not_accessible /simulation/$module
     }
+}
+
+##############################
+#
+# ::twt::simulation::play
+#
+##############################
+
+ad_proc ::twt::simulation::play::tilburg_template_user_1 {} {
+    set user_name "Demo User 1"
+    ::twt::log_section "Login with $user_name and play tilburg simulation"
+
+    ::twt::user::login [::twt::simulation::email_from_user_name $user_name]
+
+    do_request /simulation/simplay
+    link follow ~u "case.+case"
+
+    # Execute the ask client task
+    link follow ~u task-detail
+    form find ~n action
+    field fill "ask client subject" ~n subject
+    field fill "ask client body" ~n body
+    form submit
+
+    # Execute the finalizing task
+    link follow ~c "Write legal advice"
+    form find ~n action
+    field fill "legal advice subject" ~n subject
+    field fill "legal advice body" ~n body
+    form submit
+
+    # Legal advice was the last task so there shouldn't be any left
+    if { [regexp {task-detail\?} [response body]] } {
+        error "Completed last task ask legal advice but there are still tasks remaining"
+    }
+
+    # Visit case index page again
+    do_request /simulation/simplay
+    link follow ~u "case.+case"    
+
+    # Send a message
+    link follow ~u "message\\?"
+    form find ~n message
+    field find ~n recipient_role_id ~t checkbox
+    field check
+    field fill "message subject" ~n subject
+    field fill "message body" ~n body
+    form submit
+
+    # Upload a document
+    link follow ~u document-upload
+    form find ~n document
+    field find ~n document_file
+    field fill [::twt::config::serverroot]/packages/simulation/test/new-jersey-lawyer-logo.gif    
+    field fill "New Jersey Lawyers Logo" ~n title
+    form submit
 }
 
 ##############################

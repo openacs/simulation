@@ -69,12 +69,14 @@ set highest_available [expr $progress + 1]
 if { $highest_available > 6 } {
     set highest_available 6
 }
+
+wizard get_current_step -start $highest_available
+
 if { $highest_available < 5 } {
     set highest_available 5
 }
 
 
-wizard get_current_step -start $highest_available
 
 set sub_title $title(${wizard:current_id})
 

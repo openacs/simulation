@@ -10,18 +10,11 @@ if { [catch {
 
     ::twt::simulation::setup::citybuild_objects
 
-    ::twt::simulation::setup::elementary_private_law_template   
-    ::twt::simulation::setup::legislative_drafting_template
-    ::twt::simulation::setup::tilburg_template_from_spec    
-    # TODO: click the ready_p link for the templates
+    ::twt::simulation::setup::all_templates   
 
-    ::twt::simulation::test::permissions_anonymous
-    ::twt::simulation::test::permissions_city_admin
-    ::twt::simulation::test::permissions_sim_admin
-    ::twt::simulation::test::permissions_template_author
-    ::twt::simulation::test::permissions_case_author
-    ::twt::simulation::test::permissions_service_admin
-    ::twt::simulation::test::permissions_actor
+    ::twt::simulation::play::tilburg_template_user_1
+
+    ::twt::simulation::test::permissions_all
 
 } result] } {
     global errorInfo
