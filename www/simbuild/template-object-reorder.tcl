@@ -15,44 +15,61 @@ ad_page_contract {
 
 switch $type {
     state {
+        set object_id $state_id
         set workflow_id [workflow::state::fsm::get_element -state_id $state_id -element workflow_id]
+        set all_ids [workflow::state::fsm::get_ids -workflow_id $workflow_id]
+    }
+    action {
+        set object_id $action_id
+        set workflow_id [workflow::action::get_element -action_id $action_id -element workflow_id]
+        set all_ids [workflow::action::get_ids -workflow_id $workflow_id]
+    }
+    default {
+        error "Invalid type, $type, only implemented for 'state' and 'action'."
+    }
+}
         
-        set state_ids [workflow::state::fsm::get_ids -workflow_id $workflow_id]
-        
-        set cur_index [lsearch -exact $state_ids $state_id]
-        
-        switch $direction {
-            up {
-                set new_index [expr $cur_index - 1]
-            }
-            down {
-                set new_index [expr $cur_index + 1]
-            }
-        }
-        
-        if { $new_index >= 0 && $new_index < [llength $state_ids] } {
-            set new_sort_order [workflow::state::fsm::get_element -state_id [lindex $state_ids $new_index] -element sort_order]
-            
-            if { [string equal $direction "down"] } {
-                set new_sort_order [expr $new_sort_order + 1]
-            }
-            
-            set row(sort_order) $new_sort_order
+set cur_index [lsearch -exact $all_ids $object_id]
 
+switch $direction {
+    up {
+        set new_index [expr $cur_index - 1]
+    }
+    down {
+        set new_index [expr $cur_index + 1]
+    }
+}
+
+if { $new_index >= 0 && $new_index < [llength $all_ids] } {
+    switch $type {
+        state {
+            set new_sort_order [workflow::state::fsm::get_element -state_id [lindex $all_ids $new_index] -element sort_order]
+        }
+        action {
+            set new_sort_order [workflow::action::get_element -action_id [lindex $all_ids $new_index] -element sort_order]
+        }
+    }
+            
+    if { [string equal $direction "down"] } {
+        set new_sort_order [expr $new_sort_order + 1]
+    }
+    
+    set row(sort_order) $new_sort_order
+    
+    switch $type {
+        state {
             workflow::state::fsm::edit \
                 -state_id $state_id \
                 -workflow_id $workflow_id \
                 -array row
         }
-    }
-    role {
-
-    }
-    action {
-        
+        action {
+            workflow::action::edit \
+                -action_id $action_id \
+                -workflow_id $workflow_id \
+                -array row
+        }
     }
 }
-
-
 
 ad_returnredirect $return_url
