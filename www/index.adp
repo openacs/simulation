@@ -1,10 +1,11 @@
 <master src="/packages/simulation/www/simulation-master">
-<div class="phase2">
+<p>The simulation start page
+<hr>
 Your live cases:
 <listtemplate name="cases">
 </listtemplate>
-</div>
-Active simulations ...
+<hr>
+You can join the following simulations:
 <hr>
 
 <p>Sieberdam:</p>
