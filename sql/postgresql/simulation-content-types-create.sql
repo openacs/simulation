@@ -55,6 +55,13 @@ select content_type__register_relation_type (
     10                             -- max_n
 );
 
+select content_type__register_relation_type (
+    'sim_character',               -- content_type
+    'sim_location',                -- target_type
+    'associated',                  -- relation_tag
+    0,                             -- min_n
+    1                              -- max_n
+);
 
 ----------------------------------------------------------------------
 -- sim_prop
@@ -105,6 +112,14 @@ select content_type__register_relation_type (
     10                             -- max_n
 );
 
+select content_type__register_relation_type (
+    'sim_prop',                    -- content_type
+    'sim_location',                -- target_type
+    'associated',                  -- relation_tag
+    0,                             -- min_n
+    1                              -- max_n
+);
+
 
 ----------------------------------------------------------------------
 -- sim_location
@@ -113,10 +128,10 @@ select content_type__register_relation_type (
 select content_type__create_type(
     'sim_location',                -- content_type
     'content_revision',            -- supertype
-    'Home',                        -- pretty_name,
-    'Homes',                       -- pretty_plural
+    'Location',                    -- pretty_name,
+    'Locations',                   -- pretty_plural
     'sim_locations',               -- table_name
-    'home_id',                     -- id_column
+    'location_id',                 -- id_column
     null                           -- name_method
 );
 

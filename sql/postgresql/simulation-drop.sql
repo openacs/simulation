@@ -22,12 +22,7 @@ drop table sim_simulations;
 drop table sim_tasks;
 drop table sim_roles;
 drop table sim_workflow_object_map;
-
---drop types
-select acs_object_type__drop_type(
-	   'sim_object',
-	   't'
-    );
+drop table sim_workflow_cases;
 
 select acs_object_type__drop_type(
 	   'simulation',

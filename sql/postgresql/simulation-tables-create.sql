@@ -39,7 +39,7 @@ create table sim_tasks (
                                         on delete cascade
 );
 
-comment on table sim_tasks is 'Each record is a task that a role must perform, possibly upon another role.';
+comment on table sim_tasks is 'A 1-1 extension of workflow_actions.  Each record is a task that a role must perform, possibly upon another role.';
 
 create table sim_simulations (
     simulation_id       integer         constraint sim_simulations_fk
@@ -88,3 +88,16 @@ create table sim_party_sim_map (
 );
 
 comment on table sim_party_sim_map is 'Each record is an invitation to a party to participate in a simulation.';
+
+create table sim_workflow_cases (
+    case_id             integer         constraint sim_workflow_cases_fk
+                                        references workflow_cases
+                                        on delete cascade
+                                        constraint sim_workflow_cases_pk
+                                        primary key,
+    simulation          integer         constraint sim_workflow_cases_simulation_fk
+                                        references sim_simulations
+                                        on delete cascade
+);
+
+comment on table sim_workflow_cases is 'A 1-1 extension of workflow_cases.  Each record is an instantiation of a workflow into a simulation and then into a case.';
