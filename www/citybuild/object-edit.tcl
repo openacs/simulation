@@ -88,18 +88,23 @@ set content_metadata {
     sim_character {
         content_method richtext
         relations {
+            works_for {
+                label "Works For"
+            }
+            resides_at {
+                label "Resides at"
+            }
             image {
                 label "Image"
-                section "Related Images"
-            }
-            associated {
-                label "Associated with"
             }
             stylesheet {
                 label "Stylesheet"
             }
             thumbnail {
                 label "Thumbnail"
+            }
+            image {
+                label "Image"
             }
         }
     }
@@ -114,8 +119,17 @@ set content_metadata {
             }
             image {
                 label "Image"
-                section "Related Images"
             }
+            letterhead {
+                label "Letterhead"
+            }
+            logo {
+                label "Logo"
+            }
+            is_located_in {
+                label "Located inside (optional)"
+            }
+
         }
 
     }
@@ -133,15 +147,12 @@ set content_metadata {
             }
             image {
                 label "Image"
-                section "Related Images"
             }
             logo {
                 label "Logo"
-                section "Related Images"
             }
             letterhead {
                 label "Letterhead"
-                section "Related Images"
             }
         }
     }
