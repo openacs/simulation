@@ -22,6 +22,15 @@ ad_form -name clone -export { workflow_id } -edit_buttons [list [list "Clone" ok
 } -on_request {
 
 } -on_submit {
+    set unique_p [simulation::template::pretty_name_unique_p \
+                      -package_id [ad_conn package_id] \
+                      -pretty_name $pretty_name]
+    
+    if { !$unique_p } {
+        form set_error clone pretty_name "This name is already used by another simulation"
+        break
+    }
+
     set new_workflow_array(pretty_name) $pretty_name
     set new_workflow_array(short_name) {}
     set new_workflow_array(sim_type) {dev_template}

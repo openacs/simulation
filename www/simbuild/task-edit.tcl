@@ -88,11 +88,11 @@ ad_form \
         {action_id:key}
         {pretty_name:text
             {label "Task Name"}
-            {html {size 20}}
+            {html {size 50}}
         }
         {pretty_past_tense:text,optional
             {label "Task name in log"}
-            {html {size 20}}
+            {html {size 50}}
             {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
         }
         {task_type:text(radio)

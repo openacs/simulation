@@ -103,6 +103,15 @@ ad_form -extend -name sim_template -form {
     permission::require_permission -object_id $package_id -privilege sim_template_create
     
 } -on_submit {
+    set unique_p [simulation::template::pretty_name_unique_p \
+                      -package_id [ad_conn package_id] \
+                      -pretty_name $pretty_name]
+    
+    if { !$unique_p } {
+        form set_error sim_template pretty_name "This name is already used by another simulation"
+        break
+    }
+
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 } -new_data {
