@@ -15,6 +15,11 @@ ad_proc -public simulation::action::edit {
     {-array {}}
     {-internal:boolean}
     {-no_complain:boolean}
+    {-handlers { 
+        roles "simulation::role" 
+        actions "simulation::action"
+        states "workflow::state::fsm"
+    }}
 } {
     Edit an action. 
 
@@ -135,6 +140,7 @@ ad_proc -public simulation::action::edit {
         # Base row
         set action_id [workflow::action::fsm::edit \
                            -internal \
+                           -handlers $handlers \
                            -operation $operation \
                            -action_id $action_id \
                            -workflow_id $workflow_id \
@@ -244,6 +250,7 @@ ad_proc -public simulation::action::get {
 ad_proc -private simulation::action::generate_spec {
     {-action_id {}}
     {-one_id {}}
+    {-handlers {}}
 } {
     Generate the spec for an individual simulation task definition.
 
@@ -267,7 +274,10 @@ ad_proc -private simulation::action::generate_spec {
     }
 
     # Get parent spec
-    array set row [workflow::action::fsm::generate_spec -action_id $action_id]
+    if { [empty_string_p $handlers] } {
+        ds_comment "$handlers - \n[ad_get_tcl_call_stack]"
+    }
+    array set row [workflow::action::fsm::generate_spec -action_id $action_id -handlers $handlers]
 
     # Get local spec, remove unwanted entries
     get -action_id $action_id -array local_row -local_only

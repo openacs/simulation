@@ -15,6 +15,7 @@ ad_proc -public simulation::role::edit {
     {-array {}}
     {-internal:boolean}
     {-no_complain:boolean}
+    {-handlers {}}
 } {
     Edit a role. 
 
@@ -229,6 +230,7 @@ ad_proc -private simulation::role::get_ids {
 ad_proc -private simulation::role::generate_spec {
     {-role_id {}}
     {-one_id {}}
+    {-handlers {}}
 } {
     Generate the spec for an individual simulation task definition.
 
