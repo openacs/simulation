@@ -352,3 +352,21 @@ ad_proc -private simulation::object::xml::get_doc {
 
     return $xml_doc
 }
+
+ad_proc -private simulation::object::search_clause {
+    search_columns
+    search_string
+} {
+    Return a SQL clause for searching the given search columns.
+
+    @author Peter Marklund
+} {
+    set trimmed_search_string [string trim [string tolower $search_string]]
+
+    set where_clauses [list]
+    foreach column $search_columns {
+        lappend where_clauses "lower($column) like '%$trimmed_search_string%'"
+    }
+    
+    return "([join $where_clauses " or "])"
+}

@@ -17,6 +17,15 @@ if { ![exists_and_not_null user_id] } {
     set user_id [auth::get_user_id]
 }
 
+ad_page_contract {
+} {
+  search_terms:optional
+}
+
+ad_form -name search -form {
+    {search_terms:text,optional {label "Restrict to items matching word or phrase"}}
+}
+
 ######################################################################
 #
 # objects list 
@@ -52,6 +61,19 @@ template::list::create \
 #---------------------------------------------------------------------
 # database query
 
+
+# Search support
+set where_clause(locations) ""
+set where_clause(characters) ""
+if { [exists_and_not_null search_terms] } {
+
+    set search_columns(locations) {sl.title sl.description cr.content sl.address sl.city sl.history}
+    set search_columns(characters) {sc.title sc.description cr.content}
+
+    set where_clause(locations) [simulation::object::search_clause $search_columns(locations) $search_terms]
+    set where_clause(characters) [simulation::object::search_clause $search_columns(characters) $search_terms]
+}
+
 db_multirow -extend {view_url} objects select_objects "
    select sl.object_id,
           sl.object_type,
@@ -63,10 +85,13 @@ db_multirow -extend {view_url} objects select_objects "
           sl.description
      from sim_locationsx sl,
           cr_items ci,
-          acs_object_types ot
+          acs_object_types ot,
+          cr_revisions cr
     where sl.in_directory_p = 't'
       and ci.live_revision = sl.revision_id
       and ot.object_type = sl.object_type
+      and cr.revision_id = sl.revision_id
+      [ad_decode $where_clause(locations) "" "" "and $where_clause(locations)"]
    UNION
    select sc.object_id,
           sc.object_type,
@@ -78,10 +103,13 @@ db_multirow -extend {view_url} objects select_objects "
           sc.description
      from sim_charactersx sc,
           cr_items ci,
-          acs_object_types ot
+          acs_object_types ot,
+          cr_revisions cr
     where sc.in_directory_p = 't'
       and ci.live_revision = sc.revision_id
       and ot.object_type = sc.object_type
+      and sc.revision_id = cr.revision_id
+      [ad_decode $where_clause(characters) "" "" "and $where_clause(characters)"]
 
     [template::list::orderby_clause -orderby -name "objects"]
 " {
