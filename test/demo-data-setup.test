@@ -155,6 +155,12 @@ if { [catch {
         form submit
     }
 
+    ::twt::log_section "Create a template from a spec"
+    do_request /simulation/simbuild/template-load
+    field fill "Template loaded from spec" ~n pretty_name
+    field fill [::twt::simulation::get_template_spec] ~n spec
+    form submit
+
 } result] } {
     global errorInfo
 

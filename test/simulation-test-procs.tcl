@@ -110,3 +110,137 @@ ad_proc ::twt::simulation::add_user_to_group {
     field select $user_name
     form submit    
 }
+
+ad_proc ::twt::simulation::get_template_spec {} {
+    return "simulatie_tilburg {
+    description {Use case 1 template from Leiden team.}
+    description_mime_type text/enhanced
+    object_type acs_object
+    package_key simulation
+    pretty_name {
+        Simulatie Tilburg
+    }
+    roles {
+        lawyer {
+            pretty_name Lawyer
+        }
+        client {
+            pretty_name Client
+        }
+        other_lawyer {
+            pretty_name {
+                Other lawyer
+            }
+        }
+        other_client {
+            pretty_name {
+                Other client
+            }
+        }
+        mentor {
+            pretty_name Mentor
+        }
+        secretary {
+            pretty_name Secretary
+        }
+    }
+    actions {
+        initialize {
+            initial_action_p t
+            new_state started
+            pretty_name Initialize
+            attachment_num 0
+        }
+        ask_client {
+            assigned_role lawyer
+            assigned_states started
+            new_state open
+            pretty_name {
+                Ask client
+            }
+            attachment_num 1
+            recipient_role client
+        }
+        ask_client_for_more_information {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {Ask Client for more information}
+            attachment_num 1
+            recipient_role client
+        }
+        consult_lawyer {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {
+                Consult lawyer
+            }
+            attachment_num 1
+            recipient_role other_lawyer
+        }
+        visit_the_library {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {Visit the library}
+            attachment_num 0
+            recipient_role lawyer
+        }
+        consult_mentor {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {
+                Consult mentor
+            }
+            attachment_num 1
+            recipient_role mentor
+        }
+        mentor_intervenes {
+            assigned_role mentor
+            enabled_states open
+            pretty_name {
+                Mentor intervenes
+            }
+            attachment_num 1
+            recipient_role lawyer
+        }
+        consult_secretary {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {
+                Consult secretary
+            }
+            attachment_num 1
+            recipient_role secretary
+        }
+        write_legal_advice {
+            assigned_role lawyer
+            assigned_states open
+            new_state written
+            pretty_name {Write legal advice}
+            attachment_num 1
+            recipient_role secretary
+        }
+        correct_spell_check_etc {
+            assigned_role secretary
+            enabled_states written
+            new_state done
+            pretty_name {Correct, spell-check, etc.}
+            attachment_num 1
+            recipient_role client
+        }
+    }
+    states {
+        started {
+            pretty_name Started
+        }
+        open {
+            pretty_name Open
+        }
+        written {
+            pretty_name Written
+        }
+        done {
+            pretty_name Done
+        }
+    }
+}"
+}
