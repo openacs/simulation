@@ -126,3 +126,7 @@ ad_form -name add_user \
             {options {$uncast_role_options}}
         }        
     }
+
+
+set case_delete_url [export_vars -base case-delete { case_id { return_url [ad_return_url] } }]
+
