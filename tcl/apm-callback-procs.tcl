@@ -69,11 +69,11 @@ ad_proc -private simulation::apm::setup_permission_groups {
         set parent_group_id [group::new -group_name [simulation::permission_group_name]]
 
         # Make permission group a child of the subsite group
+        array set package_info [site_node::get_from_object_id -object_id $package_id]
+        set subsite_package_id [site_node::closest_ancestor_package -node_id $package_info(node_id) -package_key acs-subsite]
         set subsite_group_id [simulation::subsite_group_id -package_id $package_id]
         relation_add composition_rel $subsite_group_id $parent_group_id
 
-		# TODO: (0.3h) Sim Admins and Service Admins should be able to set groups.  Probably
-		# we can do this by granting admin on the package
         # Create the permission groups
         foreach {group_name privilege_list} {
             "Sim Admins" {sim_admin}
@@ -88,10 +88,15 @@ ad_proc -private simulation::apm::setup_permission_groups {
             # Make permission group a child of the parent group
             relation_add composition_rel $parent_group_id $permission_group_id
 
-            # Grant privileges to the group
+            # Grant privileges to the group on the package
             foreach privilege $privilege_list {
                 permission::grant -party_id $permission_group_id -object_id $package_id -privilege $privilege
             }
+
+            # Grant subsite admin to the admin groups so that they can admin groups
+            if { [string equal $group_name "Sim Admins"] || [string equal $group_name "Service Admins"] } {
+                permission::grant -party_id $permission_group_id -object_id $subsite_package_id -privilege admin
+            } 
         }
         
         
