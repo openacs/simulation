@@ -5,48 +5,14 @@
 <formtemplate id="actors"></formtemplate>
 
 <p>
-TODO: get desired layout, see below:
+TODO: Display the actor list and group size in parallel columns
+instead of in pairs of rows
 </p>
+<p>TODO: make giver a list of checkboxes instead of a single-select
+list</p>
+<p>TODO: at the bottom, show a list of all groups that are
+auto-enrolled but are not assigned anywhere (and hence won't be in any cases)
 
-<center>
-(this is just a mockup)
-<table width="60%">
-<tr><th>Role</th><th>Actor(s)</th><th>In groups of</th></tr>
-<tr><td>Plaintiff</td>
-<td><select>
-  <option>Automatic Agent</option>
-  <option>Student</option>
-  <option>TA</option>
-  <option>Professor</option>
-</select>
-</td>
-<td><input type="text" size="2" value="1"></input>
-</select>
-</td>
-</tr>
-<tr><td>Defendent</td>
-<td><select>
-  <option>Automatic Agent</option>
-  <option>Student</option>
-  <option>TA</option>
-  <option>Professor</option>
-</select>
-</td>
-<td><input type="text" size="2" value="1"></input>
-</td>
-</tr>
-<tr><td>Judge</td>
-<td><select>
-  <option>Student</option>
-  <option>TA</option>
-  <option>Professor</option>
-</select>
-</td>
-<td><input type="text" size="2" value="1"></input>
-</td>
-</tr>
-</table>
-</center>
 
 
 <p>
