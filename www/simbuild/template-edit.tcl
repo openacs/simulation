@@ -39,10 +39,24 @@ ad_form -name sim_template -mode $mode -cancel_url $cancel_url -form {
         {label "Template Name"}
         {html {size 40}}
     }
-    {template_ready_p:boolean(checkbox),optional
-        {label "Ready for use?<br> TODO: hide this in new mode"}
-        {options {{"Yes" t}}}
+}
+
+if { ![ad_form_new_p -key workflow_id] } {
+    ad_form -extend -name sim_template -form {
+        {template_ready_p:boolean(checkbox),optional
+            {label "Ready for use?"}
+            {options {{"Yes" t}}}
+        }
     }
+} else {
+    ad_form -extend -name sim_template -form {
+        {template_ready_p:boolean(hidden),optional
+            {value f}
+        }
+    }
+}
+
+ad_form -extend -name sim_template -form {
     {suggested_duration:text,optional
         {label "Suggested Duration"}
     }
