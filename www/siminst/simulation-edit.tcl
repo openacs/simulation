@@ -161,6 +161,7 @@ ad_form -export { workflow_id } -name simulation -form {
         -workflow_id $workflow_id \
         -array row
 
+    simulation::template::flush_inst_state -workflow_id $workflow_id
     wizard forward
 }
 
@@ -174,4 +175,3 @@ if { [string equal $enroll_type "closed"] } {
 }    
 
 wizard submit simulation -buttons { back next }
-

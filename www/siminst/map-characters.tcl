@@ -57,6 +57,7 @@ ad_form -extend -name characters -on_request {
             simulation::role::edit -role_id $role_id -array row
         }
     }
-    
+
+    simulation::template::flush_inst_state -workflow_id $workflow_id
     wizard forward
 }

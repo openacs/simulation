@@ -141,5 +141,6 @@ ad_form \
             }
         }
     } -after_submit {
+        simulation::template::flush_inst_state -workflow_id $workflow_id
         wizard forward
     }

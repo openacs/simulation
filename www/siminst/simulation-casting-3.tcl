@@ -169,6 +169,7 @@ ad_form \
 
         simulation::template::enroll_and_invite_users -workflow_id $workflow_id
 
+        simulation::template::flush_inst_state -workflow_id $workflow_id
         wizard forward
     }
 

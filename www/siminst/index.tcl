@@ -93,7 +93,6 @@ db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url si
 " {
     set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
 
-    # TODO: getting the states here will not scale well (executes a handful queries for every template listed)
     set state [simulation::template::get_inst_state -workflow_id $workflow_id]
 
     if { [simulation::template::ready_for_casting_p -state $state] } {
