@@ -4,7 +4,7 @@ ad_page_contract {
     workflow_id:integer
 }
 
-set page_title "Not ready for casting"
+set page_title "Edit a simulation"
 set context [list [list "." "SimInst"] $page_title]
 set package_id [ad_conn package_id]
 

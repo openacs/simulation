@@ -40,7 +40,7 @@ ad_form \
 
 
         # Proceed to the task page
-        ad_returnredirect [export_vars -base map-tasks {workflow_id}]
+        ad_returnredirect [export_vars -base map-characters {workflow_id}]
         ad_script_abort
 
     }

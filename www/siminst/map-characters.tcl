@@ -9,8 +9,9 @@ ad_page_contract {
 }
 
 # TODO: Permission check?
-
-set page_title "Map to Characters"
+# TODO: set title
+# TODO: add 
+set page_title "Assign Roles to Characters"
 set context [list [list "." "SimInst"] $page_title]
 
 ad_form \
@@ -51,6 +52,6 @@ ad_form -extend -name characters -on_request {
     }
     
     # Proceed to the task page
-    ad_returnredirect [export_vars -base map-tasks {workflow_id}]
+    ad_returnredirect [export_vars -base sim-tasks {workflow_id}]
     ad_script_abort
 }
