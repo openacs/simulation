@@ -35,7 +35,7 @@ if { [llength $enabled_action_id] == 1 } {
     set common_enabled_action_ids [list [list $enabled_action_id $case_id]]
 
     if { [empty_string_p $return_url] } {
-        set return_url [export_vars -base tasks { case_id role_id }]
+        set return_url [export_vars -base case { case_id role_id }]
     }
 
     if { [info exists body] && [info exists received_message_item_id] } {
@@ -88,8 +88,10 @@ if { [llength $enabled_action_id] == 1 } {
                                  )
               and sm.case_id = :case_id
         }] } {
-            set subject "Re: $subject"
-            set body "
+            # Only refresh form with prepopulated subject and body if this is not a submit
+            if { ![string equal action [ns_set iget [rp_getform] form:id]] } {
+                set subject "Re: $subject"
+                set body "
 
 -----Original Message-----
 From: [workflow::role::get_element -role_id $from_role_id -element pretty_name]
@@ -99,7 +101,8 @@ Subject: $subject
 
 [ad_html_text_convert -from $mime_type -to "text/plain" $triggering_body]"
 
-            ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body bulk_p received_message_item_id}]
+                ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body bulk_p received_message_item_id}]
+            }
         }    
     }
 
@@ -260,7 +263,7 @@ if { ![empty_string_p $action(recipients)] } {
             
             ad_returnredirect $return_url
             ad_script_abort
-        }
+    }
 
     set focus "action.subject"
 } else {
