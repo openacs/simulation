@@ -530,7 +530,7 @@ casting page at ${casting_page_url} to choose case or role.
     notification::request::new \
         -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
         -user_id $user_id \
-        -object_id $workflow_id \
+        -object_id [ad_conn package_id] \
         -interval_id [notification::get_interval_id -name "instant"] \
         -delivery_method_id [notification::get_delivery_method_id -name "email"]
 }

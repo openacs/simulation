@@ -14,6 +14,7 @@ You are <a href="@role.character_url@">@role.character_title@</a>
   <li><if @task_count@ eq 1><a href="@tasks_url@">@task_count@ task</a></if><else><a href="@tasks_url@">@task_count@ tasks</a></else>
   <li><a href="@portfolio_url@">Portfolio</a>
   <li><a href="@about_sim_url@">About this simulation</a>
+  <li><a href="@notifications_url@">My Notifications</a>
 </ul>
 <h4>Contacts</h4>
 <ul>

@@ -97,7 +97,7 @@ Thank you.
 
         notification::new \
             -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
-            -object_id $case(workflow_id) \
+            -object_id [ad_conn package_id] \
             -notif_subject $notif_subject \
             -notif_text $notif_body \
             -action_id $item_id \

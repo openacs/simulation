@@ -91,3 +91,5 @@ db_multirow -unclobber -extend { character_url } contacts select_contacts "
 " {
     set character_url [simulation::object::url -name $character_name]
 }
+
+set notifications_url [export_vars -base notifications { case_id role_id }]
