@@ -70,12 +70,19 @@ ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode 
         {label "Task Name"}
         {html {size 20}}
     }
-    {task_type:text(inform)
+    {pretty_past_tense:text,optional
+        {label "Task name in log"}
+        {html {size 20}}
+        {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
+    }
+    {task_type:text(radio)
         {label "Task is complete when"}
-        {value "
-<input type=radio>assignee sends message to recipient</input>
-<br><input type=radio>assignee uploads document</input>
-<br><input type=radio>child workflow is complete</input>"}
+        {options { 
+            { "Assignee sends message to recipient" message }
+            { "Assignee uploads document" normal } 
+            { "Child workflow is complete" workflow }
+        }}
+        {html {onChange "javascript:acs_FormRefresh('task');"}}
     }
     {assigned_role:text(select),optional
         {label "Assigned To"}
@@ -121,26 +128,75 @@ ad_form -extend -name task -edit_request {
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
 
     foreach elm { 
-        pretty_name new_state_id 
+        pretty_name pretty_past_tense new_state_id 
         assigned_role recipient_role
-        assigned_state_ids enabled_state_ids
         attachment_num
     } {
         set $elm $task_array($elm)
     }
+
+    # TODO: Check for child workflows, and set task_type to 'workflow'
+    if { ![empty_string_p $task_array(recipient_role)] } {
+        set task_type "message"
+    } else {
+        set task_type "normal"
+    }
+
+    switch $task_type {
+        message {
+            element set_properties task recipient_role -widget select
+        }
+        normal {
+            element set_properties task recipient_role -widget hidden
+        }
+        child {
+            element set_properties task recipient_role -widget hidden
+        }
+    }
 } -new_request {
     permission::require_write_permission -object_id $workflow_id
 
-    #TODO: is this the right way to set defaults in ad_form?
     set attachment_num 0
+
+    set task_type "message"
+} -on_refresh {
+    # TODO: Add other child widgets
+    switch $task_type {
+        message {
+            element set_properties task recipient_role -widget select
+        }
+        normal {
+            element set_properties task recipient_role -widget hidden
+        }
+        child {
+            element set_properties task recipient_role -widget hidden
+        }
+    }
 } -on_submit {
     
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 
+    switch $task_type {
+        message {
+        }
+        normal {
+            # Normal messages don't have a recipient
+            set recipient_role {}
+        }
+        workflow {
+            # TODO
+        }
+    }
+
+    # Default pretty_past_tense
+    if { [empty_string_p $pretty_past_tense] } {
+        set pretty_past_tense $pretty_name
+    }
+
     foreach elm { 
-        pretty_name assigned_role description description_mime_type
-        enabled_state_ids assigned_state_ids new_state_id 
+        pretty_name pretty_past_tense assigned_role description description_mime_type
+        new_state_id 
         recipient_role attachment_num
     } {
         set row($elm) [set $elm]

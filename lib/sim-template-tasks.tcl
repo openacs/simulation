@@ -52,19 +52,6 @@ lappend elements edit {
         <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
     }
 }
-lappend elements initialize {
-    label "Init"
-    display_template {
-        <if @tasks.initial_p@ true>
-          <img src="/resources/acs-subsite/radiochecked.gif" height="13" width="13" border="0" alt="Initial action">
-        </if>
-        <else>
-          <a href="@tasks.set_initial_url@"><img src="/resources/acs-subsite/radio.gif" height="13" width="13" border="0" alt="Set as initial action"></a>
-        </else>
-    }
-    html { align center }
-    sub_class narrow
-}
 lappend elements name { 
     label "Name"
     display_col pretty_name
@@ -82,13 +69,7 @@ lappend elements recipient_name {
 }
 
 lappend elements state_spacer { 
-    label "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-    sub_class narrow
-    display_template " "
-}
-
-lappend elements state_spacer2 { 
-    label "States:"
+    label "|&nbsp;&nbsp;&nbsp;States:"
     sub_class narrow
     display_template " "
 }
@@ -119,21 +100,6 @@ db_foreach select_states {
         display_template " "
     }
 }
-
-# TODO: make the mocked up task enable list real
-# LARS: Add state button in header removed
-if 0 { 
-    lappend elements add_state {
-        label {
-            <form action="state-edit" style="margin: 0px;">
-            [export_vars -form { workflow_id}]
-            <input type="submit" value="Add a State">
-            </form>
-        }
-        display_template {&nbsp;}
-    }
-}
-
 
 lappend elements delete {
     sub_class narrow
@@ -204,6 +170,10 @@ db_multirow -extend $extend tasks select_tasks "
            workflow_fsm_actions wfa 
      where wa.workflow_id = :workflow_id
        and wfa.action_id = wa.action_id
+       and not exists (select 1
+                         from workflow_initial_action ia
+                        where ia.workflow_id = wa.workflow_id
+                          and ia.action_id = wa.action_id)
      order by wa.sort_order
 " {
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]

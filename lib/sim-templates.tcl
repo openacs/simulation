@@ -76,22 +76,26 @@ switch $size {
                 label "Ready"
                 display_eval {[ad_decode $sim_type "ready_template" "Yes" "No"]}
             }
-            delete {
+            copy {
                 sub_class narrow
                 display_template {
+                    <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
+                }
+                link_url_col clone_url
+                link_html { title "Clone this template" }
+            }
+            delete {
+                sub_class narrow
+                link_url_col delete_url
+                link_html { 
+                    title "Delete this template" 
+                    onclick  "return confirm('Are you sure you want to delete template @sim_templates.name@?');"
+                }
+                display_template { 
                     <if @sim_templates.edit_p@>
-                    <a href="@sim_templates.delete_url@" title="Edit this template"
-                    onclick="return confirm('Are you sure you want to delete template @sim_templates.name@?');">
                     <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
-                    </a>
                     </if>
                 }
-            }
-            clone {
-                display_template {
-                    <a href="@sim_templates.clone_url@">Clone this template</a>
-                }
-                
             }
         }
     }
@@ -124,9 +128,13 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
            (select count(role_id)
               from workflow_roles
              where workflow_id = w.workflow_id) as role_count,
-           (select count(action_id)
-              from workflow_actions
-             where workflow_id = w.workflow_id) as task_count
+           (select count(a2.action_id)
+              from workflow_actions a2
+             where a2.workflow_id = w.workflow_id
+               and not exists (select 1
+                                 from workflow_initial_action ia2
+                                where ia2.workflow_id = w.workflow_id
+                                  and ia2.action_id = a2.action_id)) as task_count
       from workflows w, 
            sim_simulations ss,
            acs_objects a
@@ -142,9 +150,10 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
 
     set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" {workflow_id} ]
 
-    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-delete" {workflow_id} ]
-
     set clone_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-clone" {workflow_id} ]
 
     set edit_p [permission::write_permission_p -object_id $workflow_id]
+
+    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-delete" {workflow_id} ]
+
 }
