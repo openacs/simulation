@@ -12,7 +12,8 @@ if { [template::util::is_true $confirm_p] } {
     ad_returnredirect $return_url
 }
 
-set page_title "Delete Object"
+array set item [bcms::item::get_item -item_id $item_id -revision live]
+set page_title "Delete object \"$item(title)\""
 set context [list [list "." "CityBuild"] $page_title]
 
 set delete_url [export_vars -base [ad_conn url] { item_id return_url { confirm_p 1 } }]
