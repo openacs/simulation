@@ -10,7 +10,7 @@ simulation::include_contract {
         default_value display
     }
     size {
-        allowed_values {short long}
+        allowed_values {short long yellow-pages}
         default_value long
     }
 }
@@ -68,6 +68,12 @@ if { [string equal $display_mode "edit"] } {
     }]
 }
 
+if { $size == "yellow-pages"} {
+    set filter_sql "and content_type = 'sim_character' or content_type = 'sim_location'"
+} else {
+    set filter_sql ""
+}
+
 template::list::create \
     -name objects \
     -multirow objects \
@@ -90,11 +96,12 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     and    i.parent_id = f.folder_id
     and    r.revision_id = i.live_revision
     and    ot.object_type = i.content_type
+           $filter_sql
     [template::list::orderby_clause -orderby -name "objects"]
 " {
     set description [string_truncate -len 200 $description]
-    set edit_url [export_vars -base "object-edit" { item_id }]
-    set delete_url [export_vars -base "object-delete" { item_id }]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-edit" { item_id }]
+    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-delete" { item_id }]
 
     switch -glob $mime_type {
         text/* - {} {
@@ -106,4 +113,4 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     }
 }
 
-set create_object_url [export_vars -base object-edit { parent_id }]
+set create_object_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/object-edit" { parent_id }]

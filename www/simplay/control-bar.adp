@@ -1,5 +1,5 @@
 <ul>
-<li><a href="messages">Messages</a>
+<li><a href="@messages_url@">Messages</a>
 <li>Tasks
 <li>Archive
 <li>About this simulation

@@ -53,5 +53,5 @@ db_multirow -extend {edit_url} live_sims select_live_sims "
        and ss.case_start <= now()
        and ss.case_end   >= now()
 " {
-    set edit_url [export_vars -base "simulation-edit" { simulation_id }]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]siminst/simulation-edit" { simulation_id }]
 }

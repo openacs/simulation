@@ -65,6 +65,6 @@ db_multirow -extend { edit_url char_url delete_url } roles select_roles "
      where wr.workflow_id = :workflow_id
     [template::list::orderby_clause -orderby -name "roles"]
 " {
-    set edit_url [export_vars -base "role-edit" { role_id }]
-    set delete_url [export_vars -base "role-delete" { role_id return_url }]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { role_id }]
+    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-delete" { role_id return_url }]
 }

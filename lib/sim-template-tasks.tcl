@@ -18,7 +18,7 @@ switch $display_mode {
     display {}
 
     edit {
-	set add_task_url [export_vars -base "task-edit" { workflow_id } ]
+	set add_task_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { workflow_id } ]
     }
 }
 
@@ -98,7 +98,7 @@ db_multirow -extend { edit_url view_url delete_url } tasks select_tasks "
        and st.task_id = wa.action_id
     [template::list::orderby_clause -orderby -name "tasks"]
 " {
-    set edit_url [export_vars -base "task-edit" { action_id }]
-    set view_url [export_vars -base "task-edit" { action_id }]
-    set delete_url [export_vars -base "task-delete" { action_id return_url }]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
+    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id return_url }]
 }

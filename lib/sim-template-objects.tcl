@@ -61,9 +61,9 @@ db_multirow -extend { edit_url view_url delete_url } sim_objects select_sim_obje
     [template::list::orderby_clause -orderby -name "sim_objects"]
 " {
     set description [string_truncate -len 200 $description]
-    set edit_url [export_vars -base "object-edit" { item_id }]
-    set view_url [export_vars -base "object/$name"]
-    set delete_url [export_vars -base "object-delete" { item_id }]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-edit" { item_id }]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]object/$name"]
+    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-delete" { item_id }]
 }
 
 set sim_types { sim_character sim_prop sim_location }
@@ -74,6 +74,6 @@ db_multirow -extend { create_url label } object_types select_object_types "
     from   acs_object_types ot
     where  ot.object_type in ('[join $sim_types "','"]')
 " {
-    set create_url [export_vars -base object-edit { content_type parent_id }]
+    set create_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/object-edit" { content_type parent_id }]
     set label "Create new $pretty_name"
 }
