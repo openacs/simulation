@@ -48,10 +48,10 @@ template::list::create \
         }
         delete {
             sub_class narrow
+            link_url_col delete_url
+            link_html { onclick "return confirm('Are you sure you want to delete role @roles.pretty_name@?');" }
             display_template {
-                <a href="@roles.delete_url@" onclick="return confirm('Are you sure you want to delete role @roles.pretty_name@?');">
-                  <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
-                </a>
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
             }
         }
     }

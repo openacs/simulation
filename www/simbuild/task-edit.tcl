@@ -119,7 +119,8 @@ ad_form \
         }
     }
 
-if { [string equal [element get_value task task_type] "workflow"] || [exists_and_equal task_type "workflow"] } {
+if { [string equal [element get_value task task_type] "workflow"] || \
+         ([empty_string_p [element get_value task task_type]] && [exists_and_equal task_type "workflow"]) } {
     set child_workflow_id [element get_value task child_workflow_id]
     if { [empty_string_p $child_workflow_id] } {
         if { [exists_and_not_null task_array(child_workflow_id)] } {

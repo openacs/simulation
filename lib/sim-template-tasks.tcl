@@ -68,9 +68,17 @@ lappend elements recipient_name {
     link_url_col recipient_role_edit_url
 }
 
-lappend elements child_workflow_pretty { 
-    label "<br />Child"
-    link_url_col child_workflow_url
+lappend elements task_type { 
+    label "<br />Type"
+    display_template {
+        <if @tasks.child_workflow_pretty@ not nil>
+          <a href="@tasks.child_workflow_url@">@tasks.child_workflow_pretty@</a>
+        </if>
+        <else>
+          <if @tasks.recipient_name@ not nil>Message</if>
+          <else>Document</else>
+        </else>
+    }
 }
 
 lappend elements delete {
@@ -123,7 +131,7 @@ db_foreach select_states {
 }
 
 lappend elements new_state_pretty { 
-    label "<br />New state"
+    label "<br />Next state"
     html { style "border-left: 2px dotted #A0BDEB;" }
 }
 
