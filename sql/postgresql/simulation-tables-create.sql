@@ -42,21 +42,22 @@ create table sim_tasks (
 comment on table sim_tasks is 'A 1-1 extension of workflow_actions.  Each record is a task that a role must perform, possibly upon another role.';
 
 create table sim_simulations (
-    simulation_id       integer         constraint sim_simulations_fk
+    simulation_id         integer       constraint sim_simulations_fk
                                         references workflows
                                         on delete cascade
                                         constraint sim_simulation_pk
                                         primary key,
-    enroll_type         varchar(20)     constraint sim_simulations_enroll_type_ck
+    enroll_type           varchar(20)   constraint sim_simulations_enroll_type_ck
                                         check (1=1),
-    casting_type         varchar(20)    constraint sim_simulations_casting_type_ck
+    casting_type          varchar(20)   constraint sim_simulations_casting_type_ck
                                         check (1=1),
-    enroll_start        timestamptz,
-    enroll_end          timestamptz,
+    enroll_start          timestamptz,
+    enroll_end            timestamptz,
     constraint sim_simulations_enroll_end_after_start_end_ck
       check (enroll_end >= enroll_start),
-    case_start          timestamptz,
-    case_end            timestamptz,
+    case_start            timestamptz,
+    case_end              timestamptz,
+    send_start_note_date  timestamptz,
     constraint sim_simulations_case_end_after_start_ck
       check (case_end >= case_start)
 );
