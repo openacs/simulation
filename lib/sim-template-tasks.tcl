@@ -152,7 +152,7 @@ set initial_action_id [workflow::get_element \
                            -element initial_action_id]
 
 set extend [list]
-lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url
+lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url recipient_role_edit_url
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -179,6 +179,7 @@ db_multirow -extend $extend tasks select_tasks "
     select wa.action_id,
            wa.pretty_name,
            wa.assigned_role,
+           st.recipient as recipient_role,
            (select pretty_name 
               from workflow_roles
              where role_id = wa.assigned_role) as assigned_name,
@@ -200,6 +201,7 @@ db_multirow -extend $extend tasks select_tasks "
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url [ad_return_url]} }]
 
     set assigned_role_edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
+    set recipient_role_edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $recipient_role } }]
 
     set initial_p [string equal $initial_action_id $action_id]
     set set_initial_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/initial-action-set" { action_id {return_url [ad_return_url]} }]
