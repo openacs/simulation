@@ -517,9 +517,13 @@ ad_form -extend -name object -new_request {
         richtext_or_file {
             set content_text [template::util::richtext_or_file::get_property text $content_elm]
             set mime_type [template::util::richtext_or_file::get_property mime_type $content_elm]
-            set storage_type [template::util::richtext_or_file::get_property storage_type $content_elm]
             set content_file [template::util::richtext_or_file::get_property file $content_elm]
             set filename [template::util::richtext_or_file::get_property filename $content_elm]
+            if { [empty_string_p $content_elm] } {
+                set storage_type text
+            } else {
+                set storage_type [template::util::richtext_or_file::get_property storage_type $content_elm]
+            }
         }
         textarea {
             set content_text $content_elm
