@@ -11,4 +11,4 @@
 <p></p>
 
 <h3>Portfolio</h3>
-<include src="/packages/simulation/lib/portfolio" user_id="@user_id@" case_id="@case_id@"></include>
+<include src="/packages/simulation/lib/portfolio" case_id="@case_id@"></include>
