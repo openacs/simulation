@@ -22,24 +22,29 @@ template::list::create \
     -no_data "No Simulations are in Development" \
     -elements {
         pretty_name {
+            link_url_col edit_url
             label "Simulation"
             orderby upper(w.pretty_name)
         }
         role_count {
+            link_url_col map_roles_url
             label "Roles"
         }
         role_empty_count {
             label "Roles without Characters"
         }
         prop_count {
+            link_url_col map_tasks_url
             label "Props"
         }
         prop_empty_count {
             label "Missing props"
         }
         delete {
+            sub_class narrow
+            link_url_col delete_url
             display_template {
-                Delete
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit"></a>
             }
         }
         copy {
@@ -62,7 +67,7 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { cast_url } dev_sims select_dev_sims "
+db_multirow -extend { cast_url map_roles_url map_tasks_url delete_url } dev_sims select_dev_sims "
     select w.workflow_id,
            w.pretty_name,
            (select count(*) 
@@ -94,7 +99,10 @@ db_multirow -extend { cast_url } dev_sims select_dev_sims "
        and ss.sim_type = 'dev_sim'
     $sim_in_dev_filter_sql
 " {
-    set cast_url [export_vars -base "cast-edit" { workflow_id }]
+    set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
+    set map_roles_url [export_vars -base "${base_url}siminst/map-characters" { workflow_id }]
+    set map_tasks_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
+    set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
 }
 
 
@@ -108,6 +116,7 @@ template::list::create \
     -no_data "No Simulations are in Casting" \
     -elements {
         pretty_name {
+            link_url_col edit_url
             label "Simulation"
             orderby upper(w.pretty_name)
         }
@@ -121,19 +130,15 @@ template::list::create \
             label "Users enrolled"
         }
         delete {
+            sub_class narrow
+            link_url_col delete_url
             display_template {
-                Delete
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit"></a>
             }
         }
         copy {
             display_template {
                 <u>Copy</u>
-            }
-        }
-        cast {
-            link_url_col cast_url
-            display_template {
-                Begin casting
             }
         }
     }
@@ -145,7 +150,7 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { edit_url } casting_sims select_casting_sims "
+db_multirow -extend { edit_url delete_url edit_p } casting_sims select_casting_sims "
     select w.workflow_id,
            w.pretty_name,
            ss.enroll_type,
@@ -159,8 +164,9 @@ db_multirow -extend { edit_url } casting_sims select_casting_sims "
      where w.object_id = :package_id
        and ss.simulation_id = w.workflow_id
        and ao.object_id = w.workflow_id
-       and ss.sim_type = 'dev_sim'
+       and ss.sim_type = 'casting_sim'
     $sim_in_dev_filter_sql
 " {
-    set edit_url [export_vars -base "TODO" { workflow_id }]
+    set edit_url [export_vars -base "${base_url}siminst/cast-edit" { workflow_id }]
+    set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
 }
