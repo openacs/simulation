@@ -10,10 +10,12 @@ namespace eval simulation::apm {}
 
 ad_proc -private simulation::apm::after_install {} {
     simulation::notification::xml_map::register
+    simulation::notification::message::register
 }
 
 ad_proc -private simulation::apm::before_uninstall {} {
     simulation::notification::xml_map::unregister
+    simulation::notification::message::unregister
 }
 
 ad_proc -private simulation::apm::after_instantiate {

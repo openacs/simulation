@@ -474,6 +474,67 @@ ad_proc -public simulation::template::force_start {
     }
 }
 
+ad_proc -public simulation::template::enroll_user {
+    {-workflow_id:required}    
+    {-user_id:required}
+    {-simulation_array ""}
+    {-email ""}
+    {-user_name ""}
+} {
+    Enroll a user in a simulation. Sends out an email to the user for casting type
+    open and group. Creates a SimPlay message notification for the user.
+
+    @author Peter Marklund
+} {
+    if { ![empty_string_p $simulation_array] } {
+        upvar $simulation_array sim_template
+    } else {
+        simulation::template::get -workflow_id $workflow_id -array sim_template
+    }
+
+    if { [empty_string_p $email] } {
+        acs_user::get -user_id $user_id -array user
+        
+        set email $user(email)
+        set user_name $user(name)
+    }
+
+    # Not using edit proc here as it deletes currently enrolled users
+    db_dml enroll_user {
+        insert into sim_party_sim_map
+        (simulation_id, party_id, type)
+        values
+        (:workflow_id, :user_id, 'enrolled')
+    }
+
+    if { [string equal $sim_template(casting_type) "open"] || [string equal $sim_template(casting_type) "group"] } {
+        # Notify users that they are enrolled and can do their casting
+
+        set subject "You have been enrolled in simulation $sim_template(pretty_name)"
+        set package_id [ad_conn package_id]
+        set casting_page_url \
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay/cast" { workflow_id }]
+        set body "Dear $user_name,
+This is to notify you that you have been enrolled in simulation $sim_template(pretty_name). You may visit the
+casting page at ${casting_page_url} to choose case or role.
+"
+
+        acs_mail_lite::send \
+            -to_addr $email \
+            -from_addr [ad_system_owner] \
+            -subject $subject\
+            -body $body
+    }
+
+    # Sign the user up for immediate email notification for received messages in the simulation
+    notification::request::new \
+        -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
+        -user_id $user_id \
+        -object_id $workflow_id \
+        -interval_id [notification::get_interval_id -name "instant"] \
+        -delivery_method_id [notification::get_delivery_method_id -name "email"]
+}
+
 ad_proc -public simulation::template::enroll_and_invite_users {
      {-workflow_id:required}
 } {
@@ -482,8 +543,9 @@ ad_proc -public simulation::template::enroll_and_invite_users {
 
     @author Peter Marklund
 } {
-    set simulation_edit(enrolled) [list]
-    set enroll_email_list [list]
+    simulation::template::get -workflow_id $workflow_id -array sim_template
+
+    set enroll_user_list [list]
     set invite_email_list [list]
     db_foreach select_enrolled_and_invited_users {
             select distinct pamm.member_id as user_id,
@@ -501,40 +563,22 @@ ad_proc -public simulation::template::enroll_and_invite_users {
     } {
         if { [string equal $type "auto_enroll"] } {
             # enroll the user automatically
-            lappend simulation_edit(enrolled) $user_id
-            lappend enroll_email_list [list $email $user_name]
+            lappend enroll_user_list [list $user_id $email $user_name]
         } else {
             # Invite the user
             lappend invite_email_list [list $email $user_name]            
         }
     }
 
-    simulation::template::edit -workflow_id $workflow_id -array simulation_edit
-
-    simulation::template::get -workflow_id $workflow_id -array sim_template
-
-    if { [string equal $sim_template(casting_type) "open"] || [string equal $sim_template(casting_type) "group"] } {
-        # Notify users that they are enrolled and can do their casting
-        foreach user $enroll_email_list {
-            set email [lindex $user 0]
-            set user_name [lindex $user 1]
-
-            set subject "You have been enrolled in simulation $sim_template(pretty_name)"
-            set package_id [ad_conn package_id]
-            set casting_page_url \
-                [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/cast" { workflow_id }]
-            set body "Dear $user_name,
-This is to notify you that you have been enrolled in simulation $sim_template(pretty_name). You may visit the
-casting page at ${casting_page_url} to choose case or role.
-"
-
-            acs_mail_lite::send \
-                -to_addr $email \
-                -from_addr [ad_system_owner] \
-                -subject $subject\
-                -body $body
-        }
-    } 
+    # Enroll users
+    foreach user $enroll_user_list {
+        simulation::template::enroll_user \
+            -workflow_id $workflow_id \
+            -user_id [lindex $user 0] \
+            -simulation_array sim_template \
+            -user_name [lindex $user 2] \
+            -email [lindex $user 1]
+    }
 
     # Invite users
     foreach user $invite_email_list {
@@ -543,7 +587,7 @@ casting page at ${casting_page_url} to choose case or role.
 
         set package_id [ad_conn package_id]
         set enrollment_page_url \
-            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { workflow_id }]
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay/enroll" { workflow_id }]
         set subject "You have been invited to join simulation $sim_template(pretty_name)"
         set body "Dear $user_name,
 You have been invited to join simulation $sim_template(pretty_name). Please visit the enrollment page at $enrollment_page_url to accept the invitation. Thank you!"
@@ -672,7 +716,7 @@ ad_proc -public simulation::template::start {
         
         set package_id [ad_conn package_id]
         set simplay_url \
-            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { workflow_id }]
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay/enroll" { workflow_id }]
         set subject "Simulation $simulation(pretty_name) has started"
         set body "Dear $user_name,
 Simulation $simulation(pretty_name) has now started. Please visit $simplay_url to participate. Thank you!"

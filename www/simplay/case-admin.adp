@@ -8,7 +8,7 @@
     <listtemplate name="roles"></listtemplate>
   </p>
 
-  <if @uncast_role_options@ not nil>
+  <if @uncast_role_options@ not nil and @assigned_only_p@ eq 0>
     <h3>Add users in uncast role</h3>
   
     <p>

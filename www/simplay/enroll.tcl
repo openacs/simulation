@@ -46,14 +46,10 @@ if { [string equal $simulation(enroll_type) "open"] } {
     }
 }
 
-# The user is allowed to enroll, so enroll him
-# Not using edit proc here as it deletes currently enrolled users
-db_dml enroll_user {
-    insert into sim_party_sim_map
-      (simulation_id, party_id, type)
-    values
-      (:workflow_id, :user_id, 'enrolled')
-}
+# The user is allowed to enroll, so go ahead
+simulation::template::enroll_user \
+    -workflow_id $workflow_id \
+    -user_id $user_id    
 
 # If there are casting decisions open to the user, redirect to the casting page (casting_type group or open)
 if { [string equal $simulation(casting_type) "auto"] } {

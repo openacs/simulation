@@ -68,6 +68,40 @@ ad_proc -public simulation::message::new {
                 -related_object_id $attachment_id
         }
 
+        # Send notification to receiving users
+        set users_in_receiving_role [list]
+        foreach user_list [workflow::case::role::get_assignees -case_id $case_id -role_id $to_role_id] {
+            array set user $user_list
+            lappend users_in_receiving_role $user(party_id)
+        }
+        workflow::case::get -case_id $case_id -array case
+        workflow::get -workflow_id $case(workflow_id) -array workflow
+        set notif_subject "\[SimPlay\] New message in simulation $workflow(pretty_name): $subject"
+        set package_id [ad_conn package_id]
+        set simplay_url \
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay" { workflow_id }]
+        set notif_body "You have just received the following message in simulation $workflow(pretty_name):
+
+-----------------------------------------------------
+subject: $subject
+
+body:
+
+$body
+-----------------------------------------------------
+
+Please visit $simplay_url to continue playing the simulation.
+
+Thank you.
+"
+
+        notification::new \
+            -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
+            -object_id $case(workflow_id) \
+            -notif_subject $notif_subject \
+            -notif_text $notif_body \
+            -action_id $item_id \
+            -subset $users_in_receiving_role
     }
     
     return $item_id
