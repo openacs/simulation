@@ -484,10 +484,20 @@ ad_proc -public simulation::template::enroll_user {
     {-admin:boolean}
 } {
     Enroll a user in a simulation. Sends out an email to the user for casting type
-    open and group. Creates a SimPlay message notification for the user.
+    open and group. Creates a SimPlay message notification for the user. Note: this proc
+    will perform a check of whether the user is already enrolled and will do nothing if
+    that is the case.    
 
     @author Peter Marklund
 } {
+    if { [simulation::template::user_enrolled_p \
+	      -workflow_id $workflow_id \
+	      -user_id $user_id] } {
+	# Attempting to enroll an already enrolled user would throw a unique constraint error.
+	# It is better for the caller if we just return.
+	return
+    }
+
     if { ![empty_string_p $simulation_array] } {
         upvar $simulation_array sim_template
     } else {
@@ -564,6 +574,7 @@ ad_proc -public simulation::template::enroll_and_invite_users {
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template
 
+    set admin_user_id [ad_conn user_id]
     set enroll_user_list [list]
     set invite_email_list [list]
     db_foreach select_enrolled_and_invited_users {
@@ -579,6 +590,7 @@ ad_proc -public simulation::template::enroll_and_invite_users {
              and pamm.party_id = spsm.party_id
              and pamm.member_id = cu.user_id
              and pamm.party_id <> pamm.member_id
+	     and pamm.member_id <> :admin_user_id
     } {
         if { [string equal $type "auto_enroll"] } {
             # enroll the user automatically
@@ -589,7 +601,6 @@ ad_proc -public simulation::template::enroll_and_invite_users {
         }
     }
     # Always enroll the admin creating the simulation
-    set admin_user_id [ad_conn user_id]
     acs_user::get -user_id $admin_user_id -array admin_user
     simulation::template::enroll_user \
         -admin \
