@@ -5,3 +5,6 @@
   <include src="/packages/simulation/lib/messages" user_id="@user_id@"></include>
 
 <p>TODO: Show sent messages in a separate list
+
+<p>TODO: compose email, including preview 
+<p>TODO: add attachments to mail (attachments become sim_props)

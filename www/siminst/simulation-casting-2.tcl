@@ -64,8 +64,14 @@ ad_form -export { workflow_id } -name simulation -form {
         {options $eligible_groups}
         {help_text {Use <a href="$group_admin_url">Group Administration</a> to add groups}}
     }    
+} -new_request {
+
+    #TODO: is this the right way to set defaults in ad_form?    
+    set enroll_type "closed"
+    set casting_type "auto"
+
 } -on_request {
-    
+
     set enroll_groups [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto-enroll]
 
 } -on_submit {

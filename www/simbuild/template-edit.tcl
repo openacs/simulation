@@ -83,7 +83,9 @@ ad_form -extend -name sim_template -form {
     set template_ready_p [db_boolean [string equal $sim_template_array(sim_type) "ready_template"]]
 
     set suggested_duration $sim_template_array(suggested_duration)
-
+    if {$template_ready_p} {
+        set inst_url [export_vars -base "../siminst/map-create" { workflow_id }]
+    }
 } -new_request {
 
     permission::require_permission -object_id $package_id -privilege sim_template_create
@@ -157,3 +159,4 @@ set context [list [list "." "SimBuild"] $page_title]
 set delete_url [export_vars -base template-delete { workflow_id }]
 
 set spec_url [export_vars -base template-spec { workflow_id }]
+

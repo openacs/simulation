@@ -26,6 +26,13 @@ template::list::create \
             label "Simulation"
             orderby upper(w.pretty_name)
         }
+        description {
+            label "Description"
+            display_template {
+                TODO: Description column
+            }
+
+        }
         role_count {
             label "Roles"
             link_url_col map_roles_url

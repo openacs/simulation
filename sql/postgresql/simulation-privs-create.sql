@@ -7,6 +7,9 @@ select acs_privilege__add_child('admin','sim_admin');
 select acs_privilege__create_privilege('sim_inst','Instantiate Simulation Templates into Simulations',null);
 select acs_privilege__add_child('sim_admin','sim_inst');
 
+select acs_privilege__create_privilege('sim_adminplayer','Use Admin interface in SimPlay',null);
+select acs_privilege__add_child('sim_admin','sim_adminplayer');
+
 select acs_privilege__create_privilege('sim_object_create','Can create simulation objects.',null);
 select acs_privilege__create_privilege('sim_object_write','Can edit other people\'s simulation objects',null);
 select acs_privilege__create_privilege('sim_object_writer','Has write and create privs',null);

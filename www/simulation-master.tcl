@@ -10,6 +10,8 @@ set base_url [apm_package_url_from_id $package_id]
 #
 ######################################################################
 
+#  TODO: kill link bar for players
+
 set admin_p [permission::permission_p -object_id $package_id -privilege admin]
 set citybuild_p [permission::permission_p -object_id $package_id -privilege sim_object_create]
 set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_object_create]
