@@ -3,6 +3,7 @@
   <property name="context">@context;noquote@</property>
 
 <include src="/packages/simulation/lib/sim-objects" size="long" display_mode="edit">
+<p></p>
 
 <if @map_p@>
   <h2>Map XML</h2>

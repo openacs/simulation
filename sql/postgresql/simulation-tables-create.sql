@@ -62,7 +62,8 @@ create table sim_tasks (
                                         primary key,
     recipient           integer         constraint sim_tasks_recipient_fk
                                         references workflow_roles
-                                        on delete cascade
+                                        on delete cascade,
+    attachment_num      integer         default 0
 );
 
 comment on table sim_tasks is 'A 1-1 extension of workflow_actions.  Each record is a task that a role must perform, possibly upon another role.';
@@ -74,10 +75,10 @@ create table sim_task_object_map (
     object_id           integer         constraint stom_object_fk
                                         references acs_objects
                                         on delete cascade,
-    order_n             integer,
     relation_tag        varchar(100),
+    order_n             integer,
     constraint stom_pk
-      primary key (task_id, object_id, relation_tag)
+      primary key (task_id, object_id, relation_tag, order_n)
 );
 
 comment on table sim_task_object_map is 'A mapping table to show which tasks use which props.  Each record is one prop for one task.';

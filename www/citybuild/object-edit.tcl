@@ -262,53 +262,6 @@ ad_proc get_metadata_entries {
     return $result
 }
 
-ad_proc get_object_type_options {
-    -object_type:required
-    {-null_label "--None--"}
-} {
-    Get options for a select/radio widget of available objects of a given object_type.
-    Deals with content_types as a special-case where it'll provide a drop-down of items, 
-    not revisions.
-} {
-    # We need to know if this is a CR content_type, because in that case we 
-    # want to reference the item corresponding to the revision, not the revision
-    set content_type_p [db_string content_type_p { 
-        select count(*) 
-        from   acs_object_type_supertype_map
-        where  object_type = :object_type
-        and    ancestor_type = 'content_revision'
-    }]
-
-    # LARS TODO: We need to be able to scope this to a package, 
-    # possibly filter by other things, control the sort order,
-    # we need to be able to control what the label looks like (e.g. include email for users)
-    # and it needs to be intelligent about scaling issues
-    if { $content_type_p } {
-        set options [db_list_of_lists select_options { 
-            select r.title,
-            i.item_id
-            from   cr_items i, cr_revisions r
-            where  i.content_type = :object_type
-            and    r.revision_id = i.live_revision
-            order  by r.title
-        }]
-    } else {
-        set options [db_list_of_lists select_options { 
-            select acs_object__name(object_id),
-            object_id
-            from   acs_objects
-            where  object_type = :object_type
-            order  by acs_object__name(object_id)
-        }]
-    }
-
-    if { ![empty_string_p $null_label] } {
-        set options [concat [list [list $null_label {}]] $options]
-    }
-
-    return $options
-}
-
 
 #---------------------------------------------------------------------
 # Content edit/upload method
@@ -455,7 +408,7 @@ db_foreach select_attributes {
     set elm_ref_type [get_metadata_property -content_type $content_type -entry_type attributes -entry $attribute_name -property references]
     if { ![empty_string_p $elm_ref_type] } {
         set elm_widget select
-        set options [get_object_type_options -object_type $elm_ref_type]
+        set options [simulation::object::get_object_type_options -object_type $elm_ref_type]
         lappend extra { options \$options }
     }
 
@@ -485,7 +438,7 @@ db_foreach select_relations {
 } {
     set label [get_metadata_property -content_type $content_type -entry_type relations -entry $relation_tag -property label]
     set section [get_metadata_property -content_type $content_type -entry_type relations -entry $relation_tag -property section]
-    set options [get_object_type_options -object_type $target_type]
+    set options [simulation::object::get_object_type_options -object_type $target_type]
 
     # LARS HACK: This only works for a specific hard-coded max_n
     # We need to generalize so it can be dynamic
@@ -693,14 +646,14 @@ ad_form -extend -name object -new_request {
             -revision_id $revision_id \
             -status "live"
 
-        # LARS: The way we do this update is not very pretty: Delete all relations and re-add the new ones
+        # TODO: The way we do this update is not very pretty: Delete all relations and re-add the new ones
         db_dml delete_all_relations {
             delete from cr_item_rels
             where  item_id = :item_id
         }
 
         foreach elm $rel_elements {
-            # LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
+            # TODO: LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
             regexp {__(.+)__} $elm match relation_tag
             regexp {__.+__(.+)$} $elm match order_n
             set related_object_id [set $elm]

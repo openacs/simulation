@@ -37,7 +37,7 @@ template::list::create \
             label "Tasks"
             link_url_col sim_tasks_url
             display_template {
-                @dev_sims.tasks@ <if @dev_sims.prop_empty_count@ gt 0>, with @dev_sims.prop_empty_count@ incomplete prop</if><if @dev_sims.prop_empty_count@ gt 1>s</if>
+                @dev_sims.tasks@<if @dev_sims.prop_empty_count@ gt 0>, with @dev_sims.prop_empty_count@ incomplete prop</if><if @dev_sims.prop_empty_count@ gt 1>s</if>
             }
         }
         delete {
@@ -71,7 +71,7 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_url } dev_sims select_dev_sims "
+db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_url prop_empty_count } dev_sims select_dev_sims "
     select w.workflow_id,
            w.pretty_name,
            (select count(*) 
@@ -85,17 +85,16 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
              where sr.role_id = wr.role_id
                and wr.workflow_id = w.workflow_id
                and character_id is null) as role_empty_count,
-           (select count(*) 
-              from sim_task_object_map stom,
+           (select sum(coalesce(attachment_num,0))
+              from sim_tasks st,
                    workflow_actions wa
-             where stom.task_id = wa.action_id
+             where st.task_id = wa.action_id
                and wa.workflow_id = w.workflow_id) as prop_count,
            (select count(*) 
               from sim_task_object_map stom,
                    workflow_actions wa
              where stom.task_id = wa.action_id
-               and wa.workflow_id = w.workflow_id
-               and stom.object_id is null) as prop_empty_count,
+               and wa.workflow_id = w.workflow_id) as prop_not_empty_count,
            (select count(*)
               from workflow_actions wa
              where wa.workflow_id = w.workflow_id) as tasks
@@ -108,6 +107,7 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
        and ss.sim_type = 'dev_sim'
     $sim_in_dev_filter_sql
 " {
+    set prop_empty_count [expr $prop_count - $prop_not_empty_count]
     if { [simulation::template::ready_for_casting_p -role_empty_count $role_empty_count -prop_empty_count $prop_empty_count] } {
         set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
     } else {

@@ -49,6 +49,56 @@ ad_proc -private simulation::object::content_url {
     return "${package_url}object-content/${name}"
 }
 
+
+ad_proc simulation::object::get_object_type_options {
+    -object_type:required
+    {-null_label "--None--"}
+} {
+    Get options for a select/radio widget of available objects of a given object_type.
+    Deals with content_types as a special-case where it'll provide a drop-down of items, 
+    not revisions.
+} {
+    # We need to know if this is a CR content_type, because in that case we 
+    # want to reference the item corresponding to the revision, not the revision
+    set content_type_p [db_string content_type_p { 
+        select count(*) 
+        from   acs_object_type_supertype_map
+        where  object_type = :object_type
+        and    ancestor_type = 'content_revision'
+    }]
+
+    # LARS TODO: We need to be able to scope this to a package, 
+    # possibly filter by other things, control the sort order,
+    # we need to be able to control what the label looks like (e.g. include email for users)
+    # and it needs to be intelligent about scaling issues
+    if { $content_type_p } {
+        set options [db_list_of_lists select_options { 
+            select r.title,
+            i.item_id
+            from   cr_items i, cr_revisions r
+            where  i.content_type = :object_type
+            and    r.revision_id = i.live_revision
+            order  by r.title
+        }]
+    } else {
+        set options [db_list_of_lists select_options { 
+            select acs_object__name(object_id),
+            object_id
+            from   acs_objects
+            where  object_type = :object_type
+            order  by acs_object__name(object_id)
+        }]
+    }
+
+    if { ![empty_string_p $null_label] } {
+        set options [concat [list [list $null_label {}]] $options]
+    }
+
+    return $options
+}
+
+
+
 ###############################
 #
 # simulation::object::xml namespace

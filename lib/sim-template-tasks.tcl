@@ -183,12 +183,11 @@ db_multirow -extend $extend tasks select_tasks "
            wa.sort_order,
            wa.always_enabled_p,
            wfa.new_state
-      from workflow_actions wa,
-           workflow_fsm_actions wfa,
-           sim_tasks st
+      from workflow_actions wa left outer join
+           sim_tasks st on (st.task_id = wa.action_id),
+           workflow_fsm_actions wfa 
      where wa.workflow_id = :workflow_id
-       and wfa.action_id = wa.action_id       
-       and st.task_id = wa.action_id
+       and wfa.action_id = wa.action_id
      order by wa.sort_order
 " {
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
