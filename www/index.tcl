@@ -25,9 +25,8 @@ template::list::create \
 # number of active tasks for that role 
 
 db_multirow cases cases_sql {
-    select 'case one', 'case two' as case_name,
-           0,2 as task_count
-    from dual
+    select 'case one' as case_name,
+           2 as task_count
 }
 
 template::list::create \

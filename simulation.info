@@ -13,9 +13,13 @@
         <summary>Workflow-based task simulator.</summary>
         <release-date>2003-10-13</release-date>
 
+        <provides url="simulation" version="0.1d"/>
         <requires url="workflow" version="1.1d1"/>
+        <requires url="file-storage" version="4.7d3"/>
+        <requires url="bcms" version="0.2"/>
 
         <callbacks>
+            <callback type="after-instantiate"  proc="simulation::apm::after_instantiate"/>
         </callbacks>
         <parameters>
         <!-- No version parameters -->

@@ -1,0 +1,9 @@
+ad_page_contract {
+    Displays a Simulation Object
+    
+    @author Lars Pind (lars@collaboraid.biz)
+    @creation-date 2003-10-14
+    @cvs-id $Id$
+}
+
+rp_internal_redirect -absolute_path [file join [acs_package_root_dir "simulation"] lib object-display]

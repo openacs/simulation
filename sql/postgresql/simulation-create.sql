@@ -7,5 +7,6 @@
 --
 --
 
-\i simulation-create-tables.sql
-\i simulation-create-functions.sql
+\i simulation-tables-create.sql
+\i simulation-content-types-create.sql
+\i simulation-packages-create.sql

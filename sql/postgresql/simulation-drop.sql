@@ -5,9 +5,6 @@
 
 select drop_package('sim_object');
 
-delete from acs_permissions 
-      where object_id in (select sim_object_id from sim_objects);
-
 --drop objects
 --declare
 --	object_rec		record;
@@ -25,7 +22,6 @@ drop table sim_simulations;
 drop table sim_tasks;
 drop table sim_roles;
 drop table sim_workflow_object_map;
-drop table sim_objects;
 
 
 --drop types
