@@ -94,9 +94,9 @@ if { [llength $enabled_action_id] == 1 } {
                 set body "
 
 -----Original Message-----
-From: [workflow::role::get_element -role_id $from_role_id -element pretty_name]
+From: [workflow::role::get_element -role_id $from_role_id -element character_title]
 Sent: [lc_time_fmt $creation_date "%x %X"]
-To: [workflow::role::get_element -role_id $to_role_id -element pretty_name]
+To: [workflow::role::get_element -role_id $to_role_id -element character_title]
 Subject: $subject
 
 [ad_html_text_convert -from $mime_type -to "text/plain" $triggering_body]"
@@ -224,13 +224,13 @@ if { ![empty_string_p $action(recipients)] } {
 
             set recipient_list [list]
             foreach recipient_id $action(recipients) {
-                lappend recipient_list [simulation::role::get_element -role_id $recipient_id -element pretty_name]
+                lappend recipient_list [simulation::role::get_element -role_id $recipient_id -element character_title]
             }
             set recipient_names [join $recipient_list ", "]
 
             if { ![empty_string_p $action(assigned_role_id)] } {
                 simulation::role::get -role_id $action(assigned_role_id) -array sender_role
-                set sender_name $sender_role(pretty_name)
+                set sender_name $sender_role(character_title)
             }        
         } -on_submit {
 

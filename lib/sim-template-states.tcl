@@ -57,7 +57,7 @@ template::list::create \
             sub_class narrow
             display_template {
                 <a href="@states.delete_url@" onclick="return confirm('Are you sure you want to delete state @states.pretty_name@?');">
-                  <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
+                  <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
                 </a>
             }
         }

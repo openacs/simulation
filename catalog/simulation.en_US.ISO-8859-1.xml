@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="simulation" package_version="1.0.0b2" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="simulation" package_version="1.0.0b4" locale="en_US" charset="ISO-8859-1">
 
   <msg key="add_new_characters">add new characters</msg>
   <msg key="Administration">Administration</msg>
@@ -101,8 +101,6 @@ this time. &lt;/blockquote&gt;</msg>
   <msg key="lt_Generated_map_XML_fil">Generated map XML file and sent any notifications.</msg>
   <msg key="lt_If_you_are_using_the">If you are using the respond button to respond to multiple tasks
     then all checked tasks must share the same task name.</msg>
-  <msg key="lt_If_you_are_using_the">If you are using the respond button to respond to multiple tasks
-    then all checked tasks must share the same task name.</msg>
   <msg key="lt_in_CityBuild_before_y">in CityBuild before you can finish setting up these tasks.</msg>
   <msg key="lt_Join_a_Case_in_Simula">Join a Case in Simulation &quot;%workflow.pretty_name%&quot;</msg>
   <msg key="lt_Join_a_Case_in_Simula_1">Join a Case in Simulation &quot;%simulation.pretty_name%&quot;</msg>
@@ -185,7 +183,7 @@ Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="Max__users">Max # users</msg>
   <msg key="Message">Message</msg>
   <msg key="message">message</msg>
-  <msg key="message_notificaiton_email_subject">[SimPlay] New message in simulation %simulation_name: %subject%</msg>
+  <msg key="message_notificaiton_email_subject">[SimPlay] New message in simulation %simulation_name%: %subject%</msg>
   <msg key="message_notification_email_body">You have just received the following message in simulation %simulation_name%:
 
 -----------------------------------------------------

@@ -51,12 +51,13 @@ db_foreach tasks {
     if { ![empty_string_p $row(assigned_role_pretty)] || ![empty_string_p $recipient_role_pretty] } {
         append section_name " ("
         if { ![empty_string_p $row(assigned_role_pretty)] } {
-            append section_name "$row(assigned_role_pretty))"
+            append section_name "$row(assigned_role_pretty)"
         }
         if { ![empty_string_p $recipient_role_pretty] } {
-            append section_name "-> $recipient_role_pretty)"
+            append section_name " to $recipient_role_pretty"
         }
     }
+    append section_name ")"
     
     ad_form -extend -name tasks -form \
         [list [list description_$row(action_id):richtext,optional \

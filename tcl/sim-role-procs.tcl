@@ -172,10 +172,18 @@ ad_proc -public simulation::role::get {
     }
 
     db_1row select_sim_role {
-        select character_id,
-               users_per_case
-        from   sim_roles
-        where  role_id = :role_id
+        select sr.character_id,
+               sr.users_per_case,
+               c.name as character_name,
+               c.title as character_title,
+               c.item_id as character_item_id
+        from   sim_roles sr left outer join
+               (select scx.name, scx.title, scx.item_id
+                from   sim_charactersx scx,
+                       cr_items ci 
+                where  ci.item_id = scx.item_id 
+                and    ci.live_revision = scx.object_id) c on (c.item_id = sr.character_id)
+        where  sr.role_id = :role_id
     } -column_array local_row
 
     array set row [array get local_row]
