@@ -16,11 +16,13 @@ You are <a href="@role.character_url@">@role.character_title@</a>
   <li><a href="@about_sim_url@">About this simulation</a>
   <li><a href="@notifications_url@">My Notifications</a>
 </ul>
+<if @show_contacts_p@>
 <h4>Contacts</h4>
 <ul class="action-links">
   <multiple name="contacts">
     <li><a href="@contacts.character_url@">@contacts.character_title@</a> (@contacts.role_pretty@)</li>
   </multiple>
 </ul>
+</if>
 
 

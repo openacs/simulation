@@ -46,6 +46,12 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
          ]]
 }
 
+ad_form -extend -name characters -form {
+  {show_contacts_p:boolean(radio),optional
+    {label "Should we these contacts?"}
+    {options {{"Show contacts" t} {"Don't show contacts" f}}}
+  }
+}
 
 wizard submit characters -buttons { back next }
 
@@ -56,12 +62,21 @@ ad_form -extend -name characters -on_request {
         simulation::role::get -role_id $role_id -array sim_role_array
         set role_$role_id $sim_role_array(character_id)
     }
+    set show_contacts_p [db_string gettheflag {
+      select show_contacts_p
+        from sim_simulations
+       where simulation_id=:workflow_id}]
 } -on_submit {
     db_transaction {
         # Map each role to chosen character
         foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
             set row(character_id) [set role_${role_id}]
             simulation::role::edit -role_id $role_id -array row
+        }
+        db_dml show_contacts_p {
+          update sim_simulations
+             set show_contacts_p = :show_contacts_p
+             where simulation_id = :workflow_id
         }
     }
 

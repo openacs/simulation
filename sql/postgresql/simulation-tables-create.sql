@@ -23,7 +23,12 @@ create table sim_simulations (
     case_end              timestamptz,
     send_start_note_date  timestamptz,
     constraint sim_simulations_case_end_after_start_ck
-      check (case_end >= case_start)
+      check (case_end >= case_start),
+    show_contacts_p       boolean default 't'
+      constraint sim_show_contacts_p_ck
+        check(show_contacts_p in ('t','f'))
+      constraint sim_show_contacts_p_nn
+        not null
 );
 
 select acs_object_type__create_type (

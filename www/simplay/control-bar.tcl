@@ -15,6 +15,11 @@ set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]    
 
+set show_contacts_p [db_string getflag {
+    select show_contacts_p
+      from sim_simulations
+     where simulation_id=:workflow_id}]
+
 set case_home_url [export_vars -base "case" { case_id role_id }]
 
 set message_count [db_string message_count_sql {
