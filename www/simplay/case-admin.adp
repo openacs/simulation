@@ -21,23 +21,8 @@
 
 <h2>Case History</h2>
 
-@case_history_filter;noquote@
-
-<h3>Actions</h3>
 <p>
-  <listtemplate name="log"></listtemplate>
-<p>
+<a href="@full_history_url@">Export full case history</a>
+</p>
 
-<if @actions_only_p@ false>
-
-  <h3>Messages</h3>
-  <p>
-    <include src="/packages/simulation/lib/messages" case_id="@case_id@">
-  </p>
-
-  <h3>Documents</h3>
-  <p>
-    <listtemplate name="documents"></listtemplate>
-  </p>
-
-</if>
+<include src="/packages/simulation/lib/case-history" case_id="@case_id@" />

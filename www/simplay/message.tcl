@@ -189,7 +189,7 @@ ad_form -extend -name message -new_request {
         foreach attachment_set $attachments_set_list {
             set object_url [simulation::object::content_url -name [ns_set get $attachment_set name]]
             set object_title [ns_set get $attachment_set title]
-            append attachments "<a href=\"$object_url\">$object_title</a><br>"
+            append attachments "<a href=\"$object_url\">$object_title</a> ($content(mime_type))<br>"
         }
         if { [llength $attachments_set_list] == 0 } {
             element set_properties message attachments -widget hidden

@@ -17,6 +17,9 @@ simulation::include_contract {
     limit {
         default_value {}
     }
+    show_body_p {
+        default_value 0
+    }
 }
 
 set package_id [ad_conn package_id]
@@ -61,6 +64,17 @@ set elements {
     }
 }
 
+set extend { message_url creation_date_pretty }
+
+if { $show_body_p } {
+    lappend elements body
+    lappend elements {
+        label "Body"
+    }
+
+    lappend extend body
+}
+
 if { [exists_and_not_null case_id] && [exists_and_not_null role_id] } {
     set actions [list "Send new message" [export_vars -base message { case_id role_id }] {}]
 } else {
@@ -74,7 +88,7 @@ template::list::create \
     -actions $actions \
     -elements $elements
 
-db_multirow -extend { message_url creation_date_pretty } messages select_messages "
+db_multirow -extend $extend messages select_messages "
     select sm.message_id,
            cr.item_id,
            sm.title as subject,
@@ -94,6 +108,7 @@ db_multirow -extend { message_url creation_date_pretty } messages select_message
                and relation_tag = 'attachment') as  attachment_count,
            sm.to_role_id,
            sm.case_id as msg_case_id
+           [ad_decode $show_body_p 0 "" ", cr.content, cr.mime_type"]
     from   sim_messagesx sm,
            cr_revisions cr,
            workflows w,
@@ -116,4 +131,8 @@ db_multirow -extend { message_url creation_date_pretty } messages select_message
         set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { item_id { case_id $msg_case_id } { role_id $to_role_id } }]
     }
     set creation_date_pretty [lc_time_fmt $creation_date_ansi "%x %X"]
+
+    if { $show_body_p } {
+        set body [ad_html_text_convert -from $mime_type -to "text/plain" $content]
+    }
 }
