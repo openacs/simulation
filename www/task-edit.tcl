@@ -45,7 +45,7 @@ workflow::get -workflow_id $workflow_id -array workflow
 
 set role_options [db_list_of_lists role_option_list "
     select wr.pretty_name,
-           wr.short_name
+           wr.role_id
       from workflow_roles wr
      where wr.workflow_id = :workflow_id
 "]
@@ -96,6 +96,12 @@ ad_form -name task -edit_buttons [
     workflow::get -workflow_id $workflow_id -array sim_template_array    
     set page_title "Edit Task $name"
     set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
+    set recipient_role [db_string select_recipient {
+        select recipient
+        from sim_tasks
+        where task_id = :action_id
+    }]
+   set assigned_role $task_array(assigned_role)
 
 } -new_request {
 
@@ -113,11 +119,14 @@ ad_form -name task -edit_buttons [
 
     # create the task
 
+    set assigned_role_name [workflow::role::get_element \
+                                -role_id $assigned_role \
+                                -element short_name]
     set action_id [workflow::action::fsm::new \
 		       -workflow_id $workflow_id \
 		       -short_name $name \
 		       -pretty_name $name \
-		       -assigned_role $assigned_role \
+		       -assigned_role $assigned_role_name \
 		       -description $description_content \
 		       -description_mime_type $description_mime_type]
 
@@ -125,10 +134,9 @@ ad_form -name task -edit_buttons [
     # and then add extra data for simulation
     # because workflow::action::fsm::new wants role.short_name instead of
     # role_id, we stay consistent for recipient_role
-    set recipient_role_id [workflow::role::get_id -workflow_id $workflow_id  -short_name $recipient_role]
     db_dml set_role_recipient {
         insert into sim_tasks
-        values (:action_id, :recipient_role_id)
+        values (:action_id, :recipient_role)
     }
 } -edit_data {
 

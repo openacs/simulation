@@ -69,7 +69,7 @@ template::list::create \
 # tasks db_multirow
 #-------------------------------------------------------------
 # TODO: fix this so it returns rows when it should        
-
+set return_url "[ad_conn url]?[ad_conn query]"
 db_multirow -extend { edit_url view_url delete_url } tasks select_tasks "
     select wa.action_id,
            wa.pretty_name as name,
@@ -88,5 +88,5 @@ db_multirow -extend { edit_url view_url delete_url } tasks select_tasks "
 " {
     set edit_url [export_vars -base "task-edit" { action_id }]
     set view_url [export_vars -base "task-edit" { action_id }]
-    set delete_url [export_vars -base "task-delete" { action_id }]
+    set delete_url [export_vars -base "task-delete" { action_id return_url }]
 }

@@ -10,6 +10,8 @@ namespace eval simulation {}
 namespace eval simulation::action {}
 namespace eval simulation::object_type {}
 namespace eval simulation::template {}
+namespace eval simulation::character {}
+namespace eval simulation::role {}
 
 ad_proc -public simulation::object_type::get_options {
 } {
@@ -42,6 +44,8 @@ ad_proc -public simulation::action::edit {
     {-always_enabled_p f}
     {-initial_action_p f}
     {-recipient_role:required {}}
+    {-description {}}
+    {-description_mime_type {}}
 } {
     Edit an action.  Mostly a wrapper for fsm, plus some simulation-specific stuff.
 } {
@@ -58,21 +62,20 @@ ad_proc -public simulation::action::edit {
 
     set workflow_id [workflow::action::get_workflow_id -action_id $action_id]
 
-    set assigned_role_id [workflow::role::get_id -workflow_id $workflow_id  -short_name $assigned_role ]
-    set recipient_role_id [workflow::role::get_id -workflow_id $workflow_id  -short_name $recipient_role ]
-
     db_transaction {
         db_dml edit_workflow_action {
             update workflow_actions
                set short_name = :short_name,
                    pretty_name = :pretty_name,
-                   assigned_role = :assigned_role_id
+                   assigned_role = :assigned_role,
+                   description = :description,
+                   description_mime_type = :description_mime_type
              where action_id = :action_id
         }
 
         db_dml edit_sim_role {
             update sim_tasks
-               set recipient = :recipient_role_id
+               set recipient = :recipient_role
              where task_id = :action_id
         }
     }
@@ -86,27 +89,17 @@ ad_proc -public simulation::template::associate_object {
 } {
     Associate an object with a simulation template.  Succeeds if the record is added or already exists.
 } {
+      set exists_p [db_string row_exists {
+          select count(*) 
+            from sim_workflow_object_map
+          where workflow_id =  :template_id
+            and object_id = :object_id
+      }]
 
-    with_catch errmsg {
+    if { ! $exists_p } {
         db_dml add_object_to_workflow_insert {
             insert into sim_workflow_object_map
             values (:template_id, :object_id)
-        }
-    } { 
-        # can only be 0 or 1 due to table constraints
-        set exists_p [db_string row_exists {
-            select count(*) 
-              from sim_workflow_object_map
-            where workflow_id =  :template_id
-              and object_id = :object_id
-        }]
-        
-        if { $exists_p } {
-            # the record already exists. Return normally
-        } {
-            # the record didn't exist, so pass on the error
-            global errorInfo 
-            error $errmsg $errorInfo
         }
     }
 }
@@ -128,4 +121,97 @@ ad_proc -public simulation::template::dissociate_object {
 
 template_tag relation { params } {
     publish::process_tag relation $params
+}
+
+################################
+#
+# simulation::character namespace
+#
+################################
+
+ad_proc -public simulation::character::get {
+    {-character_id:required}
+    {-array:required}
+} {
+    Get basic information about a character. Gets the following attributes: uri, title.
+
+    @param  array       The name of an array into which you want the information put. 
+
+    @author Peter Marklund
+} {
+    upvar $array row
+
+    db_1row select_character_info {} -column_array row
+}
+
+ad_proc -public simulation::character::get_element {
+    {-character_id:required}
+    {-element:required}
+} {
+    Get a particular attribute from a character object.
+
+    @param element Name of the attribute you want to retrieve
+
+    @see simulation::character::get
+
+    @author Peter Marklund
+} {
+    get -character_id $character_id -array character
+
+    return $character($element)
+}
+
+################################
+#
+# simulation::role namespace
+#
+################################
+
+ad_proc -public simulation::role::new {
+    {-template_id:required}
+    {-character_id:required}
+    {-role_short_name ""}
+    {-role_pretty_name ""}
+} {
+    Create a new simulation role for a given simulation template
+    and character. Will map the character to the template if this
+    is not already done.
+
+    @author Peter Marklund
+} {
+    # Set default values for names
+    if { [empty_string_p $role_short_name] || [empty_string_p $role_pretty_name] } {
+        set character_name [simulation::character::get_element \
+                                -character_id $character_id \
+                                -element title]
+    }
+    if { [empty_string_p $role_short_name] } {
+        set role_short_name $character_name
+    }
+    if { [empty_string_p $role_pretty_name] } {
+        set role_pretty_name $character_name
+    }
+
+    db_transaction {
+        simulation::template::associate_object \
+            -template_id $template_id \
+            -object_id $character_id
+
+        # create the role
+        set role_id [workflow::role::new \
+                         -workflow_id $template_id \
+                         -short_name $role_short_name \
+                         -pretty_name $role_pretty_name]
+        # and then add extra data for simulation
+        db_dml set_role_character {
+            insert into sim_roles
+            values (:role_id, :character_id)
+        }    
+    }
+}
+
+ad_proc -public simulation::role::delete {
+    {-role_id:required}
+} {
+    workflow::role::delete -role_id $role_id
 }

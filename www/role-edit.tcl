@@ -104,24 +104,12 @@ ad_form -name role -cancel_url sim-template-list -form {
     set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
 } -new_data {
 
-    db_transaction {
+    simulation::role::new \
+        -template_id $workflow_id \
+        -character_id $character_id \
+        -role_short_name $name \
+        -role_pretty_name $name
 
-        simulation::template::associate_object \
-            -template_id $workflow_id \
-            -object_id $character_id
-
-    # create the role
-    set role_id [workflow::role::new \
-                     -workflow_id $workflow_id \
-                     -short_name $name \
-                     -pretty_name $name]
-    # and then add extra data for simulation
-    db_dml set_role_character {
-        insert into sim_roles
-        values (:role_id, :character_id)
-    }
-
-}    
 } -after_submit {
     ad_returnredirect [export_vars -base "sim-template-edit" { workflow_id }]
     ad_script_abort
