@@ -49,23 +49,15 @@ db_multirow cases select_cases "
            w.pretty_name,
            case when (select count(*)
                         from workflow_case_enabled_actions wcea
-                       where wcea.case_id = wc.case_id
-                         and wcea.enabled_state = 'enabled')=0 then 'Completed'
+                       where wcea.case_id = wc.case_id) = 0 then 'Completed'
                 else 'Active'
            end as status,
            r.role_id,
            r.pretty_name as role_pretty,
-           (select count(distinct wa2.action_id)
-            from   workflow_case_enabled_actions wcea2,
-                   workflow_actions wa2,
-                   workflow_case_role_party_map wcrpm2
-            where  wcea2.case_id = wc.case_id
-            and    wcea2.enabled_state = 'enabled'
-            and    wa2.action_id = wcea2.action_id
-            and    wcrpm2.role_id = wa2.assigned_role
-            and    wcrpm2.party_id = :party_id
-            and    wcrpm2.role_id = r.role_id
-            and    wcrpm2.case_id = wc.case_id) as num_user_tasks
+           (select count(distinct wcaua.enabled_action_id)
+            from   workflow_case_assigned_user_actions wcaua
+            where  wcaua.case_id = wc.case_id
+            and    wcaua.user_id = :party_id) as num_user_tasks
       from workflow_cases wc,
            sim_cases sc,
            workflow_case_role_party_map wcrpm,

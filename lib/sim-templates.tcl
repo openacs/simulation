@@ -130,11 +130,7 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
              where workflow_id = w.workflow_id) as role_count,
            (select count(a2.action_id)
               from workflow_actions a2
-             where a2.workflow_id = w.workflow_id
-               and not exists (select 1
-                                 from workflow_initial_action ia2
-                                where ia2.workflow_id = w.workflow_id
-                                  and ia2.action_id = a2.action_id)) as task_count
+             where a2.workflow_id = w.workflow_id) as task_count
       from workflows w, 
            sim_simulations ss,
            acs_objects a
