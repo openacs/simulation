@@ -644,10 +644,12 @@ ad_proc ::twt::simulation::add_tasks_to_template {
         form find ~n task
         field find ~n name 
         field fill $task_name
+
         field find ~n assigned_role
         field select $task(assigned_role)
-        field find ~n recipient_role        
-        field select $task(recipient_role)
+
+        field check_multiple recipient_roles $task(recipient_roles)
+
         field find ~n description 
         field fill "This is the task description for task $task_name"
         form submit

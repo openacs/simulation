@@ -54,46 +54,46 @@ ad_proc ::twt::simulation::data::properties {} {
 
 ad_proc ::twt::simulation::data::tasks {} {
     return {
-    "Ask information from Bernadette" {assigned_role "Her lawyer" recipient_role "Bernadette"}
-    "Ask information from MOTORHOME" {assigned_role "Her lawyer" recipient_role "MOTORHOME"}
-    "Ask information from opponent's lawyer 1" {assigned_role "Its lawyer" recipient_role "Her lawyer"}
-    "Ask information from opponent's lawyer 2" {assigned_role "Her lawyer" recipient_role "Its lawyer"}
-    "Ask information from library" {assigned_role "Her lawyer" recipient_role "Library"}
-    "Ask information from partner" {assigned_role "Her lawyer" recipient_role "Partner firm X"}
-    "Intervene" {assigned_role "Partner firm X" recipient_role "Her lawyer"}
-    "Reply to intervention" {assigned_role "Her lawyer" recipient_role "Partner firm X"}
-    "Give information as Bernadette" {assigned_role "Bernadette" recipient_role "Her lawyer"}
-    "Give information as Motorhome" {assigned_role "MOTORHOME" recipient_role "Her lawyer"}
-    "Make/edit draft report" {assigned_role "Her lawyer" recipient_role "Her lawyer"}
-    "Edit draft report" {assigned_role "Her lawyer" recipient_role "Her lawyer"}
-    "Give information to opponent's lawyer" {assigned_role "Her lawyer" recipient_role "Its lawyer"}
-    "Send final report" {assigned_role "Her lawyer" recipient_role "Partner firm X"}
-    "Send draft report" {assigned_role "Her lawyer" recipient_role "Partner firm X"}
+    "Ask information from Bernadette" {assigned_role "Her lawyer" recipient_roles "bernadette"}
+    "Ask information from MOTORHOME" {assigned_role "Her lawyer" recipient_roles "motorhome"}
+    "Ask information from opponent's lawyer 1" {assigned_role "Its lawyer" recipient_roles "her_lawyer"}
+    "Ask information from opponent's lawyer 2" {assigned_role "Her lawyer" recipient_roles "its_lawyer"}
+    "Ask information from library" {assigned_role "Her lawyer" recipient_roles "library"}
+    "Ask information from partner" {assigned_role "Her lawyer" recipient_roles "partner_firm_x"}
+    "Intervene" {assigned_role "Partner firm X" recipient_roles "her_lawyer"}
+    "Reply to intervention" {assigned_role "Her lawyer" recipient_roles "partner_firm_x"}
+    "Give information as Bernadette" {assigned_role "Bernadette" recipient_roles "her_lawyer"}
+    "Give information as Motorhome" {assigned_role "MOTORHOME" recipient_roles "her_lawyer"}
+    "Make/edit draft report" {assigned_role "Her lawyer" recipient_roles "her_lawyer"}
+    "Edit draft report" {assigned_role "Her lawyer" recipient_roles "her_lawyer"}
+    "Give information to opponent's lawyer" {assigned_role "Her lawyer" recipient_roles "its_lawyer"}
+    "Send final report" {assigned_role "Her lawyer" recipient_roles "partner_firm_x"}
+    "Send draft report" {assigned_role "Her lawyer" recipient_roles "partner_firm_x"}
     }
 }
 
 ad_proc ::twt::simulation::data::tasks_ld {} {
     return {
-    "Write Proposal gr1" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Head of Legisl. Dept."}
-    "Write Proposal gr2" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Deputy Head of Legisl. Dept."}
-    "Write Opinion SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Fundraiser" recipient_role "Minister of Justice"}
-    "Write Opinion SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Representative of ADC" recipient_role "Minister of Justice"}
-    "Comment on Member2 Proposal SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Head of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Comment on Member1 Proposal SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Deputy Head of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Revise using Opinions and Comment from Head SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Revise using Opinions and Comment from Deputy SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Rate Comments SHOULD BE A REVIEWINFO" {assigned_role "Student" recipient_role "Minister of Justice"}
-    "Rate Revisions SHOULD BE A REVIEWINFO" {assigned_role "Student" recipient_role "Minister of Justice"}
-    "Learning evaluation DUMMY or ADDINFOTOPORTFOLIO" {assigned_role "Student" recipient_role "Minister of Justice"}
-    "Write Definition based on Revision SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Elaborate the Revision SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Comment Revision of Member 1" {assigned_role "Head of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Comment Revision of Member 2" {assigned_role "Deputy Head of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Learning Evalution SHOULD BE A ADDINFOTOPORTFOLIO" {assigned_role "Student" recipient_role "Minister of Justice"}
-    "Implementation of all received comments and opinions SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Implementation of all received comments and opinions SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Write law SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
-    "Write law SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
+    "Write Proposal gr1" {assigned_role "Member 1 of Legisl. Dept." recipient_roles "head_of_legisl_dept_"}
+    "Write Proposal gr2" {assigned_role "Member 2 of Legisl. Dept." recipient_roles "deputy_head_of_legisl_dept"}
+    "Write Opinion SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Fundraiser" recipient_roles "minister_of_justice"}
+    "Write Opinion SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Representative of ADC" recipient_roles "minister_of_justice"}
+    "Comment on Member2 Proposal SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Head of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Comment on Member1 Proposal SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Deputy Head of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Revise using Opinions and Comment from Head SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 1 of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Revise using Opinions and Comment from Deputy SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 2 of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Rate Comments SHOULD BE A REVIEWINFO" {assigned_role "Student" recipient_roles "minister_of_justice"}
+    "Rate Revisions SHOULD BE A REVIEWINFO" {assigned_role "Student" recipient_roles "minister_of_justice"}
+    "Learning evaluation DUMMY or ADDINFOTOPORTFOLIO" {assigned_role "Student" recipient_roles "minister_of_justice"}
+    "Write Definition based on Revision SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 1 of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Elaborate the Revision SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 2 of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Comment Revision of Member 1" {assigned_role "Head of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Comment Revision of Member 2" {assigned_role "Deputy Head of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Learning Evalution SHOULD BE A ADDINFOTOPORTFOLIO" {assigned_role "Student" recipient_roles "minister_of_justice"}
+    "Implementation of all received comments and opinions SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Member 2 of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Implementation of all received comments and opinions SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Member 2 of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Write law SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Member 1 of Legisl. Dept." recipient_roles "minister_of_justice"}
+    "Write law SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Member 1 of Legisl. Dept." recipient_roles "minister_of_justice"}
     }   
 }
 
