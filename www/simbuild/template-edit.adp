@@ -22,9 +22,11 @@
   <p>TODO: Instead of initialize column and special task, UI should
   show an "initial state" radio button.  The special initialize task should not
   appear in this list.
-  
+  <p>TODO: Better widget for suggested duration.</p>
+
   <a href="@spec_url@" class="action">Download a specification for this template</a>
   <if @inst_url@ not nil>
     <a href="@inst_url@" class="action">Start a simulation with this template</a>
   </if>
+
 </if>
