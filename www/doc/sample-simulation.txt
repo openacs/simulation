@@ -1,0 +1,112 @@
+tilburg {
+    object_type acs_object
+    package_key simulation
+    pretty_name Tilburg
+    roles {
+        lawyer {
+            pretty_name Lawyer
+        }
+        client {
+            pretty_name Client
+        }
+        other_lawyer {
+            pretty_name {
+                Other lawyer
+            }
+        }
+        other_client {
+            pretty_name {
+                Other client
+            }
+        }
+        mentor {
+            pretty_name Mentor
+        }
+        secretary {
+            pretty_name Secretary
+        }
+    }
+    states {
+        started {
+            pretty_name Started
+        }
+        open {
+            pretty_name Open
+        }
+        written {
+            pretty_name Written
+        }
+        done {
+            pretty_name Done
+        }
+    }
+    actions {
+        initialize {
+            initial_action_p t
+            pretty_name Initialize
+        }
+        ask_client_for_information {
+            assigned_role lawyer
+            assigned_states started
+            new_state open
+            pretty_name {
+                Ask client
+                for information
+            }
+        }
+        ask_client_for_more_information {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {Ask Client for more information}
+        }
+        consult_lawyer_of_the_other_party {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {
+                Consult lawyer
+                of the
+                other party
+            }
+        }
+        visit_the_library {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {Visit the library}
+        }
+        consult_mentor {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {
+                Consult mentor
+            }
+        }
+        mentor_intervenes {
+            assigned_role mentor
+            enabled_states open
+            pretty_name {
+                Mentor intervenes
+            }
+        }
+        consult_secretary {
+            assigned_role lawyer
+            enabled_states open
+            pretty_name {
+                Consult secretary
+            }
+        }
+        write_legal_advice {
+            assigned_role lawyer
+            enabled_states open
+            new_state written
+            pretty_name {Write legal advice}
+        }
+        correct_spell_check_etc {
+            assigned_role secretary
+            enabled_states written
+            new_state done
+            pretty_name {Correct, spell-check, etc.}
+        }
+    }
+}
+
+

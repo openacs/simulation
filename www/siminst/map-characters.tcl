@@ -52,6 +52,6 @@ ad_form -extend -name characters -on_request {
     }
     
     # Proceed to the task page
-    ad_returnredirect [export_vars -base sim-tasks {workflow_id}]
+    ad_returnredirect [export_vars -base map-tasks {workflow_id}]
     ad_script_abort
 }

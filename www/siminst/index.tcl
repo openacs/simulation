@@ -114,8 +114,7 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
         set cast_url ""
     }
     set map_roles_url [export_vars -base "${base_url}siminst/map-characters" { workflow_id }]
-    set map_props_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
-    set sim_tasks_url [export_vars -base "${base_url}siminst/sim-tasks" { workflow_id }]
+    set sim_tasks_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
 }
 
