@@ -1,5 +1,5 @@
 ad_page_contract {
-    TODO...explain what this page is about
+    Display and edit the task descriptions and attachments of a simulation.
 
     @author Peter Marklund
 } {
@@ -48,9 +48,9 @@ db_foreach tasks {
         ad_form -extend -name tasks -form \
             [list [list description_$row(action_id):richtext,optional \
                        {label "Task Description"} \
+                       {help_text "This is the text that users will see while attempting to complete a task."} \
                        {html {cols 60 rows 4}} \
-                       {section $section_name}]]
-
+                       {section $section_name} ]]
         set description_$row(action_id) [template::util::richtext::create $row(description) $row(description_mime_type)]
         
         # Save attachment_num for later
