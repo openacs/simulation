@@ -5,6 +5,9 @@
 
 <formtemplate id="sim_template"></formtemplate>
 
+<p>TODO: Missing from form: description, description-mime-type.  Ready
+for use should be a checkbox.
+
 <if @workflow_id@ not nil>
 
   <p>

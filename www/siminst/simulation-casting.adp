@@ -20,11 +20,7 @@
   <option>Professor</option>
 </select>
 </td>
-<td><select>
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
+<td><input type="text" size="2" value="1"></input>
 </select>
 </td>
 </tr>
@@ -42,12 +38,7 @@
   <option>Professor</option>
 </select>
 </td>
-<td><select>
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-</select>
+<td><input type="text" size="2" value="1"></input>
 </td>
 </tr>
 <tr><td>Judge</td><td>
@@ -63,12 +54,7 @@
   <option>Professor</option>
 </select>
 </td>
-<td><select>
-  <option>1</option>
-  <option>2</option>
-  <option>3</option>
-  <option>4</option>
-</select>
+<td><input type="text" size="2" value="1"></input>
 </td>
 </tr>
 </table>
