@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<message_catalog package_key="simulation" package_version="1.0.0b3" locale="nl_NL" charset="ISO-8859-1">
+
+  <msg key="Cancel">Annuleren</msg>
+  <msg key="Delete_this_template">Verwijder dit sjabloon</msg>
+  <msg key="Edit">Bewerken</msg>
+  <msg key="to_attach_a_document">&lt;font color=&quot;red&quot;&gt;&lt;em&gt;NOTE&lt;/em&gt;&lt;/font&gt;: Om een document aan uw bericht te hechten moet u &lt;a href=&quot;%document_upload_url%&quot;&gt;het document in uw portfolio plaatsen&lt;/a&gt; alvorens het bericht te versturen.</msg>
+  <msg key="to_attach_document_to_message">&lt;font color=&quot;red&quot;&gt;&lt;em&gt;NOTE&lt;/em&gt;&lt;/font&gt;: Om een document aan uw bericht te hechten moet u &lt;a href=&quot;%document_upload_url%&quot;&gt;het document in uw portfolio plaatsen&lt;/a&gt; alvorens het bericht te versturen.</msg>
+  <msg key="Unknown_type">Onbekend </msg>
+  <msg key="Unsubscribe">Meld u af voor een spel</msg>
+  <msg key="Upload_a_document">Upload een document</msg>
+  <msg key="User">Gebruiker</msg>
+  <msg key="Users">Aantal deelnemers</msg>
+  <msg key="View_Map_XML">Zie kaart (XML)</msg>
+  <msg key="Yellow_Pages">Gouden gids</msg>
+  <msg key="Yes_delete_the_case">Ja ... verwijder dit spel (deze case)</msg>
+  <msg key="Your_Options">Uw opties</msg>
+  <msg key="Your_Tasks">Uw taken</msg>
+</message_catalog>
