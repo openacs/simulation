@@ -61,3 +61,52 @@ ad_proc ::twt::simulation::visit_template_page { template_name } {
     do_request /simulation/simbuild/
     link follow ~u template-edit ~c $template_name    
 }
+
+ad_proc ::twt::simulation::add_user {
+    {-first_names:required}
+    {-last_name:required}
+} {
+    do_request /acs-admin/users/user-add
+    field find ~n email
+    set email_account [string map {" " _} "$first_names $last_name"]
+    field fill "${email_account}@test.test"
+    field find ~n first_names
+    field fill $first_names
+    field find ~n last_name
+    field fill $last_name
+    field find ~n password
+    field fill "1"
+    field find ~n password_confirm
+    field fill "1"
+
+    form submit
+}
+
+ad_proc ::twt::simulation::add_user_to_group_url {
+    {-group_name:required}
+} {
+    do_request "/admin/group-types/one?group_type=group"
+    link follow ~c $group_name
+    
+    link follow ~u "relations/add.*membership_rel"        
+    link follow ~u "membership_rel"
+
+    set add_user_url $::tclwebtest::url
+
+    return $add_user_url
+}
+
+ad_proc ::twt::simulation::add_user_to_group {
+    {-group_name ""}
+    {-add_user_url ""}
+    {-user_name:required}
+} {
+    if { [empty_string_p $add_user_url] } {
+        set add_user_url [add_user_to_group_url -group_name $group_name]
+    }
+
+    do_request $add_user_url
+    field find ~n party_id
+    field select $user_name
+    form submit    
+}
