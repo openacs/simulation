@@ -11,10 +11,13 @@ set base_url [apm_package_url_from_id $package_id]
 ######################################################################
 
 # Anonymous users should only be allowed to access the index page (with the flash map)
-# and the object view urls
+# , the yellow pages, and the object view urls
 # We are assuming here that all pages in the package use this master template
 if { [string equal [ad_conn user_id] 0] } {
-    if { ![regexp "^object/" [ad_conn extra_url]] && ![empty_string_p [ad_conn extra_url]] } {
+    if { ![regexp "^object/" [ad_conn extra_url]] && 
+         ![regexp "^yellow-pages" [ad_conn extra_url]] && 
+         ![empty_string_p [ad_conn extra_url]] } {
+
         ad_redirect_for_registration
     }
 }
