@@ -111,7 +111,7 @@ db_foreach select_states {
     lappend states $state_id
 } if_no_rows {
     lappend elements state_spacer3 { 
-        label "<span class=\"form-required-mark\">None.  Template will not work until you add states.</span>"
+        label "<br /><span class=\"form-required-mark\">None.  Template will not work until you add states.</span>"
         sub_class narrow
         display_template " "
     }
@@ -191,10 +191,9 @@ db_multirow -extend $extend tasks select_tasks "
             from   workflow_fsm_states
             where  state_id = wfa.new_state) as new_state_pretty
       from workflow_actions wa left outer join
-           sim_tasks st on (st.task_id = wa.action_id),
-           workflow_fsm_actions wfa 
+           sim_tasks st on (st.task_id = wa.action_id) left outer join
+           workflow_fsm_actions wfa on (wfa.action_id = wa.action_id)
      where wa.workflow_id = :workflow_id
-       and wfa.action_id = wa.action_id
        and not exists (select 1
                          from workflow_initial_action ia
                         where ia.workflow_id = wa.workflow_id

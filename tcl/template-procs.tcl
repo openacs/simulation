@@ -237,6 +237,28 @@ ad_proc -public simulation::template::delete {
     simulation::template::edit -workflow_id $workflow_id -operation delete
 }
 
+ad_proc -public simulation::template::get_options {
+    -package_id
+    {-sim_type "ready_template"}
+} {
+    Get options-list of workflows mapped to the given object, suitable for using in a form.
+} {
+    if { ![exists_and_not_null package_id] } {
+        set package_id [ad_conn package_id]
+    }
+    
+    return [db_list_of_lists workflows {
+        select w.pretty_name, w.workflow_id
+        from   workflows w,
+               sim_simulations s
+        where  w.object_id = :package_id
+        and    s.simulation_id = w.workflow_id
+        and    s.sim_type = :sim_type
+        order  by lower(w.pretty_name)
+    }]
+}
+
+
 
 #----------------------------------------------------------------------
 # Additional API implementations

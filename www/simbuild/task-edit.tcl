@@ -50,6 +50,7 @@ set context [list [list "." "SimBuild"] [list [export_vars -base "template-edit"
 #---------------------------------------------------------------------
 set role_options [concat [list [list "--None--" ""]] [workflow::role::get_options -workflow_id $workflow_id]]
 
+
 ######################################################################
 #
 # task
@@ -64,34 +65,61 @@ set role_options [concat [list [list "--None--" ""]] [workflow::role::get_option
 # task form
 #---------------------------------------------------------------------
 
-ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]] -form {
-    {action_id:key}
-    {pretty_name:text
-        {label "Task Name"}
-        {html {size 20}}
+ad_form \
+    -name task \
+    -export { workflow_id } \
+    -edit_buttons [list \
+                       [list \
+                            [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] \
+                            ok]] \
+    -form {
+        {action_id:key}
+        {pretty_name:text
+            {label "Task Name"}
+            {html {size 20}}
+        }
+        {pretty_past_tense:text,optional
+            {label "Task name in log"}
+            {html {size 20}}
+            {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
+        }
+        {task_type:text(radio)
+            {label "Task is complete when"}
+            {options { 
+                { "Assignee sends message to recipient" message }
+                { "Assignee uploads document" normal } 
+                { "Child workflow is complete" workflow }
+            }}
+            {html {onChange "javascript:acs_FormRefresh('task');"}}
+        }
+        {assigned_role:text(select),optional
+            {label "Assigned To"}
+            {options $role_options}
+        }
+        {recipient_role:text(select),optional
+            {label "Recipient"}
+            {options $role_options}
+        }
+        {child_workflow_id:integer(select),optional
+            {label "Child workflow"}
+            {options {[simulation::template::get_options]}}
+            {html {onChange "javascript:acs_FormRefresh('task');"}}
+        }
     }
-    {pretty_past_tense:text,optional
-        {label "Task name in log"}
-        {html {size 20}}
-        {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
+
+if { [string equal [element get_value task task_type] "workflow"] } {
+    foreach role_id [workflow::get_roles -workflow_id [element get_value task child_workflow_id]] {
+        set role__${role_id}__pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
+        ad_form -extend -name task -form \
+            [list [list child__$role_id:text(select),optional \
+                       [list label "\$role__${role_id}__pretty_name"] \
+                       {options $role_options} \
+                      ]]
+
     }
-    {task_type:text(radio)
-        {label "Task is complete when"}
-        {options { 
-            { "Assignee sends message to recipient" message }
-            { "Assignee uploads document" normal } 
-            { "Child workflow is complete" workflow }
-        }}
-        {html {onChange "javascript:acs_FormRefresh('task');"}}
-    }
-    {assigned_role:text(select),optional
-        {label "Assigned To"}
-        {options $role_options}
-    }
-    {recipient_role:text(select),optional
-        {label "Recipient"}
-        {options $role_options}
-    }
+}
+
+ad_form -extend -name task -form {
     {description:richtext,optional
         {label "Task Description"}
         {html {cols 60 rows 8}}
@@ -122,6 +150,8 @@ ad_form -extend -name task -form {
     }
 }
 
+set focus "task.pretty_name"
+
 ad_form -extend -name task -edit_request {
     set workflow_id $task_array(workflow_id)
     permission::require_write_permission -object_id $workflow_id
@@ -144,13 +174,19 @@ ad_form -extend -name task -edit_request {
 
     switch $task_type {
         message {
+            element set_properties task assigned_role -widget select
             element set_properties task recipient_role -widget select
+            element set_properties task child_workflow_id -widget hidden
         }
         normal {
+            element set_properties task assigned_role -widget select
             element set_properties task recipient_role -widget hidden
+            element set_properties task child_workflow_id -widget hidden
         }
-        child {
+        workflow {
+            element set_properties task assigned_role -widget hidden
             element set_properties task recipient_role -widget hidden
+            element set_properties task child_workflow_id -widget select
         }
     }
 } -new_request {
@@ -159,19 +195,27 @@ ad_form -extend -name task -edit_request {
     set attachment_num 0
 
     set task_type "message"
+    element set_properties task child_workflow_id -widget hidden
 } -on_refresh {
-    # TODO: Add other child widgets
     switch $task_type {
         message {
+            element set_properties task assigned_role -widget select
             element set_properties task recipient_role -widget select
+            element set_properties task child_workflow_id -widget hidden
         }
         normal {
+            element set_properties task assigned_role -widget select
             element set_properties task recipient_role -widget hidden
+            element set_properties task child_workflow_id -widget hidden
         }
-        child {
+        workflow {
+            element set_properties task assigned_role -widget hidden
             element set_properties task recipient_role -widget hidden
+            element set_properties task child_workflow_id -widget select
         }
     }
+
+    set focus {}
 } -on_submit {
     
     set description_mime_type [template::util::richtext::get_property format $description]
@@ -179,13 +223,15 @@ ad_form -extend -name task -edit_request {
 
     switch $task_type {
         message {
+            set child_workflow_id {}
         }
         normal {
-            # Normal messages don't have a recipient
             set recipient_role {}
+            set child_workflow_id {}
         }
         workflow {
-            # TODO
+            set recipient_role {}
+            error "Missing"
         }
     }
 
