@@ -139,7 +139,7 @@ template::list::create \
         casting_type {
             label "Casting Type"
         }
-        users {
+        n_users {
             label "Users enrolled"
         }
         case_start {
@@ -172,8 +172,13 @@ db_multirow -extend { edit_url delete_url edit_p } casting_sims select_casting_s
            ss.enroll_type,
            ss.casting_type,
            (select count(*) 
-              from sim_party_sim_map spsm
-             where spsm.simulation_id = w.workflow_id) as users,
+              from sim_party_sim_map spsm,
+                   party_approved_member_map pamm,
+                   users u
+             where spsm.simulation_id = w.workflow_id
+               and spsm.type = 'auto-enroll'
+               and spsm.party_id = pamm.party_id
+               and pamm.member_id = u.user_id) as n_users,
            to_char(ss.case_start, 'YYYY-MM-DD') as case_start
       from workflows w,
            sim_simulations ss,
