@@ -67,6 +67,21 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
         append documents "<a href=\"$object_url\">$object_title</a><br>"
     }
 
-    set recipient_name [simulation::role::get_element -role_id $action(recipient) -element pretty_name]
-    set sender_name [simulation::role::get_element -role_id $action(assigned_role_id) -element pretty_name]
+    if { ![empty_string_p $action(recipient)] } {
+        set recipient_name [simulation::role::get_element -role_id $action(recipient) -element pretty_name]
+    }
+    if { ![empty_string_p $action(assigned_role_id)] } {
+        set sender_name [simulation::role::get_element -role_id $action(assigned_role_id) -element pretty_name]
+    }
+} -on_submit {
+
+
+    workflow::case::action::execute \
+        -case_id $case_id \
+        -action_id $action_id \
+        -comment [template::util::richtext::get_property $body "content"] \
+        -comment_mime_type [template::util::richtext::get_property $body "mime_type"]
+    
+    ad_returnredirect [export_vars -base tasks { case_id }]
+    ad_script_abort
 }

@@ -67,6 +67,7 @@ db_multirow -extend { task_url } tasks select_tasks "
        and sc.sim_case_id = wc.object_id
        and w.workflow_id = wc.workflow_id
     [template::list::filter_where_clauses -and -name "tasks"]
+    order by wa.sort_order
 " {
     set task_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/task-detail" { enabled_action_id }]
 }

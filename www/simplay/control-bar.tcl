@@ -42,6 +42,7 @@ set task_count [db_string task_count_sql "
        and wcrmp.case_id = wcea.case_id
        and wcrmp.role_id = wa.assigned_role
        and wa.action_id = wcea.action_id
+       and wcea.enabled_state = 'enabled'
     [ad_decode $case_id "" "" "and wcea.case_id = :case_id"]
 "]
 
