@@ -133,23 +133,30 @@ ad_proc -public simulation::template::edit {
         # Update sim_simulations table
 
         set set_clauses [list]
-        foreach col {sim_type suggested_duration} {
+        foreach col {sim_type enroll_type casting_type} {
             if { [info exists edit_array($col)] } {
-                if { [string equal $col suggested_duration] } {
-                    # Suggested duration needs special interval update syntax
-                    if { [empty_string_p $edit_array($col)] } {
-                        lappend set_clauses "$col = null"
-                    } else {
-                        lappend set_clauses "$col = (interval '$edit_array($col)')"
-                    }
-                } else {
-                    lappend set_clauses "$col = :$col"
-                }
-
+                lappend set_clauses "$col = :$col"
                 set $col $edit_array($col)
             }
         }
 
+        if { [info exists edit_array(suggested_duration)] } {
+            if { [empty_string_p $edit_array($col)] } {
+                lappend set_clauses "$col = null"
+            } else {
+                lappend set_clauses "$col = (interval '$edit_array($col)')"
+            }
+            
+            set parties $edit_array(suggested_duration)
+        }
+
+        foreach col {enroll_start enroll_end send_start_note_date case_start case_end} {
+            if { [info exists edit_array($col)] } {
+                lappend set_clauses "$col = to_date(:$col, 'YYYY-MM-DD')"
+                set $col $edit_array($col)
+            }
+        }
+        
         if { [llength $set_clauses] > 0 } {
             db_dml edit_sim "
                     update sim_simulations
@@ -157,49 +164,24 @@ ad_proc -public simulation::template::edit {
                     where simulation_id=:workflow_id
                 "
         }
-    }
-}
 
-ad_proc -public simulation::template::instantiate_edit {
-    {-workflow_id:required}
-    {-enroll_start:required}
-    {-enroll_end:required}
-    {-notification_date:required}
-    {-case_start:required}
-    {-case_end:required}
-    {-enroll_type:required}
-    {-casting_type:required}
-    {-parties:required}    
-} {
-    Edit properties of a simulation set during instantiation.
-    
-    TODO: merge this proc with ::edit?
+        # Update sim_party_sim_map table
 
-    @author Peter Marklund
-} {
-    db_dml update_instantiate_template {
-        update sim_simulations
-        set enroll_start = to_date(:enroll_start, 'YYYY-MM-DD'),
-        enroll_end = to_date(:enroll_end, 'YYYY-MM-DD'),
-        send_start_note_date = to_date(:notification_date, 'YYYY-MM-DD'),
-        case_start = to_date(:case_start, 'YYYY-MM-DD'),
-        case_end = to_date(:case_end, 'YYYY-MM-DD'),
-        enroll_type = :enroll_type,
-        casting_type = :casting_type
-        where simulation_id = :workflow_id
-    }
+        if { [info exists edit_array(parties)] } {
 
-    # Clear out old mappings first
-    db_dml clear_old_mappings {
-        delete from sim_party_sim_map
-        where simulation_id = :workflow_id
-    }
+            # Clear out old mappings first
+            db_dml clear_old_mappings {
+                delete from sim_party_sim_map
+                where simulation_id = :workflow_id
+            }
 
-    foreach party_id $parties {
-        db_dml map_party_to_template {
-            insert into sim_party_sim_map
-            (simulation_id, party_id)
-            values (:workflow_id, :party_id)
+            foreach party_id $edit_array(parties) {
+                db_dml map_party_to_template {
+                    insert into sim_party_sim_map
+                    (simulation_id, party_id)
+                    values (:workflow_id, :party_id)
+                }
+            }
         }
     }
 }

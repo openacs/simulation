@@ -4,7 +4,9 @@ ad_page_contract {
     workflow_id:integer
 }
 
-set page_title "Cast simulation"
+simulation::template::get -workflow_id $workflow_id -array sim_template
+
+set page_title "Cast $sim_template(pretty_name)"
 set context [list [list "." "SimInst"] $page_title]
 set package_id [ad_conn package_id]
 
@@ -45,13 +47,13 @@ ad_form -export { workflow_id } -name simulation -form {
     }
     {enroll_type:text(radio)
         {label "Enrollment type"}
-        {options {{Closed closed} {Open closed}}}
-        {value closed}
+        {options {{Invite invite} {Open open}}}
+        {value $sim_template(enroll_type)}
     }
     {casting_type:text(radio)
         {label "Casting type"}
-        {options {{Automatic automatic} {Group group} {Open open}}}
-        {value automatic}
+        {options {{Automatic auto} {Group group} {Open open}}}
+        {value $sim_template(casting_type)}
     }
     {user_group:integer(checkbox),multiple,optional
         {label "Invite all users in these groups"}
@@ -65,19 +67,20 @@ ad_form -export { workflow_id } -name simulation -form {
         set ${var_name}_ansi "[lindex [set $var_name] 0]-[lindex [set $var_name] 1]-[lindex [set $var_name] 2]"
     }
     
-    simulation::template::instantiate_edit \
-        -workflow_id $workflow_id \
-        -enroll_start $enroll_start_ansi \
-        -enroll_end $enroll_end_ansi \
-        -notification_date $notification_date_ansi \
-        -case_start $case_start_ansi \
-        -case_end $case_end_ansi \
-        -enroll_type $enroll_type \
-        -casting_type $casting_type \
-        -parties $user_group
+    array unset sim_template
+    set sim_template(enroll_start) $enroll_start_ansi
+    set sim_template(enroll_end) $enroll_end_ansi
+    set sim_template(notification_date) $notification_date_ansi
+    set sim_template(case_start) $case_start_ansi
+    set sim_template(case_end) $case_end_ansi
+    set sim_template(enroll_type) $enroll_type
+    set sim_template(casting_type) $casting_type
+    set sim_template(parties $user_group
 
-    # Proceed to 
-    ad_returnredirect [export_vars -base "simulation-casting-2" { workflow_id }]
+    simulation::template::edit \
+        -workflow_id $workflow_id \
+        -array sim_template
+
+    ad_returnredirect .
     ad_script_abort
 }
-
