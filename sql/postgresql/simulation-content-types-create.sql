@@ -38,6 +38,16 @@ select content_type__create_attribute(
     'integer constraint sim_char_stylesheet_fk references cr_items'                          -- column_spec
 );
 
+select content_type__register_relation_type (
+    'sim_character',               -- content_type
+    'image',                       -- target_type
+    'image',                       -- relation_tag
+    0,                             -- min_n
+    10                             -- max_n
+);
+
+
+
 -- sim_prop
 
 select content_type__create_type(

@@ -74,7 +74,7 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     set delete_url [export_vars -base "object-delete" { item_id }]
 
     switch -glob $mime_type {
-        text/* {
+        text/* - {} {
             set view_url [export_vars -base "object/$name"]
         }
         default {
