@@ -162,21 +162,20 @@ if { [exists_and_not_null search_terms] } {
     set search_terms_lower [string trim [string tolower $search_terms]]
     set search_clause "
        exists (select 1
-              from workflow_case_log wcl1,
-                   cr_items ci,
+              from sim_messages sm,
                    cr_revisions cr
-              where wcl1.entry_id = ci.item_id
-                and ci.live_revision = cr.revision_id
-                and wcl1.entry_id = (select max(wcl2.entry_id)
-                                    from workflow_case_log wcl2,
+              where sm.message_id = cr.revision_id
+                and sm.entry_id = (select max(wcl.entry_id)
+                                    from workflow_case_log wcl,
                                          workflow_fsm_actions wfa,
                                          workflow_case_fsm wcf
-                                    where wcl2.case_id = wcl1.case_id
-                                    and wcl2.action_id = wfa.action_id
-                                    and wcf.case_id = wcl2.case_id
+                                    where wcl.case_id = sm.case_id
+                                    and wcl.action_id = wfa.action_id
+                                    and wcf.case_id = wcl.case_id
                                     and wfa.new_state = wcf.current_state)
-                and wcl1.case_id = wcaa.case_id
-                and lower(cr.content) like '%$search_terms_lower%'
+                and sm.case_id = wcaa.case_id
+                and (lower(cr.content) like '%$search_terms_lower%' or
+                     lower(cr.title) like '%$search_terms_lower%')  
              )"
 }
 
