@@ -77,6 +77,7 @@ if { $size == "yellow-pages"} {
 template::list::create \
     -name objects \
     -multirow objects \
+    -actions " {Add an object} $add_url " \
     -elements $elements 
 
 
@@ -113,4 +114,4 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     }
 }
 
-set create_object_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/object-edit" { parent_id }]
+set add_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-edit" { parent_id }]
