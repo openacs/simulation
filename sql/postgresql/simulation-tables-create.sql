@@ -147,3 +147,35 @@ create table sim_case_role_object_map (
 );
 
 comment on table sim_case_role_object_map is 'The portfolio of sim_props for a role in a case.';
+
+
+----------------------------------------------------------------------
+-- sim_case
+----------------------------------------------------------------------
+
+select acs_object_type__create_type (
+    'sim_case',                             -- object_type
+    'Simulation Case',                      -- pretty_name
+    'Simulation Cases',                     -- pretty_plural
+    'acs_object',                           -- supertype
+    'sim_cases',                            -- table_name
+    'sim_case_id'  ,                        -- id_column
+    null,                                   -- package_name
+    'f',                                    -- abstract_p
+    null,                                   -- type_extension_table
+    'acs_object__name'                      -- name_method
+);
+      
+create table sim_cases (
+    sim_case_id         integer         constraint sim_case_fk
+                                        references acs_objects
+                                        constraint sim_case_pk
+                                        primary key,
+    workflow_id         integer         constraint sim_case_workflow_fk
+                                        references workflows,
+    sort_order          integer,
+    constraint sim_case_workflow_sort_order_un unique (workflow_id, sort_order)
+);
+
+comment on table sim_cases is 'The object behind a simulation case.';
+
