@@ -25,7 +25,7 @@
                   <li><a href="@inst_url@">#simulation.lt_Start_a_simulation_wi#</a></li>
                 </if>
               </else>
-              <li><a href="@spec_url@">#simulation.lt_Export_this_template_#</a></li>
+              <li><a href="@spec_url@">#simulation.lt_Export_this_template#</a></li>
               <li><a href="@delete_url@" onclick="return confirm('Are you sure you want to delete the template?');">#simulation.Delete_this_template#</a></li>
             </ul>
 

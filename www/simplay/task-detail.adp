@@ -11,7 +11,7 @@
 
 <if @bulk_p@>
   <p>
-    #simulation.lt_You_are_doing_a_bulk_#
+    #simulation.lt_You_are_doing_a_bulk#
   </p>
 
   <if @ignored_actions_count@ gt 0>

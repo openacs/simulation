@@ -1,5 +1,5 @@
 <p>
-  #simulation.lt_Select_from_existing_# 
+  #simulation.lt_Select_from_existing# 
   <a href="../citybuild/object-edit?content_type=sim_character">#simulation.add_new_characters#</a> #simulation.lt_and_refresh__this_pag#  
 </p>
 

@@ -14,7 +14,7 @@
 </else>
 
 <if @result.errors@ not nil>
-#simulation.lt_The_following_errors_#
+#simulation.lt_The_following_errors#
 
 <pre>
 @error_text@

@@ -4,7 +4,7 @@
 
 <if @already_cast_p@>
   <p>
-    #simulation.lt_You_are_already_cast_#
+    #simulation.lt_You_are_already_cast#
   </p>
  
   <listtemplate name="cast_info"></listtemplate></p>
@@ -34,7 +34,7 @@
 
 <if @join_new_case_url@ not nil>
   <ul class="action-links">
-    <li><a href="@join_new_case_url@">#simulation.lt_Be_the_first_user_in_#</a></li>
+    <li><a href="@join_new_case_url@">#simulation.lt_Be_the_first_user_in#</a></li>
   </ul>
 </if>
 

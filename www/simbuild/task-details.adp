@@ -15,7 +15,7 @@
             <if @parent_action_url@ not nil>
               <li><a href="@parent_action_url@">#simulation.lt_Up_to_parent_task_arr#</a></li>
             </if>
-            <li><a href="@template_url@">#simulation.lt_Back_to_template_sim_#</a></li>
+            <li><a href="@template_url@">#simulation.lt_Back_to_template_sim#</a></li>
           </ul>
         </div>
       </div>

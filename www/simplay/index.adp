@@ -7,7 +7,7 @@
 
 <if @adminplayer_p@ true>
 <h3>#simulation.Administration#</h3>
-  <h3>#simulation.lt_You_administer_these_#</h3>
+  <h3>#simulation.lt_You_administer_these#</h3>
 
   <include src="/packages/simulation/lib/cases-admin"/>
   <p></p>

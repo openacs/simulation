@@ -10,10 +10,10 @@
 
   <ul class="action-links">
     <if @subscribe_url@ not nil>
-      <li><a href="@subscribe_url@">#simulation.lt_Notify_me_of_changes_#</a></li>
+      <li><a href="@subscribe_url@">#simulation.lt_Notify_me_of_changes#</a></li>
     </if>
     <if @unsubscribe_url@ not nil>
-      <li><a href="@unsubscribe_url@">#simulation.lt_Stop_notifying_me_of_#</a></li>
+      <li><a href="@unsubscribe_url@">#simulation.lt_Stop_notifying_me_of#</a></li>
     </if>
     <li><a href="map-xml">#simulation.View_Map_XML#</a></li>
     <li><a href="generate-xml">#simulation.lt_Generate_Map_XML_file#</a></li>

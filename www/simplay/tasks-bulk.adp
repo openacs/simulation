@@ -5,5 +5,5 @@
   <include src="/packages/simulation/lib/tasks" workflow_id="@workflow_id@" &="role_id">
 
   <p>
-    #simulation.lt_If_you_are_using_the_#
+    #simulation.lt_If_you_are_using_the#
   </p>
