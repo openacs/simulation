@@ -5,8 +5,9 @@ ad_page_contract {
     @creation-date 2003-12-10
 } {
     workflow_id:integer
+    {deep_p:boolean "f"}
 }
 
-set spec [simulation::template::generate_spec -workflow_id $workflow_id] 
+set spec [simulation::template::generate_spec -workflow_id $workflow_id -deep=[template::util::is_true $deep_p]]
 
 ns_return 200 text/plain [util::array_list_spec_pretty $spec]

@@ -223,12 +223,17 @@ ad_proc -private simulation::action::generate_spec {
         }
     }
 
-    set spec [workflow::action::fsm::generate_spec -action_id $action_id]
+    # Get parent spec
+    array set row [workflow::action::fsm::generate_spec -action_id $action_id]
 
-    get -action_id $action_id -array row -local_only
+    # Get local spec, remove unwanted entries
+    get -action_id $action_id -array local_row -local_only
+    array unset local_row recipient
+    
+    # Copy local stuff in over the parent stuff
+    array set row [array get local_row]
 
-    array unset row recipient
-
+    # Output the entire thing in alpha sort order
     foreach name [lsort [array names row]] {
         if { ![empty_string_p $row($name)] } {
             lappend spec $name $row($name)

@@ -691,6 +691,13 @@ ad_proc -public simulation::template::new {
 
 ad_proc -public simulation::template::generate_spec {
     {-workflow_id:required}
+    {-workflow_handler "simulation::template"}
+    {-handlers { 
+        roles "simulation::role" 
+        actions "simulation::action"
+        states "workflow::state::fsm"
+    }}
+    {-deep:boolean}
 } {
     Generate a spec for a workflow in array list style.
     
@@ -702,11 +709,9 @@ ad_proc -public simulation::template::generate_spec {
 } {
     set spec [workflow::generate_spec \
                   -workflow_id $workflow_id \
-                  -handlers {
-                      roles simulation::role 
-                      actions simulation::action
-                      states workflow::state::fsm
-                  }]
+                  -workflow_handler $workflow_handler \
+                  -handlers $handlers \
+                  -deep=$deep_p]
 
     simulation::template::get -workflow_id $workflow_id -array simulation
     
@@ -714,7 +719,7 @@ ad_proc -public simulation::template::generate_spec {
 
     lappend inner_spec suggested_duration $simulation(suggested_duration)
 
-    set spec [list [lindex $spec 0] $inner_spec]
+    set spec [lreplace $spec 1 1 $inner_spec]
 
     return $spec
 }
@@ -724,10 +729,17 @@ ad_proc -public simulation::template::new_from_spec {
     {-object_id {}}
     {-spec:required}
     {-array {}}
+    {-workflow_handler "simulation::template"}
+    {-handlers {
+        roles "simulation::role"
+        states "workflow::state::fsm"
+        actions "simulation::action"
+    }}
 } {
     Create new simulation template from a spec. Basically encodes the handlers to use.
 } {
     # Wrapper for workflow::new_from_spec
+    # This proc basically defines the handlers for roles, states, actions
 
     if { ![empty_string_p $array] } {
         upvar 1 $array row
@@ -738,12 +750,8 @@ ad_proc -public simulation::template::new_from_spec {
                 -object_id $object_id \
                 -spec $spec \
                 -array $array \
-                -workflow_handler "simulation::template" \
-                -handlers {
-                    roles simulation::role 
-                    states workflow::state::fsm
-                    actions simulation::action
-                }]
+                -workflow_handler $workflow_handler \
+                -handlers $handlers]
 }
 
 ad_proc -public simulation::template::clone {
@@ -751,6 +759,8 @@ ad_proc -public simulation::template::clone {
     {-package_key {}}
     {-object_id {}}
     {-array {}}
+    {-deep:boolean}
+    {-workflow_handler "simulation::template"}
 } {
     Clones an existing simulation template. The clone must belong to either a package key or an object id.
 
@@ -767,42 +777,20 @@ ad_proc -public simulation::template::clone {
     @author Lars Pind (lars@collaboraid.biz)
     @see workflow::new
 } {
-    # Wrapper for workflow::clone
+    # Wrapper for workflow::clone -- only here to provide the right workflow_handler
 
     if { ![empty_string_p $array] } {
         upvar 1 $array row
         set array row
     } 
     
-    db_transaction {
-        set workflow_id [workflow::clone \
-                             -workflow_id $workflow_id \
-                             -package_key $package_key \
-                             -object_id $object_id \
-                             -array $array \
-                             -workflow_handler simulation::template]
-
-        # Special for simulation template:
-        # If there is no initial-action, we create one now
-        
-        set initial_action_id [workflow::get_element -workflow_id $workflow_id -element initial_action_id]
-        if { [empty_string_p $initial_action_id] } {
-
-            set action_row(pretty_name) "Start"
-            set action_row(pretty_past_tense) "Started"
-            set action_row(initial_action_p) "t"
-
-            set states [workflow::fsm::get_states -workflow_id $workflow_id]
-            
-            # We use the first state as the initial state
-            set action_row(new_state_id) [lindex $states 0]
-            
-            workflow::action::fsm::edit \
-                -operation "insert" \
-                -array action_row \
-                -workflow_id $workflow_id
-        }
-    }
+    set workflow_id [workflow::clone \
+                         -deep=$deep_p \
+                         -workflow_id $workflow_id \
+                         -package_key $package_key \
+                         -object_id $object_id \
+                         -array $array \
+                         -workflow_handler $workflow_handler]
 
     return $workflow_id
 }

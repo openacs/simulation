@@ -245,10 +245,16 @@ ad_proc -private simulation::role::generate_spec {
         }
     }
 
-    set spec [workflow::role::generate_spec -role_id $role_id]
+    # Get parent spec
+    array set row [workflow::role::generate_spec -role_id $role_id]
+    
+    # Get local spec, remove unwanted entries
+    get -role_id $role_id -array local_row -local_only
 
-    get -role_id $role_id -array row -local_only
+    # Copy local stuff in over the parent stuff
+    array set row [array get local_row]
 
+    # Output the entire thing in alpha sort order
     foreach name [lsort [array names row]] {
         if { ![empty_string_p $row($name)] } {
             lappend spec $name $row($name)
