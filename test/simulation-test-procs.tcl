@@ -29,6 +29,7 @@ ad_proc ::twt::simulation::setup::users_and_groups {} {
         do_request "/admin/group-types/one?group_type=group"
         link follow ~u "parties/new"
 
+        form find ~n add_group
         field find ~n group.group_name
         field fill "Demo group $i"
         form submit
@@ -596,6 +597,7 @@ ad_proc ::twt::simulation::add_user_to_group {
     }
 
     do_request $add_user_url
+    form find ~n add_relation
     field find ~n party_id
     field select $user_name
     form submit    
