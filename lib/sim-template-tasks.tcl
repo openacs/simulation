@@ -117,6 +117,10 @@ db_foreach select_states {
     }
 }
 
+lappend elements new_state_pretty { 
+    label "<br />New state"
+    html { style "border-left: 2px dotted #A0BDEB;" }
+}
 
 template::list::create \
     -name tasks \
@@ -135,7 +139,7 @@ set initial_action_id [workflow::get_element \
                            -element initial_action_id]
 
 set extend [list]
-lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url recipient_role_edit_url
+lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url recipient_role_edit_url 
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -182,7 +186,10 @@ db_multirow -extend $extend tasks select_tasks "
              where role_id = st.recipient) as recipient_name,
            wa.sort_order,
            wa.always_enabled_p,
-           wfa.new_state
+           wfa.new_state,
+           (select pretty_name
+            from   workflow_fsm_states
+            where  state_id = wfa.new_state) as new_state_pretty
       from workflow_actions wa left outer join
            sim_tasks st on (st.task_id = wa.action_id),
            workflow_fsm_actions wfa 
