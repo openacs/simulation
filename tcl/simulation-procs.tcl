@@ -15,6 +15,11 @@ ad_proc -public simulation::package_key {} {
 ad_proc -public simulation::include_contract { args } {
     Used to define which parameters an include expecs.
 
+    <p>
+      NOTE: This proc is to be replaced with a refactored ad_page_contract that
+      can function for includes. Lars knows more.
+    </p>
+
     @param args A list where the first element is an explanation of what the
                 include does, who wrote it when etc. The second element is the optional
                 param spec which is an array list where the keys are parameter (variable)
@@ -63,10 +68,6 @@ ad_proc -public simulation::include_contract { args } {
       </ul>
     </p> 
 
-    <p>
-      TODO: Have Lars review this proc and then move it into core
-    </p>
-    
     @author Peter Marklund
 } {
     set description [lindex $args 0]

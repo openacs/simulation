@@ -84,7 +84,7 @@ foreach name [lsort [array names content]] {
 
 
 if { [permission::write_permission_p -object_id $item(item_id) -party_id [ad_conn untrusted_user_id]] } {
-    set edit_url [export_vars -base [ad_conn package_url]object-edit { { item_id $item(item_id) } }]
+    set edit_url [export_vars -base [ad_conn package_url]citybuild/object-edit { { item_id $item(item_id) } }]
     set delete_url [export_vars -base [ad_conn package_url]object-delete { { item_id $item(item_id) } }]
 }
 
@@ -93,12 +93,15 @@ if { [permission::write_permission_p -object_id $item(item_id) -party_id [ad_con
 # Serve stylesheet
 #
 #####
-
-if { [exists_and_not_null content(stylesheet)] } {
-    array set item [bcms::item::get_item -item_id $content(stylesheet)]
-
+set related_stylesheets [bcms::item::list_related_items \
+                             -item_id $item(item_id) \
+                             -relation_tag stylesheet \
+                             -return_list]
+set first_stylesheet [lindex $related_stylesheets 0]
+set stylesheet_id [ns_set get $first_stylesheet item_id]
+if { [exists_and_not_null stylesheet_id] } {
+    array set item [bcms::item::get_item -item_id $stylesheet_id]
     set stylesheet_url [file join [ad_conn package_url] object-content $item(name)]
 } else {
     set stylesheet_url {}
 }
-

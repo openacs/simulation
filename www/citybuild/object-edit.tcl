@@ -15,6 +15,7 @@ if { ![ad_form_new_p -key item_id] } {
     # Get data for existing object
     array set item_info [bcms::item::get_item -item_id $item_id -revision live]
     item::get_revision_content $item_info(revision_id)
+
     if {! [info exists content(text)] } {
         set content(text) ""
     }
@@ -640,6 +641,7 @@ ad_form -extend -name object -new_request {
         from   cr_item_rels
         where  item_id = :item_id
     } {
+        ns_log Notice "pm debug $related_object_id $relation_tag"
         set "rel__${relation_tag}__${order_n}" $related_object_id
     }
     
@@ -678,7 +680,7 @@ ad_form -extend -name object -new_request {
             delete from cr_item_rels
             where  item_id = :item_id
         }
-        
+
         foreach elm $rel_elements {
             # LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
             regexp {__(.+)__} $elm match relation_tag
