@@ -12,6 +12,3 @@
 <h2>Simulations in Casting</h2>
 
 <listtemplate name="casting_sims"></listtemplate>
-<p></p>
-
-<p>TODO (1h): Merge the casting_sims list into the dev_sims list</p>
