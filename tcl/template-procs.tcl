@@ -734,12 +734,33 @@ ad_proc -public simulation::template::clone {
         upvar 1 $array row
         set array row
     } 
-    return [workflow::clone \
-                -workflow_id $workflow_id \
-                -package_key $package_key \
-                -object_id $object_id \
-                -array $array \
-                -workflow_handler simulation::template]
+    set workflow_id [workflow::clone \
+                         -workflow_id $workflow_id \
+                         -package_key $package_key \
+                         -object_id $object_id \
+                         -array $array \
+                         -workflow_handler simulation::template]
+
+    # Special for simulation template:
+    # If there is no initial-action, we create one now
+    
+    set initial_action_id [workflow::get -workflow_id $workflow_id -element initial_action_id]
+    if { [empty_string_p $initial_action_id] } {
+
+        set action_row(pretty_name) "Start"
+        set action_row(pretty_past_tense) "Started"
+        set action_row(initial_action_p) "t"
+
+        set states [workflow::fsm::get_states -workflow_id $workflow_id]
+        
+        # We use the first state as the initial state
+        set action_row(new_state_id) [lindex $states 0]
+        
+        workflow::action::edit \
+            -operation "insert" \
+            -array action_row \
+            -workflow_id $workflow_id
+    }
 
     return $workflow_id
 }
@@ -764,6 +785,10 @@ ad_proc -public simulation::template::get_inst_state {
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template
     
+    # TODO: Refactor
+    # What we really need to know is whether each step is complete
+    # They're all independent of each other, except for casting, which is dependent on participants.
+
     switch $sim_template(sim_type) {
         dev_sim {
             set state "none"
