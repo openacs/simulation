@@ -98,34 +98,60 @@ ad_form -extend -name object -form {
 #---------------------------------------------------------------------
 
 # Define the metadata in an easy format
+# this is prototype stuff
+
 set content_metadata {
     sim_character {
         content_method richtext
-        attributes {
+        relations {
+            image {
+                label "Image"
+                section "Related Objects"
+            }
             stylesheet {
-                references sim_stylesheet
+                label "Stylesheet"
+            }
+            thumbnail {
+                label "Thumbnail"
             }
         }
+    }
+    sim_location {
+        content_method richtext
         relations {
+            stylesheet {
+                label "Stylesheet"
+            }
+            thumbnail {
+                label "Thumbnail"
+            }
             image {
                 label "Image"
                 section "Related Images"
             }
         }
-    }
-    sim_home {
-        content_method richtext
-        attributes {
-            stylesheet {
-                references sim_stylesheet
-            }
-        }
+
     }
     sim_prop {
         content_method richtext
-        attributes {
+        relations {
             stylesheet {
-                references sim_stylesheet
+                label "Stylesheet"
+            }
+            thumbnail {
+                label "Thumbnail"
+            }
+            image {
+                label "Image"
+                section "Related Images"
+            }
+            logo {
+                label "Logo"
+                section "Related Images"
+            }
+            letterhead {
+                label "Letterhead"
+                section "Related Images"
             }
         }
     }
@@ -287,7 +313,7 @@ switch $content_method  {
         ad_form -extend -name object -form {
             {content_elm:richtext(richtext),optional
                 {label "Content"}
-                {html {cols 60 rows 8}}
+                {html {cols 80 rows 16}}
             }
         }
     }
@@ -295,7 +321,7 @@ switch $content_method  {
         ad_form -extend -name object -form {
             {content_elm:text(textarea),optional
                 {label "Content"}
-                {html {cols 60 rows 8}}
+                {html {cols 80 rows 16}}
             }
         }
     }
@@ -342,7 +368,7 @@ array set form_datatype {
 
 array set form_widget {
     string text
-    boolean text
+    boolean radio
     number text
     integer text
     money text
@@ -360,7 +386,9 @@ array set form_extra {
     string {
         {html {size 50}}
     }
-    boolean {}
+    boolean { 
+        {options { {Yes t} {No f}} }
+    }
     number {}
     integer {}
     money {}

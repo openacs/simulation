@@ -2,8 +2,9 @@
 -- @creation-date 2003-10-14
 -- @cvs-id $Id$
 
+----------------------------------------------------------------------
 -- sim_stylesheet
--- a chunk of css stylesheet
+----------------------------------------------------------------------
 
 select content_type__create_type(
     'sim_stylesheet',              -- content_type
@@ -15,7 +16,10 @@ select content_type__create_type(
     null                           -- name_method
 );
 
+
+----------------------------------------------------------------------
 -- sim_character
+----------------------------------------------------------------------
 
 select content_type__create_type(
     'sim_character',               -- content_type
@@ -27,15 +31,20 @@ select content_type__create_type(
     null                           -- name_method
 );
 
-select content_type__create_attribute(
+select content_type__register_relation_type (
     'sim_character',               -- content_type
-    'stylesheet',                  -- attribute_name
-    'integer',                     -- datatype
-    'Stylesheet',                  -- pretty_name
-    'Stylesheets',                 -- pretty_plural
-    1,                             -- sort_order
-    null,                          -- default_value
-    'integer constraint sim_char_stylesheet_fk references cr_items'                          -- column_spec
+    'image',                       -- target_type
+    'thumbnail',                   -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_character',               -- content_type
+    'sim_stylesheet',              -- target_type
+    'stylesheet',                  -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
 );
 
 select content_type__register_relation_type (
@@ -47,8 +56,9 @@ select content_type__register_relation_type (
 );
 
 
-
+----------------------------------------------------------------------
 -- sim_prop
+----------------------------------------------------------------------
 
 select content_type__create_type(
     'sim_prop',                    -- content_type
@@ -61,70 +71,135 @@ select content_type__create_type(
 );
 
 select content_type__create_attribute(
-    'sim_prop',               -- content_type
-    'stylesheet',                  -- attribute_name
-    'integer',                     -- datatype
-    'Stylesheet',                  -- pretty_name
-    'Stylesheets',                 -- pretty_plural
+    'sim_prop',                    -- content_type
+    'on_map_p',                    -- attribute_name
+    'boolean',                     -- datatype
+    'Is on map',                   -- pretty_name
+    'Is on map',                   -- pretty_plural
     1,                             -- sort_order
-    null,                          -- default_value
-    'integer constraint sim_prop_stylesheet_fk references cr_items'                          -- column_spec
+    'f',                           -- default_value
+    'boolean'                      -- column_spec
+);
+
+select content_type__register_relation_type (
+    'sim_prop',                    -- content_type
+    'image',                       -- target_type
+    'thumbnail',                   -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_prop',                    -- content_type
+    'sim_stylesheet',              -- target_type
+    'stylesheet',                  -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_prop',                    -- content_type
+    'image',                       -- target_type
+    'image',                       -- relation_tag
+    0,                             -- min_n
+    10                             -- max_n
 );
 
 
+----------------------------------------------------------------------
 -- sim_home
+----------------------------------------------------------------------
 
 select content_type__create_type(
-    'sim_home',                    -- content_type
+    'sim_location',                -- content_type
     'content_revision',            -- supertype
     'Home',                        -- pretty_name,
     'Homes',                       -- pretty_plural
-    'sim_homes',                   -- table_name
+    'sim_locations',               -- table_name
     'home_id',                     -- id_column
     null                           -- name_method
 );
 
 select content_type__create_attribute(
-    'sim_home',                    -- content_type
+    'sim_location',                -- content_type
+    'on_map_p',                    -- attribute_name
+    'boolean',                     -- datatype
+    'Is on map',                   -- pretty_name
+    'Is on map',                   -- pretty_plural
+    1,                             -- sort_order
+    'f',                           -- default_value
+    'boolean'                      -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_location',                -- content_type
     'address',                     -- attribute_name
     'string',                      -- datatype
     'Addresss',                    -- pretty_name
     'Addresses',                   -- pretty_plural
-    1,                             -- sort_order
-    null,                          -- default_value
-    'varchar(4000)'                -- column_spec
-);
-
-select content_type__create_attribute(
-    'sim_home',                    -- content_type
-    'city',                        -- attribute_name
-    'string',                      -- datatype
-    'City',                        -- pretty_name
-    'Cities',                      -- pretty_plural
     2,                             -- sort_order
     null,                          -- default_value
     'varchar(4000)'                -- column_spec
 );
 
 select content_type__create_attribute(
-    'sim_home',                    -- content_type
+    'sim_location',                -- content_type
+    'city',                        -- attribute_name
+    'string',                      -- datatype
+    'City',                        -- pretty_name
+    'Cities',                      -- pretty_plural
+    3,                             -- sort_order
+    null,                          -- default_value
+    'varchar(4000)'                -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_location',                -- content_type
     'history',                     -- attribute_name
     'text',                        -- datatype
     'History',                     -- pretty_name
     'Histories',                   -- pretty_plural
-    3,                             -- sort_order
+    4,                             -- sort_order
     null,                          -- default_value
     'text'                         -- column_spec
 );
 
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'thumbnail',                   -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
 
-select content_type__create_attribute(
-    'sim_home',                    -- content_type
-    'stylesheet',                  -- attribute_name
-    'integer',                     -- datatype
-    'Stylesheet',                  -- pretty_name
-    'Stylesheets',                 -- pretty_plural
-    4,                             -- sort_order
-    null,                          -- default_value
-    'integer constraint sim_home_stylesheet_fk references cr_items'                          -- column_spec
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'sim_stylesheet',              -- target_type
+    'stylesheet',                  -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'image',                       -- relation_tag
+    0,                             -- min_n
+    10                             -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'letterhead',                  -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'logo',                        -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
 );

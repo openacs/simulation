@@ -46,40 +46,137 @@ select acs_object_type__drop_type(
 --end;' language 'plpgsql';
 
 -- drop content_types
-create function inline_0 ()
-returns integer as '
+create function inline_0 () returns integer as '
 declare
-    rec                 record;      
+    row record;
 begin
-    for rec in (select folder_id 
+    for row in select folder_id 
                   from cr_folders 
                  where package_id in (select package_id 
                                         from apm_packages 
-                                       where package_key = ''simulation''))
-        loop
-            perform content_folder__unregister_content_type(rec.folder_id, ''sim_characters'',''t'');
+                                       where package_key = ''simulation'') loop
+            perform content_folder__unregister_content_type(v_id, ''sim_characters'',''t'');
         end loop;
     return 0;
 end;' language 'plpgsql';
 select inline_0();
 drop function inline_0 ();
 
-select content_type__drop_type(
-	   'sim_homes',
-	   't',
-	   't'
-    );
+
+
+----------------------------------------------------------------------
+-- drop everything in reverse order of creation
+----------------------------------------------------------------------
+-- have to manually drop attributes because content_type__drop_type doesn't
+-- bad, stupid content_type__drop_type
+
+----------------------------------------------------------------------
+-- sim_location
+----------------------------------------------------------------------
+
+select content_type__unregister_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'thumbnail'                    -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_location',                -- content_type
+    'sim_stylesheet',              -- target_type
+    'stylesheet'                   -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'image'                        -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'letterhead'                   -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'logo'                         -- relation_tag
+);
 
 select content_type__drop_type(
-	   'sim_props',
-	   't',
-	   't'
-    );
+    'sim_location',
+    't',
+    't'
+);
+
+
+----------------------------------------------------------------------
+-- sim_prop
+----------------------------------------------------------------------
+
+select content_type__unregister_relation_type (
+    'sim_prop',                    -- content_type
+    'image',                       -- target_type
+    'thumbnail'                    -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_prop',                    -- content_type
+    'sim_stylesheet',              -- target_type
+    'stylesheet'                   -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_prop',                    -- content_type
+    'image',                       -- target_type
+    'image'                        -- relation_tag
+);
 
 select content_type__drop_type(
-	   'sim_stylesheets',
-	   't',
-	   't'
-    );
+    'sim_prop',
+    't',
+    't'
+);
+
+
+----------------------------------------------------------------------
+-- sim_character
+----------------------------------------------------------------------
+
+select content_type__unregister_relation_type (
+    'sim_character',               -- content_type
+    'image',                       -- target_type
+    'thumbnail'                    -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_character',               -- content_type
+    'sim_stylesheet',              -- target_type
+    'stylesheet'                   -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_character',               -- content_type
+    'image',                       -- target_type
+    'image'                        -- relation_tag
+);
+
+select content_type__drop_type(
+    'sim_character',
+    't',
+    't'
+);
+
+----------------------------------------------------------------------
+-- sim_stylesheet
+----------------------------------------------------------------------
+
+select content_type__drop_type(
+    'sim_stylesheet',
+    't',
+    't'
+
+);
 
 
