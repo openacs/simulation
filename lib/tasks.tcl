@@ -32,7 +32,7 @@ set adminplayer_p [permission::permission_p -object_id $package_id -privilege si
 
 if { !$adminplayer_p } {
     if { ![exists_and_not_null case_id] || ![exists_and_not_null role_id] } {
-        error "You must supply both case_id and role_id"
+        error [_ simulation.lt_You_must_supply_both_]
     }
 }
 
@@ -50,19 +50,19 @@ if { [exists_and_not_null case_id] } {
 set elements {
     name {
         link_url_col task_url
-        label "Task"
+        label {[_ simulation.Task]}
     }
     role {
-        label "Role"
+        label {[_ simulation.Role]}
         hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
         display_col role_pretty
     }
     case_label {
-        label "Case"
+        label {[_ simulation.Case]}
         hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
     sim_name {
-        label "Simulation"
+        label {[_ simulation.Simulation]}
         hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
 }
@@ -81,7 +81,7 @@ if { ![empty_string_p $workflow_id] } {
     }
 
     ad_form -name search -export { workflow_id } -form {
-        {search_terms:text,optional {label "Restrict to previous task matching word or phrase"}}
+        {search_terms:text,optional {label {[_ simulation.lt_Restrict_to_previous_]}}}
     }
 
     set role_values [db_list_of_lists select_roles {
@@ -124,26 +124,24 @@ if { ![empty_string_p $workflow_id] } {
         set task_values {}
     }
 
-    set bulk_actions {
-        "Respond" task-detail "Take action on selected tasks"
-    }
+    set bulk_actions [list [_ simulation.Respond] task-detail [_ simulation.lt_Take_action_on_select]]
     set bulk_p 1
 }
 
 template::list::create \
     -name tasks \
     -multirow tasks \
-    -no_data "You don't have any tasks." \
+    -no_data [_ simulation.lt_You_dont_have_any_tas] \
     -key "enabled_action_id" \
     -elements $elements \
     -filters {
         role_id {
-            label "Role"
+            label {[_ simulation.Role]}
             values $role_values
             hide_p {[ad_decode [llength $role_values] 0 t f]}
         }
         task_id {
-            label "Task"
+            label {[_ simulation.Task]}
             values $task_values
             hide_p {[ad_decode [llength $task_values] 0 t f]}
         }

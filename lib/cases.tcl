@@ -14,20 +14,20 @@ set package_id [ad_conn package_id]
 
 set elements {
     label {
-        label "Case"
+        label {[_ simulation.Case]}
         link_url_eval {[export_vars -base "[ad_conn package_url]simplay/case" { case_id role_id }]}
     }
     pretty_name {
-        label "Simulation"
+        label {[_ simulation.Simulation]}
     }
     role_pretty {
-        label "Role"
+        label {[_ simulation.Role]}
     }
     status {
-        label "Status"
+        label {[_ simulation.Status]}
     }
     num_user_tasks {
-        label "Your Tasks"
+        label {[_ simulation.Your_Tasks]}
         display_template {
             <if @cases.num_user_tasks@ gt 0>@cases.num_user_tasks@</if>
         }
@@ -38,7 +38,7 @@ set elements {
 template::list::create \
     -name cases \
     -multirow cases \
-    -no_data "You are not in any active simulation cases." \
+    -no_data [_ simulation.lt_You_are_not_in_any_ac] \
     -elements $elements 
 
 db_multirow cases select_cases "

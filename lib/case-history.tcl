@@ -17,18 +17,18 @@ template::list::create \
     -name log \
     -elements {
         timestamp {
-            label "Time"
+            label {[_ simulation.Time]}
             display_eval {[lc_time_fmt $creation_date_ansi "%x %X"]}
         }
         role_pretty {
-            label "Role"
+            label {[_ simulation.Role]}
         }
         user_name {
-            label "User"
+            label {[_ simulation.User]}
             link_url_eval {[ad_decode $creation_user "" "" [acs_community_member_url -user_id $creation_user]]}
         }
         action_pretty {
-            label "Task"
+            label {[_ simulation.Task]}
             link_url_col action_url
         }
     }
@@ -72,27 +72,27 @@ db_multirow -extend { action_url } log select_log {
     }
 
     if { [empty_string_p $creation_user] } {
-        set user_name "Timeout"
+        set user_name [_ simulation.Timeout]
     }
 }
 
 template::list::create \
     -name documents \
-    -no_data "No documents" \
+    -no_data [_ simulation.No_documents] \
     -elements {
         timestamp {
-            label "Time"
+            label {[_ simulation.Time]}
             display_eval {[lc_time_fmt $creation_date_ansi "%x %X"]}
         }
         role_pretty {
-            label "Role"
+            label {[_ simulation.Role]}
         }
         user_name {
-            label "User"
+            label {[_ simulation.User]}
             link_url_eval {[acs_community_member_url -user_id $creation_user]}
         }
         document_pretty {
-            label "Document"
+            label {[_ simulation.Document]}
             link_url_col document_url
         }        
     }
