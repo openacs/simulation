@@ -34,7 +34,6 @@ if { [exists_and_not_null case_id] } {
         select count(*) 
         from   workflow_case_enabled_actions 
         where  case_id = :case_id
-        and    enabled_state = 'enabled'
     }]
     set complete_p [expr $num_enabled_actions == 0]
 } else {

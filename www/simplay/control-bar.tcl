@@ -31,7 +31,6 @@ set task_count [db_string task_count_sql {
            workflow_actions wa
      where wa.assigned_role = :role_id
        and wa.action_id = wcea.action_id
-       and wcea.enabled_state = 'enabled'
        and wcea.case_id = :case_id
 }]
 
