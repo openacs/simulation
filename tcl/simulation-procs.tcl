@@ -143,6 +143,29 @@ ad_proc simulation::groups_eligible_for_casting {} {
 
     @author Peter Marklund
 } {
+    set options_list [list]
+
+    # We only want the label and the id, i.e. strip off the count
+    array set groups [groups_eligible_for_casting_with_counts]
+    foreach group_id [array names groups] {
+        lappend options_list [list "[lindex $groups($group_id) 0] ([lindex $groups($group_id) 1] users)" $group_id]
+    }
+
+    return $options_list
+}
+
+ad_proc simulation::groups_eligible_for_casting_with_counts {} {
+    Return a list of groups eligible for enrollment and invitation
+    for the current simulation package.
+
+    @return An array lists on the format
+            [list group_id1 [list group_name1 n_users1] group_id2 [list group_name2 n_users2] ...]
+
+with label-id pairs, suitable to be passed
+            as the options attribute of a form builder select widget.
+
+    @author Peter Marklund
+} {
     # lookup package_id of the nearest subsite
     subsite::get -array closest_subsite    
 
@@ -151,14 +174,31 @@ ad_proc simulation::groups_eligible_for_casting {} {
                               -package_id $closest_subsite(package_id)]
 
     # Get all groups related to (children of) the subsite group (only one level down)
-    return [db_list_of_lists subsite_group_options {
+    set groups_list [list]
+    db_foreach subsite_group_options {
         select g.group_name,
-               g.group_id
+               g.group_id,
+               (select count(*)
+                       from party_approved_member_map pamm,
+                            users u
+                       where pamm.party_id = g.group_id
+                         and pamm.member_id = u.user_id
+               ) as n_users
         from   acs_rels ar,
                groups   g
         where  ar.object_id_one = :subsite_group_id
           and  ar.object_id_two = g.group_id
-    }]
+          and  exists (select 1
+                       from party_approved_member_map pamm,
+                            users u
+                       where pamm.party_id = g.group_id
+                         and pamm.member_id = u.user_id
+                      )
+    } {
+        lappend groups_list $group_id [list $group_name $n_users]
+    }
+
+    return $groups_list
 }
 
 template_tag relation { params } {

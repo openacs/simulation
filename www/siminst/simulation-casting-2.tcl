@@ -33,7 +33,7 @@ ad_form -export { workflow_id } -name simulation -form {
         {value $in_two_months_date}
     }
     {notification_date:date
-        {label "Date to send start notification"}
+        {label "Date to send start notification (mockup only)"}
         {value $in_two_and_a_half_months_date}
     }
     {case_start:date
@@ -83,7 +83,8 @@ ad_form -export { workflow_id } -name simulation -form {
     array unset sim_template
     set sim_template(enroll_start) $enroll_start_ansi
     set sim_template(enroll_end) $enroll_end_ansi
-    set sim_template(notification_date) $notification_date_ansi
+    # TODO:
+    #set sim_template(notification_date) $notification_date_ansi
     set sim_template(case_start) $case_start_ansi
     set sim_template(case_end) $case_end_ansi
     set sim_template(enroll_type) $enroll_type

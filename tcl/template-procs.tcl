@@ -274,7 +274,6 @@ ad_proc -public simulation::template::get_role_group_mappings {
     }
 }
  
-
 ad_proc -public simulation::template::get_parties {
     {-workflow_id:required}
     {-rel_type "auto-enroll"}
@@ -398,11 +397,15 @@ ad_proc -public simulation::template::start {
             select to_char(current_timestamp, 'YYYY-MM-DD')
         }]
         if { [clock scan $today] < [clock scan $simulation(enroll_end)] } {
-            set simulation_edit(enroll_date) $today
+            set simulation_edit(enroll_end) $today
+        }
+        # enroll_start must be before or equal enroll_end
+        if { [clock scan $today] < [clock scan $simulation(enroll_start)] } {
+            set simulation_edit(enroll_start) $today
         }
 
         # Set start_date to now
-        set simulation_edit(start_date) $today
+        set simulation_edit(case_start) $today
 
         # Auto enroll users in auto-enroll groups
         set simulation_edit(enrolled) [list]
@@ -448,7 +451,7 @@ ad_proc -public simulation::template::cast {
     }]
     set total_n_users [llength $user_list]
 
-    simulation::template::get_role_mappings -workflow_id $workflow_id -array roles
+    simulation::template::get_role_group_mappings -workflow_id $workflow_id -array roles
 
     set n_users_per_case 0
     foreach role_id [array names roles] {

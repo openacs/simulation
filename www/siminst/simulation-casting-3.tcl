@@ -41,11 +41,29 @@ ad_form \
         }      
     } -on_submit {
 
-        # TODO: move this code into the simulation::template::edit proc? Low priority.
+        # Validation
+        # Make sure the number of users per case does not exceed the number of users
+        # in each group
+        array set groups [simulation::groups_eligible_for_casting_with_counts]
+        set error_p 0
+        foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
+            set group_size [set group_$role_id]
+            set group_id [set actor_$role_id]
+            set n_members [lindex $groups($group_id) 1]
 
+            if { $group_size > $n_members } {
+                template::form::set_error actors group_$role_id "Group size is larger than the number of users in the group: $n_members"
+                set error_p 1
+                break
+            }
+        }        
+        if { $error_p } {
+            break
+        }
+
+        # TODO: move this code into the simulation::template::edit proc? Low priority.
         # Clear out old mappings
         simulation::template::delete_role_group_mappings -workflow_id $workflow_id
-
         foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
             simulation::template::new_role_group_mapping \
                 -role_id $role_id \
