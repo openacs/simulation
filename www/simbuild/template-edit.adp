@@ -11,12 +11,12 @@
     <b>&raquo;</b> <a href="@delete_url@" onclick="return confirm('Are you sure you want to delete the template?');">Delete this template</a>
   </p>
 
-  <h4>Roles</h4>
+  <a name="roles"><h4>Roles</h4></a>
 
   <include src="/packages/simulation/lib/sim-template-roles" workflow_id="@workflow_id@" display_mode="edit">
   <p></p>
 
-  <h4>Tasks</h4>
+  <a name="tasks"><h4>Tasks</h4></a>
 
   <include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" display_mode="edit" >
   
