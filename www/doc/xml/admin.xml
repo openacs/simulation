@@ -20,20 +20,25 @@
       </para>
 
       <para>
-        To activate this feature you need to specify the location
-        of the XML file by visiting the parameters page of the package and setting the 
-        MapXMLFilePath parameter.
+        To activate this feature you need to specify the location of
+        the XML file by visiting the configuration page of the package
+        (start at the <ulink url="../">index page</ulink>) and setting
+        the MapXMLFilePath parameter.
       </para>
 
       <para>
-        You may view the XML file from a link on the object list page and you may also manually trigger the
-        recreation of the XML file from there.
+        You may view the XML file from a link on the <ulink
+        url="../object-list">object list page</ulink> and you may also
+        manually trigger the recreation of the XML file from there.
       </para>
 
       <para>
-        On the object list page you may sign up for notifications for the Map XML file. You will then be notified
-        by email everytime the XML file is regenerated (because something has changed) or everytime there is a problem
-        generating the XML file.
-      </para>
+        On the <ulink url="../object-list">object list page</ulink>
+        you may sign up for notifications for the Map XML file. You
+        will then be notified by email everytime the XML file is
+        regenerated (because something has changed) or everytime there
+        is a problem generating the XML file.  
+      </para> 
+    </sect1>
 
   </article>

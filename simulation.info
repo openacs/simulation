@@ -23,7 +23,7 @@
             <callback type="after-install"  proc="simulation::apm::after_install"/>
         </callbacks>
         <parameters>
-            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="MapXMLFilePath"  description="The full file path for the XML file with info about objects to be displayed on the simulation map."/>
+            <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="MapXMLFilePath"  description="The full file path for the XML file with info about objects to be displayed on the simulation map. If left empty no XML file will be generated."/>
         </parameters>
 
     </version>

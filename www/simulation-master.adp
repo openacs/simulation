@@ -13,3 +13,8 @@
 </td>
 </tr>
 </table>
+<if @admin_p@>
+  <p>
+        <a href="@parameters_url@">Configuration</a> | <a href="doc">Documentation</a>
+  </p>
+</if>

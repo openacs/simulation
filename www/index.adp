@@ -1,8 +1,10 @@
-<master src="/packages/simulation/www/simulation-master">
+<master src="/packages/simulation/www/map-master">
+<div style="margin: 4px; background: lightgray; border: 1px solid black;">
+<h3>SIMPLAY</h3>
 Your live cases:
 <p><listtemplate name="active_cases"></listtemplate></p>
-<p>Join a Simulation:
-<p><table class="list" cellpadding="3" cellspacing="1">
+Available simulations
+<table class="list" cellpadding="3" cellspacing="1">
       <tr class="list-header">
           <th class="list">
                 Simulation
@@ -20,19 +22,19 @@ Your live cases:
                 </td>
             </tr>
   </table>
-<p>Sim Objects (administrators only)
-<p><listtemplate name="object_count"></listtemplate></p>
-<p><a href="object-list">Add an object</a>
-<p><listtemplate name="sim_template_count"></listtemplate></p>
-<p><a href="sim-template-list">View and edit simulation templates</a>
-<div class="notloggedin">
-<h3>If not logged in:</h3>
-Sieberdam currently has 
-<br>1580 Inhabitants
-<br>460 Offices
-<br>8 running simulations
-<p>
-<u>Join a Simulation</u>
+</div>
+<div style="margin: 4px; padding: 4px; border: 1px solid black;">
+<h3><a href="object-list">CITYBUILD</a></h3>
+<listtemplate name="object_count"></listtemplate></p>
+</div>
+<div style="margin: 4px; padding: 4px; border: 1px solid
+black;">
+<h3><a href="sim-template-list">SIMBUILD</a></h3>
+<include src="/packages/simulation/lib/sim-template-list">
 
+</div>
+<div style="margin: 4px; background: lightgray; border: 1px solid
+black;">
+<h3>SIMINST</h3>
 </div>
 

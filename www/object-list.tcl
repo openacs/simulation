@@ -10,6 +10,8 @@ ad_page_contract {
 
 set page_title "Sim Objects"
 set context [list $page_title]
+set package_id [ad_conn package_id]
+set admin_p [permission::permission_p -object_id $package_id -privilege admin]
 
 if { ![exists_and_not_null parent_id] } {
     set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]

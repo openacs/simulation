@@ -6,9 +6,3 @@ ad_library {
 }
 
 ad_schedule_proc -thread t -schedule_proc ns_schedule_daily [list 02 00] simulation::object::xml::file_sweeper
-
-# FOR DEVELOPMENT ONLY
-# TODO (pm debug): remove for production:
-foreach package_key {simulation workflow} {
-    apm_watch_all_files $package_key
-}

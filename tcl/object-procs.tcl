@@ -25,9 +25,22 @@ ad_proc -private simulation::object::xml::file_sweeper {} {
 
     ns_log Notice "Proc simulation::object::xml::file_sweeper executing with simulation_package_ids=$simulation_package_ids"
     foreach package_id $simulation_package_ids {
-        generate_file -package_id $package_id
+        # An empty file path parameter is valid and signifies that no XML file should be generated
+        if { ![empty_string_p [file_path $package_id]] } {
+            generate_file -package_id $package_id
+        }
     }
     ns_log Notice "Finished executing simulation::object::xml::file_sweeper"
+}
+
+ad_proc -private simulation::object::xml::file_path { package_id } {
+    return [parameter::get \
+                -parameter [file_path_param_name] \
+                -package_id $package_id]
+}
+
+ad_proc -private simulation::object::xml::file_path_param_name {} {
+    return "MapXMLFilePath"
 }
 
 ad_proc -private simulation::object::xml::generate_file {
@@ -41,43 +54,51 @@ ad_proc -private simulation::object::xml::generate_file {
 
     @see simulation::object::xml::get_doc
 
-    @return 1 if a new XML file was written and 0 otherwise
+    @return An array list with the elements wrote_file_p and errors. The
+            wrote_file_p attribute will be 1 if a new XML file was written and 0 otherwise.
+            The errors attribute will be a list containing any error messages.
 
     @author Peter Marklund
 } {
     set errors [list]
 
-    set parameter_name "MapXmlFilePath"
-    set file_path [parameter::get -parameter $parameter_name -package_id $package_id]
-
-    # An empty file_path signifies that no XML map file should be generated
-    if { [empty_string_p $file_path] } {
-        return
-    }
-
     # file_path validity check
+    set parameter_name [file_path_param_name]
+    set file_path [file_path $package_id]
     set file_path_error_prefix "Parameter simulation.$parameter_name for package $package_id has invalid value \"${file_path}\"."
-    if { ![regexp {^/} $file_path] } {
+    if { [empty_string_p $file_path] } {
+        set error_message "simulation::object::xml::generate_file - parameter simulation.$parameter_name for package $package_id is empty."
+        lappend errors $error_message
+        ns_log Error $error_message
+    } elseif { ![regexp {^/} $file_path] } {
         set error_message "$file_path_error_prefix It needs to start with /"
         lappend errors $error_message
         ns_log Error $error_message
-    }
-    if { ![file readable $file_path] } {
+    } elseif { [file exists $file_path] && ![file readable $file_path] } {
         set error_message "$file_path_error_prefix The file is not readable"
         lappend errors $error_message
         ns_log Error $error_message        
     }
 
     set wrote_file_p 0
+
     with_catch errmsg {
 
         if { [llength $errors] == 0 } {
-            set old_xml_doc [template::util::read_file $file_path]
             set new_xml_doc [get_doc -package_id $package_id]
-            set xml_changed_p [ad_decode [string compare $old_xml_doc $new_xml_doc] 0 0 1]
-            error hej
+
+            if { [file exists $file_path] } {
+                # We have an XML file to compare with
+                set old_xml_doc [template::util::read_file $file_path]
+                # Ignore leading or trailing new lines in comparison
+                set xml_changed_p [ad_decode [string compare [string trim $old_xml_doc] [string trim $new_xml_doc]] 0 0 1]
+            } else {
+                # First time generation
+                set xml_changed_p 1
+            }
+
             if { $xml_changed_p } {
-                template::util::write_file $file_path
+                template::util::write_file $file_path $new_xml_doc
                 set wrote_file_p 1
             }
         }
@@ -96,10 +117,19 @@ ad_proc -private simulation::object::xml::generate_file {
             -errors $errors
     }
 
-    return $wrote_file_p
+    if { $wrote_file_p } {
+        ns_log Notice "simulation::object::xml::generate_file - generated new XML file for package $package_id"
+    } else {
+        ns_log Notice "simulation::object::xml::generate_file - Did not generate new XML file for package $package_id"        
+    }
+
+    set return_array(wrote_file_p) $wrote_file_p
+    set return_array(errors) $errors
+
+    return [array get return_array]
 }
 
-ad_proc -private simulatation::object::xml::notify {
+ad_proc -private simulation::object::xml::notify {
     {-package_id:required}
     {-file_path:required}
     {-wrote_file_p:required}
@@ -128,11 +158,17 @@ $all_errors
 "
     }
 
-    # Send notification    
+    # Send notification
+    set type [simulation::notification::xml_map::type_short_name]
+    notification::new \
+        -type_id [notification::type::get_type_id -short_name $type] \
+        -object_id $package_id \
+        -notif_subject $subject \
+        -notif_text $body
 }
 
 ad_proc -private simulation::object::xml::get_doc {
-    {-package_id:required}
+    {-package_id ""}
 } {
     Generates XML for all relevant simulation objects in the given
     package (that have on_map_p attribute set to true).
@@ -141,6 +177,10 @@ ad_proc -private simulation::object::xml::get_doc {
 
     @author Peter Marklund
 } {
+    if { [empty_string_p $package_id] } {
+        set package_id [ad_conn package_id]
+    }
+
     set full_package_url "[ad_url][apm_package_url_from_id $package_id]"
 
     # Get table names and id column names for the on_map_p attribute of each object type
@@ -165,28 +205,6 @@ ad_proc -private simulation::object::xml::get_doc {
 
     # Object type loop.
     template::multirow -local foreach sim_table_list {
-        ns_log Notice "
-            select ci.item_id as id,
-                   cr.title as name,
-                   ci.name as uri,
-                   cr.description,
-                   ci.content_type,
-                   (select min(ci2.name)
-                    from cr_item_rels cir,
-                         cr_items ci2
-                    where cir.item_id = ci.item_id
-                      and cir.related_object_id = ci2.item_id
-                      and cir.relation_tag = 'thumbnail') as thumbnail_uri
-            from cr_items ci
-                 left outer join cr_item_rels cir on (cir.item_id = ci.item_id),
-                 cr_revisions cr,
-                 $table_name st           
-            where st.on_map_p = 't'
-              and st.$id_column = cr.revision_id
-              and ci.live_revision = cr.revision_id
-              and ci.parent_id = :parent_id
-              order by ci.name
-        "
         db_foreach select_on_map_objects "
             select ci.item_id as id,
                    cr.title as name,
@@ -209,13 +227,14 @@ ad_proc -private simulation::object::xml::get_doc {
               and ci.parent_id = :parent_id
               order by ci.name
         " {
-            set url "$full_package_url/object/$name"
+            set url "${full_package_url}object/$uri"
 
+            set thumbnail_url ""
             if { [lsearch -exact {sim_location sim_prop sim_character} $content_type] != -1 } {
-                set thumbnail_url "${full_package_url}object-content/${thumbnail_uri}"
-            } else {
-                set thumbnail_url ""
-            }
+                if { ![empty_string_p $thumbnail_uri] } {
+                    set thumbnail_url "${full_package_url}object-content/${thumbnail_uri}"
+                }
+            } 
 
             append xml_doc "  <object>\n"
             # Assuming var names are identical to XML tag names

@@ -60,10 +60,20 @@ db_multirow active_cases active_cases_select {
 #---------------------------------------------------------------------
 # object_count list
 #---------------------------------------------------------------------
+if { ![exists_and_not_null parent_id] } {
+    set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
+}
+
+set action_list [list "Add an Object" [export_vars -base object-edit { parent_id }] ]
+
+#error "
+#object_add_url: $object_add_url
+#add_action: $add_action"
 
 template::list::create \
     -name object_count \
     -multirow object_count \
+    -actions $action_list \
     -html {width "100%"} \
     -elements {
         type {
@@ -88,6 +98,8 @@ db_multirow  -extend { view_url } object_count object_count_select "
            count(content_type) as count
       from cr_items
      where content_type like 'sim_%'
+        or content_type like 'image'
+        or content_type like 'stylesheet'
      group by content_type
 " {
     set view_url [export_vars -base "object-list" { type }]

@@ -9,6 +9,9 @@
       <xi:include href="install.xml" xmlns:xi="http://www.w3.org/2001/XInclude">
         <xi:fallback>Installation Section Missing</xi:fallback>
       </xi:include>
+      <xi:include href="admin.xml" xmlns:xi="http://www.w3.org/2001/XInclude">
+        <xi:fallback>Admin Section Missing</xi:fallback>
+      </xi:include>
       <xi:include href="design.xml" xmlns:xi="http://www.w3.org/2001/XInclude">
         <xi:fallback>Design Section Missing</xi:fallback>
       </xi:include>
