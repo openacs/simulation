@@ -74,17 +74,11 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     set delete_url [export_vars -base "object-delete" { item_id }]
 }
 
-set sim_types { sim_character sim_prop sim_home }
+multirow create object_types create_url label
 
-db_multirow -extend { create_url label } object_types select_object_types "
-    select ot.object_type as content_type,
-           ot.pretty_name
-    from   acs_object_types ot
-    where  ot.object_type in ('[join $sim_types "','"]')
-" {
-    set create_url [export_vars -base object-edit { content_type parent_id }]
-    set label "Create new $pretty_name"
-
+foreach elm [simulation::object_type::get_options] {
+    foreach { pretty_name content_type } $elm {}
+    multirow append object_types \
+        [export_vars -base object-edit { content_type parent_id }] \
+        "Create new $pretty_name"
 }
-
-#multirow append object_types content_template  "Template" [export_vars -base template-edit] "Upload new Template"

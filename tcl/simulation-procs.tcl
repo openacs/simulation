@@ -13,7 +13,7 @@ ad_proc -public simulation::object_type::get_options {
 } {
     Generate a list of object types formatted as an option list for form-builder's widgets.
 } {
-    set sim_types { sim_character sim_prop sim_home }
+    set sim_types { sim_character sim_prop sim_home sim_stylesheet }
 
     return [db_list_of_lists object_types "
         select ot.pretty_name,

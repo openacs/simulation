@@ -83,25 +83,34 @@ array set content_method {
     sim_character richtext
     sim_home richtext
     sim_prop richtext
+    sim_stylesheet textarea
 }
 
-if { [info exists content_method($content_type)] } {
-
-    switch $content_method($content_type) {
-        richtext {
-            ad_form -extend -name object -form {
-                {content_elm:richtext(richtext),optional
-                    {label "Content"}
-                    {html {cols 60 rows 8}}
-                }
+if { ![info exists content_method($content_type)] } {
+    set content_method($content_type) "richtext"
+}
+switch $content_method($content_type) {
+    richtext {
+        ad_form -extend -name object -form {
+            {content_elm:richtext(richtext),optional
+                {label "Content"}
+                {html {cols 60 rows 8}}
             }
         }
-        upload {
-            
+    }
+    textarea {
+        ad_form -extend -name object -form {
+            {content_elm:text(textarea),optional
+                {label "Content"}
+                {html {cols 60 rows 8}}
+            }
         }
     }
-
+    default {
+        error "The '$content_method($content_type)' content input method has not yet been implemented"
+    }
 }
+
 
 
 #####
@@ -171,6 +180,12 @@ array set form_extra {
     keyword {}
 }
 
+array set form_references {
+    sim_character.stylesheet sim_stylesheet
+    sim_home.stylesheet sim_stylesheet
+    sim_prop.stylesheet sim_stylesheet
+}
+
 set attr_names [list]
 
 db_foreach select_attributes {
@@ -182,17 +197,59 @@ db_foreach select_attributes {
     order  by sort_order
 } {
     lappend attr_names $attribute_name
+    set elm_name attr__${content_type}__${attribute_name}
+    set elm_datatype $form_datatype($datatype)
+    set elm_widget $form_widget($datatype)
+    # LARS TODO: This needs to be specifiable in the attribute declaration
+    set elm_optional_p 1
 
-    set elm_decl "attr__${content_type}__${attribute_name}:$form_datatype($datatype)($form_widget($datatype))"
+    set extra $form_extra($datatype)
+    if { [exists_and_not_null form_references(${content_type}.${attribute_name})] } {
+        set elm_widget select
+        set elm_ref_type $form_references(${content_type}.${attribute_name})
 
-    set optional_p [expr ![empty_string_p $default_value] || $min_n_values == 0]
-    # LARS hack: Make extra attributes optional
-    if { 1 || $optional_p } {
-        append elm_decl ",optional"
+        # LARS TODO: We need to be able to scope this to a package, 
+        # possibly filter by other things, control the sort order,
+        # we need to be able to control what the label looks like (e.g. include email for users)
+        # and it needs to be intelligent about scaling issues
+
+        set content_type_p [db_string content_type_p { 
+            select count(*) 
+            from   acs_object_type_supertype_map
+            where  object_type = :elm_ref_type
+            and    ancestor_type = 'content_revision'
+        }]
+
+        if { $content_type_p } {
+            set options [db_list_of_lists select_options { 
+                select r.title,
+                       i.item_id
+                from   cr_items i, cr_revisions r
+                where  i.content_type = :elm_ref_type
+                and    r.revision_id = i.live_revision
+                order  by r.title
+            }]
+        } else {
+            set options [db_list_of_lists select_options { 
+                select acs_object__name(object_id),
+                       object_id
+                from   acs_objects
+                where  object_type = :elm_ref_type
+                order  by acs_object__name(object_id)
+            }]
+        }
+
+        set options [concat {{{--None--} {}}} $options]
+        lappend extra { options \$options }
     }
 
+    set elm_decl "${elm_name}:${elm_datatype}($elm_widget)"
+    if { $elm_optional_p } {
+        append elm_decl ",optional"
+    }
+    
     ad_form -extend -name object -form \
-        [list [concat [list $elm_decl [list label \$pretty_name]] $form_extra($datatype)]]
+            [list [concat [list $elm_decl [list label \$pretty_name]] $extra]]
 }
 
 
@@ -225,8 +282,16 @@ ad_form -extend -name object -new_request {
                      -parent_id $parent_id \
                      -content_type $content_type]
     
-    set content_text [template::util::richtext::get_property contents $content_elm]
-    set mime_type [template::util::richtext::get_property format $content_elm]
+    switch $content_method($content_type) {
+        richtext {
+            set content_text [template::util::richtext::get_property contents $content_elm]
+            set mime_type [template::util::richtext::get_property format $content_elm]
+        }
+        textarea {
+            set content_text $content_elm
+            set mime_type "text/plain"
+        }
+    }
 
     set revision_id [bcms::revision::add_revision \
                          -item_id $item_id \
@@ -253,11 +318,27 @@ ad_form -extend -name object -new_request {
         set attr__${content_type}__${attribute_name} $content($attribute_name)
     }
     
-    set content_elm [template::util::richtext::create $content(text) $content(mime_type)]
+    switch $content_method($content_type) {
+        richtext {
+            set content_elm [template::util::richtext::create $content(text) $content(mime_type)]
+        } 
+        textara {
+            set content_elm $content(text)
+        }
+    }
 } -edit_data {
 
-    set content_text [template::util::richtext::get_property contents $content_elm]
-    set mime_type [template::util::richtext::get_property format $content_elm]
+    switch $content_method($content_type) {
+        richtext {
+            set content_text [template::util::richtext::get_property contents $content_elm]
+            set mime_type [template::util::richtext::get_property format $content_elm]
+        }
+        textarea {
+            set content_text $content_elm
+            set mime_type "text/plain"
+        }
+    }
+
 
     set revision_id [bcms::revision::add_revision \
                          -item_id $item_id \
