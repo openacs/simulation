@@ -22,6 +22,20 @@ set elements {
         label "Simulation"
         orderby upper(w.pretty_name)
     }
+    status {
+        label "Status"
+        display_template {
+            <if @cases.num_enabled_tasks@ eq 0>Completed</if>
+            <else>Active</else>
+        }
+    }
+    num_user_tasks {
+        label "Your Tasks"
+        display_template {
+            <if @cases.num_user_tasks@ gt 0>@cases.num_user_tasks@</if>
+        }
+        html { align right }
+    }
 }
 
 template::list::create \
@@ -33,7 +47,21 @@ template::list::create \
 db_multirow cases select_cases "
     select distinct wc.case_id,
            sc.label,
-           w.pretty_name
+           w.pretty_name,
+           (select count(*)
+            from   workflow_case_enabled_actions wcea
+            where  wcea.case_id = wc.case_id
+            and    wcea.enabled_state = 'enabled') as num_enabled_tasks,
+           (select count(distinct wa2.action_id)
+            from   workflow_case_enabled_actions wcea2,
+                   workflow_actions wa2,
+                   workflow_case_role_party_map wcrpm2
+            where  wcea2.case_id = wc.case_id
+            and    wcea2.enabled_state = 'enabled'
+            and    wa2.action_id = wcea2.action_id
+            and    wcrpm2.role_id = wa2.assigned_role
+            and    wcrpm2.party_id = :party_id
+            and    wcrpm2.case_id = wc.case_id) as num_user_tasks
       from workflow_cases wc,
            sim_cases sc,
            workflow_case_role_party_map wcrpm,
