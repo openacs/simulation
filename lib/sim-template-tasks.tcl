@@ -68,14 +68,6 @@ lappend elements up {
         </if>
     }
 }
-lappend elements copy {
-    hide_p {[ad_decode $display_mode edit 0 1]}
-    sub_class narrow
-    link_url_col copy_url
-    display_template {
-        <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
-    }
-}
 
 lappend elements name { 
     label "<br />Name"
@@ -93,6 +85,15 @@ lappend elements trigger_type {
 lappend elements assigned_name { 
     label "<br />Assignee"
     link_url_col assigned_role_edit_url
+}
+
+lappend elements copy {
+    hide_p {[ad_decode $display_mode edit 0 1]}
+    sub_class narrow
+    link_url_col copy_url
+    display_template {
+        <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
+    }
 }
 
 lappend elements delete {

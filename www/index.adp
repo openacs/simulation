@@ -32,7 +32,7 @@
             <include src="/packages/simulation/lib/cases" party_id="@user_id@"/>
           </if>
           <else>
-            <u>Log in</u> to see your active cases.
+            <a href="@login_url@">Log in</a> to see your active cases.
           </else>
           <p>
           <h4>Join a Simulation</h4>
