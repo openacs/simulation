@@ -17,44 +17,37 @@ set group_admin_url "${closest_subsite(url)}admin/group-types/one?group_type=gro
 
 # TODO: provide more sensible default dates?
 # Notification send could be start date minus some parameter
-set in_a_month_date [clock format [expr [clock seconds] + 3600*24*31] -format "%Y %m %d"]
-set in_two_months_date [clock format [expr [clock seconds] + 2*3600*24*31] -format "%Y %m %d"]
-set in_two_and_a_half_months_date [clock format [expr [clock seconds] + 3*3600*24*31 - 3600*24*15] -format "%Y %m %d"]
-set in_three_months_date [clock format [expr [clock seconds] + 3*3600*24*31] -format "%Y %m %d"]
-set in_four_months_date [clock format [expr [clock seconds] + 4*3600*24*31] -format "%Y %m %d"]
+set in_a_month_date [clock format [expr [clock seconds] + 3600*24*31] -format "%Y-%m-%d"]
+set in_two_months_date [clock format [expr [clock seconds] + 2*3600*24*31] -format "%Y-%m-%d"]
+set in_two_and_a_half_months_date [clock format [expr [clock seconds] + 3*3600*24*31 - 3600*24*15] -format "%Y-%m-%d"]
+set in_three_months_date [clock format [expr [clock seconds] + 3*3600*24*31] -format "%Y-%m-%d"]
+set in_four_months_date [clock format [expr [clock seconds] + 4*3600*24*31] -format "%Y-%m-%d"]
 
 set eligible_groups [simulation::casting_groups -workflow_id $workflow_id]
 
 ad_form -export { workflow_id } -name simulation -form {
-    {enroll_start:date,optional
+    {enroll_start:date,to_sql(ansi),from_sql(ansi),optional
         {label "Enrollment start date"}
-        {value $in_a_month_date}
     }
-    {enroll_end:date,optional
+    {enroll_end:date,to_sql(ansi),from_sql(ansi),optional
         {label "Enrollment end date"}
-        {value $in_two_months_date}
     }
-    {notification_date:date
+    {send_start_note_date:date,to_sql(ansi),from_sql(ansi),optional
         {label "Date to send start notification (mockup only)"}
-        {value $in_two_and_a_half_months_date}
     }
-    {case_start:date
+    {case_start:date,to_sql(ansi),from_sql(ansi),optional
         {label "Simulation start date"}
-        {value $in_three_months_date}
     }
-    {case_end:date
+    {case_end:date,to_sql(ansi),from_sql(ansi),optional
         {label "Simulation end date"}
-        {value $in_four_months_date}
     }
     {enroll_type:text(radio)
         {label "Enrollment type"}
         {options {{"By invitation only" closed} {Open open}}}
-        {value $sim_template(enroll_type)}
     }
     {casting_type:text(radio)
         {label "Casting type"}
         {options {{Automatic auto} {Group group} {Open open}}}
-        {value $sim_template(casting_type)}
     }
     {enroll_groups:integer(checkbox),multiple,optional
         {label "Enroll all users in these groups"}
@@ -68,34 +61,59 @@ ad_form -export { workflow_id } -name simulation -form {
     }    
 } -on_request {
 
-    # TODO: use these default values if none are specified
-    set enroll_type "closed"
-    set casting_type "auto"
+    foreach elm { 
+        enroll_type
+        casting_type
+        enroll_start
+        enroll_end
+        case_start
+        case_end
+        send_start_note_date 
+    } { 
+        set $elm $sim_template($elm)
+    }
 
     set enroll_groups [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto-enroll]
 
+    # Default values
+    if { [empty_string_p $enroll_start] } {
+        set enroll_start $in_a_month_date
+    }
+    if { [empty_string_p $enroll_end] } {
+        set enroll_end $in_two_months_date
+    }
+    if { [empty_string_p $send_start_note_date] } {
+        set send_start_note_date $in_two_and_a_half_months_date
+    }
+    if { [empty_string_p $case_start] } {
+        set case_start $in_three_months_date
+    }
+    if { [empty_string_p $case_end] } {
+        set case_end $in_three_months_date
+    }
+    if { [empty_string_p $enroll_type] } {
+        set enroll_type "closed"
+    }
+    if { [empty_string_p $casting_type] } {
+        set casting_type "auto"
+    }
+
+
 } -on_submit {
-    # Convert dates to ANSI format
-    foreach var_name {enroll_start enroll_end notification_date case_start case_end} {
-        set ${var_name}_ansi "[lindex [set $var_name] 0]-[lindex [set $var_name] 1]-[lindex [set $var_name] 2]"
+    # TODO: Use underscore in "auto-enroll" -> "auto_enroll" for consistency
+
+    foreach elm { enroll_start enroll_end send_start_note_date case_start case_end enroll_type casting_type } {
+        set row($elm) [set $elm]
     }
     
-    array unset sim_template
-    set sim_template(enroll_start) $enroll_start_ansi
-    set sim_template(enroll_end) $enroll_end_ansi
-    # TODO:
-    #set sim_template(notification_date) $notification_date_ansi
-    set sim_template(case_start) $case_start_ansi
-    set sim_template(case_end) $case_end_ansi
-    set sim_template(enroll_type) $enroll_type
-    set sim_template(casting_type) $casting_type
-    set sim_template(auto-enroll) $enroll_groups
-    # TODO:
-    #set sim_template(invite_gropus) $invite_groups
+    # TODO: Rename "auto-enroll" property to "auto_enroll", and rename the form element to the same
+    set row(auto-enroll) $enroll_groups
+
+    # TODO: add invite_gropus to list of elements above
 
     simulation::template::edit \
         -workflow_id $workflow_id \
-        -array sim_template
+        -array row
 
     ad_returnredirect .
     ad_script_abort
