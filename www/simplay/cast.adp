@@ -2,15 +2,51 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-<p>
-  Select which case <if @simulation.casting_type@ eq "open">and role</if> to join, or create a new case for yourself.  
-  If you do not select a case <if @simulation.casting_type@ eq "open">and role</if> to join, you will be automatically
-  assigned to a case <if @simulation.casting_type@ eq "open">and role</if> when the simulation begins.
-</p>
+<if @already_cast_p@>
+  <p>
+    You are already cast in the following roles:
+  </p>
+ 
+  <listtemplate name="cast_info"></listtemplate></p>
+  
+  <p>
+    Below is a listing of all users in the simulation.
+  </p>
 
+</if>
+<else>
+  <p>
+    Select which case <if @simulation.casting_type@ eq "open">and
+    role</if> to join, or create a new case for yourself.  If you do not
+    select a case <if @simulation.casting_type@ eq "open">and role</if>
+    to join, you will be automatically assigned to a case <if
+    @simulation.casting_type@ eq "open">and role</if> when the
+    simulation begins.
+  </p>
+
+</else>
 
 <listtemplate name="roles"></listtemplate></p>
 
+<if @join_new_case_url@ not nil>
+  <p>
+    <a href="@join_new_case_url@" class="action">Be the first user in a new case</a>
+  </p>
+</if>
+
+
+<p>
+&nbsp;
+</p>
+<p>
+&nbsp;
+</p>
+<p>
+&nbsp;
+</p>
+<p>
+&nbsp;
+</p>
 <p>
 Mockup below:
 </p>
@@ -98,11 +134,7 @@ Mockup below:
 </table>
 <bR><input type="submit" value="Be the first user in
       a new case">
+
 <p>
-If no rows, display this text: "There are no cases yet."
-<p>
-After clicking join, redirect back to this page.  Hide all buttons.
-Show new text at the bottom: "You are participating in this simulation
-as a player in case #X.  The simulation will start XXX."
-<p>If casting type is group instead of open, do not display or group
+TODO: If casting type is group instead of open, do not display or group
 by the role column.
