@@ -3,6 +3,10 @@
   <property name="context">@context;noquote@</property>
 
 <p>
+  TODO: show report with all tasks and character-role mappings.
+</p>
+
+<p>
   <b>&raquo;</b> <a href="cast-edit?workflow_id=@workflow_id@">Proceed to Casting</a>
 </p>
 
