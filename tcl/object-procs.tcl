@@ -18,6 +18,7 @@ namespace eval simulation::object::xml {}
 ad_proc -private simulation::object::url { 
     {-package_id ""}
     {-name:required}
+    {-mime_type ""}
 } {
     The URL for the page displaying contents and name of
     an item.
@@ -29,7 +30,11 @@ ad_proc -private simulation::object::url {
         set package_url "[ad_url][apm_package_url_from_id $package_id]"
     }
     
-    return "${package_url}object/${name}"
+    if { [empty_string_p $mime_type] || [string match "text/*" $mime_type] } {
+        return "${package_url}object/${name}"
+    } else {
+        return "${package_url}object-content/${name}"
+    }
 }
 
 ad_proc -private simulation::object::content_url { 
