@@ -558,16 +558,11 @@ ad_proc -public simulation::template::autocast {
     # Create the cases and for each case assign users to roles    
     while { $total_users > 0 } {
 
-        # TODO: implement simulation::case::new
-#         set object_id [simulation::case::new \
-#                            -workflow_id $workflow_id]
-#         set case_id [workflow::case::get_id \
-#                          -object_id $object_id \
-#                          -workflow_short_name $workflow_short_name]
-        # Temporary while waiting for simulation::case::new proc:
-        set case_id [workflow::case::new \
-                         -workflow_id $workflow_id \
-                         -object_id [ad_conn package_id]]
+        set sim_case_id [simulation::case::new \
+                             -workflow_id $workflow_id]
+        set case_id [workflow::case::get_id \
+                         -object_id $sim_case_id \
+                         -workflow_short_name $workflow_short_name]
         
         # Assign users from the specified group for each role
         array unset row
