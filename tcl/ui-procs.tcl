@@ -157,14 +157,10 @@ ad_proc -public simulation::ui::forms::document_upload::check_mime {
 	set mime_type [template::util::file::get_property mime_type $document_file]
     }
 
-    ns_log notice "check_mime(1): mime_type is <$mime_type>"
-
     if { ![exists_and_not_null mime_type] } {
 	set mime_type [cr_filename_to_mime_type -create $upload_filename]
     }
     
-    ns_log notice "check_mime(2): mime_type is <$mime_type>"
-
     set mime_count [db_string get_mime {
 	select count(*) from cr_mime_types where mime_type = :mime_type}]
     
@@ -188,8 +184,6 @@ ad_proc -public simulation::ui::forms::document_upload::add_mime {
     set upload_filename [template::util::file::get_property filename $document_file]
     set extension [string tolower [string trimleft [file extension $upload_filename] "."]]
     set orig_mime_type [template::util::file::get_property mime_type $document_file]
-
-    ns_log notice "add_mime: mime_type is <$orig_mime_type>"
 
     cr_create_mime_type -extension $extension -mime_type $orig_mime_type
 }

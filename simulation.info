@@ -8,7 +8,7 @@
     <singleton-p>f</singleton-p>
     <auto-mount>simulation</auto-mount>
 
-    <version name="1.0" url="http://openacs.org/repository/download/apm/simulation-1.0.apm">
+    <version name="1.0.1" url="http://openacs.org/repository/download/apm/simulation-1.0.1.apm">
         <owner url="mailto:team@collaboraid.biz">Collaboraid ApS</owner>
         <owner url="mailto:jarkko@jlaine.net">O'Design</owner>
         <summary>Workflow-based task simulator.  Build scenario
@@ -17,14 +17,12 @@
         of students into cases, cast the students into roles, and
         monitor progress.  Developed as a legal education tool for
         www.rechtenonline.nl.</summary>
-        <release-date>2004-11-30</release-date>
+        <release-date>2004-12-23</release-date>
 
-        <provides url="simulation" version="1.0"/>
+        <provides url="simulation" version="1.0.1"/>
         <requires url="acs-mail-lite" version="0.2a"/>
         <requires url="bcms" version="0.2"/>
         <requires url="workflow" version="2.0.0b3"/>
-
-	<maturity>1</maturity>
 
         <callbacks>
             <callback type="before-unmount"  proc="simulation::apm::before_unmount"/>

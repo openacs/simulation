@@ -5,11 +5,11 @@
   id="map" 
   ALIGN=""
   alt="Flash map of the city">
-  <param NAME="movie" VALUE="@url@static-map.swf"/> 
+  <param NAME="movie" VALUE="@url@"/> 
   <param NAME="menu" VALUE="false"/>
   <param NAME="quality" VALUE="high"/> 
   <param NAME="bgcolor" VALUE="#EEFFEE"/>
-  <embed src="@url@static-map.swf" menu="false" quality="high" bgcolor="#EEFFEE"
+  <embed src="@url@" menu="false" quality="high" bgcolor="#EEFFEE"
     WIDTH="500" HEIGHT="500" NAME="map" ALIGN=""
     TYPE="application/x-shockwave-flash"
     PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer">

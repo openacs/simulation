@@ -24,6 +24,20 @@ if { [lsearch -exact $base_url "simplay"] == -1 } {
     set simplay 0
 }
 
+if { $simplay } {
+    if { [exists_and_not_null case_id] } {
+	set num_enabled_actions [db_string select_num_enabled_actions { 
+	    select count(*) 
+	    from   workflow_case_enabled_actions 
+	    where  case_id = :case_id
+	}]
+	set complete_p [expr $num_enabled_actions == 0]
+    } else {
+	set complete_p 0
+    }   
+}
+
+
 # This little exercise removes the object/ part from the extra_url
 # Let's just use path_info
 # set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 1 end]]
@@ -40,9 +54,13 @@ if { ![info exists revision_id] } {
     array set item [bcms::revision::get_revision -revision_id $revision_id]
 }
 
+if {[catch {
 item::get_content \
     -revision_id $item(revision_id) \
     -array content
+}]} {
+    ns_returnnotfound
+}
 
 #file delete /web/lars/www/picture.jpg
 

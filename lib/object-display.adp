@@ -18,9 +18,11 @@
 </if>
 
 <if @simplay@>
+ <if @complete_p@ not true>
   <if @recipient_p@>
     <p>
     <a href="@message_url@">#simulation.Send_a_message_to# @page_title@</a>
     </p>
   </if>
+ </if>
 </if>

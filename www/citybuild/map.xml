@@ -3,610 +3,610 @@
      <object num="1">
           <id>sd001</id>
           <name>Achterhaven</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-001</url>
-          <thumbnail_url>images/th_sd001.jpg</thumbnail_url>
+          <url>object/sd-001</url>
+          <thumbnail_url>object-content/th_sd001.jpg</thumbnail_url>
           <description>De Achterhaven is een van de drie oude havens van Sieberdam.</description>
      </object>
      <object num="2">
           <id>sd002</id>
           <name>Antex uitzendbureau</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-002</url>
-          <thumbnail_url>images/th_sd002.jpg</thumbnail_url>
+          <url>object/sd-002</url>
+          <thumbnail_url>object-content/th_sd002.jpg</thumbnail_url>
           <description>Antex heeft zich in de loop der tijd gespecialiseerd in dienstverlenende beroepen.</description>
      </object>
      <object num="3">
           <id>sd003</id>
           <name>Apotheek Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-003</url>
-          <thumbnail_url>images/th_sd003.jpg</thumbnail_url>
+          <url>object/sd-003</url>
+          <thumbnail_url>object-content/th_sd003.jpg</thumbnail_url>
           <description>De oude apotheek van Sieberdam is in 1932 geheel uitgebrand. Sindsdien is zij in Middelberg gevestigd.</description>
      </object>
      <object num="4">
           <id>sd004</id>
           <name>Artsenpraktijk NGF</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-004</url>
-          <thumbnail_url>images/th_sd004.jpg</thumbnail_url>
+          <url>object/sd-004</url>
+          <thumbnail_url>object-content/th_sd004.jpg</thumbnail_url>
           <description>Artsenpraktijk NGF is een recente samenvoeging van enkele bestaande huisartsenpraktijken.</description>
      </object>
      <object num="5">
           <id>sd005</id>
           <name>Bakker Bas</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-005</url>
-          <thumbnail_url>images/th_sd005.jpg</thumbnail_url>
+          <url>object/sd-005</url>
+          <thumbnail_url>object-content/th_sd005.jpg</thumbnail_url>
           <description>Al sinds de middeleeuwen zit de bakkerij in de oude stad. Er wordt nog elke nacht brood gebakken.</description>
      </object>
      <object num="6">
           <id>sd006</id>
           <name>Basisschool Amalia</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-006</url>
-          <thumbnail_url>images/th_sd006.jpg</thumbnail_url>
+          <url>object/sd-006</url>
+          <thumbnail_url>object-content/th_sd006.jpg</thumbnail_url>
           <description>De basisschool Amalia opende in 1978 haar deuren. De laatste jaren is er steevast een wachtlijst.</description>
      </object>
      <object num="7">
           <id>sd007</id>
           <name>Bastion Hotel</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-007</url>
-          <thumbnail_url>images/th_sd007.jpg</thumbnail_url>
+          <url>object/sd-007</url>
+          <thumbnail_url>object-content/th_sd007.jpg</thumbnail_url>
           <description>Bastion Hotel Sieberdam is onderdeel van de gelijknamige keten. Open sinds 1998.</description>
      </object>
      <object num="8">
           <id>sd008</id>
           <name>Begraafplaats Sieberhof</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-008</url>
-          <thumbnail_url>images/th_sd008.jpg</thumbnail_url>
+          <url>object/sd-008</url>
+          <thumbnail_url>object-content/th_sd008.jpg</thumbnail_url>
           <description>Begraafplaats Middelberg is gelegen op de plek waar reeds in de Romeinse tijd begraven werd.</description>
      </object>
      <object num="9">
           <id>sd009</id>
           <name>Bibliotheek Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-009</url>
-          <thumbnail_url>images/th_sd009.jpg</thumbnail_url>
+          <url>object/sd-009</url>
+          <thumbnail_url>object-content/th_sd009.jpg</thumbnail_url>
           <description>De bibliotheek van Sieberdam heeft een duidelijke streekfunctie. Multimedia zijn er sterk in opkomst.</description>
      </object>
      <object num="10">
           <id>sd010</id>
           <name>Brandweer</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-010</url>
-          <thumbnail_url>images/th_sd010.jpg</thumbnail_url>
+          <url>object/sd-010</url>
+          <thumbnail_url>object-content/th_sd010.jpg</thumbnail_url>
           <description>De brandweer prijst zich gelukkig met nieuw materiaal en enthousiaste vrijwilligers. Ingesteld in 1867!</description>
      </object>
      <object num="11">
           <id>sd011</id>
           <name>Buikstra cargadoorsbedrijf</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-011</url>
-          <thumbnail_url>images/th_sd011.jpg</thumbnail_url>
+          <url>object/sd-011</url>
+          <thumbnail_url>object-content/th_sd011.jpg</thumbnail_url>
           <description>Cargadoorsbedrijf Buikstra is onderdeel van Sieberdam als Regionaal Overslag Centrum.</description>
      </object>
      <object num="12">
           <id>sd012</id>
           <name>Buitenhaven</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-012</url>
-          <thumbnail_url>images/th_sd012.jpg</thumbnail_url>
+          <url>object/sd-012</url>
+          <thumbnail_url>object-content/th_sd012.jpg</thumbnail_url>
           <description>De Buitenhaven is een van de drie nieuwe havens, tot stand gekomen nadat de bruggen gebouwd waren.</description>
      </object>
      <object num="13">
           <id>sd013</id>
           <name>Cafe Beukers</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-013</url>
-          <thumbnail_url>images/th_sd013.jpg</thumbnail_url>
+          <url>object/sd-013</url>
+          <thumbnail_url>object-content/th_sd013.jpg</thumbnail_url>
           <description>Cafe Beukers is vanouds de verzamelplaats van de Sieberdamse kunst-scene en vrije beroepers.</description>
      </object>
      <object num="14">
           <id>sd014</id>
           <name>Cafe Locus</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-014</url>
-          <thumbnail_url>images/th_sd014.jpg</thumbnail_url>
+          <url>object/sd-014</url>
+          <thumbnail_url>object-content/th_sd014.jpg</thumbnail_url>
           <description>Cafe Locus is bekend om zijn volks karakter, dat versterkt wordt door de &apos;&apos;volkse&quot;&quot; (zang)activiteiten.</description>
      </object>
      <object num="15">
           <id>sd015</id>
           <name>Cafe-restaurant &apos;t Oude Raedthuys</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-015</url>
-          <thumbnail_url>images/th_sd015.jpg</thumbnail_url>
+          <url>object/sd-015</url>
+          <thumbnail_url>object-content/th_sd015.jpg</thumbnail_url>
           <description>t Oude Raedhuys is trots op haar oorsprong als middeleeuwse herberg, welke uitstraling het koestert.</description>
      </object>
      <object num="16">
           <id>sd016</id>
           <name>Cash &amp; co gerechtsdeurwaarder</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-016</url>
-          <thumbnail_url>images/th_sd016.jpg</thumbnail_url>
+          <url>object/sd-016</url>
+          <thumbnail_url>object-content/th_sd016.jpg</thumbnail_url>
           <description>Onze klanten staan centraal. Ons motto: maximaal resultaat tegen een redelijke prijs.</description>
      </object>
      <object num="17">
           <id>sd017</id>
           <name>Catharina College</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-017</url>
-          <thumbnail_url>images/th_sd017.jpg</thumbnail_url>
+          <url>object/sd-017</url>
+          <thumbnail_url>object-content/th_sd017.jpg</thumbnail_url>
           <description>Het Catharina College is de middelbare scholengemeenschap van Sieberdam. </description>
      </object>
      <object num="18">
           <id>sd018</id>
           <name>Copyshop NORP</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-018</url>
-          <thumbnail_url>images/th_sd018.jpg</thumbnail_url>
+          <url>object/sd-018</url>
+          <thumbnail_url>object-content/th_sd018.jpg</thumbnail_url>
           <description>Copyshop NORP staat voor NoRePro. Daarmee slaan we de creatieve spijker van ons vak op de kop.</description>
      </object>
      <object num="19">
           <id>sd019</id>
           <name>De oude fabriek</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-019</url>
-          <thumbnail_url>images/th_sd019.jpg</thumbnail_url>
+          <url>object/sd-019</url>
+          <thumbnail_url>object-content/th_sd019.jpg</thumbnail_url>
           <description>De locatie van deze voormalige textielfabriek wordt de laatste jaren herontwikkeld</description>
      </object>
      <object num="20">
           <id>sd020</id>
           <name>De Stalhof factory outlet</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-020</url>
-          <thumbnail_url>images/th_sd020.jpg</thumbnail_url>
+          <url>object/sd-020</url>
+          <thumbnail_url>object-content/th_sd020.jpg</thumbnail_url>
           <description>Voor een brede range aan originele producten bent u hier tientallen procenten goedkoper uit.</description>
      </object>
      <object num="21">
           <id>sd021</id>
           <name>De Vries makelaardij</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-021</url>
-          <thumbnail_url>images/th_sd021.jpg</thumbnail_url>
+          <url>object/sd-021</url>
+          <thumbnail_url>object-content/th_sd021.jpg</thumbnail_url>
           <description>De Vries Makelaardij is een veelzijdig makelaarskantoor. U bent welkom in een van de vier kantoren.</description>
      </object>
      <object num="22">
           <id>sd022</id>
           <name>De Waag</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-022</url>
-          <thumbnail_url>images/th_sd022.jpg</thumbnail_url>
+          <url>object/sd-022</url>
+          <thumbnail_url>object-content/th_sd022.jpg</thumbnail_url>
           <description>Volgens de overlevering is De Waag opgericht door Schotse kooplui in de 16e eeuw.</description>
      </object>
      <object num="23">
           <id>sd023</id>
           <name>Discotheek Breakout</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-023</url>
-          <thumbnail_url>images/th_sd023.jpg</thumbnail_url>
+          <url>object/sd-023</url>
+          <thumbnail_url>object-content/th_sd023.jpg</thumbnail_url>
           <description>Breakout is iedere zaterdagavond geopend en ook voor speciale evenementen. Kijk op onze E-pages.</description>
      </object>
      <object num="24">
           <id>sd024</id>
           <name>DMM inspectiediensten</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-024</url>
-          <thumbnail_url>images/th_sd024.jpg</thumbnail_url>
+          <url>object/sd-024</url>
+          <thumbnail_url>object-content/th_sd024.jpg</thumbnail_url>
           <description>Al meer dan 65 jaar is DMM actief met inspectiemethoden en andere gespecialiseerde diensten.</description>
      </object>
      <object num="25">
           <id>sd025</id>
           <name>ENSIE energiebedrijf</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-025</url>
-          <thumbnail_url>images/th_sd025.jpg</thumbnail_url>
+          <url>object/sd-025</url>
+          <thumbnail_url>object-content/th_sd025.jpg</thumbnail_url>
           <description>De ENSIE is een gerenommeerd en betrouwbare partner van haar afnemers. Comfort thuis en in bedrijf.</description>
      </object>
      <object num="26">
           <id>sd026</id>
           <name>Gezondheidscentrum Siedok</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-026</url>
-          <thumbnail_url>images/th_sd026.jpg</thumbnail_url>
+          <url>object/sd-026</url>
+          <thumbnail_url>object-content/th_sd026.jpg</thumbnail_url>
           <description>Gezondheidscentrum SieDok omvat een artsenpraktijk, fysiotherapeuten en maatschappelijk werk.</description>
      </object>
      <object num="27">
           <id>sd027</id>
           <name>Global Inc</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-027</url>
-          <thumbnail_url>images/th_sd027.jpg</thumbnail_url>
+          <url>object/sd-027</url>
+          <thumbnail_url>object-content/th_sd027.jpg</thumbnail_url>
           <description>Global Inc. is de eerste multinational in Sieberdam. ICT en ruimtevaart zijn haar kernactiviteiten.</description>
      </object>
      <object num="28">
           <id>sd028</id>
           <name>Groentenboer Boorn</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-028</url>
-          <thumbnail_url>images/th_sd028.jpg</thumbnail_url>
+          <url>object/sd-028</url>
+          <thumbnail_url>object-content/th_sd028.jpg</thumbnail_url>
           <description>Al 22 jaar lang is familiebedrijf Boorn de groentenboer van heel Sieberdam.</description>
      </object>
      <object num="29">
           <id>sd029</id>
           <name>Historisch Museum</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-029</url>
-          <thumbnail_url>images/th_sd029.jpg</thumbnail_url>
+          <url>object/sd-029</url>
+          <thumbnail_url>object-content/th_sd029.jpg</thumbnail_url>
           <description>In 1996 ging het Historisch Museum Sieberdam open voor het publiek.</description>
      </object>
      <object num="30">
           <id>sd030</id>
           <name>Hoek Vastgoed BV</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-030</url>
-          <thumbnail_url>images/th_sd030.jpg</thumbnail_url>
+          <url>object/sd-030</url>
+          <thumbnail_url>object-content/th_sd030.jpg</thumbnail_url>
           <description>Hoek Vastgoed BV is geopend maandag t/m vrijdag van 09.00 tot 17.00 uur en zaterdag tot 14.00 uur.</description>
      </object>
      <object num="31">
           <id>sd031</id>
           <name>Hotel &apos;t Wapen van Sielre</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-031</url>
-          <thumbnail_url>images/th_sd031.jpg</thumbnail_url>
+          <url>object/sd-031</url>
+          <thumbnail_url>object-content/th_sd031.jpg</thumbnail_url>
           <description>t Wapen van Sielre is ouder dan Sieberdam zelf. Nu met een online reserverings-systeem.</description>
      </object>
      <object num="32">
           <id>sd032</id>
           <name>Industriegebied Alfa</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-032</url>
-          <thumbnail_url>images/th_sd032.jpg</thumbnail_url>
+          <url>object/sd-032</url>
+          <thumbnail_url>object-content/th_sd032.jpg</thumbnail_url>
           <description>Industrieterrein Alfa is de perfecte plaats voor bedrijven die ruimte en bereikbaarheid wensen.</description>
      </object>
      <object num="33">
           <id>sd033</id>
           <name>Kraakpand Bezet</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-033</url>
-          <thumbnail_url>images/th_sd033.jpg</thumbnail_url>
+          <url>object/sd-033</url>
+          <thumbnail_url>object-content/th_sd033.jpg</thumbnail_url>
           <description>Kraakpand bezet is een uiting van zo&apos;n 80 woningzoekenden die geen hotel willen maar een huis.</description>
      </object>
      <object num="34">
           <id>sd034</id>
           <name>Laapers ziekenhuis</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-034</url>
-          <thumbnail_url>images/th_sd034.jpg</thumbnail_url>
+          <url>object/sd-034</url>
+          <thumbnail_url>object-content/th_sd034.jpg</thumbnail_url>
           <description>Het Laapersziekenhuis heeft een streekfunctie. Vrijwel alle specialismen zijn aanwezig.</description>
      </object>
      <object num="35">
           <id>sd035</id>
           <name>LIG coffeeshop</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-035</url>
-          <thumbnail_url>images/th_sd035.jpg</thumbnail_url>
+          <url>object/sd-035</url>
+          <thumbnail_url>object-content/th_sd035.jpg</thumbnail_url>
           <description>De beste weed langs de IJssel. Ook voor uw smartproducten en uw growshop.</description>
      </object>
      <object num="36">
           <id>sd036</id>
           <name>Lincoln garage</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-036</url>
-          <thumbnail_url>images/th_sd036.jpg</thumbnail_url>
+          <url>object/sd-036</url>
+          <thumbnail_url>object-content/th_sd036.jpg</thumbnail_url>
           <description>Merkgarage Lincoln specialiseert zich in in Amerikaanse auto&apos;s, die wij zelf importeren.</description>
      </object>
      <object num="37">
           <id>sd037</id>
           <name>McDonalds</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-037</url>
-          <thumbnail_url>images/th_sd037.jpg</thumbnail_url>
+          <url>object/sd-037</url>
+          <thumbnail_url>object-content/th_sd037.jpg</thumbnail_url>
           <description>I&apos;m lovin it brengt de lifestyle van onze gasten in contact met McDonalds.</description>
      </object>
      <object num="38">
           <id>sd038</id>
           <name>Mevlana Moskee</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-038</url>
-          <thumbnail_url>images/th_sd038.jpg</thumbnail_url>
+          <url>object/sd-038</url>
+          <thumbnail_url>object-content/th_sd038.jpg</thumbnail_url>
           <description>Moslims in Sieberdam hebben sinds oktober 2001 een nieuwe moskee: de Mevlana Moskee.</description>
      </object>
      <object num="39">
           <id>sd039</id>
           <name>MKB Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-039</url>
-          <thumbnail_url>images/th_sd039.jpg</thumbnail_url>
+          <url>object/sd-039</url>
+          <thumbnail_url>object-content/th_sd039.jpg</thumbnail_url>
           <description>De regionale MKB-organisatie is een belangrijke gesprekspartner op lokaal en regionaal terrein.</description>
      </object>
      <object num="40">
           <id>sd040</id>
           <name>Molen Voorspoed</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-040</url>
-          <thumbnail_url>images/th_sd040.jpg</thumbnail_url>
+          <url>object/sd-040</url>
+          <thumbnail_url>object-content/th_sd040.jpg</thumbnail_url>
           <description>Deze ronde stenen stellingmolen heeft zijn huidige vorm sinds 1711.</description>
      </object>
      <object num="41">
           <id>sd041</id>
           <name>Nieuwe Industriehaven</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-041</url>
-          <thumbnail_url>images/th_sd041.jpg</thumbnail_url>
+          <url>object/sd-041</url>
+          <thumbnail_url>object-content/th_sd041.jpg</thumbnail_url>
           <description>De Nieuwe Industriehaven is de middelste van de drie nieuwe havens, buiten de bruggen.</description>
      </object>
      <object num="42">
           <id>sd042</id>
           <name>Nieuwe Kerk</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-042</url>
-          <thumbnail_url>images/th_sd042.jpg</thumbnail_url>
+          <url>object/sd-042</url>
+          <thumbnail_url>object-content/th_sd042.jpg</thumbnail_url>
           <description>In de nieuwe kerk vindt u de Christelijke Gereformeerde Kerk van Sieberdam.</description>
      </object>
      <object num="43">
           <id>sd043</id>
           <name>Notaris Koers</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-043</url>
-          <thumbnail_url>images/th_sd043.jpg</thumbnail_url>
+          <url>object/sd-043</url>
+          <thumbnail_url>object-content/th_sd043.jpg</thumbnail_url>
           <description>Koers heeft ervaring met en kennis van nagenoeg alle rechtsgebieden.</description>
      </object>
      <object num="44">
           <id>sd044</id>
           <name>NS station Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-044</url>
-          <thumbnail_url>images/th_sd044.jpg</thumbnail_url>
+          <url>object/sd-044</url>
+          <thumbnail_url>object-content/th_sd044.jpg</thumbnail_url>
           <description>Het NS station Sieberdam staat op de lijst van nieuwbouw-stations van de NS - naar verwachting 2008.</description>
      </object>
      <object num="45">
           <id>sd045</id>
           <name>Oude Kerk</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-045</url>
-          <thumbnail_url>images/th_sd045.jpg</thumbnail_url>
+          <url>object/sd-045</url>
+          <thumbnail_url>object-content/th_sd045.jpg</thumbnail_url>
           <description>Kerkdienst elke zondagochtend om 10.00 uur, waarna ontmoeting en gespreksmogelijkheid, met koffie.</description>
      </object>
      <object num="46">
           <id>sd046</id>
           <name>Oude Kerk</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-046</url>
-          <thumbnail_url>images/th_sd046.jpg</thumbnail_url>
+          <url>object/sd-046</url>
+          <thumbnail_url>object-content/th_sd046.jpg</thumbnail_url>
           <description>Kerkdienst elke zondagochtend om 10.00 uur, waarna ontmoeting en gespreksmogelijkheid, met koffie.</description>
      </object>
      <object num="47">
           <id>sd047</id>
           <name>Oude spoorbrug</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-047</url>
-          <thumbnail_url>images/th_sd047.jpg</thumbnail_url>
+          <url>object/sd-047</url>
+          <thumbnail_url>object-content/th_sd047.jpg</thumbnail_url>
           <description>De oude spoorbrug is ingrijpend gereconstrueerd, waarbij een fietspad is toegevoegd.</description>
      </object>
      <object num="48">
           <id>sd048</id>
           <name>Overslagbedrijf SCT</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-048</url>
-          <thumbnail_url>images/th_sd048.jpg</thumbnail_url>
+          <url>object/sd-048</url>
+          <thumbnail_url>object-content/th_sd048.jpg</thumbnail_url>
           <description>SCT bv is gecertificeerd voor HACCP, GMP, Minas- en Japanstandaard.</description>
      </object>
      <object num="49">
           <id>sd049</id>
           <name>Penitentiaire inrichting IJsselstein</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-049</url>
-          <thumbnail_url>images/th_sd049.jpg</thumbnail_url>
+          <url>object/sd-049</url>
+          <thumbnail_url>object-content/th_sd049.jpg</thumbnail_url>
           <description>De Penitentiaire Inrichting IJsselstein maakt deel uit van de DJI van het Ministerie van Justitie.</description>
      </object>
      <object num="50">
           <id>sd050</id>
           <name>Peters Mediation</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-050</url>
-          <thumbnail_url>images/th_sd050.jpg</thumbnail_url>
+          <url>object/sd-050</url>
+          <thumbnail_url>object-content/th_sd050.jpg</thumbnail_url>
           <description>Peters Mediation lost het op. NMI erkend mediator.</description>
      </object>
      <object num="51">
           <id>sd051</id>
           <name>Gerechtsgebouw Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-051</url>
-          <thumbnail_url>images/th_sd051.jpg</thumbnail_url>
+          <url>object/sd-051</url>
+          <thumbnail_url>object-content/th_sd051.jpg</thumbnail_url>
           <description>De zittingen in het gerechtsgebouw zijn openbaar. Melden bij de informatiebalie.</description>
      </object>
      <object num="52">
           <id>sd052</id>
           <name>SC Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-052</url>
-          <thumbnail_url>images/th_sd052.jpg</thumbnail_url>
+          <url>object/sd-052</url>
+          <thumbnail_url>object-content/th_sd052.jpg</thumbnail_url>
           <description>SC Sieberdam houdt al generaties Sieberdammers in beweging. Voetbal is meer dan gezondheid.</description>
      </object>
      <object num="53">
           <id>sd053</id>
           <name>Sieber Gazette</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-053</url>
-          <thumbnail_url>images/th_sd053.jpg</thumbnail_url>
+          <url>object/sd-053</url>
+          <thumbnail_url>object-content/th_sd053.jpg</thumbnail_url>
           <description>De Sieber Gazette behoort tot de oudste kranten van Nederland. Haar eerste statuut gaat terug tot 1824.</description>
      </object>
      <object num="54">
           <id>sd054</id>
           <name>Sieberdam Beton Groep</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-054</url>
-          <thumbnail_url>images/th_sd054.jpg</thumbnail_url>
+          <url>object/sd-054</url>
+          <thumbnail_url>object-content/th_sd054.jpg</thumbnail_url>
           <description>De Sieberdam Beton Groep is een erkend hoofdaannemer voor de publieke en de private sector.</description>
      </object>
      <object num="55">
           <id>sd055</id>
           <name>Sieberdam Golf Club</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-055</url>
-          <thumbnail_url>images/th_sd055.jpg</thumbnail_url>
+          <url>object/sd-055</url>
+          <thumbnail_url>object-content/th_sd055.jpg</thumbnail_url>
           <description>De Sieberdam Golfclub is een rustige jonge baan. De club telt inmiddels meer dan 300 leden.</description>
      </object>
      <object num="56">
           <id>sd056</id>
           <name>Sieberdam Shipyards</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-056</url>
-          <thumbnail_url>images/th_sd056.jpg</thumbnail_url>
+          <url>object/sd-056</url>
+          <thumbnail_url>object-content/th_sd056.jpg</thumbnail_url>
           <description>Sieberdam Ship Yards: nieuwbouw, onderhoud, reparatie en andere vormen van dienstverlening.</description>
      </object>
      <object num="57">
           <id>sd057</id>
           <name>Sieberlande VINEX locatie</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-057</url>
-          <thumbnail_url>images/th_sd057.jpg</thumbnail_url>
+          <url>object/sd-057</url>
+          <thumbnail_url>object-content/th_sd057.jpg</thumbnail_url>
           <description>Vinex locatie Sieberlande biedt plaats aan 4000 woningen, in deelplannen met elk een eigen karakter.</description>
      </object>
      <object num="58">
           <id>sd058</id>
           <name>Sielrezand vereniging</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-058</url>
-          <thumbnail_url>images/th_sd058.jpg</thumbnail_url>
+          <url>object/sd-058</url>
+          <thumbnail_url>object-content/th_sd058.jpg</thumbnail_url>
           <description>Sielrezand is een natuurgebied in ontwikkeling. Contact: Vereniging ter behoud van Sielrezand.</description>
      </object>
      <object num="59">
           <id>sd059</id>
           <name>Slagerij Slots</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-059</url>
-          <thumbnail_url>images/th_sd059.jpg</thumbnail_url>
+          <url>object/sd-059</url>
+          <thumbnail_url>object-content/th_sd059.jpg</thumbnail_url>
           <description>Slagerij Slots is een familiebedrijf, dat in 2003 van vader op dochter is overgegaan.</description>
      </object>
      <object num="60">
           <id>sd060</id>
           <name>Sloopbedrijf De Haas &amp; dochters</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-060</url>
-          <thumbnail_url>images/th_sd060.jpg</thumbnail_url>
+          <url>object/sd-060</url>
+          <thumbnail_url>object-content/th_sd060.jpg</thumbnail_url>
           <description>Sloopbedrijf De Haas en Dochters - asbestverwijdering, renovatie-, sloop-, grond-, riool- en straatwerk.</description>
      </object>
      <object num="61">
           <id>sd061</id>
           <name>Sportfondsenbad Sieberberg</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-061</url>
-          <thumbnail_url>images/th_sd061.jpg</thumbnail_url>
+          <url>object/sd-061</url>
+          <thumbnail_url>object-content/th_sd061.jpg</thumbnail_url>
           <description>Het sportfondsenbad met veel zwemplezier voor elke doelgroep. Met binnenbad in de Sieberberg.</description>
      </object>
      <object num="62">
           <id>sd062</id>
           <name>Stad Sieberdam Verzekeringen</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-062</url>
-          <thumbnail_url>images/th_sd062.jpg</thumbnail_url>
+          <url>object/sd-062</url>
+          <thumbnail_url>object-content/th_sd062.jpg</thumbnail_url>
           <description>Stad Sieberdam Verzekeringen is een middelgrote verzekeraar, landelijk opererend vanuit Zoetermeer.</description>
      </object>
      <object num="63">
           <id>sd063</id>
           <name>Stadhuis</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-063</url>
-          <thumbnail_url>images/th_sd063.jpg</thumbnail_url>
+          <url>object/sd-063</url>
+          <thumbnail_url>object-content/th_sd063.jpg</thumbnail_url>
           <description>Het gemeentehuis aan de Lapersweg 2-20 is elke dag voor het publiek geopend van 09.00 - 17.00 uur.</description>
      </object>
      <object num="64">
           <id>sd064</id>
           <name>Stadspark De Plantage</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-064</url>
-          <thumbnail_url>images/th_sd064.jpg</thumbnail_url>
+          <url>object/sd-064</url>
+          <thumbnail_url>object-content/th_sd064.jpg</thumbnail_url>
           <description>Stadspark De Plantage is onderdeel van de &apos;groene long&apos; van Sieberdam. Het is er goed toeven.</description>
      </object>
      <object num="65">
           <id>sd065</id>
           <name>Supermarkt De Hemel</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-065</url>
-          <thumbnail_url>images/th_sd065.jpg</thumbnail_url>
+          <url>object/sd-065</url>
+          <thumbnail_url>object-content/th_sd065.jpg</thumbnail_url>
           <description>Supermarkt De Hemel: een goed en supervoordeling winkelaanbod. Lage dagprijzen - weekaanbiedingen.</description>
      </object>
      <object num="66">
           <id>sd066</id>
           <name>SV architecten</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-066</url>
-          <thumbnail_url>images/th_sd066.jpg</thumbnail_url>
+          <url>object/sd-066</url>
+          <thumbnail_url>object-content/th_sd066.jpg</thumbnail_url>
           <description>Architectenbureau Siebervisie is een volwaardige partner in uw bouwproces.</description>
      </object>
      <object num="67">
           <id>sd067</id>
           <name>Tankstation Di-namo</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-067</url>
-          <thumbnail_url>images/th_sd067.jpg</thumbnail_url>
+          <url>object/sd-067</url>
+          <thumbnail_url>object-content/th_sd067.jpg</thumbnail_url>
           <description>Tankstation DI-namo - shop, carwash, handwash, Bart&apos;s Bakerstreet, 24-uurs buitenpaal.</description>
      </object>
      <object num="68">
           <id>sd068</id>
           <name>Uitvaartcentrum Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-068</url>
-          <thumbnail_url>images/th_sd068.jpg</thumbnail_url>
+          <url>object/sd-068</url>
+          <thumbnail_url>object-content/th_sd068.jpg</thumbnail_url>
           <description>Het uitvaartcentrum Sieberdam verzorgt al jaren begrafenissen en crematies.</description>
      </object>
      <object num="69">
           <id>sd069</id>
           <name>Veilinghuis Van der Hijden</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-069</url>
-          <thumbnail_url>images/th_sd069.jpg</thumbnail_url>
+          <url>object/sd-069</url>
+          <thumbnail_url>object-content/th_sd069.jpg</thumbnail_url>
           <description>Veilinghuis Van der Hijden - reeds dertig jaar een vaste waarde in het Nederlands veilinglandschap.</description>
      </object>
      <object num="70">
           <id>sd070</id>
           <name>Verkeersbrug</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-070</url>
-          <thumbnail_url>images/th_sd070.jpg</thumbnail_url>
+          <url>object/sd-070</url>
+          <thumbnail_url>object-content/th_sd070.jpg</thumbnail_url>
           <description>De verkeersbrug is geruime tijd na de Oude Spoorbrug aangelegd als vaste oeververbinding.</description>
      </object>
      <object num="71">
           <id>sd071</id>
           <name>Vervoerbedrijf Travel</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-071</url>
-          <thumbnail_url>images/th_sd071.jpg</thumbnail_url>
+          <url>object/sd-071</url>
+          <thumbnail_url>object-content/th_sd071.jpg</thumbnail_url>
           <description>Vervoerbedrijf Travel heeft sinds 1921 ervaring en know-how met elk gewenst vervoer.</description>
      </object>
      <object num="72">
           <id>sd072</id>
           <name>Volkspark</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-072</url>
-          <thumbnail_url>images/th_sd072.jpg</thumbnail_url>
+          <url>object/sd-072</url>
+          <thumbnail_url>object-content/th_sd072.jpg</thumbnail_url>
           <description>Het Volkspark is meer dan 60 jaar geleden aangelegd. De parkvijver dateert uit 1989.</description>
      </object>
      <object num="73">
           <id>sd073</id>
           <name>Volkstuinvereniging DANIG</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-073</url>
-          <thumbnail_url>images/th_sd073.jpg</thumbnail_url>
+          <url>object/sd-073</url>
+          <thumbnail_url>object-content/th_sd073.jpg</thumbnail_url>
           <description>Volkstuinvereniging Door Arbeid Noest In &apos;t Groen biedt velen een waar buitenleven.</description>
      </object>
      <object num="74">
           <id>sd074</id>
           <name>Voorhaven</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-074</url>
-          <thumbnail_url>images/th_sd074.jpg</thumbnail_url>
+          <url>object/sd-074</url>
+          <thumbnail_url>object-content/th_sd074.jpg</thumbnail_url>
           <description>De Voorhaven is een van de drie oude havens van Sieberdam.</description>
      </object>
      <object num="75">
           <id>sd075</id>
           <name>Watch Out beveiliging</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-075</url>
-          <thumbnail_url>images/th_sd075.jpg</thumbnail_url>
+          <url>object/sd-075</url>
+          <thumbnail_url>object-content/th_sd075.jpg</thumbnail_url>
           <description>Beveiligingsbedrijf Watch Out kiest voor een no-nonsense benadering bij uitvoering en risicoanalyse.</description>
      </object>
      <object num="76">
           <id>sd076</id>
           <name>Winkeliersvereniging Sieberdam</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-076</url>
-          <thumbnail_url>images/th_sd076.jpg</thumbnail_url>
+          <url>object/sd-076</url>
+          <thumbnail_url>object-content/th_sd076.jpg</thumbnail_url>
           <description>De Winkeliersvereniging Sieberdam is opgericht op 1 januari 1884.</description>
      </object>
      <object num="77">
           <id>sd077</id>
           <name>Woningbouwvereniging EMM</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-077</url>
-          <thumbnail_url>images/th_sd077.jpg</thumbnail_url>
+          <url>object/sd-077</url>
+          <thumbnail_url>object-content/th_sd077.jpg</thumbnail_url>
           <description>EMM is een woningbouwvereniging met bijna 2600 woningen. In 2002 behaalde zij het KWH-huurlabel.</description>
      </object>
      <object num="78">
           <id>sd078</id>
           <name>Woningbouwvereniging Sielrebouw</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-078</url>
-          <thumbnail_url>images/th_sd078.jpg</thumbnail_url>
+          <url>object/sd-078</url>
+          <thumbnail_url>object-content/th_sd078.jpg</thumbnail_url>
           <description>Woningbouwvereniging Sielrebouw legt zich toe op grootschalige renovatieprojecten.</description>
      </object>
      <object num="79">
           <id>sd079</id>
           <name>Woonwagenkamp Sjaanie</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-079</url>
-          <thumbnail_url>images/th_sd079.jpg</thumbnail_url>
+          <url>object/sd-079</url>
+          <thumbnail_url>object-content/th_sd079.jpg</thumbnail_url>
           <description>Woonwagenkamp Sjaanie was sinds 1961 gevestigd op het terrein van de Oude Fabriek.</description>
      </object>
      <object num="80">
           <id>sd080</id>
           <name>Zalmhaven</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-080</url>
-          <thumbnail_url>images/th_sd080.jpg</thumbnail_url>
+          <url>object/sd-080</url>
+          <thumbnail_url>object-content/th_sd080.jpg</thumbnail_url>
           <description>De Zalmhaven is een van de drie oude havens van Sieberdam. Het is thans de jachthaven.</description>
      </object>
      <object num="81">
           <id>sd081</id>
           <name>Zoon &amp; Zonen aannemersbedrijf</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-081</url>
-          <thumbnail_url>images/th_sd081.jpg</thumbnail_url>
+          <url>object/sd-081</url>
+          <thumbnail_url>object-content/th_sd081.jpg</thumbnail_url>
           <description>Op aannemersbedrijf Zoon &amp; Zonen kunt u bouwen. Gespecialiseerd in vrije sector woningen.</description>
      </object>
      <object num="82">
           <id>sd082</id>
           <name>De Dokken</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-082</url>
-          <thumbnail_url>images/th_sd082.jpg</thumbnail_url>
+          <url>object/sd-082</url>
+          <thumbnail_url>object-content/th_sd082.jpg</thumbnail_url>
           <description>In De Dokken wordt de oude havens van Sieberdam nieuw leven in geblazen met bewoning en recreatie.</description>
      </object>
      <object num="83">
           <id>sd083</id>
           <name>Laaperspoort</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-083</url>
-          <thumbnail_url>images/th_sd083.jpg</thumbnail_url>
+          <url>object/sd-083</url>
+          <thumbnail_url>object-content/th_sd083.jpg</thumbnail_url>
           <description>De Laaperspoort is een van de toegangspoorten tot een oude stad.</description>
      </object>
      <object num="84">
           <id>sd084</id>
           <name>Sieberpark stadion</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-084</url>
-          <thumbnail_url>images/th_sd084.jpg</thumbnail_url>
+          <url>object/sd-084</url>
+          <thumbnail_url>object-content/th_sd084.jpg</thumbnail_url>
           <description>Het Sieberpark stadion is op 31 juli 2000 officieel geopend. SEC Sieberdam speelt er Hoofdklasse A.</description>
      </object>
      <object num="85">
           <id>sd085</id>
           <name>Speeltuin Het Torentje</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-085</url>
-          <thumbnail_url>images/th_sd085.jpg</thumbnail_url>
+          <url>object/sd-085</url>
+          <thumbnail_url>object-content/th_sd085.jpg</thumbnail_url>
           <description>Speeltuin Het Torentje - al 33 jaar speelplezier voor jong en oud.</description>
      </object>
      <object num="86">
           <id>sd086</id>
           <name>Spoorhaven</name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-086</url>
-          <thumbnail_url>images/th_sd086.jpg</thumbnail_url>
+          <url>object/sd-086</url>
+          <thumbnail_url>object-content/th_sd086.jpg</thumbnail_url>
           <description>De Spoorhaven is de grootste van de drie nieuwe havens, buiten de bruggen. De Sieberwerf ligt er aan.</description>
      </object>
      <object num="87">
           <id>sd087</id>
           <name>Standbeeld </name>
-          <url>http://rocs.uvt.nl/simulation/object/sd-087</url>
-          <thumbnail_url>images/th_sd087.jpg</thumbnail_url>
+          <url>object/sd-087</url>
+          <thumbnail_url>object-content/th_sd087.jpg</thumbnail_url>
           <description>Het standbeeld van de Griekse koopman Solomon verwijst naar het Hanze-verleden van de stad. </description>
      </object>
 </objects_for_flashmap>

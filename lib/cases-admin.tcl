@@ -44,6 +44,8 @@ template::list::create \
     -orderby_name case_admin_order \
     -elements $elements 
 
+
+
 db_multirow cases select_cases "
     select wc.case_id,
            sc.label,
@@ -63,6 +65,8 @@ db_multirow cases select_cases "
      where wc.workflow_id = w.workflow_id
        and sc.sim_case_id = wc.object_id
        and w.workflow_id = ao.object_id
-       and ao.creation_user = :user_id
+       [ad_decode [permission::permission_p -party_id $user_id \
+                       -object_id $package_id -privilege sim_admin] \
+              1 "" "and ao.creation_user = :user_id"]
     [template::list::orderby_clause -orderby -name "cases"]
 "
