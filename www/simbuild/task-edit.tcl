@@ -82,9 +82,8 @@ ad_form -name task -edit_buttons [
         {html {cols 60 rows 8}}
     }
 } -edit_request {
-    permission::require_write_permission -object_id $action_id
-    # TODO - get the recipient (and put all this in simulation api)
     set workflow_id $task_array(workflow_id)
+    permission::require_write_permission -object_id $workflow_id
     set name $task_array(pretty_name)
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
     set recipient_role_id [db_string select_recipient {
@@ -124,7 +123,10 @@ ad_form -name task -edit_buttons [
         values (:action_id, :recipient_role_id)
     }
 } -edit_data {
-    permission::require_write_permission -object_id $action_id
+    # We use task_array(workflow_id) here, which is gotten from the DB, and not
+    # workflow_id, which is gotten from the form, because the workflow_id from the form 
+    # could be spoofed
+    permission::require_write_permission -object_id $task_array(workflow_id)
     simulation::action::edit \
         -action_id $action_id \
         -short_name $name \

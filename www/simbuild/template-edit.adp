@@ -16,11 +16,14 @@
   <h4>Roles</h4>
 
   <include src="/packages/simulation/lib/sim-template-roles" workflow_id="@workflow_id@" display_mode="edit">
+  <p></p>
 
   <h4>Tasks</h4>
 
   <include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" display_mode="edit" >
 </if>
+<P>TODO: Allow sorting of roles, (states), tasks.</p>
+
 <p>MOCKUP: workflow matrix
 <table cellpadding=3 border=1 cellspacing=0>
 <tr><th></th><th>Talking to Client</th><th>Prepare Case</th><th>Submit

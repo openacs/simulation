@@ -27,11 +27,13 @@ set package_id [ad_conn package_id]
 
 if { [ad_form_new_p -key workflow_id] } {
     set mode edit
+    set cancel_url .
 } else {
     set mode display
+    set cancel_url [export_vars -base [ad_conn url] { workflow_id }]
 }
 
-ad_form -name sim_template -mode $mode -cancel_url . -form {
+ad_form -name sim_template -mode $mode -cancel_url $cancel_url -form {
     {workflow_id:key}
     {name:text,optional
         {label "Template Name"}

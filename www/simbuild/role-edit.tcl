@@ -46,9 +46,9 @@ ad_form -name role -cancel_url index -form {
         {html {size 20}}
     }
 } -edit_request {
-    permission::require_write_permission -object_id $role_id    
     workflow::role::get -role_id $role_id -array role_array
     set workflow_id $role_array(workflow_id)
+    permission::require_write_permission -object_id $workflow_id
     set name $role_array(pretty_name)
     workflow::get -workflow_id $workflow_id -array sim_template_array
     set page_title "Edit Role template $name"
@@ -68,7 +68,12 @@ ad_form -name role -cancel_url index -form {
         -role_pretty_name $name
 
 } -edit_data {
-    permission::require_write_permission -object_id $role_id        
+    workflow::role::get -role_id $role_id -array role_array
+    # We use role_array(workflow_id) here, which is gotten from the DB, and not
+    # workflow_id, which is gotten from the form, because the workflow_id from the form 
+    # could be spoofed
+    permission::require_write_permission -object_id $role_array(workflow_id)
+
     set role_array(pretty_name) $name
 
     workflow::role::edit \
