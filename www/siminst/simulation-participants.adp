@@ -1,6 +1,3 @@
-<p>TODO: (0.5h) change invited/mandatory checkboxes to a single radio button
-set per row: invited/mandatory/neither invited nor mandatory or preferably use Javascript with checkboxes
-
 <formtemplate id="simulation">
 
   <listtemplate name="participants"></listtemplate>

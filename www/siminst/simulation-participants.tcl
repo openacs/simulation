@@ -21,7 +21,7 @@ ad_form -name simulation -form {
 
 set groups [list]
 
-db_multirow participants select_participants {
+db_multirow -extend { group_radio } participants select_participants {
     select g.group_name,
            g.group_id,
            (select count(distinct u.user_id)
@@ -48,12 +48,17 @@ db_multirow participants select_participants {
     order  by lower(g.group_name)
 } {
     ad_form -extend -name simulation -form \
-        [list [list __auto_enroll_$group_id:text,optional]]
-
-    ad_form -extend -name simulation -form \
-        [list [list __invited_$group_id:text,optional]]
+        [list [list __group_$group_id:text,optional]]
 
     lappend groups $group_id
+    
+    if { $invited_p > 0 } {
+        set group_radio invited
+    } elseif { $auto_enroll_p > 0 } {
+        set group_radio auto_enroll
+    } else { 
+        set group_radio neither
+    }
 }
 
 template::list::create \
@@ -71,24 +76,21 @@ template::list::create \
         invited_p {
             label "Invited"
             display_template { 
-                <if @participants.invited_p@ true>
-                  <input name="__invited_@participants.group_id@" value="t" type="checkbox" checked>
-                </if>
-                <else>
-                  <input name="__invited_@participants.group_id@" value="t" type="checkbox">
-                </else>
+                  <input name="__group_@participants.group_id@" value="invited" type="radio" <if @participants.group_radio@ eq "invited">checked="checked"</if>>
             }
             html { align center }
         }
         auto_enroll_p {
-            label "Mandatory Participation"
-            display_template {
-                <if @participants.auto_enroll_p@ true>
-                  <input name="__auto_enroll_@participants.group_id@" value="t" type="checkbox" checked>
-                </if>
-                <else>
-                  <input name="__auto_enroll_@participants.group_id@" value="t" type="checkbox">
-                </else>
+            label "Mandatory"
+            display_template {                
+                  <input name="__group_@participants.group_id@" value="auto_enroll" type="radio" <if @participants.group_radio@ eq "auto_enroll">checked</if>>
+            }
+            html { align center }
+        }
+        neither {
+            label "Neither invited nor mandatory"
+            display_template {                
+                  <input name="__group_@participants.group_id@" value="neither" type="radio" <if @participants.group_radio@ eq "neither">checked="checked"</if>>
             }
             html { align center }
         }
@@ -103,13 +105,6 @@ ad_form \
         {groups:text(hidden),optional {value $groups}}
     } -on_submit {
     
-        # First, drop all "invited" check marks if the user is also auto-enrolled
-        foreach group_id $groups {
-            if { [exists_and_equal __invited_${group_id} "t"] && [exists_and_equal __auto_enroll_${group_id} "t"] } {
-                unset __invited_${group_id}
-            }
-        }
-
         db_transaction {
             foreach group_id $groups {
                 foreach type { invited auto_enroll } {
@@ -119,7 +114,9 @@ ad_form \
                         and    type = :type
                         and    party_id = :group_id
                     }
-                    if { [exists_and_equal __${type}_${group_id} "t"] } {
+
+                    set selected_type [element get_value simulation __group_${group_id}]
+                    if { [string equal $selected_type $type] } {
                         db_dml insert_party {
                             insert into sim_party_sim_map (simulation_id, party_id, type)
                             values (:workflow_id, :group_id, :type)
@@ -132,4 +129,3 @@ ad_form \
     } -after_submit {
         wizard forward
     }
-
