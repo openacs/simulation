@@ -93,7 +93,6 @@ template::list::create \
             html { align center }
         }
     }
-#                <formwidget id="auto_enroll_@participants.group_id@">
 
 wizard submit simulation -buttons { back next }
 
@@ -102,11 +101,7 @@ ad_form \
     -name simulation \
     -form { 
         {groups:text(hidden),optional {value $groups}}
-    } \
-    -on_request {
-        # Grab values from local vars 
-    } \
-    -on_submit {
+    } -on_submit {
     
         # First, drop all "invited" check marks if the user is also auto-enrolled
         foreach group_id $groups {

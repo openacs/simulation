@@ -22,6 +22,18 @@ ad_form -export { workflow_id } -name simulation -form {
     {case_end:date,to_sql(ansi),from_sql(ansi),optional
         {label "Simulation end date"}
     }
+    {enroll_type:text(radio)
+        {label "Allow Self Enrollment"}
+        {options {{"Yes" open} {"No" closed}}}
+            {html {onChange "javascript:acs_FormRefresh('simulation');"}}
+        {help_text "If self-enrollment is allowed, this simulation will be publicly listed on the Simulation home page and anybody can enroll themself."}
+    }
+    {enroll_start:date,to_sql(ansi),from_sql(ansi),optional
+        {label "Enrollment start date"}
+    }
+    {enroll_end:date,to_sql(ansi),from_sql(ansi),optional
+        {label "Enrollment end date"}
+    }    
     {description:richtext(richtext),optional
         {label "Description"}
         {html {cols 60 rows 8}}
@@ -35,11 +47,18 @@ ad_form -export { workflow_id } -name simulation -form {
         case_start
         case_end
         pretty_name
+        enroll_type
+        enroll_start
+        enroll_end
     } { 
         set $elm $sim_template($elm)
     }
 
     set description [template::util::richtext::create $sim_template(description) $sim_template(description_mime_type)]
+
+    if { ![exists_and_not_null sim_template(enroll_type)] } {
+        set enroll_type closed
+    }
 
     # Default values
     set one_week [expr 3600*24*7]
@@ -61,7 +80,52 @@ ad_form -export { workflow_id } -name simulation -form {
     if { [empty_string_p $case_end] } {
         set case_end [clock format [expr [clock seconds] + 2*$one_week + $default_duration] -format "%Y-%m-%d"]
     }
+    if { [empty_string_p $enroll_start] } {
+        set enroll_start [clock format [expr [clock seconds] + 1*$one_week] -format "%Y-%m-%d"]
+    }
+    if { [empty_string_p $enroll_end] } {
+        set enroll_end [clock format [expr [clock seconds] + 2*$one_week + $default_duration] -format "%Y-%m-%d"]
+    }
+
 } -on_submit {
+
+    # Date validation
+    set error_p 0
+    if { [clock scan $send_start_note_date] > [clock scan $case_start] } {
+        template::form::set_error simulation send_start_note_date "Send start note date must be before simulation start date"
+        set error_p 1                            
+    }
+    if { [clock scan $case_start] > [clock scan $case_end] } {
+        template::form::set_error simulation case_start "Simulation start date must be before simulation end date"
+        set error_p 1                            
+    }
+    if { [string equal $enroll_type "open"] } {
+        if { [empty_string_p $enroll_start] } {
+            template::form::set_error simulation enroll_start "When self enrollment is allowed you need to specify an enrollment start date"
+            set error_p 1                            
+        }
+        if { [empty_string_p $enroll_end] } {
+            template::form::set_error simulation enroll_end "When self enrollment is allowed you need to specify an enrollment end date"
+            set error_p 1                            
+        }
+
+        if { [clock scan $enroll_start] > [clock scan $case_start] } {
+            template::form::set_error simulation enroll_start "Enrollment start date must be before simulation start date"
+            set error_p 1                            
+        }
+        if { [clock scan $enroll_end] > [clock scan $case_start] } {
+            template::form::set_error simulation enroll_start "Enrollment start date must be before simulation start date"
+            set error_p 1                            
+        }
+        if { [clock scan $enroll_start] > [clock scan $enroll_end] } {
+            template::form::set_error simulation enroll_start "Enrollment start date must be before enrollment end date"
+            set error_p 1                            
+        }
+    }
+    if { $error_p } {
+        break
+    }
+
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 
@@ -75,7 +139,7 @@ ad_form -export { workflow_id } -name simulation -form {
         break
     }
 
-    foreach elm { send_start_note_date case_start case_end pretty_name description description_mime_type } {
+    foreach elm { send_start_note_date case_start case_end pretty_name description description_mime_type enroll_type enroll_start enroll_end } {
         set row($elm) [set $elm]
     }
  
@@ -85,6 +149,15 @@ ad_form -export { workflow_id } -name simulation -form {
 
     wizard forward
 }
+
+# Want this to be executed both on_refresh and on_request
+if { [string equal $enroll_type "closed"] } {
+    element set_properties simulation enroll_start -widget hidden
+    element set_properties simulation enroll_end -widget hidden
+} else {
+    element set_properties simulation enroll_start -widget date
+    element set_properties simulation enroll_end -widget date
+}    
 
 wizard submit simulation -buttons { back next }
 
