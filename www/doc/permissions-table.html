@@ -7,7 +7,7 @@
 	<TITLE></TITLE>
 	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.1.0  (Linux)">
 	<META NAME="CREATED" CONTENT="20031120;15335300">
-	<META NAME="CHANGED" CONTENT="20031128;13075200">
+	<META NAME="CHANGED" CONTENT="20031201;11352700">
 	
 	<STYLE>
 		<!-- 
@@ -149,7 +149,7 @@
 			<TD ALIGN=CENTER><BR></TD>
 			<TD ALIGN=CENTER BGCOLOR="#808080"><BR></TD>
 			<TD ALIGN=CENTER BGCOLOR="#808080"><BR></TD>
-			<TD ALIGN=CENTER BGCOLOR="#808080"><BR></TD>
+			<TD ALIGN=LEFT><BR></TD>
 			<TD ALIGN=CENTER BGCOLOR="#808080"><BR></TD>
 			<TD ALIGN=CENTER><BR></TD>
 			<TD ALIGN=CENTER><BR></TD>
@@ -272,13 +272,13 @@
 			<TD ROWSPAN=3 HEIGHT=54 ALIGN=LEFT VALIGN=MIDDLE>Templates</TD>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Read</TD>
 			<TD ALIGN=LEFT>Can see all templates</TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>n/a</TD>
 			<TD ALIGN=LEFT><BR></TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
 			<TD ALIGN=LEFT>Can create and edit templates</TD>
-			<TD ALIGN=LEFT>write</TD>
+			<TD ALIGN=LEFT><I>create_template</I></TD>
 			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
@@ -311,7 +311,7 @@
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Mine</TD>
 			<TD ALIGN=LEFT>Can see case log for all actors in cases of own simulations</TD>
 			<TD ALIGN=LEFT>admin</TD>
-			<TD ALIGN=LEFT>sim_simulation</TD>
+			<TD ALIGN=LEFT><I>sim_simulation</I></TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>All</TD>
@@ -323,26 +323,26 @@
 			<TD ROWSPAN=3 HEIGHT=86 ALIGN=LEFT VALIGN=MIDDLE>Casting</TD>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Self</TD>
 			<TD ALIGN=LEFT>Any visitor can go to /simulation and see a list of all sims with enrollment=open and current enrollment dates.  Must login in/register to actually join</TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>user_id not null</TD>
 			<TD ALIGN=LEFT><BR></TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Case</TD>
 			<TD ALIGN=LEFT>Can case eligible users into cases in own simulation</TD>
-			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>admin</TD>
+			<TD ALIGN=LEFT><I>sim_simulation</I></TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Global</TD>
 			<TD ALIGN=LEFT>Can see and edit any casting</TD>
-			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>admin</TD>
+			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
 			<TD ROWSPAN=2 HEIGHT=36 ALIGN=LEFT VALIGN=MIDDLE>OpenACS</TD>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Admin</TD>
 			<TD ALIGN=LEFT>Can create OpenACS users</TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT> </TD>
 			<TD ALIGN=LEFT><BR></TD>
 		</TR>
 		<TR>
@@ -355,20 +355,20 @@
 			<TD ROWSPAN=4 HEIGHT=72 ALIGN=LEFT VALIGN=MIDDLE>Global Objects</TD>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Read</TD>
 			<TD ALIGN=LEFT>Can see all objects</TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>n/a</TD>
 			<TD ALIGN=LEFT><BR></TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
 			<TD ALIGN=LEFT>Can create global objects</TD>
-			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT><I>create_sim_object</I></TD>
+			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Edit</TD>
 			<TD ALIGN=LEFT>Can change other people's objects</TD>
-			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT><I>write_sim_object</I></TD>
+			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>SetMapP</TD>
@@ -380,20 +380,20 @@
 			<TD ROWSPAN=3 HEIGHT=54 ALIGN=LEFT VALIGN=MIDDLE>Case Objects</TD>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Read</TD>
 			<TD ALIGN=LEFT>Can see objects in a case</TD>
-			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>read</TD>
+			<TD ALIGN=LEFT><I>workflow_case</I></TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
 			<TD ALIGN=LEFT>Can create own objects in a case</TD>
-			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>create</TD>
+			<TD ALIGN=LEFT><I>workflow_case</I></TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Edit</TD>
 			<TD ALIGN=LEFT>Can change other people's objects in a case</TD>
-			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT>admin</TD>
+			<TD ALIGN=LEFT><I>sim_simulation</I></TD>
 		</TR>
 		<TR>
 			<TD HEIGHT=17 ALIGN=LEFT><BR></TD>
