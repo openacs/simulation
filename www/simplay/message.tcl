@@ -78,7 +78,7 @@ ad_form \
     -form {
         {sender_role_id:text(select)
             {label "From"}
-            {html {onChange "javascript:FormRefresh('message');"}}
+            {html {onChange "javascript:acs_FormRefresh('message');"}}
             {options $all_role_options}
         }
     }

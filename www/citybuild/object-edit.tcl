@@ -45,7 +45,7 @@ if { [ad_form_new_p -key item_id] } {
         {content_type:text(radio)
             {label "Type"}
             {options {[simulation::object_type::get_options]}}
-            {html {onChange "javascript:FormRefresh('object');"}}
+            {html {onChange "javascript:acs_FormRefresh('object');"}}
         }
     }
 } else {
@@ -459,7 +459,7 @@ db_foreach select_relations {
                       {label $elm_label} \
                       {section $section} \
                       {options $options} \
-                      {html {onChange "javascript:FormRefresh('object');"}} \
+                      {html {onChange "javascript:acs_FormRefresh('object');"}} \
                      ] \
                 ]
     }
@@ -694,7 +694,7 @@ foreach elm $rel_elements {
             append elm_before_html {<img src="} $thumb_url {" width="50" height="50">}
             append elm_before_html {&nbsp;}
             append elm_before_html {<a href="javascript:document.forms['object'].elements['} $elm {'].value = '';}
-            append elm_before_html {FormRefresh('object');" title="} 
+            append elm_before_html {acs_FormRefresh('object');" title="} 
             append elm_before_html [ad_quotehtml "Remove this $relation_tag"] 
             append elm_before_html {"><img src="/resources/acs-subsite/Delete24.gif" width="24" height="24" border="0">}
             append elm_before_html {</a>}
