@@ -34,7 +34,7 @@
   </p>
 </if>
 
-
+<!--
 <p>
 &nbsp;
 </p>
@@ -134,6 +134,7 @@ Mockup below:
 </table>
 <bR><input type="submit" value="Be the first user in
       a new case">
+-->
 
 <p>
 TODO: If casting type is group instead of open, do not display or group

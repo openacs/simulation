@@ -12,9 +12,20 @@ set user_id [ad_conn user_id]
 
 simulation::template::get -workflow_id $workflow_id -array simulation
 
+if { ![string equal $simulation(sim_type) "casting_sim"] } {
+    ad_return_forbidden "Cannot enroll in simulation" "Simulation \"$simulation(pretty_name)\" is in state $simulation(sim_type) and you cannot enroll in it now. Contact your administrator if you believe this is an error. Thank you!"
+    ad_script_abort
+}
+
 # Check that the user has permission to enroll
 if { [string equal $simulation(enroll_type) "open"] } {
     # Open simulation - anybody can enroll so the user is authorized
+    # Check that we are within the enrollment period
+    if { [clock scan $simulation(enroll_start)] > [clock seconds] || [clock scan $simulation(enroll_end)] < [clock seconds] } {
+        # We are not in the enrollment period
+        ad_return_forbidden "Cannot enroll in simulation" "The enrollment period for simulation \"$simulation(pretty_name)\" is between $simulation(enroll_start) and $simulation(enroll_end) and you cannot enroll at this time. Contact your administrator if you believe this is an error. Thank you!"
+        ad_script_abort
+    }
 } else {
     # Closed enrollment. The user needs to be invited to enroll
     set user_invited_p [simulation::template::user_invited_p -workflow_id $workflow_id]

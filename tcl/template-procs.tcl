@@ -699,13 +699,49 @@ ad_proc -public simulation::template::autocast {
     # TODO (3h): handle casting when casting_type is auto, and some users have enrolled, either through
     # invitation or because enroll_type is open. 
 
+    # Get the list of all enrolled users that haven't been cast
+    set users_to_cast [db_list users_to_cast {
+            select distinct spsm.party_id,
+            from sim_party_sim_map spsm,
+            where spsm.simulation_id = :workflow_id
+             and spsm.type = 'enrolled'
+             and not exists (select 1
+                             from workflow_case_role_party_map wcrpm,
+                                  workflow_cases wc
+                             where wcrpm.party_id = spsm.party_id
+                               and wcrpm.case_id = wc.case_id
+                               and wc.workflow_id = :workflow_id
+                             )
+    }]
+
+    # Get the list of enrolled and uncast users that are not in any of the
+    # auto-cast groups
+    set users_to_cast_not_in_groups [db_list users_to_cast_not_in_groups {
+            select distinct spsm.party_id,
+            from sim_party_sim_map spsm,
+            where spsm.simulation_id = :workflow_id
+             and spsm.type = 'enrolled'
+             and not exists (select 1
+                             from workflow_case_role_party_map wcrpm,
+                                  workflow_cases wc
+                             where wcrpm.party_id = spsm.party_id
+                               and wcrpm.case_id = wc.case_id
+                               and wc.workflow_id = :workflow_id
+                             )
+             and not exists (select 1
+                             from sim_party_sim_map spsm2,
+                                  party_approved_member_map pamm
+                             where spsm2.party_id = pamm.party
+                               and spsm2.type = 'auto-enroll'
+                               and pamm.member_id = spsm.party_id
+                            )
+    }]
+
+    # Build user lists for each of the groups mapped to roles (the auto-cast groups)
     simulation::template::role_party_mappings \
         -workflow_id $workflow_id \
         -array roles
 
-    # Build user lists for each of the groups mapped to a role and calculate the total number
-    # of users in the groups
-    set total_users 0
     foreach role_id [array names roles] {
         array unset one_role
         array set one_role $roles($role_id)
@@ -717,17 +753,15 @@ ad_proc -public simulation::template::autocast {
             if { ![info exists group_members($group_id)] } { 
                 set group_members($group_id) [party::approved_members -party_id $group_id -object_type user]
                 set group_members($group_id) [util::randomize_list $group_members($group_id)]        
-                incr total_users [llength $group_members($group_id)]
             }
         }
-    }
+    }    
 
     set workflow_short_name [workflow::get_element -workflow_id $workflow_id -element short_name]
     
-    set case_counter 0
-
     # Create the cases and for each case assign users to roles    
-    while { $total_users > 0 } {
+    set case_counter 0
+    while { [llength $users_to_cast] > 0 } {
 
         incr case_counter
         set sim_case_id [simulation::case::new \
@@ -746,31 +780,63 @@ ad_proc -public simulation::template::autocast {
 
             set assignees [list]
             for { set i 0 } { $i < $one_role(users_per_case) } { incr i } {
-                # Get user from random group mapped to role
-                set group_id [lindex [util::randomize_list $one_role(parties)] 0]
+                # Get user from random non-empty group mapped to role
+                foreach group_id [util::randomize_list $one_role(parties)] {
+                    # Remove users from the list that have already been cast
+                    set not_cast_list [list]
+                    foreach user_id $group_members($group_id) {
+                        if { [lsearch -exact $users_to_cast $user_id] != -1 } {
+                            lappend not_cast_list $user_id
+                        }
+                    }
+                    set group_members($group_id) $not_cast_list
+
+                    if { [llength $group_members($group_id)] > 0 } {
+                        break
+                    }
+                }
 
                 if { [llength $group_members($group_id)] > 0 } {
-                    # Add assignee
-                    lappend assignees [lindex $group_members($group_id) 0]
+                    # There is a role group with at least one user that hasn't been cast.
+                    # Cast a random user from that group
+                    set user_id [lindex $group_members($group_id) 0]
+                    lappend assignees $user_id
+
                     # Remove the user from the group member list
                     set group_members($group_id) [lreplace $group_members($group_id) 0 0]
-                    # Reduce the total_users count
-                    incr total_users -1
+
+                    # Remove the user from the users_to_cast_list
+                    set cast_list_index [lsearch -exact $users_to_cast_list $user_id]
+                    set users_to_cast [lreplace $user_to_cast $cast_list_index $cast_list_index]
+
                 } else {
-                    # Current group exhausted, use current user
-                    lappend assignees [ad_conn user_id]
-                    # Don't add the admin more than once
-                    break
+                    # There is no group mapped to the role with a user that hasn't been cast
+
+                    # Are there any uncast users who are not in any groups?
+                    if { [llength $users_to_cast_not_in_groups] > 0 } {
+                        # Fill the role with a user not in any of the role groups
+                        set user_id [lindex $users_to_cast_not_in_groups 0]
+                        lappend assignees $user_id
+                        
+                        # Remove user from the not-in-group list
+                        set users_to_cast_not_in_groups [lreplace $users_to_cast_not_in_gruops 0 0]                        
+
+                        # Remove the user from the users_to_cast_list
+                        set cast_list_index [lsearch -exact $users_to_cast_list $user_id]
+                        set users_to_cast [lreplace $user_to_cast $cast_list_index $cast_list_index]
+
+                    } else {
+                        # No more users to cast, use current user (admin)
+                        
+                        lappend assignees [ad_conn user_id]
+                        # Don't add the admin more than once
+                        break
+                    }
                 }
             }
 
             set row($role_short_name($role_id)) $assignees
         }
-
-        #foreach { short_name users } {
-        # Remove duplicates, otherwise the call below bombs
-        #    set role($short_name) [lsort -unique $role($short_name)]
-        #}
 
         workflow::case::role::assign \
             -case_id $case_id \

@@ -128,7 +128,7 @@ ad_form -export { workflow_id } -name simulation -form {
             set error_p 1                            
         }
         if { [clock scan $enroll_end] > [clock scan $case_start] } {
-            template::form::set_error simulation enroll_start "Enrollment start date must be before simulation start date"
+            template::form::set_error simulation enroll_end "Enrollment end date must be before simulation start date"
             set error_p 1                            
         }
         if { [clock scan $enroll_start] > [clock scan $enroll_end] } {
