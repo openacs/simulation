@@ -1,16 +1,12 @@
-# an includelet 
+simulation::include_contract {
+    A list of all objects associated with the Simulation Template
 
-##############################################################
-#
-# sim_objects
-#
-# A list of all objects associated with the Simulation Template
-#
-##############################################################
-
-# maybe replace this chunk of copied text with an includable template
-# which passes in a filter for the workflow_id?
-
+    @author Joel Aufrecht
+    @creation-date 2003-11-12
+    @cvs-id $Id$
+} {
+    workflow_id {}
+}
 
 #-------------------------------------------------------------
 # sim_objects list 

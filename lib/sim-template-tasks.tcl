@@ -1,18 +1,24 @@
-# an includelet 
+simulation::include_contract {
+    A list of all tasks associated with the Simulation Template
 
-# the includelet can be a full edit
-
-if { ![exists_and_not_null usage_mode] } {
-    set usage_mode display
+    @author Joel Aufrecht
+    @creation-date 2003-11-12
+    @cvs-id $Id$
+} {
+    workflow_id {}
+    display_mode {
+        allowed_values {edit display}
+        default_value display
+    }
 }
 
-switch $usage_mode {
+set package_id [ad_conn package_id]
+
+switch $display_mode {
     display {}
+
     edit {
 	set add_task_url [export_vars -base "task-edit" { workflow_id } ]
-    }
-    default { 
-	error "This is an opportunity to inspect the code and find out how we got here, since it should be impossible" 
     }
 }
 
@@ -38,7 +44,7 @@ template::list::create \
     -no_data "No tasks in this Simulation Template" \
     -elements {
         edit {
-            hide_p {[ad_decode $usage_mode edit 0 1]}
+            hide_p {[ad_decode $display_mode edit 0 1]}
             sub_class narrow
             link_url_col edit_url
             display_template {
@@ -47,7 +53,7 @@ template::list::create \
         }
         name { 
             label "Name"
-	    link_url_col {[ad_decode $usage_mode edit view_url ""]}
+	    link_url_col {[ad_decode $display_mode edit view_url ""]}
         }
         assigned_name {
             label "Assigned to"
@@ -58,7 +64,7 @@ template::list::create \
         delete {
             sub_class narrow
             link_url_col delete_url
-            hide_p {[ad_decode $usage_mode edit 0 1]}
+            hide_p {[ad_decode $display_mode edit 0 1]}
             display_template {
                 <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
             }

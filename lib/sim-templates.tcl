@@ -1,13 +1,25 @@
-# an includelet 
+simulation::include_contract {
+    Displays a list of templates for the current simulation package instance.
 
-# expects paramater "list_mode" = "short" or "long"
-# defaults to short
-
-if { ![exists_and_not_null list_mode] } {
-    set list_mode short
+    @author Joel Aufrecht
+    @creation-date 2003-11-12
+    @cvs-id $Id$
+} {
+    display_mode {
+        allowed_values {edit display}
+        default_value display
+    }
+    size {
+        allowed_values {short long}
+        default_value long
+    }
 }
 
-switch $list_mode {
+set package_id [ad_conn package_id]
+
+# TODO: make this include honor the display_mode parameter
+
+switch $size {
     short {
 	template::list::create \
 	    -name sim_templates \
@@ -98,7 +110,8 @@ db_multirow -extend { edit_url view_url delete_url } sim_templates select_sim_te
              where workflow_id = w.workflow_id) as task_count
       from workflows w, acs_objects a
      where w.workflow_id = a.object_id
-    [template::list::orderby_clause -orderby -name sim_templates]
+       and w.object_id = :package_id 
+   [template::list::orderby_clause -orderby -name sim_templates]
 " {
     set description [string_truncate -len 200 $description]
     set edit_url [export_vars -base "sim-template-edit?workflow_id=$workflow_id"]

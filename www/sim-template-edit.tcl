@@ -40,15 +40,11 @@ ad_form -name sim_template -cancel_url sim-template-list -form {
     set page_title "Create template"
     set context [list [list "sim-template-list" "Templates"] $page_title]
 } -new_data {
-    set workflow_id [workflow::new \
+    set workflow_id [simulation::template::new \
                          -short_name $name \
                          -pretty_name $name \
-                     -package_key $package_key]
-    # create a dummy action with initial action setting because
-    # workflow::get doesn't work on bare workflows
-    workflow::action::fsm::new -initial_action_p t -workflow_id $workflow_id \
-                         -short_name "dummy action" \
-                         -pretty_name "dummy action"
+                         -package_key $package_key \
+                         -object_id $package_id]
 } -after_submit {
     ad_returnredirect sim-template-edit?workflow_id=$workflow_id
     ad_script_abort
@@ -78,6 +74,6 @@ switch $mode {
     }
 }
 
-set context [list [list "sim-template-list" "Sim Templates"] $page_title] 
+set context [list [list "sim-template-list" "Simulation Templates"] $page_title] 
 
-
+set delete_url [export_vars -base sim-template-delete { workflow_id }]

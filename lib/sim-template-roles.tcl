@@ -1,16 +1,14 @@
-# an includelet 
+simulation::include_contract {
+    A list of all roles associated with the Simulation Template
 
-##############################################################
-#
-# roles
-#
-# A list of all roles associated with the Simulation Template
-#
-##############################################################
+    @author Joel Aufrecht
+    @creation-date 2003-11-12
+    @cvs-id $Id$
+} {
+    workflow_id {}
+}
 
-# maybe replace this chunk of copied text with an includable template
-# which passes in a filter for the workflow_id?
-
+set package_id [ad_conn package_id]
 
 #-------------------------------------------------------------
 # roles list 
