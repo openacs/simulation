@@ -43,11 +43,12 @@ template::list::create \
         }
         name { 
             label "Name"
+            display_col pretty_name
         }
         delete {
             sub_class narrow
             display_template {
-                <a href="@roles.delete_url@" onclick="return confirm('Are you sure you want to delete role @roles.name@?');">
+                <a href="@roles.delete_url@" onclick="return confirm('Are you sure you want to delete role @roles.pretty_name@?');">
                   <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
                 </a>
             }
@@ -59,11 +60,11 @@ template::list::create \
 set return_url "[ad_conn url]?[ad_conn query]"
 db_multirow -extend { edit_url char_url delete_url } roles select_roles "
     select wr.role_id,
-           wr.pretty_name as name,
+           wr.pretty_name,
            wr.sort_order
       from workflow_roles wr
      where wr.workflow_id = :workflow_id
-    [template::list::orderby_clause -orderby -name "roles"]
+     order by lower(pretty_name)
 " {
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { role_id }]
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-delete" { role_id return_url }]

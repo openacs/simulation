@@ -37,29 +37,34 @@ ad_proc -public simulation::action::edit {
 
     #    workflow::action::fsm::edit \
     #       -workflow_id $workflow_id
-    #      -short_name $name \
+    #       -short_name $name \
     #       -pretty_name $name \
     #       -assigned_role $assigned_role
 
+    
+    
+
     set workflow_id [workflow::action::get_workflow_id -action_id $action_id]
 
-    db_transaction {
-        db_dml edit_workflow_action {
-            update workflow_actions
-               set short_name = :short_name,
-                   pretty_name = :pretty_name,
-                   assigned_role = :assigned_role,
-                   description = :description,
-                   description_mime_type = :description_mime_type
-             where action_id = :action_id
-        }
+    
 
+    db_transaction {
+        foreach col { short_name pretty_name assigned_role description description_mime_type } {
+            set action_array($col) [set $col]
+        }
+        
+        workflow::action::fsm::edit \
+            -action_id $action_id \
+            -array action_array
+        
+        set recipient_role_id [workflow::role::get_id -workflow_id $workflow_id -short_name $recipient_role]
         db_dml edit_sim_role {
             update sim_tasks
-               set recipient = :recipient_role
+               set recipient = :recipient_role_id
              where task_id = :action_id
         }
     }
 
+    workflow::definition_changed_handler -workflow_id $workflow_id
     workflow::action::flush_cache -workflow_id $workflow_id
 }

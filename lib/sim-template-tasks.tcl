@@ -58,6 +58,7 @@ template::list::create \
         }
         name { 
             label "Name"
+            display_col pretty_name
 	    link_url_col {[ad_decode $display_mode edit view_url ""]}
         }
         assigned_name {
@@ -70,7 +71,7 @@ template::list::create \
             sub_class narrow
             hide_p {[ad_decode $display_mode edit 0 1]}
             display_template {
-                <a href="@tasks.delete_url@" onclick="return confirm('Are you sure you want to delete task @tasks.name@?');">
+                <a href="@tasks.delete_url@" onclick="return confirm('Are you sure you want to delete task @tasks.pretty_name@?');">
                   <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
                 </a>
             }
@@ -84,7 +85,7 @@ template::list::create \
 set return_url "[ad_conn url]?[ad_conn query]"
 db_multirow -extend { edit_url view_url delete_url } tasks select_tasks "
     select wa.action_id,
-           wa.pretty_name as name,
+           wa.pretty_name,
            (select pretty_name 
               from workflow_roles
              where role_id = wa.assigned_role) as assigned_name,
@@ -96,9 +97,10 @@ db_multirow -extend { edit_url view_url delete_url } tasks select_tasks "
            sim_tasks st
      where wa.workflow_id = :workflow_id
        and st.task_id = wa.action_id
-    [template::list::orderby_clause -orderby -name "tasks"]
+     order by lower(pretty_name)
 " {
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
     set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id return_url }]
 }
+

@@ -50,7 +50,7 @@ ad_form -name role -cancel_url index -form {
     workflow::role::get -role_id $role_id -array role_array
     set workflow_id $role_array(workflow_id)
     set name $role_array(pretty_name)
-    workflow::get -workflow_id $workflow_id -array sim_template_array    
+    workflow::get -workflow_id $workflow_id -array sim_template_array
     set page_title "Edit Role template $name"
     set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
 
@@ -67,6 +67,15 @@ ad_form -name role -cancel_url index -form {
         -role_short_name $name \
         -role_pretty_name $name
 
+} -edit_data {
+    
+    set role_array(pretty_name) $name
+
+    workflow::role::edit \
+        -role_id $role_id \
+        -workflow_id $workflow_id \
+        -array role_array
+    
 } -after_submit {
     ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort

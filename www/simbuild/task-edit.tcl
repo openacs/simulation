@@ -4,7 +4,7 @@ ad_page_contract {
     @creation-date 2003-10-27
     @cvs-id $Id$
 } {
-    workflow_id:integer,optional
+    {workflow_id:integer ""}
     action_id:integer,optional
 } -validate {
     workflow_id_or_task_id {
@@ -21,39 +21,28 @@ ad_page_contract {
 #
 ######################################################################
 
-# if we got task_id instead of workflow_id, figure out workflow_id
-if { ![info exists workflow_id] } {
-    set workflow_id [simulation::template::get_workflow_id_from_action -action_id $action_id]
-}
-simulation::template::get -workflow_id $workflow_id -array sim_template_array    
-
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
 
 if { ![ad_form_new_p -key action_id] } {
     workflow::action::fsm::get -action_id $action_id -array task_array
+    set workflow_id $task_array(workflow_id)
+}
+
+workflow::get -workflow_id $workflow_id -array sim_template_array
+
+if { ![ad_form_new_p -key action_id] } {
     set page_title "Edit Task $task_array(pretty_name)"
 } else {
 
     set page_title "Add Task to $sim_template_array(pretty_name)"
 }
-set context [list [list "." "SimBuild"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
-
+set context [list [list "." "SimBuild"] [list [export_vars -base "template-edit" { workflow_id }] "$sim_template_array(pretty_name)"] $page_title]
 
 #---------------------------------------------------------------------
 # Get a list of relevant roles
 #---------------------------------------------------------------------
-# TODO: make sure this query (and other queries to cr) get only the live
-# record from cr_revisions
-# deliberately not checking to see if character is already cast in sim
-# because no reason not to have same character in multiple tasks (?)
-
-set role_options [db_list_of_lists role_option_list "
-    select wr.pretty_name,
-           wr.role_id
-      from workflow_roles wr
-     where wr.workflow_id = :workflow_id
-"]
+set role_options [workflow::role::get_options -workflow_id $workflow_id]
 
 ######################################################################
 #
@@ -77,7 +66,7 @@ ad_form -name task -edit_buttons [
         {value $workflow_id}
     }
     {name:text
-        {label "Task"}
+        {label "Task Name"}
         {html {size 20}}
     }
     {assigned_role:text(select)
@@ -98,13 +87,14 @@ ad_form -name task -edit_buttons [
     set workflow_id $task_array(workflow_id)
     set name $task_array(pretty_name)
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
-    set recipient_role [db_string select_recipient {
+    set recipient_role_id [db_string select_recipient {
         select recipient
         from sim_tasks
         where task_id = :action_id
     }]
-   set assigned_role $task_array(assigned_role)
+    set recipient_role [workflow::role::get_element -role_id $recipient_role_id -element short_name]
 
+   set assigned_role $task_array(assigned_role)
 } -on_submit {
     
     set description_content [template::util::richtext::get_property contents $description]
@@ -114,14 +104,11 @@ ad_form -name task -edit_buttons [
 
     # create the task
 
-    set assigned_role_name [workflow::role::get_element \
-                                -role_id $assigned_role \
-                                -element short_name]
     set action_id [workflow::action::fsm::new \
 		       -workflow_id $workflow_id \
 		       -short_name $name \
 		       -pretty_name $name \
-		       -assigned_role $assigned_role_name \
+		       -assigned_role $assigned_role \
 		       -description $description_content \
 		       -description_mime_type $description_mime_type]
 
@@ -129,9 +116,10 @@ ad_form -name task -edit_buttons [
     # and then add extra data for simulation
     # because workflow::action::fsm::new wants role.short_name instead of
     # role_id, we stay consistent for recipient_role
+    set recipient_role_id [workflow::role::get_id -workflow_id $workflow_id -short_name $recipient_role]
     db_dml set_role_recipient {
         insert into sim_tasks
-        values (:action_id, :recipient_role)
+        values (:action_id, :recipient_role_id)
     }
 } -edit_data {
 

@@ -25,15 +25,21 @@ set package_id [ad_conn package_id]
 # sim_template form
 #---------------------------------------------------------------------
 
-ad_form -name sim_template -cancel_url . -form {
+if { [ad_form_new_p -key workflow_id] } {
+    set mode edit
+} else {
+    set mode display
+}
+
+ad_form -name sim_template -mode $mode -cancel_url . -form {
     {workflow_id:key}
     {name:text,optional
         {label "Template Name"}
         {html {size 40}}
     }
-    {ready_p:boolean(radio),optional
+    {ready_p:boolean(checkbox),optional
         {label "Ready for use?"}
-        {options {{Yes t} {No f}}}
+        {options {{"Ready for use" t}}}
     }
     {suggested_duration:text,optional
         {label "Suggested Duration"}

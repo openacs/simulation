@@ -22,9 +22,8 @@ ad_proc -public simulation::template::new {
 
     @author Peter Marklund
 } {
-    if { ![exists_and_not_null ready_p] } {
-        set ready_p "f"
-    }
+    set ready_p [db_boolean [template::util::is_true $ready_p]]
+
     db_transaction {
         set short_name [util_text_to_url -replacement "_" $short_name]
 
