@@ -99,6 +99,7 @@ if { [llength $from_role_options] > 1 } {
     set focus "message.recipient_role_id"
 }
 
+ds_comment [llength $attachment_options]
 
 ad_form -extend -name message -form {
     {recipient_role_id:integer(checkbox),multiple
@@ -113,11 +114,22 @@ ad_form -extend -name message -form {
         {label "Body"}
         {html {cols 60 rows 20}}
     }
-    {attachments:integer(checkbox),multiple,optional
-        {label "Attachments"}
-        {options $attachment_options}
+}
+
+if { [llength $attachment_options] > 0 } {
+    ad_form -extend -name message -form {
+        {attachments:integer(checkbox),multiple,optional
+            {label "Attachments"}
+            {options $attachment_options}
+        }
     }
-} -new_request {
+} else {
+    ad_form -extend -name message -form {
+        {attachments:integer(hidden),optional}
+    }
+}
+
+ad_form -extend -name message -new_request {
     if { [info exists body_text] } {
         if { ![info exists body_mime_type] } {
             set body_mime_type "text/enhanced"
