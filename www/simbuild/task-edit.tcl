@@ -154,6 +154,9 @@ ad_form -extend -name task -form {
     set enabled_state_ids $task_array(enabled_state_ids)
 } -new_request {
     permission::require_write_permission -object_id $workflow_id
+
+    #TODO: is this the right way to set defaults in ad_form?
+    set attachment_num 0
 } -on_submit {
     
     set description_mime_type [template::util::richtext::get_property format $description]
