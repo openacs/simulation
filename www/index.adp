@@ -23,8 +23,8 @@ Available simulations
             </tr>
   </table>
 </div>
-<div style="margin: 4px; background: lightgray; border: 1px solid black;">
-<h3>YELLOW PAGES</h3>
+<div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid black;">
+<h3><a href="directory">YELLOW PAGES</a></h3>
 </div>
 <div style="margin: 4px; padding: 4px; border: 1px solid black;">
 <h3><a href="object-list">CITYBUILD</a></h3>
@@ -35,8 +35,8 @@ black;">
 <h3><a href="sim-template-list">SIMBUILD</a></h3>
 <include src="/packages/simulation/lib/sim-templates" size="short" display_mode="display">
 </div>
-<div style="margin: 4px; background: lightgray; border: 1px solid
+<div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid
 black;">
-<h3>SIMINST</h3>
+<h3><a href="simulation-list">SIMINST</a></h3>
 </div>
 

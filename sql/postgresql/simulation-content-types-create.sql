@@ -158,7 +158,7 @@ select content_type__register_relation_type (
     'sim_character',               -- content_type
     'sim_location',                -- target_type
     'associated',                  -- relation_tag
-    0,                             -- min_n
+    1,                             -- min_n
     1                              -- max_n
 );
 

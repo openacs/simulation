@@ -6,6 +6,14 @@ simulation::include_contract {
     @cvs-id $Id$
 } {
     workflow_id {}
+    display_mode {
+        allowed_values {edit display}
+        default_value display
+    }
+    size {
+        allowed_values {short long}
+        default_value long
+    }
 }
 
 set package_id [ad_conn package_id]
@@ -14,10 +22,17 @@ set package_id [ad_conn package_id]
 # roles list 
 #-------------------------------------------------------------
 
+if { $display_mode == "edit"} {
+    set actions [list "Add a Role" [export_vars -base role-edit {workflow_id} ]]
+} else {
+    set actions ""
+}
+
 template::list::create \
     -name roles \
     -multirow roles \
     -no_data "No roles in this Simulation Template" \
+    -actions $actions \
     -elements {
         edit {
             sub_class narrow

@@ -100,7 +100,9 @@ db_multirow -extend { edit_url view_url delete_url } sim_templates select_sim_te
     select w.workflow_id,
            w.pretty_name as name,
            'placeholder' as description,
-           a.creation_user as created_by,
+           (select p.first_names || ' ' || p.last_name
+              from persons p
+             where p.person_id = a.creation_user) as created_by,
            (select count(object_id)
               from sim_workflow_object_map
              where workflow_id = w.workflow_id) as object_count,

@@ -6,7 +6,6 @@ ad_page_contract {
 } {
     workflow_id:optional
     role_id:optional
-    {limit_characters_p "0"}
 } -validate {
     workflow_id_or_role_id {
         if { ![exists_and_not_null workflow_id] &&
@@ -31,40 +30,13 @@ set package_id [ad_conn package_id]
 # deliberately not checking to see if character is already cast in sim
 # because no reason not to have same character in multiple roles (?)
 
-# if we are limiting to only characters already in the sim,
-# create the sql filter and generate a link to end the filter
-# if not, create the opposite filter and link
-
-if { $limit_characters_p } {
-    set char_options [db_list_of_lists character_option_list {
-    select ci.name,
-           ci.item_id
-      from cr_items ci,
-           sim_workflow_object_map swom
-     where ci.content_type = 'sim_character'
-       and ci.item_id = swom.object_id
-       and swom.workflow_id = :workflow_id
-     order by upper(ci.name)
-    }]
-    set toggle_text "show all"
-} else {
-    set char_options [db_list_of_lists character_option_list {
+set char_options [db_list_of_lists character_option_list {
     select ci.name,
            ci.item_id
       from cr_items ci
      where ci.content_type = 'sim_character'
      order by upper(ci.name)
     }]
-
-    set toggle_text "(<small>limit to characters<br>in template</small>)"
-}
-
-set character_filter_html "<a href=\"[export_vars -base "role-edit" { 
-       role_id 
-       workflow_id {limit_characters_p {[expr ![template::util::is_true $limit_characters_p]]}}
-
-} ]\">$toggle_text</a>"
-
 
 ######################################################################
 #
@@ -84,7 +56,7 @@ ad_form -name role -cancel_url sim-template-list -form {
     {role_id:key}
     {workflow_id:integer(hidden),optional}
     {character_id:text(select)
-        {label "Character<br>$character_filter_html"}
+        {label "Character"}
         {options $char_options}
     }
     {name:text

@@ -9,7 +9,6 @@ ad_page_contract {
     {content_type {sim_prop}}
 }
 
-# TODO: Joel will do something about this?
 auth::require_login
 
 if { ![ad_form_new_p -key item_id] } {
@@ -90,7 +89,10 @@ set content_metadata {
         relations {
             image {
                 label "Image"
-                section "Related Objects"
+                section "Related Images"
+            }
+            associated {
+                label "Associated with"
             }
             stylesheet {
                 label "Stylesheet"
@@ -119,6 +121,9 @@ set content_metadata {
     sim_prop {
         content_method richtext
         relations {
+            associated {
+                label "Associated with"
+            }
             stylesheet {
                 label "Stylesheet"
             }

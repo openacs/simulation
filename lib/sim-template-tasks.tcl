@@ -36,12 +36,17 @@ switch $display_mode {
 # TODO: missing: discription, type
 # how is type going to work?  open question pending prototyping
 
-
+if { $display_mode == "edit"} {
+    set actions [list "Add a Task" [export_vars -base task-edit {workflow_id} ]]
+} else {
+    set actions ""
+}
 
 template::list::create \
     -name tasks \
     -multirow tasks \
     -no_data "No tasks in this Simulation Template" \
+    -actions $actions \
     -elements {
         edit {
             hide_p {[ad_decode $display_mode edit 0 1]}
