@@ -178,7 +178,8 @@ ad_proc simulation::casting_groups_with_counts {
     @author Peter Marklund
 } {
     # Lookup the application group of the subsite
-    set subsite_group_id [subsite_group_id]
+    set subsite_group_id [application_group::group_id_from_package_id \
+                          -package_id [ad_conn subsite_id]]
 
     # Get all groups related to (children of) the subsite group (only one level down)
     set enrollment_clause [ad_decode $enrolled_only_p "0" "" "and  exists (select 1

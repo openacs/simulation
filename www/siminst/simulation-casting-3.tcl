@@ -20,7 +20,7 @@ set pick_groups_url [export_vars -base simulation-casting-2 { workflow_id }]
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     set role_${role_id}_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
 
-    lappend form [list parties_${role_id}:text(checkbox),multiple \
+    lappend form [list parties_${role_id}:text(checkbox),multiple,optional \
                       [list help_text "Only users in these groups can be cast in this role"] \
                       [list label \$role_${role_id}_pretty_name] \
                       [list options $eligible_groups]
@@ -76,6 +76,8 @@ ad_form \
                 -parties [set parties_$role_id] \
         }
 
-        ad_returnredirect .
-        ad_script_abort
+        wizard forward
     }
+
+wizard submit actors -buttons { back next }
+

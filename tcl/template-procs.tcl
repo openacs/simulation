@@ -755,7 +755,9 @@ ad_proc -public simulation::template::get_inst_state {
       <li>none
       <li>roles_complete
       <li>tasks_complete
-      <li>casting_begun
+      <li>settings_complete
+      <li>enrollment_complete
+      <li>participants_complete
     </ul>
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template
@@ -775,7 +777,7 @@ ad_proc -public simulation::template::get_inst_state {
                 and    character_id is null
             }]
             if { $role_empty_count == 0 } {
-                set state "roles"
+                set state "roles_complete"
 
                 # 2. Tasks
                 set prop_empty_count [db_string prop_empty_count {
@@ -787,12 +789,25 @@ ad_proc -public simulation::template::get_inst_state {
                 }]
                 
                 if { $prop_empty_count == 0 } {
-                    set state "tasks"
+                    set state "tasks_complete"
+
+                    if { ![empty_string_p $sim_template(case_start)] && ![empty_string_p $sim_template(send_start_note_date)] } {
+                        set state "settings_complete"
+
+                        if { ![empty_string_p $sim_template(enroll_type)] && 
+                             (![string equal $sim_template(enroll_type) "open"] || 
+                              (![empty_string_p $sim_template(enroll_start)] && ![empty_string_p $sim_template(enroll_end)])) } {
+                            set state "enrollment_complete"
+
+                            set num_parties [db_string num_parties { select count(*) from sim_party_sim_map where simulation_id = :workflow_id }]
+
+                            if { $num_parties > 0 } {
+                                set state "participants_complete"
+                            }
+                        }
+                    }
                 }
             }
-        }
-        casting_sim {
-            set state "casting_begun"
         }
     }
     
