@@ -10,3 +10,7 @@
 <else>
 <include src="/packages/simulation/lib/sim-templates" size="long">
 </else>
+
+<ul class="action-links">
+<li><a href="@package_url@">#simulation.lt_Return_to_Simulation__1#</a></li>
+</ul>

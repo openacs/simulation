@@ -9,6 +9,7 @@
   <msg key="All">All</msg>
   <msg key="All_Messages">All Messages</msg>
   <msg key="All_messages">All messages...</msg>
+  <msg key="and_rest_length_more">and %rest_length% more</msg>
   <msg key="Assigned_action">Assigned action</msg>
   <msg key="Attachments">Attachments</msg>
   <msg key="Body">Body</msg>
@@ -105,6 +106,7 @@ this time. &lt;/blockquote&gt;</msg>
   <msg key="lt_Delete_case_caselabel">Delete case &quot;%case.label%&quot;</msg>
   <msg key="lt_Delete_name_and_tasks">Delete %name% and tasks</msg>
   <msg key="lt_Did_not_generate_an_X">Did not generate an XML file.</msg>
+  <msg key="lt_Do_not_delete_it_if_y">Do not delete it if you're not 100% sure about what you're doing.</msg>
   <msg key="lt_Document_document_upl">Document %document% uploaded</msg>
   <msg key="lt_Duration_in_hours_dec">Duration in hours, decimals are allowed; example: 0.25 = 15 minutes.</msg>
   <msg key="lt_Each_role_may_be_play">Each role may be played by one or by
@@ -113,7 +115,7 @@ this time. &lt;/blockquote&gt;</msg>
     in that group will not be cast in the simulation</msg>
   <msg key="lt_Either_of_the_HTTP_pa">Either of the HTTP parameters workflow_id and case_id must be provided. Please contact the system administrator about this error.</msg>
   <msg key="lt_Expects_a_sim_id__Sho">Expects a sim id.  Shows all cases for that sim.  This is an admin page.</msg>
-  <msg key="lt_Export_full_case_hist">Export full case history</msg>
+  <msg key="lt_Export_full_case_hist">Show full case history</msg>
   <msg key="lt_Export_this_template">Export this template as a text file</msg>
   <msg key="lt_Full_History_for_case">Full History for %case.label%</msg>
   <msg key="lt_Generate_Map_XML_file">Generate Map XML file and send notifications</msg>
@@ -146,7 +148,9 @@ this time. &lt;/blockquote&gt;</msg>
   <msg key="lt_Portfolio_for_role_ar_1">Portfolio for %role_array.pretty_name%</msg>
   <msg key="lt_Restrict_to_items_mat">Restrict to items matching word or phrase</msg>
   <msg key="lt_Restrict_to_previous">Restrict to previous task matching word or phrase</msg>
+  <msg key="lt_Return_to_SimBuild_Ho">Return to SimBuild Home</msg>
   <msg key="lt_Return_to_Simulation_">Return to Simulation root</msg>
+  <msg key="lt_Return_to_Simulation__1">Return to Simulation Home</msg>
   <msg key="lt_Return_to_template_li">Return to template list page</msg>
   <msg key="lt_Right-click_document_">Right-click document name and select &quot;Save as&quot; (or equiv.) to download a document to your computer.</msg>
   <msg key="lt_Roles_with_actions_on">Roles with actions only</msg>
@@ -187,6 +191,8 @@ Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_There_are_no_roles_or">There are no roles or users in this simulation case</msg>
   <msg key="lt_There_are_no_users_pl">There are no users playing the role</msg>
   <msg key="lt_This_case_has_been_co">This case has been completed.</msg>
+  <msg key="lt_This_item_is_related_">This item is related to one or more items</msg>
+  <msg key="lt_This_item_is_used_in_">This item is used in one or more simulations</msg>
   <msg key="lt_to_see_your_active_ca">to see your active cases.</msg>
   <msg key="lt_Unsubscribe_from_pret">Unsubscribe from %pretty_name%</msg>
   <msg key="lt_Up_to_parent_task_arr">Up to %parent_task_array.pretty_name%</msg>
@@ -237,6 +243,9 @@ Please visit %simplay_url% to continue playing the simulation.
 Thank you.</msg>
   <msg key="Messages">Messages</msg>
   <msg key="messages">messages</msg>
+  <msg key="Mime_type">Mime type
+
+</msg>
   <msg key="mime_type">mime type</msg>
   <msg key="Move_user">Move user</msg>
   <msg key="My_Notifications">My Notifications</msg>
@@ -323,6 +332,7 @@ Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% 
   <msg key="User">User</msg>
   <msg key="Users"># Users</msg>
   <msg key="View_Map_XML">View Map XML</msg>
+  <msg key="Warning">Warning</msg>
   <msg key="Yellow_Pages">Yellow Pages</msg>
   <msg key="Yes_delete_the_case">Yes, delete the case</msg>
   <msg key="You_are">You are</msg>

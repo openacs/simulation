@@ -20,13 +20,7 @@
               <if @mark_ready_url@ not nil>
                 <li><a href="@mark_ready_url@">#simulation.lt_Mark_this_template_re#</a></li>
               </if>
-              <else>
-                <if @inst_url@ not nil>
-                  <li><a href="@inst_url@">#simulation.lt_Start_a_simulation_wi#</a></li>
-                </if>
-              </else>
               <li><a href="@spec_url@">#simulation.lt_Export_this_template#</a></li>
-              <li><a href="@delete_url@" onclick="return confirm('Are you sure you want to delete the template?');">#simulation.Delete_this_template#</a></li>
             </ul>
 
           </div>
@@ -63,3 +57,7 @@
 
 </else>
 
+<ul class="action-links">
+<li><a href="@package_url@simbuild/">#simulation.lt_Return_to_SimBuild_Ho#</a></li>
+<li><a href="@package_url@">#simulation.lt_Return_to_Simulation__1#</a></li>
+</ul>

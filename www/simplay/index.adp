@@ -26,11 +26,6 @@
     <include src="/packages/simulation/lib/messages" user_id="@user_id@">
   </div>
 
-  <div class="simplay_index_tasks">
-    <h3>#simulation.Your_Tasks#</h3>
-    <include src="/packages/simulation/lib/simulations-task-count">
-  </div>
-
 </if>
 
 <div class="simplay_case-admin_action-links">

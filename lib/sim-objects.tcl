@@ -125,7 +125,7 @@ if { [string equal $display_mode "edit"] } {
                <if @objects.edit_p@ true>
                 <a href="@objects.delete_url@" title="Delete this object"
                 ><img src="/resources/acs-subsite/Delete16.gif" height="16" 
-                width="16" border="0" alt="Edit"></a>
+                width="16" border="0" alt="Delete"></a>
                 </if>        
             }
         }

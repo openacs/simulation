@@ -36,6 +36,14 @@ if { ![exists_and_not_null case_id] || ![exists_and_not_null role_id] } {
 }
 
 set elements {
+    sim_name {
+        label {[_ simulation.Simulation]}
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
+    }
+    case_label {
+        label {[_ simulation.Case]}
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
+    }
     from {
         label {[_ simulation.From]}
     }
@@ -53,14 +61,6 @@ set elements {
     attachment_count {
         label {[_ simulation.Attachments]}
         html { align center }
-    }
-    case_label {
-        label {[_ simulation.Case]}
-        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
-    }
-    sim_name {
-        label {[_ simulation.Simulation]}
-        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
 }
 

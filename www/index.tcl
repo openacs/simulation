@@ -6,6 +6,6 @@ ad_page_contract {
 } -properties {
 }
 
-set page_title "[_ simulation.Simulation]"
+set page_title "[_ simulation.Simulation_Home]"
 set context ""
 

@@ -9,6 +9,7 @@ ad_page_contract {
 
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
+set package_url [ad_conn package_url]
 
 ######################################################################
 #

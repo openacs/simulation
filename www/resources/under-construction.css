@@ -11,3 +11,7 @@
 	margin-left: -200px;
 	margin-top: -30px;
 }
+
+#page-body td {
+	vertical-align: top;
+}

@@ -3,4 +3,5 @@
   <property name="context">@context;noquote@</property>
  <div class="map-master_flash">
   <include src="../map">
+  <p><a href="@map_help_url@">#simulation.Map_help#</a></p>
 </div>

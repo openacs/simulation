@@ -18,22 +18,22 @@ set package_id [ad_conn package_id]
 set user_id [auth::get_user_id]
 
 set elements {
+    pretty_name {
+        label {[_ simulation.Simulation]}
+        orderby upper(w.pretty_name)
+    }
     label {
         label {[_ simulation.Case]}
         orderby label
         link_url_eval {[export_vars -base [ad_conn package_url]simplay/case-admin { case_id }]}
     }
-    pretty_name {
-        label {[_ simulation.Simulation]}
-        orderby upper(w.pretty_name)
+    num_roles {
+	label {[_ simulation.Roles]}
+	orderby num_roles
     }
     status {
 	label {[_ simulation.Status]}
 	orderby status
-    }
-    num_roles {
-	label {[_ simulation.Roles]}
-	orderby num_roles
     }
 }
 

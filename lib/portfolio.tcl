@@ -57,7 +57,7 @@ template::list::create \
 	    display_col publish_date_pretty
 	}
 	mime_type {
-	    label "[_ simulation.mime_type]"
+	    label "[_ simulation.Mime_type]"
 	    orderby cr.mime_type
 	}
 	content_length {

@@ -19,7 +19,7 @@
 <ul class="action-links">
 <li class="simplay_control-bar_options_case-home"><strong>
 <if @case_home_url@ ne @current_url@>
-<a href="@case_home_url@">#simulation.Home#</a>
+<a href="@case_home_url@">#simulation.Session_Home#</a>
 </if>
 <else>
 #simulation.Home#
@@ -28,15 +28,14 @@
 </li>
 
 <li>
-<a href="@messages_url@">@message_count@ <if @message_count@ ne 1>#simulation.messages#</if>
-  <else>#simulation.message#</else></a>
+<a href="@messages_url@">#simulation.Messages# [@message_count@]</a>
 </li>
-  <li><if @task_count@ eq 1><a href="@tasks_url@">@task_count@ #simulation.task#</a></if><else><a href="@tasks_url@">@task_count@ #simulation.tasks#</a></else></li>
+  <li><a href="@tasks_url@">#simulation.Tasks# [@task_count@]</a></li>
   <li><a href="@map_url@">#simulation.Sieberdam_Map#</a></li>
   <li><a href="@yp_url@">#simulation.Yellow_Pages#</a></li>
   <li><a href="@portfolio_url@">#simulation.Portfolio#</a></li>
   <li><a href="@about_sim_url@">#simulation.lt_About_this_simulation#</a></li>
-  <li><a href="@notifications_url@">#simulation.My_Notifications#</a></li>
+  <li><a href="@notifications_url@">#simulation.Notifications#</a></li>
   <li><a href="@help_url@">#simulation.Simplay_Help#</a></li>
 </ul>
 

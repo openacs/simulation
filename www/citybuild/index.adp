@@ -22,3 +22,6 @@
   </ul>
 </if>
 
+<ul class="action-links">
+<li><a href="@package_url@">#simulation.lt_Return_to_Simulation__1#</a></li>
+</ul>
