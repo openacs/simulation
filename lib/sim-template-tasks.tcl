@@ -234,6 +234,11 @@ db_multirow -extend $extend tasks select_tasks "
     set child_workflow_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { { workflow_id $child_workflow_id } }]
 
+    if { ![empty_string_p $child_workflow_id] } {
+        # No assignee when there's a child workflow
+        set assigned_name {}
+    }
+
     foreach state_id $states {
 
         if { [info exists enabled_in_state($action_id,$state_id)] } {
