@@ -9,6 +9,12 @@ ad_library {
 namespace eval simulation::object {}
 namespace eval simulation::object::xml {}
 
+###############################
+#
+# simulation::object namespace
+#
+###############################
+
 ad_proc -private simulation::object::url { 
     {-package_id ""}
     {-name:required}
@@ -42,6 +48,12 @@ ad_proc -private simulation::object::content_url {
     
     return "${package_url}object-content/${name}"
 }
+
+###############################
+#
+# simulation::object::xml namespace
+#
+###############################
 
 ad_proc -private simulation::object::xml::file_sweeper {} {
     Loop over all simulation package instances and re-generate

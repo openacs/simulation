@@ -6,65 +6,112 @@ set page_title "SimInst"
 set context [list $page_title]
 set package_id [ad_conn package_id]
 
-######################################################################
-#
-# avail_templates
-#
-# A list of templates that can be instantiated
-#
-######################################################################
-
 #---------------------------------------------------------------------
-# avail_templates list
+# Templates ready for mapping
 #---------------------------------------------------------------------
 
-set elements {
-    pretty_name {
-        label "Template"
-        orderby upper(w.pretty_name)
-    }
-    suggested_duration {
-        label "Suggested Duration"
-        orderby suggested_duration
-    }
-    number_of_roles {
-        label "Roles"
-        orderby number_of_roles
-    }
-    min_number_of_human_roles {
-        label "Min \# of players"
-        orderby min_number_of_human_roles
-    }
-    instantiate {
-        link_url_col inst_url
-        display_template {
-            Start mapping process
-        }
-    }
-}
-
+# TODO: new columns:
+# number_of_roles
+# number_of_roles_not_cast
+# number_of_tasks
+# number_of_tasks_undescribed
+# number_of_prop_slots
+# number_of_prop_unfilled
+# TODO:
+# only show casting link if all the mapping parts are complete
 template::list::create \
-    -name avail_templates \
-    -multirow avail_templates \
-    -no_data "No simulation templates available for instantiation." \
-    -elements $elements 
+    -name ready_templates \
+    -multirow ready_templates \
+    -no_data "No templates are ready for mapping" \
+    -elements {
+        pretty_name {
+            label "Template"
+            orderby upper(w.pretty_name)
+        }
+        suggested_duration {
+            label "Suggested Duration"
+            orderby suggested_duration
+        }
+        number_of_roles {
+            label "Roles"
+            orderby number_of_roles
+        }
+        min_number_of_human_roles {
+            label "Min \# of players"
+            orderby min_number_of_human_roles
+        }
+        map {
+            link_url_col map_url
+            display_template {
+                Begin mapping
+            }
+        }    
+    }
 
-#---------------------------------------------------------------------
-# avail_templates multirow
-#---------------------------------------------------------------------
-
-# TODO: number_of_roles, min_number_of_human_roles
-db_multirow -extend {inst_url} avail_templates select_avail_templates "
+# TODO: min_number_of_human_roles should take agents into account
+db_multirow -extend {map_url} ready_templates select_ready_templates {
 select workflow_id,
        suggested_duration,
        pretty_name,
-       (select 1) as number_of_roles,
-       (select 1) as min_number_of_human_roles
+       (select count(*)
+        from workflow_roles
+        where workflow_id = w.workflow_id) as number_of_roles,
+       (select count(*)
+        from workflow_roles
+        where workflow_id = w.workflow_id) as min_number_of_human_roles
   from sim_simulations ss,
        workflows w
  where ss.simulation_id = w.workflow_id
    and w.object_id = :package_id
    and ready_p = 't'
-" {
-    set inst_url [export_vars -base "map-characters" { workflow_id }]
+} {
+    set map_url [export_vars -base "map-create" { workflow_id }]
+
+    if { [empty_string_p $suggested_duration] } {
+        set suggested_duration "none specified"
+    }
+}
+
+#---------------------------------------------------------------------
+# Mapped templates
+#---------------------------------------------------------------------
+
+template::list::create \
+    -name mapped_templates \
+    -multirow mapped_templates \
+    -no_data "No templates have been mapped" \
+    -elements {
+        pretty_name {
+            label "Template"
+            orderby upper(w.pretty_name)
+        }
+        cast {
+            link_url_col cast_url
+            display_template {
+                Begin casting
+            }
+        }
+    }
+
+# TODO: update the mapped_p subquery for agents
+# Simpler solution:
+# type column with possible values:
+# incomplete_template
+# ready_template
+# mapped_template
+# simulation
+#       and not exists (select 1
+#                       from sim_roles sr,
+#                        workflow_roles wr
+#                       where sr.role_id = wr.role_id
+#                       and sr.character_id is null
+#                       and wr.workflow_id = w.workflow_id
+#                       )
+db_multirow -extend { cast_url } mapped_templates select_mapped_templates {
+    select w.workflow_id,
+           w.pretty_name
+    from workflows w
+    where w.object_id = :package_id
+} {
+    set cast_url [export_vars -base "cast-edit" { workflow_id }]
 }

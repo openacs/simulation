@@ -75,6 +75,8 @@ if { [catch {
     do_request /simulation/simbuild/template-edit
     set template_name "Elementary Private Law"
     field fill $template_name ~n name
+    field find ~n ready_p
+    field fill t
     form submit
 
     ::twt::log_section "Create roles for template"

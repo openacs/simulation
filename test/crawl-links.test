@@ -9,7 +9,7 @@ if { [catch {
     ::twt::log_section "Login the site wide admin"
     ::twt::user::login_site_wide_admin
 
-    ::twt::set_crawler_exclude_links {delete}
+    ::twt::set_crawler_exclude_links {delete remove}
     
     # NOTE: The crawler needs the trailing slash when first invoked
     set simulation_uri /simulation/

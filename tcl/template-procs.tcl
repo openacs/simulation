@@ -26,6 +26,8 @@ ad_proc -public simulation::template::new {
         set ready_p "f"
     }
     db_transaction {
+        set short_name [util_text_to_url -replacement "_" $short_name]
+
         set workflow_id [workflow::new \
                              -short_name $short_name \
                              -pretty_name $pretty_name \
@@ -42,22 +44,38 @@ ad_proc -public simulation::template::new {
             -short_name "dummy action" \
             -pretty_name "dummy action"
 
-        set suggested_duration [string trim $suggested_duration]
-        if { [empty_string_p $suggested_duration] } {
-            db_dml new_sim {
-                insert into sim_simulations
-                (simulation_id, ready_p)
-                values (:workflow_id, :ready_p)
-            }
-        } else {
-            db_dml new_sim "
-            insert into sim_simulations
-            (simulation_id, ready_p, suggested_duration)
-            values ('$workflow_id', '$ready_p', interval '$suggested_duration')"            
-        }
+        insert_sim \
+            -workflow_id $workflow_id \
+            -ready_p $ready_p \
+            -suggested_duration $suggested_duration
     }
 
     return $workflow_id
+}
+
+ad_proc -private simulation::template::insert_sim {
+    {-workflow_id:required}
+    {-ready_p:required}
+    {-suggested_duration:required}
+} {
+    Internal proc for inserting values into the sim_simulations
+    table that are set prior to a template being mapped.
+    
+    @author Peter Marklund
+} {
+    set suggested_duration [string trim $suggested_duration]
+    if { [empty_string_p $suggested_duration] } {
+        db_dml new_sim {
+            insert into sim_simulations
+            (simulation_id, ready_p)
+            values (:workflow_id, :ready_p)
+        }
+    } else {
+        db_dml new_sim "
+        insert into sim_simulations
+        (simulation_id, ready_p, suggested_duration)
+        values ('$workflow_id', '$ready_p', interval '$suggested_duration')"            
+    }
 }
 
 ad_proc -public simulation::template::edit {
@@ -104,6 +122,98 @@ ad_proc -public simulation::template::edit {
             "
         }
     }
+}
+
+ad_proc -public simulation::template::instantiate_edit {
+    {-workflow_id:required}
+    {-enroll_start:required}
+    {-enroll_end:required}
+    {-notification_date:required}
+    {-case_start:required}
+    {-case_end:required}
+    {-enroll_type:required}
+    {-casting_type:required}
+    {-parties:required}    
+} {
+    Edit properties of a simulation set during instantiation.
+    
+    TODO: merge this proc with ::edit?
+
+    @author Peter Marklund
+} {
+    db_dml update_instantiate_template {
+        update sim_simulations
+        set enroll_start = to_date(:enroll_start, 'YYYY-MM-DD'),
+        enroll_end = to_date(:enroll_end, 'YYYY-MM-DD'),
+        send_start_note_date = to_date(:notification_date, 'YYYY-MM-DD'),
+        case_start = to_date(:case_start, 'YYYY-MM-DD'),
+        case_end = to_date(:case_end, 'YYYY-MM-DD'),
+        enroll_type = :enroll_type,
+        casting_type = :casting_type
+        where simulation_id = :workflow_id
+    }
+
+    # Clear out old mappings first
+    db_dml clear_old_mappings {
+        delete from sim_party_sim_map
+        where simulation_id = :workflow_id
+    }
+
+    foreach party_id $parties {
+        db_dml map_party_to_template {
+            insert into sim_party_sim_map
+            (simulation_id, party_id)
+            values (:workflow_id, :party_id)
+        }
+    }
+}
+ad_proc -public simulation::template::clone {
+    {-workflow_id:required}
+    {-pretty_name:required}
+} {
+    Create a new simulation template which is a clone of the template with
+    given id. The clone will be mapped to the package of the current request.
+
+    @param workflow_id The id of the template that you wish to clone.
+    @param pretty_name The pretty name of the clone you are creating.
+    
+    @return The id of the clone.
+
+    @author Peter Marklund
+} {
+    # If we set object_id here and leave short_name unchanged we
+    # get a unique constraint violation
+    set clone_workflow_id [workflow::fsm::clone \
+                               -workflow_id $workflow_id]
+
+    # Set names of clones workflow and update the object_id
+    # TODO: create workflow::edit proc
+    set clone_short_name [util_text_to_url -replacement "_" $pretty_name]
+    set object_id [ad_conn package_id]
+    db_dml update_short_name {
+        update workflows
+        set short_name = :clone_short_name,
+        pretty_name = :pretty_name,
+        object_id = :object_id
+        where workflow_id = :clone_workflow_id
+    }
+
+    # Add the role_id:s to the sim_roles table
+    set role_id_list [workflow::get_roles -workflow_id $clone_workflow_id]
+    foreach role_id $role_id_list {
+        db_dml insert_sim_role {
+            insert into sim_roles (role_id) values (:role_id)
+        }
+    }
+
+    # Clone the values in the simulation table
+    get -workflow_id $workflow_id -array workflow
+    insert_sim \
+        -workflow_id $clone_workflow_id \
+        -ready_p $workflow(ready_p) \
+        -suggested_duration $workflow(suggested_duration)
+
+    return $clone_workflow_id
 }
 
 ad_proc -public simulation::template::get {

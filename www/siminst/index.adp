@@ -5,12 +5,14 @@
 <h2>Templates Ready for Mapping</h2>
 
 <p>
-  <listtemplate name="avail_templates"></listtemplate>
+  <listtemplate name="ready_templates"></listtemplate>
 </p>
 
 <h2>Mapped Templates</h2>
 
-TODO...
+<p>
+  <listtemplate name="mapped_templates"></listtemplate>
+</p>
 
 <h2>Current Simulations</h2>
 <p>
@@ -20,7 +22,7 @@ TODO...
 <h2>Help</h2>
 
 <p>
-  The process of creating a simulation form a simulation template is referred to as instantiation. The
+  The process of creating a simulation form a simulation template is referred to as <b>instantiation</b>. The
   instantiation process is divided into two steps:
 
   <ol>
