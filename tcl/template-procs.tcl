@@ -222,6 +222,14 @@ ad_proc -public simulation::template::clone {
         
         # Clone the values in the simulation table
         simulation::template::get -workflow_id $workflow_id -array workflow
+
+        # Allow overriding of sim_type and duration
+        if { ![empty_string_p $array] } {
+            foreach name [array names row] {
+                set workflow($name) $row($name)
+            }
+        }
+
         insert_sim \
             -workflow_id $clone_workflow_id \
             -sim_type $workflow(sim_type) \
