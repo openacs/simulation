@@ -51,6 +51,7 @@ ad_proc ::twt::simulation::add_object {
 
     set_object_form_type $type
 
+    form find ~n object
     field find ~n title
     field fill $title
     form submit
@@ -69,15 +70,16 @@ ad_proc ::twt::simulation::add_user {
     do_request /acs-admin/users/user-add
     field find ~n email
     set email_account [string map {" " _} "$first_names $last_name"]
-    field fill "${email_account}@test.test"
+    set email "${email_account}@test.test"
+    field fill $email
     field find ~n first_names
     field fill $first_names
     field find ~n last_name
     field fill $last_name
     field find ~n password
-    field fill "1"
+    field fill [::twt::user::get_password $email]
     field find ~n password_confirm
-    field fill "1"
+    field fill [::twt::user::get_password $email]
 
     form submit
 }
@@ -118,7 +120,7 @@ ad_proc ::twt::simulation::get_template_spec {} {
     object_type acs_object
     package_key simulation
     pretty_name {
-        Simulatie Tilburg
+        Simulation Tilburg
     }
     roles {
         lawyer {
@@ -243,4 +245,58 @@ ad_proc ::twt::simulation::get_template_spec {} {
         }
     }
 }"
+}
+
+ad_proc ::twt::simulation::add_template {
+    {-template_name:required}
+} {
+    do_request /simulation/simbuild/template-edit
+    form find ~n sim_template    
+    field fill $template_name ~n name
+    form submit
+}
+
+ad_proc ::twt::simulation::add_roles_to_template {
+    {-template_name:required}
+    {-character_array:required}
+} {
+    upvar $character_array characters
+
+    ::twt::simulation::visit_template_page $template_name 
+    link follow ~u role-edit
+    set add_role_url [response url]
+    foreach character_name [array names characters] {
+        do_request $add_role_url
+        form find ~n role
+        field find ~n name
+        field fill $characters($character_name)
+        form submit
+    }
+}
+
+ad_proc ::twt::simulation::add_tasks_to_template {
+    {-template_name:required}
+    {-task_array:required}
+} {
+    upvar $task_array tasks
+
+    ::twt::simulation::visit_template_page $template_name 
+
+    link follow ~u task-edit
+    set add_task_url [response url]
+
+    foreach task_name [array names tasks] {
+        array set task $tasks($task_name)
+        do_request $add_task_url
+        form find ~n task
+        field find ~n name 
+        field fill $task_name
+        field find ~n assigned_role
+        field select $task(assigned_role)
+        field find ~n recipient_role        
+        field select $task(recipient_role)
+        field find ~n description 
+        field fill "This is the task description for task $task_name"
+        form submit
+    }
 }

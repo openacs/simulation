@@ -23,6 +23,26 @@ if { [catch {
         "C of Lawfirm X"   "Secretary firm X"
         "C of Lawfirm Y"   "Secretary firm Y"
         "Portal"           "Library"          
+        "Lok of Legisl. Dept."		"Member 1 of Legisl. Dept."
+	"Peter of Legisl. Dept."	"Member 2 of Legisl. Dept."
+	"Aernout of Legisl. Dept."	"Head of Legisl. Dept."
+	"Jeroen of Legisl. Dept."	"Deputy Head of Legisl. Dept."
+	"Laurens of Legisl. Dept."	"Chief of Legisl. Dept."
+	"Fred Undraiser"		"Fundraiser"
+	"A of ADC"			"Representative of ADC"	
+	"Minister"			"Minister of Justice"          
+	"General Student"		"Student"
+    }
+    array set characters_ld {
+        "Lok of Legisl. Dept."		"Member 1 of Legisl. Dept."
+	"Peter of Legisl. Dept."	"Member 2 of Legisl. Dept."
+	"Aernout of Legisl. Dept."	"Head of Legisl. Dept."
+	"Jeroen of Legisl. Dept."	"Deputy Head of Legisl. Dept."
+	"Laurens of Legisl. Dept."	"Chief of Legisl. Dept."
+	"Fred Undraiser"		"Fundraiser"
+	"A of ADC"			"Representative of ADC"	
+	"Minister"			"Minister of Justice"          
+	"General Student"		"Student"
     }
     array set properties {
         "Demo Property 1" "Demo Property 1"
@@ -45,10 +65,38 @@ if { [catch {
         "Send final report" {assigned_role "Her lawyer" recipient_role "Partner firm X"}
         "Send draft report" {assigned_role "Her lawyer" recipient_role "Partner firm X"}
     }
+    array set tasks_ld {
+	"Write Proposal gr1" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Head of Legisl. Dept."}
+	"Write Proposal gr2" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Deputy Head of Legisl. Dept."}
+	"Write Opinion SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Fundraiser" recipient_role "Minister of Justice"}
+	"Write Opinion SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Representative of ADC" recipient_role "Minister of Justice"}
+	"Comment on Member2 Proposal SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Head of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Comment on Member1 Proposal SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Deputy Head of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Revise using Opinions and Comment from Head SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Revise using Opinions and Comment from Deputy SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Rate Comments SHOULD BE A REVIEWINFO" {assigned_role "Student" recipient_role "Minister of Justice"}
+	"Rate Revisions SHOULD BE A REVIEWINFO" {assigned_role "Student" recipient_role "Minister of Justice"}
+	"Learning evaluation DUMMY or ADDINFOTOPORTFOLIO" {assigned_role "Student" recipient_role "Minister of Justice"}
+	"Write Definition based on Revision SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Elaborate the Revision SHOULD BE AN ADDINFOTOPORTFOLIO" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Comment Revision of Member 1" {assigned_role "Head of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Comment Revision of Member 2" {assigned_role "Deputy Head of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Learning Evalution SHOULD BE A ADDINFOTOPORTFOLIO" {assigned_role "Student" recipient_role "Minister of Justice"}
+	"Implementation of all received comments and opinions SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Implementation of all received comments and opinions SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Member 2 of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Write law SHOULD BE AN ADDINFOTOPORTFOLIO gr1" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
+	"Write law SHOULD BE AN ADDINFOTOPORTFOLIO gr2" {assigned_role "Member 1 of Legisl. Dept." recipient_role "Minister of Justice"}
+    }   
     # Demo data end
 
     ::twt::log_section "Login the site wide admin"
     ::twt::user::login_site_wide_admin
+
+    ###################################
+    #
+    # Users and Groups setup
+    #
+    ###################################
 
     ::twt::log_section "Add demo users to system"
     for {set i 1} {$i <= 20} {incr i} {
@@ -91,6 +139,12 @@ if { [catch {
         ::twt::simulation::add_user_to_group -group_name $group_name -user_name "$first_names $last_name"
     }
 
+    ###################################
+    #
+    # Citybuild object setup
+    #
+    ###################################
+
     ::twt::log_section "Create an image object"
     do_request /simulation/citybuild
     link follow ~u object-edit
@@ -108,8 +162,13 @@ if { [catch {
     field fill [::twt::config::serverroot]/packages/simulation/test/new-jersey-lawyer-logo.gif
     form submit
 
-    ::twt::log_section "Create characters"
+    ::twt::log_section "Create characters for Elementary private law"
     foreach character_name [array names characters] {
+        ::twt::simulation::add_object -type character -title $character_name
+    }
+
+    ::twt::log_section "Create characters for Legislative Drafting"
+    foreach character_name [array names characters_ld] {
         ::twt::simulation::add_object -type character -title $character_name
     }
 
@@ -118,48 +177,61 @@ if { [catch {
         ::twt::simulation::add_object -type sim_prop -title $property_name
     }
 
-    ::twt::log_section "Create simulation template"
-    do_request /simulation/simbuild/template-edit
+    ###################################
+    #
+    # Elementary private law template
+    #
+    ###################################
+
     set template_name "Elementary Private Law"
-    field fill $template_name ~n pretty_name
-    field find ~n template_ready_p
-    field fill t
-    form submit
+    ::twt::log_section "Create $template_name simulation template"
+    ::twt::simulation::add_template -template_name $template_name
 
     ::twt::log_section "Create roles for template"
-    ::twt::simulation::visit_template_page $template_name 
-    link follow ~u role-edit
-    set add_role_url [response url]
-    foreach character_name [array names characters] {
-        do_request $add_role_url
-        field find ~n name
-        field fill $characters($character_name)
-        form submit
-    }
+    ::twt::simulation::add_roles_to_template \
+        -template_name $template_name \
+        -character_array characters
 
     ::twt::log_section "Add tasks to template"
-    ::twt::simulation::visit_template_page $template_name 
-    link follow ~u task-edit
-    set add_task_url [response url]
-    foreach task_name [array names tasks] {
-        array set task $tasks($task_name)
-        do_request $add_task_url
-        field find ~n name 
-        field fill $task_name
-        field find ~n assigned_role
-        field select $task(assigned_role)
-        field find ~n recipient_role        
-        field select $task(recipient_role)
-        field find ~n description 
-        field fill "This is the task description for task $task_name"
-        form submit
-    }
+    ::twt::simulation::add_tasks_to_template \
+        -template_name $template_name \
+        -task_array tasks
+
+    ###################################
+    #
+    # Legislative Drafting template
+    #
+    ###################################
+
+    set template_name "Legislative Drafting"
+    ::twt::log_section "Create $template_name simulation template"
+    ::twt::simulation::add_template -template_name $template_name
+
+    ::twt::log_section "Create roles for template"
+    ::twt::simulation::add_roles_to_template \
+        -template_name $template_name \
+        -character_array characters_ld
+
+    ::twt::log_section "Add tasks to template"
+    ::twt::simulation::add_tasks_to_template \
+        -template_name $template_name \
+        -task_array tasks_ld
+
+    ###################################
+    #
+    # Tilburg template created from spec
+    #
+    ###################################
 
     ::twt::log_section "Create a template from a spec"
     do_request /simulation/simbuild/template-load
     field fill "Template loaded from spec" ~n pretty_name
     field fill [::twt::simulation::get_template_spec] ~n spec
     form submit
+
+    # TODO: Check permissions with different users
+
+    # TODO: click the ready_p link for the templates
 
 } result] } {
     global errorInfo
