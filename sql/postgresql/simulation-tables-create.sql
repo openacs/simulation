@@ -15,19 +15,6 @@ create table sim_workflow_object_map (
 
 comment on table sim_workflow_object_map is 'Each record indicates that one object is used in one simulation template.  If a sim_object is a child of another sim_object which is in this table, the child sim_object should not be in the table.';
 
-create table sim_roles (
-    role_id             integer         constraint sim_roles_ri_fk
-                                        references workflow_roles(role_id)
-                                        on delete cascade
-                                        constraint sim_roles_pk
-                                        primary key,
-    character_id        integer         constraint sim_roles_character_fk
-                                        references cr_items
-                                        on delete cascade
-);
-
-comment on table sim_roles is 'Each record is a role within a simulation template to be played by one or more users or a computer agent when the template is instantiated into cases.';
-
 create table sim_tasks (
     task_id             integer         constraint sim_tasks_fk
                                         references workflow_actions
@@ -90,15 +77,3 @@ create table sim_party_sim_map (
 
 comment on table sim_party_sim_map is 'Each record is an invitation to a party to participate in a simulation.';
 
-create table sim_workflow_cases (
-    case_id             integer         constraint sim_workflow_cases_fk
-                                        references workflow_cases
-                                        on delete cascade
-                                        constraint sim_workflow_cases_pk
-                                        primary key,
-    simulation          integer         constraint sim_workflow_cases_simulation_fk
-                                        references sim_simulations
-                                        on delete cascade
-);
-
-comment on table sim_workflow_cases is 'A 1-1 extension of workflow_cases.  Each record is an instantiation of a workflow into a simulation and then into a case.';
