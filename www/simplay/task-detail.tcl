@@ -17,8 +17,6 @@ simulation::action::get -action_id $action_id -array action
 set page_title $action(pretty_name)
 set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] [list [export_vars -base tasks { case_id role_id }] "Tasks"] $page_title]
 
-set action(recipients) [list 110 111]
-
 if { ![empty_string_p $action(recipients)] } {
     # We have recipient roles - use message form
 

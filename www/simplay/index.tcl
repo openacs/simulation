@@ -21,7 +21,9 @@ set case_list [db_list_of_lists case_count {
        and wc.case_id = wcrpm.case_id
 }]
 
-if { [llength $case_list] == 1 } {
+if { !$adminplayer_p && [llength $case_list] == 1 } {
     set case_id [lindex [lindex $case_list 0] 0]
     set role_id [lindex [lindex $case_list 0] 1]
+    ad_returnredirect [export_vars -base case { case_id role_id }]
+    ad_script_abort
 }

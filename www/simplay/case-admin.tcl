@@ -19,6 +19,7 @@ set section_uri [apm_package_url_from_id $package_id]simplay/
 set elements {
     role {
         label "Role"
+        link_url_eval {[export_vars -base case { case_id role_id }]}
     }    
     role_action {
         display_template {
@@ -26,33 +27,42 @@ set elements {
         }
     }
     user_name {
-            label "User"
-            display_template {
-                @roles.user_name@ &nbsp; <a href="@roles.move_url@" class="button">Move</a> <a href="@roles.remove_url@" class="button">remove</a>
-            }
-        }
-        max_n_users {
-            label "Target # users"
+        label "User"
+    }
+    user_actions {
+        label ""
+        display_template {
+            <a href="@roles.move_url@" class="button">Move user</a> <a href="@roles.remove_url@" class="button">Remove user</a>
         }
     }
-
-if { $assigned_only_p } {
-    lappend elements assigned_action {
-            label "Assigned action"
-        }
-}
-
-if { $assigned_only_p } {
-    set assigned_filter "<a href=\"[export_vars -base case-admin { case_id {assigned_only_p 0} }]\">Show all roles</a>"
-} else {
-    set assigned_filter "<a href=\"[export_vars -base case-admin { case_id {assigned_only_p 1} }]\">Show only roles with assigned actions</a>"
+    max_n_users {
+        label "Target # users"
+    }
+    assigned_action {
+        label "Assigned action"
+        hide_p {[expr !$assigned_only_p]}
+    }
 }
 
 template::list::create \
     -name roles \
     -multirow roles \
     -no_data "There are no roles or users in this simulation case" \
-    -elements $elements
+    -elements $elements \
+    -pass_properties { case_id } \
+    -filters {
+        assigned_only_p {
+            label "Display"
+            values {
+                {"All" 0}
+                {"Roles with actions only" 1}
+            }
+            default_value 0
+        }
+        case_id {
+            hide_p 1
+        }
+    }
 
 # Set clauses for the assigned only filter
 set select_clause ""

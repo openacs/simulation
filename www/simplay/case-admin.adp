@@ -2,16 +2,13 @@
   <property name="title">@title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-  @assigned_filter;noquote@
+<listfilters name="roles" style="inline-filters"></listfilters>
+<listtemplate name="roles"></listtemplate>
+<p></p>
 
-  <p>
-    <listtemplate name="roles"></listtemplate>
-  </p>
+<if @uncast_role_options@ not nil and @assigned_only_p@ false>
+  <h3>Add users in uncast role</h3>
 
-  <if @uncast_role_options@ not nil and @assigned_only_p@ eq 0>
-    <h3>Add users in uncast role</h3>
-  
-    <p>
-      <formtemplate id="add_user"></formtemplate>
-    </p>
-  </if>
+  <formtemplate id="add_user"></formtemplate>
+  <p></p>
+</if>
