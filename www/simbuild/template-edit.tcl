@@ -125,6 +125,13 @@ ad_form -extend -name sim_template -form {
 } -edit_data {
 
     if { [template::util::is_true $template_ready_p] } {
+	
+	# A workflow needs to have states to be ready
+	if { [llength [workflow::state::fsm::get_ids -all -workflow_id $workflow_id]] == 0 } {
+            template::form::set_error sim_template template_ready_p "Cannot mark template ready for use as it has no states"
+	    break
+	}
+
         set row(sim_type) "ready_template"
     } else {
         set row(sim_type) "dev_template"
