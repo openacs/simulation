@@ -12,8 +12,7 @@
       </td>
       <td width="500" valign="top">
       <include src="map">
-          <div style="width:500px">#simulation.lt_Placeholder_for_flash#</div>
+          <div class="map-master_flash">Placeholder for flash map</div>
       </td>   
     </tr>   
   </table>    
-
