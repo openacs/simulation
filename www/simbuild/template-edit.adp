@@ -22,7 +22,7 @@
               </if>
               <else>
                 <if @inst_url@ not nil>
-                  <li><a href="@inst_url@" class="action">Start a simulation with this template</a></li>
+                  <li><a href="@inst_url@">Start a simulation with this template</a></li>
                 </if>
               </else>
               <li><a href="@spec_url@">Export this template as a text file</a></li>
