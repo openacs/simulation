@@ -10,6 +10,12 @@ simulation::include_contract {
 
 set upload_url [export_vars -base document-upload { case_id }]
 
+if { [exists_and_not_null case_id] } {
+    set user_roles [workflow::case::get_user_roles -case_id $case_id]
+} else {
+    set user_roles [list]
+}
+
 template::list::create \
     -name documents \
     -multirow documents \
@@ -18,6 +24,7 @@ template::list::create \
     -elements {
         role_name {
             label "Role"
+            hide_p {[ad_decode [llength $user_roles] 1 1 0]}
         }
         document_title {
             label "Document"

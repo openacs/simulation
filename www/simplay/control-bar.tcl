@@ -34,16 +34,24 @@ set messages_url [export_vars -base ${section_uri}messages { case_id }]
 set task_count [db_string task_count_sql "
     select count(wcea.enabled_action_id) 
       from workflow_case_enabled_actions wcea,
-           workflow_case_role_party_map wcrmp,
+           workflow_case_role_party_map wcrpm,
            workflow_actions wa,
            party_approved_member_map pamm
      where pamm.member_id = :user_id
-       and wcrmp.party_id = pamm.party_id
-       and wcrmp.case_id = wcea.case_id
-       and wcrmp.role_id = wa.assigned_role
+       and wcrpm.party_id = pamm.party_id
+       and wcrpm.case_id = wcea.case_id
+       and wcrpm.role_id = wa.assigned_role
        and wa.action_id = wcea.action_id
        and wcea.enabled_state = 'enabled'
     [ad_decode $case_id "" "" "and wcea.case_id = :case_id"]
 "]
 
 set tasks_url [export_vars -base ${section_uri}tasks { case_id }]
+
+multirow create roles role_id short_name pretty_name
+
+foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
+    array unset role
+    workflow::role::get -role_id $role_id -array role
+    multirow append roles $role(role_id) $role(short_name) $role(pretty_name)
+}

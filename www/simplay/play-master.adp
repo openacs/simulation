@@ -5,7 +5,7 @@
 
 <table border="0" width="100%">
   <tr>
-    <td valign="top">
+    <td valign="top" width="200">
       <include src="control-bar" case_id="@case_id@">
     </td>
     <td valign="top">

@@ -8,18 +8,35 @@ ad_page_contract {
 }
 
 set page_title "Upload new document to portfolio"
-set context [list [list . "SimPlay"] $page_title]
+set context [list [list . "SimPlay"] [list [export_vars -base case { case_id }] "Case"] $page_title]
 
-# TODO: should there be a workflow::case::get_workflow_id?
-set workflow_id [workflow::case::fsm::get_element -case_id $case_id -element workflow_id]
+set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
+
+# TODO: Only pick from roles the current user is playing in this case
+# TODO: If only one role, hide the role select widget
+
+set role_options [list]
+foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
+    lappend role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+}
 
 ad_form -name document -export { case_id workflow_id } -html {enctype multipart/form-data} -form {
     {item_id:key}
+}
 
-    {role_short_name:text(select)
-        {label "Role"}
-        {options {[workflow::role::get_options -workflow_id $workflow_id]}}
+if { [llength $role_options] > 1 } {
+    ad_form -extend -name document -form {
+        {role_id:text(select)
+            {label "Role"}
+            {options $role_options}
+        }
     }
+    set focus "document.role_id"
+} else {
+    set focus "document.document_file"
+}
+
+ad_form -extend -name document -form {
     {document_file:file(file)
         {label "Document file"}
     }
@@ -64,7 +81,9 @@ ad_form -name document -export { case_id workflow_id } -html {enctype multipart/
             -revision_id $revision_id \
             -status "live"
 
-        set role_id [workflow::role::get_id -short_name $role_short_name -workflow_id $workflow_id]
+        if { ![exists_and_not_null role_id] } {
+            set role_id [lindex [lindex $role_options 0] 1]
+        }
 
         # TODO: Tcl proc?
         # TODO: what should relation_tag be?

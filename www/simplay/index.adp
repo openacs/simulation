@@ -10,11 +10,16 @@
 <p></p>
 
 <if @adminplayer_p@ true>
+
   <h3>All Messages</h3>
+
   <include src="/packages/simulation/lib/messages" user_id="@user_id@"></include>
   <p></p>
+
   <h3>All Tasks</h3>
+
   <include src="/packages/simulation/lib/tasks" user_id="@user_id@"></include>
+
 </if>
 
 <p>TODO: how can a player access completed cases?</p>
