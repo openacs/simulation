@@ -320,9 +320,9 @@ create table workflow_case_enabled_actions(
    <b>Action.CanEnableP -> (CanEnabledP)</b>: Gets called when an
    action is about to be enabled, and can be used to prevent the
    action from actually being enabled. This will only get called once
-   for enabled actions, so if the callback refuses to let the action
-   become enabled, it will not get called again until the next time
-   the action would have become enabled. If the callback refuses, the
+   per case state change, so if the callback refuses to let the action
+   become enabled, it will not be asked again until the next time
+   the case's state changes. If the callback refuses, the
    <code>enabled_state</code> of the row in
    <code>workflow_case_enabled_actions</code> will be set to
    'refused'.
