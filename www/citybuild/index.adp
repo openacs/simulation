@@ -8,10 +8,14 @@
 <if @map_p@>
   <h2>Map XML</h2>
 
-  <p>
-  @notification_widget;noquote@
-  </p>
-
-  <a href="map-xml" class="action">View Map XML</a>
-  <a href="generate-xml" class="action">Generate Map XML file and send notifications</a>
+  <ul class="action-links">
+    <if @subscribe_url@ not nil>
+      <li><a href="@subscribe_url@">Notify me of changes to map XML</a></li>
+    </if>
+    <if @unsubscribe_url@ not nil>
+      <li><a href="@unsubscribe_url@">Stop notifying me of changes to map XML</a></li>
+    </if>
+    <li><a href="map-xml">View Map XML</a></li>
+    <li><a href="generate-xml">Generate Map XML file and send notifications</a></li>
+  </ul>
 </if>

@@ -136,7 +136,7 @@ set content_metadata {
         }
     }
     sim_prop {
-        content_method richtext
+        content_method richtext_or_file
         relations {
             associated {
                 label "Associated with"
@@ -282,7 +282,15 @@ switch $content_method  {
         ad_form -extend -name object -form {
             {content_elm:richtext(richtext),optional
                 {label "Content"}
-                {html {cols 80 rows 16}}
+                {html {cols 60 rows 8}}
+            }
+        }
+    }
+    richtext_or_file {
+        ad_form -extend -name object -form {
+            {content_elm:richtext_or_file(richtext_or_file),optional
+                {label "Content"}
+                {html {cols 60 rows 8}}
             }
         }
     }
@@ -500,12 +508,18 @@ db_foreach select_relations {
 ad_form -extend -name object -new_request {
     # Set element values from local vars
 } -on_submit {
-
     switch $content_method {
         richtext {
             set content_text [template::util::richtext::get_property contents $content_elm]
             set mime_type [template::util::richtext::get_property format $content_elm]
             set storage_type text
+        }
+        richtext_or_file {
+            set content_text [template::util::richtext_or_file::get_property text $content_elm]
+            set mime_type [template::util::richtext_or_file::get_property mime_type $content_elm]
+            set storage_type [template::util::richtext_or_file::get_property storage_type $content_elm]
+            set content_file [template::util::richtext_or_file::get_property file $content_elm]
+            set filename [template::util::richtext_or_file::get_property filename $content_elm]
         }
         textarea {
             set content_text $content_elm
@@ -550,7 +564,13 @@ ad_form -extend -name object -new_request {
     set existing_items [db_list select_items { select name from cr_items where parent_id = :parent_id }]
 
     if { [empty_string_p $name] } {
-        set name [util_text_to_url -existing_urls $existing_items -text $title]
+
+        # TODO: If file upload, auto-set item name to filename (but then make unique)
+        if { [exists_and_not_null filename] } {
+            set name [util_text_to_url -existing_urls $existing_items -text $filename]
+        } else {
+            set name [util_text_to_url -existing_urls $existing_items -text $title]
+        }
     } else {
         set name [util_text_to_url -text $name]
         if { [lsearch $existing_items $name] != -1 } {
@@ -569,8 +589,8 @@ ad_form -extend -name object -new_request {
                          -storage_type $storage_type]
         
         
-        switch $content_method {
-            upload {
+        switch $storage_type {
+            file {
                 set revision_id [bcms::revision::upload_file_revision \
                                      -item_id $item_id \
                                      -title $title \
@@ -579,7 +599,7 @@ ad_form -extend -name object -new_request {
                                      -description $description \
                                      -additional_properties $attributes]
             }
-            default {
+            text {
                 set revision_id [bcms::revision::add_revision \
                                      -item_id $item_id \
                                      -title $title \
@@ -627,6 +647,10 @@ ad_form -extend -name object -new_request {
         richtext {
             set content_elm [template::util::richtext::create $content(text) $content(mime_type)]
         } 
+        richtext_or_file {
+            set content_elm [template::util::richtext_or_file::create $item_info(storage_type) $content(mime_type) $content(text) \
+                                 $item_info(name) {} [simulation::object::content_url -name $item_info(name)]]
+        } 
         textarea {
             set content_elm $content(text)
         }
@@ -646,8 +670,8 @@ ad_form -extend -name object -new_request {
 
     db_transaction {
 
-        switch $content_method {
-            upload {
+        switch $storage_type {
+            file {
                 set revision_id [bcms::revision::upload_file_revision \
                                      -item_id $item_id \
                                      -title $title \
@@ -656,7 +680,7 @@ ad_form -extend -name object -new_request {
                                      -description $description \
                                      -additional_properties $attributes]
             }
-            default {
+            text {
                 set revision_id [bcms::revision::add_revision \
                                      -item_id $item_id \
                                      -title $title \
@@ -695,8 +719,7 @@ ad_form -extend -name object -new_request {
     }
     
 } -after_submit {
-    ad_returnredirect "."
-    ad_script_abort
+    ad_returnredirect -message "\"$title\" has been saved." -abort "."
 }
 
 

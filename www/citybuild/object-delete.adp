@@ -4,10 +4,7 @@
 
 <p> Are you sure you want to delete this object? </p>
 
-<p>
-  <b>&raquo;</b> <a href="@delete_url@">Yes, delete the object</a>
-</p>
+<a href="@delete_url@" class="button">Yes, delete the object</a> 
+&nbsp;&nbsp;&nbsp;&nbsp;
+<a href="@cancel_url@" class="button">No, cancel</a>
 
-<p>
-  <b>&raquo;</b> <a href="@cancel_url@">No, cancel</a>
-</p>

@@ -6,13 +6,14 @@ ad_page_contract {
     {return_url "."}
 }
 
+array set item [bcms::item::get_item -item_id $item_id -revision live]
+
 if { [template::util::is_true $confirm_p] } {
     permission::require_write_permission -object_id $item_id    
     bcms::item::delete_item -item_id $item_id
-    ad_returnredirect $return_url
+    ad_returnredirect -message "\"$item(title)\" has been deleted." -break $return_url
 }
 
-array set item [bcms::item::get_item -item_id $item_id -revision live]
 set page_title "Delete object \"$item(title)\""
 set context [list [list "." "CityBuild"] $page_title]
 
