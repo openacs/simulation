@@ -7,7 +7,7 @@
 <table border="0" width="100%">
   <tr>
     <td valign="top" width="200">
-      <include src="control-bar" case_id="@case_id@">
+      <include src="control-bar" case_id="@case_id@" role_id="@role_id@">
     </td>
     <td valign="top">
       <slave>

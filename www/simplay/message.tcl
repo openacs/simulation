@@ -1,10 +1,11 @@
 ad_page_contract {
     Create or edit a message.
 } {
-    item_id:optional
-    case_id:optional
-    sender_role_id:optional
-    recipient_role_id:optional,multiple
+    item_id:integer,optional
+    case_id:integer
+    role_id:integer
+    sender_role_id:integer,optional
+    recipient_role_id:integer,optional,multiple
     subject:optional
     body_text:optional
     body_mime_type:optional
@@ -13,14 +14,14 @@ ad_page_contract {
 # TODO: store messages in a folder specific to the case
 
 set page_title "Message"
-set context [list [list "." "SimPlay"] [list [export_vars -base case { case_id }] "Case"] $page_title]
+set context [list [list "." "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] $page_title]
 set package_id [ad_conn package_id]
 
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
 
 set from_role_options [list]
-foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
-    lappend from_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+foreach one_role_id [workflow::case::get_user_roles -case_id $case_id] {
+    lappend from_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
 }
 
 # First sender role selected by default
@@ -29,15 +30,15 @@ if { ![exists_and_not_null sender_role_id] } {
 }
 
 set all_role_options [list]
-foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-    lappend all_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
+    lappend all_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
 }
 
 set to_role_options [list]
-foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
+foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
     # A role cannot send message to himself
-    if { ![exists_and_equal sender_role_id $role_id] } {
-        lappend to_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+    if { ![exists_and_equal sender_role_id $one_role_id] } {
+        lappend to_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
     }
 }
 
@@ -205,6 +206,6 @@ ad_form -extend -name message -new_request {
         }
     }
 
-    ad_returnredirect [export_vars -base case { case_id }]
+    ad_returnredirect [export_vars -base case { case_id role_id }]
     ad_script_abort
 }

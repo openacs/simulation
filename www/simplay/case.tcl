@@ -1,7 +1,8 @@
 ad_page_contract {
     Simplay home page for a user in one case.
 } {
-    case_id:integer
+    case_id:integer,notnull
+    role_id:integer,notnull
 }
 
 set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]
@@ -14,3 +15,5 @@ set package_id [ad_conn package_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
+
+set messages_url [export_vars -base messages { case_id role_id }]

@@ -3,12 +3,14 @@
   <property name="context">@context;noquote@</property>
 
 <include src="/packages/simulation/lib/cases" party_id="@user_id@"/>
+<p></p>
 
 <if @adminplayer_p@ true>
 <h3>Administration</h3>
   <h3>You administer these cases</h3>
 
   <include src="/packages/simulation/lib/cases-admin"/>
+  <p></p>
 
   <h3>All Messages</h3>
 
@@ -18,8 +20,8 @@
   <h3>All Tasks</h3>
 
   <include src="/packages/simulation/lib/tasks" user_id="@user_id@"></include>
+  <p></p>
 
 </if>
 
-<p>TODO: how can a player access completed cases?</p>
-<P>TODO: all of simplay should require role_id</p>
+<P>TODO (1h): all of simplay should require role_id</p>

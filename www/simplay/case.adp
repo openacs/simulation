@@ -4,10 +4,9 @@
 
 <h3>Recent Messages</h3>
 
-<include src="/packages/simulation/lib/messages"  user_id="@user_id@" case_id="@case_id@"></include>
-
-TODO: show only 5 most recent messages in this view
+<include src="/packages/simulation/lib/messages"  user_id="@user_id@" case_id="@case_id@" limit="5"></include>
 <p></p>
+<a href="@messages_url@" class="action">All messages...</a>
 
 <h3>Tasks</h3>
 

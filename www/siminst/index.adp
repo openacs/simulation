@@ -9,6 +9,9 @@
 
 <a href="../simplay/" class="action">Live Simulations</a>
 
+<h2>Simulations in Casting</h2>
 
-<p>TODO: make sure dev_sims template shows all simulations, including
-those from Simulations in casting list
+<listtemplate name="casting_sims"></listtemplate>
+<p></p>
+
+<p>TODO (1h): Merge the casting_sims list into the dev_sims list</p>

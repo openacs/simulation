@@ -1,12 +1,13 @@
 ad_page_contract {
     Details for a task
 } {
+    case_id:integer
+    role_id:integer
     enabled_action_id:integer
 }
 
 workflow::case::enabled_action_get -enabled_action_id $enabled_action_id -array enabled_action
 
-set case_id $enabled_action(case_id)
 set action_id $enabled_action(action_id)
 
 simulation::action::get -action_id $action_id -array action
@@ -16,9 +17,9 @@ if { ![empty_string_p $action(assigned_role_id)] } {
 }
 
 set title "Task"
-set context [list [list . "SimPlay"] [list [export_vars -base case { case_id }] "Case"] [list [export_vars -base tasks { case_id }] "Tasks"] $title]
+set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] [list [export_vars -base tasks { case_id role_id }] "Tasks"] $title]
 
-ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id } -form {
+ad_form -name action -edit_buttons { { Send ok } } -export { case_id role_id enabled_action_id } -form {
     {pretty_name:text(inform)
         {label "Task"}
     }
@@ -99,6 +100,6 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
             -attachments $attachments
     }
 
-    ad_returnredirect [export_vars -base tasks { case_id }]
+    ad_returnredirect [export_vars -base tasks { case_id role_id }]
     ad_script_abort
 }

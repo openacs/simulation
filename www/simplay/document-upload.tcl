@@ -4,20 +4,21 @@ ad_page_contract {
     @author Peter Marklund
 } {
     case_id:integer
+    role_id:integer
     item_id:optional
 }
 
 set page_title "Upload new document to portfolio"
-set context [list [list . "SimPlay"] [list [export_vars -base case { case_id }] "Case"] $page_title]
+set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] $page_title]
 
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
 
 set role_options [list]
-foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
-    lappend role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+foreach one_role_id [workflow::case::get_user_roles -case_id $case_id] {
+    lappend role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
 }
 
-ad_form -name document -export { case_id workflow_id } -html {enctype multipart/form-data} -form {
+ad_form -name document -export { case_id role_id workflow_id } -html {enctype multipart/form-data} -form {
     {item_id:key}
 }
 
@@ -51,14 +52,11 @@ ad_form -extend -name document -form {
 
         set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
 
-        # TODO: this is a copy-and-paste from object-edit.tcl
         set existing_items [db_list select_items { select name from cr_items where parent_id = :parent_id }]
         set name [util_text_to_url -existing_urls $existing_items -text $title]
 
         set content_type sim_prop
         set storage_type file
-
-        #error "$item_id $name $parent_id $content_type $storage_type"
 
         set item_id [bcms::item::create_item \
                          -item_id $item_id \
@@ -82,9 +80,7 @@ ad_form -extend -name document -form {
             set role_id [lindex [lindex $role_options 0] 1]
         }
 
-        # TODO: Tcl proc?
-        # TODO: what should relation_tag be?
-        set relation_tag "dummy"
+        set relation_tag "portfolio"
         db_dml add_document_to_portfolio {
             insert into sim_case_role_object_map
             (case_id, object_id, role_id, relation_tag)
@@ -93,5 +89,5 @@ ad_form -extend -name document -form {
         }
     }
     
-    ad_returnredirect [export_vars -base case { case_id }]
+    ad_returnredirect [export_vars -base case { case_id role_id }]
 }

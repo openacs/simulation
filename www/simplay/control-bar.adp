@@ -1,6 +1,10 @@
-You are <a href="/simulation/object/bernadette">Bernadette</a>
-(Plaintiff) (TODO: make this real)
-<img src="/simulation/object-content/new-jersey-lawyers">
+You are <a href="@role.character_url@">@role.character_title@</a>
+(@role.role_pretty@)
+
+<img src="@role.thumbnail_url@" width="@role.thumbnail_width@" height="@role.thumbnail_height@">
+
+<p>
+
 <h4>Your Options</if></h4>
 <ul>
   <li><a href="@case_home_url@">Case home</a>
@@ -9,10 +13,10 @@ You are <a href="/simulation/object/bernadette">Bernadette</a>
   <li><a href="@portfolio_url@">Portfolio</a>
   <li><a href="@about_sim_url@">About this simulation</a>
 </ul>
-<h4>Contacts<if @roles:rowcount@ gt 1>s</if></h4>
+<h4>Contacts</h4>
 <ul>
-  <multiple name="roles">
-    <li><a href="@roles.character_url@">@roles.pretty_name@</a> (@roles.role_name@)</li>
+  <multiple name="contacts">
+    <li><a href="@contacts.character_url@">@contacts.character_title@</a> (@contacts.role_pretty@)</li>
   </multiple>
 </ul>
 

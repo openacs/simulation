@@ -51,6 +51,23 @@ lappend elements edit {
         <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
     }
 }
+lappend elements down {
+    sub_class narrow
+    display_template {
+        <if @tasks.down_url@ not nil>
+          <a href="@tasks.down_url@" class="button" style="padding-top: 6px; padding-bottom: -2px; padding-left: 1px; padding-right: 1px;"><img src="/resources/acs-subsite/arrow-down.gif" border="0"></a>
+        </if>
+    }
+}
+lappend elements up {
+    sub_class narrow
+    display_template {
+        <if @tasks.up_url@ not nil>
+        <a href="@tasks.up_url@" class="button" style="padding-top: 6px; padding-bottom: -2px; padding-left: 1px; padding-right: 1px;"><img src="/resources/acs-subsite/arrow-up.gif" border="0"></a>
+        </if>
+    }
+}
+
 lappend elements name { 
     label "<br />Name"
     display_col pretty_name
@@ -113,10 +130,10 @@ db_foreach select_states {
              html { align center } \
              display_template "
                  <if @tasks.state_$state_id@ not nil>
-                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkboxchecked.gif\" border=\"0\" height=\"13\" width=\"13\" style=\"background-color: white;\"></a>
+                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkboxchecked.gif\" border=\"0\" height=\"13\" width=\"13\"></a>
                  </if>
                  <else>
-                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkbox.gif\" border=\"0\" height=\"13\" width=\"13\" style=\"background-color: white;\"></a>
+                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkbox.gif\" border=\"0\" height=\"13\" width=\"13\"></a>
                  </else>
              "]
 
@@ -147,7 +164,7 @@ template::list::create \
 #-------------------------------------------------------------
 
 set extend [list]
-lappend extend edit_url view_url delete_url assigned_role_edit_url recipient_role_edit_url child_workflow_url
+lappend extend edit_url view_url delete_url assigned_role_edit_url recipient_role_edit_url child_workflow_url up_url down_url
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -172,6 +189,7 @@ db_foreach select_enabled_in_states {
 }
 
 set actions [list]
+set counter 0
 
 db_multirow -extend $extend tasks select_tasks "
     select wa.action_id,
@@ -204,6 +222,7 @@ db_multirow -extend $extend tasks select_tasks "
                           and ia.action_id = wa.action_id)
      order by wa.sort_order
 " {
+    incr counter
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
     set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
     set delete_url \
@@ -236,7 +255,13 @@ db_multirow -extend $extend tasks select_tasks "
         }
     }
 
+    if { $counter > 1 } {
+        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction up } { return_url [ad_return_url] } }]
+    }
+    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction down } { return_url [ad_return_url] } }]
+
     lappend actions $action_id
 }
 
-
+# Get rid of the last down_url
+set tasks:${counter}(down_url) {}

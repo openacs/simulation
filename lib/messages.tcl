@@ -11,6 +11,9 @@ simulation::include_contract {
     case_id {
         required_p 0
     }
+    limit {
+        default_value {}
+    }
 }
 
 # TODO: finish.  if case id is nil, check that adminplayer_p is true.  if not, fail.
@@ -98,6 +101,7 @@ db_multirow -extend { message_url creation_date_pretty } messages select_message
     and    w.workflow_id = wc.workflow_id
     [ad_decode [exists_and_not_null case_id] 1 "and sm.case_id = :case_id" ""]
     order  by sm.creation_date desc
+    [ad_decode $limit "" "" "limit $limit"]
 " {
     set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { item_id case_id }]
     set creation_date_pretty [lc_time_fmt $creation_date_ansi "%x %X"]

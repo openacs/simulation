@@ -80,6 +80,5 @@ db_multirow -extend { edit_url char_url delete_url up_url down_url } states sele
     set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type state } state_id { direction down } { return_url [ad_return_url] } }]
 }
 
-
 # Get rid of the last down_url
 set states:${counter}(down_url) {}
