@@ -102,6 +102,7 @@ if { [llength $from_role_options] > 1 } {
 ds_comment [llength $attachment_options]
 
 ad_form -extend -name message -form {
+    {item_id:key}
     {recipient_role_id:integer(checkbox),multiple
         {label "To"}
         {options $to_role_options}
@@ -157,6 +158,16 @@ ad_form -extend -name message -new_request {
     set recipient_role_id $content(to_role_id)
     set subject $content(title)
     set body [template::util::richtext::create $content(text) $content(mime_type)]
+
+    set attachments_set_list [bcms::item::list_related_items \
+                             -item_id $item_id \
+                             -relation_tag attachment \
+                             -return_list]
+    set attachments [list]
+    foreach attachment_set $attachments_set_list {
+        lappend attachments [ns_set get $attachment_set item_id]
+    }
+
 } -on_submit {
 
     set body_text [template::util::richtext::get_property "contents" $body]
