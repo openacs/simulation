@@ -63,7 +63,7 @@ db_multirow -extend {view_url} objects select_objects "
           sl.description
      from sim_locationsx sl,
           acs_object_types ot
-    where in_directory_p = 't'
+    where sl.in_directory_p = 't'
       and ot.object_type = sl.object_type
    UNION
    select sc.object_id,
@@ -76,7 +76,7 @@ db_multirow -extend {view_url} objects select_objects "
           sc.description
      from sim_charactersx sc,
           acs_object_types ot
-    where in_directory_p = 't'
+    where sc.in_directory_p = 't'
       and ot.object_type = sc.object_type
 
     [template::list::orderby_clause -orderby -name "objects"]
