@@ -9,8 +9,6 @@ ad_page_contract {
     {content_type {sim_prop}}
 }
 
-#TODO: object type should be changable in new mode
-
 #---------------------------------------------------------------------
 # Determine if we are in edit mode or display mode
 #---------------------------------------------------------------------
@@ -48,6 +46,7 @@ set context [list [list "object-list" "Sim Objects"] $page_title]
 # A form for editing and viewing sim objects
 #
 ######################################################################
+#TODO: content_type should be changable in new mode
 
 ad_form -name object -cancel_url object-list -form {
     {item_id:key}
@@ -73,14 +72,11 @@ ad_form -name object -cancel_url object-list -form {
     }
 }
 
-
-######################################################################
-#
+#---------------------------------------------------------------------
 # Content edit/upload method
 #
 # Add a form widget appropriate for the content attribute of the object type
-#
-######################################################################
+#---------------------------------------------------------------------
 
 array set content_method {
     sim_character richtext
@@ -114,18 +110,13 @@ switch $content_method($content_type) {
     }
 }
 
-
-
-#####
-#
+#---------------------------------------------------------------------
 # Dynamic attributes for the content type
 #
 # Look up the other attributes for this content type and put them on the form
-#
-#####
-
-# LARS: I'm doing this as a proof-of-concept type thing. If it works well enough for us, 
-# we'll want to generalize and move into acs-content-repository
+#---------------------------------------------------------------------
+# LARS: I'm doing this as a proof-of-concept type thing. If it works well
+# enough for us, we'll want to generalize and move into acs-content-repository
 
 array set form_datatype {
     string text
@@ -191,6 +182,11 @@ array set form_references {
 
 set attr_names [list]
 
+
+#---------------------------------------------------------------------
+# database access for attributes
+#---------------------------------------------------------------------
+
 db_foreach select_attributes {
     select attribute_name, pretty_name, datatype, default_value, min_n_values
     from   acs_attributes
@@ -226,7 +222,7 @@ db_foreach select_attributes {
         if { $content_type_p } {
             set options [db_list_of_lists select_options { 
                 select r.title,
-                       i.item_id
+                i.item_id
                 from   cr_items i, cr_revisions r
                 where  i.content_type = :elm_ref_type
                 and    r.revision_id = i.live_revision
@@ -235,7 +231,7 @@ db_foreach select_attributes {
         } else {
             set options [db_list_of_lists select_options { 
                 select acs_object__name(object_id),
-                       object_id
+                object_id
                 from   acs_objects
                 where  object_type = :elm_ref_type
                 order  by acs_object__name(object_id)
@@ -252,7 +248,7 @@ db_foreach select_attributes {
     }
     
     ad_form -extend -name object -form \
-            [list [concat [list $elm_decl [list label \$pretty_name]] $extra]]
+        [list [concat [list $elm_decl [list label \$pretty_name]] $extra]]
 }
 
 
@@ -296,6 +292,11 @@ ad_form -extend -name object -new_request {
         }
     }
 
+    if { $content_type == "sim_stylesheet" } {
+        set mime_type "text/css"
+    }
+
+    
     set revision_id [bcms::revision::add_revision \
                          -item_id $item_id \
                          -title $title \
