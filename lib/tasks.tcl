@@ -26,6 +26,7 @@ set elements {
     }
     sim_name {
         label "Simulation"
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
     case_label {
         label "Case"
