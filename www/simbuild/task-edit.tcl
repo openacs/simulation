@@ -183,6 +183,6 @@ ad_form -extend -name task -form {
                        -action_id $action_id \
                        -array row]
 
-    ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
+    ad_returnredirect [export_vars -base "template-edit" -anchor "tasks" { workflow_id }]
     ad_script_abort
 }
