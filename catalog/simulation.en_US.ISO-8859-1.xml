@@ -3,8 +3,10 @@
 
   <msg key="add_new_characters">add new characters</msg>
   <msg key="Administration">Administration</msg>
+  <msg key="All">All</msg>
   <msg key="All_Messages">All Messages</msg>
   <msg key="All_messages">All messages...</msg>
+  <msg key="Assigned_action">Assigned action</msg>
   <msg key="Attachments">Attachments</msg>
   <msg key="Body">Body</msg>
   <msg key="Cancel">Cancel</msg>
@@ -20,6 +22,7 @@
   <msg key="Delete_this_case">Delete this case</msg>
   <msg key="Delete_this_template">Delete this template</msg>
   <msg key="Description">Description</msg>
+  <msg key="Display">Display</msg>
   <msg key="Document">Document</msg>
   <msg key="Document_Portfolio">Document Portfolio</msg>
   <msg key="Documents">Documents</msg>
@@ -39,46 +42,91 @@ You have been invited to join simulation %sim_template.pretty_name%. Please visi
     when this wizard is completed and
     casting begins.</msg>
   <msg key="Join_a_Simulation">Join a Simulation</msg>
+  <msg key="join_case">join case</msg>
+  <msg key="join_role">join role</msg>
   <msg key="Live_Simulations">Live Simulations</msg>
   <msg key="Log_in">Log in</msg>
+  <msg key="lt_a_hreflink_targetClic">&lt;a href=\&quot;%link_target%\&quot;&gt;Click here&lt;/a&gt; to enroll now.</msg>
   <msg key="lt_About_simulation_name">About %simulation_name%</msg>
   <msg key="lt_About_this_simulation">About this simulation</msg>
   <msg key="lt_Add_SimObjects_to_thi">Add Sim
 Objects to this Workflow</msg>
   <msg key="lt_Add_users_in_uncast_r">Add users in uncast role</msg>
+  <msg key="lt_Administer_case_array">Administer %case_array.label%</msg>
   <msg key="lt_Administer_case_prett">Administer %case_array.label%</msg>
+  <msg key="lt_Administer_caselabel">Administer %case.label%</msg>
+  <msg key="lt_all_messages_you_rece">all messages you receive</msg>
+  <msg key="lt_All_tasks_in_the_simu">All tasks in the simulation</msg>
+  <msg key="lt_all_tasks_youre_assig">all tasks you're assigned to</msg>
   <msg key="lt_and_refresh__this_pag">and refresh
   this page.</msg>
   <msg key="lt_Are_you_sure_you_want">Are you sure you want to delete this object?</msg>
   <msg key="lt_Are_you_sure_you_want_1">Are you sure you want to delete this case?</msg>
   <msg key="lt_Attachments_in_receiv">Attachments in received message:</msg>
+  <msg key="lt_Back_to_template_sim">Back to template %sim_template_array.pretty_name%</msg>
   <msg key="lt_Back_to_template_sim_">Back to template %sim_template_array.pretty_name%</msg>
+  <msg key="lt_Be_the_first_user_in">Be the first user in a new case</msg>
   <msg key="lt_Be_the_first_user_in_">Be the first user in a new case</msg>
   <msg key="lt_Below_is_a_listing_of">Below is a listing of all roles in the simulation.</msg>
+  <msg key="lt_blockquote_We_are_sor">&lt;blockquote&gt; We are sorry, but simulation
+\&quot;%simulation.pretty_name%\&quot; is not open to enrollment and you
+are not invited to join the simulation so you cannot enroll at
+this time. &lt;/blockquote&gt;</msg>
+  <msg key="lt_blockquoteThe_simulat">&lt;blockquote&gt;The simulation \&quot;%simulation.pretty_name%\&quot; is configured to use automatic casting. This means that a simulation case and simulation role will be chosen automatically for you right before the simulation starts. You will be notified by email. &lt;p&gt; Thank you! &lt;/p&gt; &lt;/blockquote&gt;</msg>
+  <msg key="lt_blockquoteWe_are_sorr">&lt;blockquote&gt;We are sorry, but since you are not enrolled in simulation \&quot;%simulation.pretty_name%\&quot; you can not choose case or role in it.&lt;/blockquote&gt;</msg>
+  <msg key="lt_blockquoteWe_are_sorr_1">&lt;blockquote&gt;We are sorry, but simulation \&quot;%simulation.pretty_name%\&quot; does not allow users to choose role (casting type is not open). This message means the system is not operating correctly. Please contact the system administrator. Thank you!&lt;/blockquote&gt;</msg>
+  <msg key="lt_blockquoteWe_are_sorr_2">&lt;blockquote&gt;We are sorry, but there are no empty seats in role \&quot;%role.pretty_name%\&quot; in case \&quot;%case.label%\&quot; of simulation \&quot;%simulation.pretty_name%\&quot;. This message means the system is not operating correctly. Please contact the system administrator. Thank you!&lt;/blockquote&gt;</msg>
+  <msg key="lt_blockquoteWe_are_sorr_3">&lt;blockquote&gt;We are sorry, but you are not in the group of users that can be cast in role \&quot;%role.pretty_name%\&quot; in case \&quot;%case.label%\&quot; of simulation \&quot;%simulation.pretty_name%\&quot;. This message means the system is not operating correctly. Please contact the system administrator. Thank you!&lt;/blockquote&gt;</msg>
+  <msg key="lt_blockquoteWe_are_sorr_4">&lt;blockquote&gt;We are sorry, but simulation \&quot;%simulation.pretty_name%\&quot; does not allow users to choose case (casting type is auto). This message means the system is not operating correctly. Please contact the system administrator. Thank you!&lt;/blockquote&gt;</msg>
+  <msg key="lt_blockquoteWe_are_sorr_5">&lt;blockquote&gt;We are sorry, but since you are not enrolled in simulation \&quot;%simulation.pretty_name%\&quot; you can not choose case or role in it. %enroll_now_text%&lt;/blockquote&gt;</msg>
+  <msg key="lt_Cannot_choose_case_in">Cannot choose case in \&quot;%simulation.pretty_name%\&quot;</msg>
+  <msg key="lt_Cannot_choose_role_in">Cannot choose role in \&quot;%simulation.pretty_name%\&quot;</msg>
+  <msg key="lt_Cannot_enroll_in_simu">Cannot enroll in simulation</msg>
+  <msg key="lt_Cannot_enroll_in_simu_1">Cannot enroll in simulation \&quot;%simulation.pretty_name%\&quot;</msg>
+  <msg key="lt_Case_caselabel_has_be">Case \&quot;%case.label%\&quot; has been deleted.</msg>
+  <msg key="lt_Choose_new_roles_for">Choose new roles for user %user.name%</msg>
+  <msg key="lt_Choose_new_users_for">Choose new users for role %role.pretty_name%</msg>
+  <msg key="lt_Delete_case_caselabel">Delete case \&quot;%case.label%\&quot;</msg>
   <msg key="lt_Delete_name_and_tasks">Delete %name% and tasks</msg>
   <msg key="lt_Did_not_generate_an_X">Did not generate an XML file.</msg>
+  <msg key="lt_Document_document_upl">Document %document% uploaded</msg>
   <msg key="lt_Each_role_may_be_play">Each role may be played by one or by
     many users.  Each role can only be played by users in the groups
     specified below.  If a group is not selected for any role, users
     in that group will not be cast in the simulation</msg>
+  <msg key="lt_Either_of_the_HTTP_pa">Either of the HTTP parameters workflow_id and case_id must be provided. Please contact the system administrator about this error.</msg>
   <msg key="lt_Expects_a_sim_id__Sho">Expects a sim id.  Shows all cases for that sim.  This is an admin page.</msg>
   <msg key="lt_Export_full_case_hist">Export full case history</msg>
+  <msg key="lt_Export_this_template">Export this template as a text file</msg>
   <msg key="lt_Export_this_template_">Export this template as a text file</msg>
+  <msg key="lt_Full_History_for_case">Full History for %case.label%</msg>
   <msg key="lt_Generate_Map_XML_file">Generate Map XML file and send notifications</msg>
   <msg key="lt_Generated_map_XML_fil">Generated map XML file and sent any notifications.</msg>
+  <msg key="lt_If_you_are_using_the">If you are using the respond button to respond to multiple tasks
+    then all checked tasks must share the same task name.</msg>
   <msg key="lt_If_you_are_using_the_">If you are using the respond button to respond to multiple tasks
     then all checked tasks must share the same task name.</msg>
   <msg key="lt_in_CityBuild_before_y">in CityBuild before you can finish setting up these tasks.</msg>
+  <msg key="lt_Join_a_Case_in_Simula">Join a Case in Simulation \&quot;%workflow.pretty_name%\&quot;</msg>
+  <msg key="lt_Join_a_Case_in_Simula_1">Join a Case in Simulation \&quot;%simulation.pretty_name%\&quot;</msg>
   <msg key="lt_Make_a_copy_of_the_se">Make a copy of the selected template, including all tasks and
   roles, but not any objects.</msg>
   <msg key="lt_Mark_this_template_re">Mark this template ready for use</msg>
   <msg key="lt_Messages_for_role_pre">Messages for %role_array.pretty_name%</msg>
   <msg key="lt_name_has_dependent_ta">%name% has dependent tasks.  Do you want to delete this role
 and all related tasks?</msg>
+  <msg key="lt_No_empty_slots_in_rol">No empty slots in role \&quot;%role.pretty_name%\&quot;</msg>
+  <msg key="lt_Not_allowed_to_cast_i">Not allowed to cast in role \&quot;%role.pretty_name%\&quot;</msg>
+  <msg key="lt_Not_enrolled_in_simul">Not enrolled in simulation \&quot;%simulation.pretty_name%\&quot;</msg>
+  <msg key="lt_Notify_me_of_changes">Notify me of changes to map XML</msg>
   <msg key="lt_Notify_me_of_changes_">Notify me of changes to map XML</msg>
   <msg key="lt_Placeholder_for_flash">Placeholder for flash map</msg>
+  <msg key="lt_Portfolio_for_role_ar">Portfolio for %role_array.pretty_name% in %case_array.label%</msg>
+  <msg key="lt_Portfolio_for_role_ar_1">Portfolio for %role_array.pretty_name%</msg>
   <msg key="lt_Restrict_to_previous_">Restrict to previous task matching word or phrase</msg>
   <msg key="lt_Return_to_template_li">Return to template list page</msg>
+  <msg key="lt_Roles_with_actions_on">Roles with actions only</msg>
+  <msg key="lt_Select_from_existing">Select from existing characters in the Yellow Pages, or</msg>
   <msg key="lt_Select_from_existing_">Select from existing characters in the Yellow Pages, or</msg>
   <msg key="lt_Select_which_case_and_role_to_join">Select which case and role to join, or create a new case for
     yourself.  If you do not select a case and role to join, you will
@@ -88,36 +136,65 @@ and all related tasks?</msg>
     yourself.  If you do not select a case to join, you will
     be automatically assigned to a case when the simulation
     begins.</msg>
+  <msg key="lt_Simulation_Case_List">Simulation Case List</msg>
+  <msg key="lt_Simulation_simulation">Simulation \&quot;%simulation.pretty_name%\&quot; is in state
+%simulation.sim_type% and you cannot enroll in it now. Contact your
+administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_Simulations_in_Castin">Simulations in Casting</msg>
   <msg key="lt_Simulations_in_Develo">Simulations in Development</msg>
+  <msg key="lt_Some_of_the_tasks_of">Some of the tasks of this simulation require attachments. However, there are no CityBuild props to select from.</msg>
   <msg key="lt_Some_of_the_tasks_of_">Some of the tasks of this simulation require attachments. However, there are no CityBuild props to select from.</msg>
   <msg key="lt_Start_a_simulation_wi">Start a simulation with this template</msg>
+  <msg key="lt_Stop_notifying_me_of">Stop notifying me of changes to map XML</msg>
   <msg key="lt_Stop_notifying_me_of_">Stop notifying me of changes to map XML</msg>
   <msg key="lt_Take_action_on_select">Take action on selected tasks</msg>
   <msg key="lt_Templates_must_be_mar">Templates must be marked ready for use by template authors in order to appear on this list.</msg>
+  <msg key="lt_The_enrollment_period">The enrollment period for simulation
+\&quot;%simulation.pretty_name%\&quot; is between %simulation.enroll_start%
+and %simulation.enroll_end% and you cannot enroll at this time.
+Contact your administrator if you believe this is an error. Thank you!</msg>
+  <msg key="lt_The_following_errors">The following errors were encountered:</msg>
   <msg key="lt_The_following_errors_">The following errors were encountered:</msg>
   <msg key="lt_The_template_simulati">The template &quot;%simulation.pretty_name%&quot; is not ready for casting.</msg>
+  <msg key="lt_There_are_no_cases_in">There are no cases in this simulation yet</msg>
   <msg key="lt_There_are_no_document">There are no documents.</msg>
   <msg key="lt_There_are_no_particip">There are no participants selected, so casting is not yet possible. On the previous tab, please select participants, or allow open enrollment on the first tab.</msg>
+  <msg key="lt_There_are_no_roles_or">There are no roles or users in this simulation case</msg>
+  <msg key="lt_There_are_no_users_pl">There are no users playing the role</msg>
   <msg key="lt_This_case_has_been_co">This case has been completed.</msg>
   <msg key="lt_to_see_your_active_ca">to see your active cases.</msg>
+  <msg key="lt_Unsubscribe_from_pret">Unsubscribe from %pretty_name%</msg>
   <msg key="lt_Up_to_parent_task_arr">Up to %parent_task_array.pretty_name%</msg>
+  <msg key="lt_Upload_new_document_t">Upload new document to portfolio</msg>
+  <msg key="lt_User_castings_in_simu">User castings in simulation \&quot;%simulation.pretty_name%\&quot;</msg>
+  <msg key="lt_Users_playing_role_ro">Users playing role %role.pretty_name% in case %case.label%</msg>
   <msg key="lt_Warning_this_simulati">Warning: this simulation is already in casting. Clicking the finish button may have unwanted consequences such as sending notifications twice to users.</msg>
+  <msg key="lt_We_couldnt_find_any_r">We couldn't find any roles that you could join in case \&quot;%case.label%\&quot; of simulation \&quot;%simulation.pretty_name%\&quot;. You would need to join a new case. Select your administrator about this. Thank you!</msg>
   <msg key="lt_Yes_delete_the_object">Yes, delete the object</msg>
+  <msg key="lt_You_administer_these">You administer these cases</msg>
   <msg key="lt_You_administer_these_">You administer these cases</msg>
+  <msg key="lt_You_are_already_cast">You are already cast in the following roles:</msg>
   <msg key="lt_You_are_already_cast_">You are already cast in the following roles:</msg>
+  <msg key="lt_You_are_doing_a_bulk">You are doing a bulk response to %common_actions_count% tasks.</msg>
   <msg key="lt_You_are_doing_a_bulk_">You are doing a bulk response to %common_actions_count% tasks.</msg>
   <msg key="lt_You_are_not_administe">You are not administering any active simulation cases.</msg>
+  <msg key="lt_You_are_not_cast_in_a">You are not cast in any roles yet</msg>
   <msg key="lt_You_are_not_in_any_ac">You are not in any active simulation cases.</msg>
   <msg key="lt_You_cannot_submit_thi">You cannot submit this form until you have submitted all forms on the previous tabs.</msg>
   <msg key="lt_You_dont_have_any_tas">You don't have any tasks.</msg>
   <msg key="lt_You_have_been_enrolle">You have been enrolled in &quot;%simulation.pretty_name%&quot;.  The simulation will
   begin on %simulation.case_start% and you will be notified by email at this time.</msg>
+  <msg key="lt_You_have_been_enrolle_1">You have been enrolled in simulation
+\&quot;%simulation.pretty_name%\&quot;</msg>
   <msg key="lt_You_have_deleted_temp">You have deleted template &quot;%template_name%&quot;.</msg>
   <msg key="lt_You_must_supply_both_">You must supply both case_id and role_id</msg>
+  <msg key="lt_You_will_be_automatic">You will be automatically cast in \&quot;%simulation.pretty_name%\&quot;</msg>
   <msg key="lt_Your_Current_Simulati">Your Current Simulations</msg>
+  <msg key="lt_Your_Tasks_in_Simulat">Your Tasks in Simulation %simulation.pretty_name%</msg>
   <msg key="Manage_groups">Manage groups</msg>
   <msg key="Map_XML">Map XML</msg>
+  <msg key="Max__users">Max # users</msg>
+  <msg key="Message">Message</msg>
   <msg key="message">message</msg>
   <msg key="message_notificaiton_email_subject">[SimPlay] New message in simulation %simulation_name: %subject%</msg>
   <msg key="message_notification_email_body">You have just received the following message in simulation %simulation_name%:
@@ -135,14 +212,19 @@ Please visit %simplay_url% to continue playing the simulation.
 Thank you.</msg>
   <msg key="Messages">Messages</msg>
   <msg key="messages">messages</msg>
+  <msg key="Move_user">Move user</msg>
   <msg key="My_Notifications">My Notifications</msg>
+  <msg key="New_Users">New Users</msg>
+  <msg key="No_available_roles">No available roles</msg>
   <msg key="No_cancel">No, cancel</msg>
   <msg key="No_documents">No documents</msg>
   <msg key="No_messages">No messages.</msg>
+  <msg key="Notifications">Notifications</msg>
   <msg key="Notifications_page_notification_type_header">Notifications for</msg>
   <msg key="Number_of_tasks">Number of tasks</msg>
   <msg key="Parent_Task">Parent Task</msg>
   <msg key="Portfolio">Portfolio</msg>
+  <msg key="Re">Re:</msg>
   <msg key="Received">Received</msg>
   <msg key="Recent_Messages">Recent Messages</msg>
   <msg key="Related_Tasks">Related Tasks</msg>
@@ -152,6 +234,7 @@ simulation description:
 
 %simulation_description%</msg>
   <msg key="reminder_email_subject">Simulation %simulation_name% starts on %simulation_start_date%</msg>
+  <msg key="Remove_user">Remove user</msg>
   <msg key="Respond">Respond</msg>
   <msg key="Role">Role</msg>
   <msg key="Roles">Roles</msg>
@@ -160,6 +243,7 @@ simulation description:
   <msg key="SimInst">SimInst</msg>
   <msg key="SimPlay">SimPlay</msg>
   <msg key="Simulation">Simulation</msg>
+  <msg key="simulation_name">%simulation_name%</msg>
   <msg key="simulation_started_email_body">Dear %user_name%,
 Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% to participate. Thank you!</msg>
   <msg key="simulation_started_email_subject">Simulation %simulation.pretty_name% has started</msg>
@@ -169,6 +253,7 @@ Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% 
   <msg key="Sub-Tasks">Sub-Tasks</msg>
   <msg key="Subject">Subject</msg>
   <msg key="Subscribe">Subscribe</msg>
+  <msg key="Target__users">Target # users</msg>
   <msg key="Task">Task</msg>
   <msg key="task">task</msg>
   <msg key="Tasks">Tasks</msg>
@@ -185,9 +270,11 @@ Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% 
   <msg key="to_attach_document_to_message">&lt;font color=&quot;red&quot;&gt;&lt;em&gt;NOTE&lt;/em&gt;&lt;/font&gt;: To attach a document to your message you need to &lt;a
     href=&quot;%document_upload_url%&quot;&gt;upload a document&lt;/a&gt; to your
     portfolio before writing the message.</msg>
+  <msg key="Unknown_type">Unknown type</msg>
   <msg key="Unsubscribe">Unsubscribe</msg>
   <msg key="Upload_a_document">Upload a document</msg>
   <msg key="User">User</msg>
+  <msg key="Users"># Users</msg>
   <msg key="View_Map_XML">View Map XML</msg>
   <msg key="Yellow_Pages">Yellow Pages</msg>
   <msg key="Yes_delete_the_case">Yes, delete the case</msg>
