@@ -35,7 +35,7 @@ if { [ad_form_new_p -key workflow_id] } {
 
 ad_form -name sim_template -mode $mode -cancel_url $cancel_url -form {
     {workflow_id:key}
-    {name:text,optional
+    {pretty_name:text,optional
         {label "Template Name"}
         {html {size 40}}
     }
@@ -60,63 +60,68 @@ ad_form -extend -name sim_template -form {
     {suggested_duration:text,optional
         {label "Suggested Duration"}
     }
-    {description:text(textarea),optional
-        {label "TODO: Description and<br> Description-mime-type"}
+    {description:richtext(richtext),optional
+        {label "Description"}
         {html {cols 60 rows 8}}
     }
 } -edit_request {
 
     permission::require_write_permission -object_id $workflow_id
+
     simulation::template::get -workflow_id $workflow_id -array sim_template_array
-    set name $sim_template_array(pretty_name)
-    set description $sim_template_array(description)
+
+    set pretty_name $sim_template_array(pretty_name)
+
+    set description [template::util::richtext::create $sim_template_array(description) $sim_template_array(description_mime_type)]
 
     # translate sim_type to ready/not-ready
-    # TODO: we should only see ready_template and dev_template here, so maybe assert that?
-    if {$sim_template_array(sim_type) == "ready_template"} {
-        set template_ready_p "t"
-    } else {
-        set template_ready_p "f"
+    
+    if { [lsearch { dev_template ready_template } $sim_template_array(sim_type)] == -1 } {
+        error "Can only handle dev_template and ready_template sim_types here."
     }
+
+    set template_ready_p [db_boolean [string equal $sim_template_array(sim_type) "ready_template"]]
 
     set suggested_duration $sim_template_array(suggested_duration)
 
 } -new_request {
 
     permission::require_permission -object_id $package_id -privilege sim_template_create
-
+    
+} -on_submit {
+    set description_mime_type [template::util::richtext::get_property format $description]
+    set description [template::util::richtext::get_property contents $description]
 } -new_data {
 
     permission::require_permission -object_id $package_id -privilege sim_template_create
-    set workflow_id [simulation::template::new \
-                         -short_name $name \
-                         -pretty_name $name \
-                         -suggested_duration $suggested_duration \
-                         -package_key $package_key \
-                         -object_id $package_id]
+    set operation "insert"
+
+    set row(package_key) $package_key 
+    set row(object_id) $package_id
+    set row(sim_type) "dev_template"
     
 } -edit_data {
 
-    if {$template_ready_p == "t"} {
-        set sim_type "ready_template"
+    if { [template::util::is_true $template_ready_p] } {
+        set row(sim_type) "ready_template"
     } else {
-        set sim_type "dev_template"
+        set row(sim_type) "dev_template"
     }
 
     permission::require_write_permission -object_id $workflow_id
-
-    set simulation(short_name) $name
-    set simulation(pretty_name $name
-    set simulation(sim_type) $sim_type
-    set simulation(suggested_duration) $suggested_duration
-    set simulation(package_key) $package_key
-    set simulation(object_id) $package_id
-    set simulation(description) $description
-    simulation::template::edit \
-        -workflow_id $workflow_id \
-        -array simulation
+    set operation "update"
 
 } -after_submit {
+
+    set row(short_name) {}
+    foreach elm { pretty_name suggested_duration description description_mime_type } {
+        set row($elm) [set $elm]
+    }
+
+    set workflow_id [simulation::template::edit \
+                         -operation $operation \
+                         -workflow_id $workflow_id \
+                         -array row]
 
     ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
@@ -143,7 +148,7 @@ switch $mode {
         set page_title "New Simulation Template"
     }
     edit {
-        set page_title "Editing $name"
+        set page_title "Editing $pretty_name"
     }
 }
 

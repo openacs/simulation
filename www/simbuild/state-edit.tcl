@@ -75,27 +75,25 @@ ad_form -name state -edit_buttons [list [list [ad_decode [ad_form_new_p -key sta
     permission::require_write_permission -object_id $workflow_id
 } -new_data {
     permission::require_write_permission -object_id $workflow_id
-    # create the state
 
-    set state_id [workflow::state::fsm::new \
-                      -workflow_id $workflow_id \
-                      -pretty_name $pretty_name]
-
+    set operation "insert"
 } -edit_data {
     # We use state_array(workflow_id) here, which is gotten from the DB, and not
     # workflow_id, which is gotten from the form, because the workflow_id from the form 
     # could be spoofed
-    permission::require_write_permission -object_id $state_array(workflow_id)
-
+    set workflow_id $state_array(workflow_id)
+    permission::require_write_permission -object_id $workflow_id
+    set operation "update"
+} -after_submit {
     set row(pretty_name) $pretty_name
     set row(short_name) {}
 
-    workflow::state::fsm::edit \
-        -state_id $state_id \
-        -workflow_id $state_array(workflow_id) \
-        -array row
+    set state_id [workflow::state::fsm::edit \
+                      -operation $operation \
+                      -state_id $state_id \
+                      -workflow_id $workflow_id \
+                      -array row]
 
-} -after_submit {
     ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
 }

@@ -43,7 +43,7 @@ set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
 
 if { ![ad_form_new_p -key action_id] } {
-    workflow::action::fsm::get -action_id $action_id -array task_array
+    simulation::action::get -action_id $action_id -array task_array
 
     set workflow_id $task_array(workflow_id)
 }
@@ -132,26 +132,16 @@ ad_form -extend -name task -form {
 } -edit_request {
     set workflow_id $task_array(workflow_id)
     permission::require_write_permission -object_id $workflow_id
-    set pretty_name $task_array(pretty_name)
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
-    set new_state_id $task_array(new_state_id)
-    
-    db_1row select_recipient {
-        select recipient as recipient_role_id, attachment_num
-        from sim_tasks
-        where task_id = :action_id
+
+    foreach elm { 
+        pretty_name new_state_id 
+        assigned_role recipient_role
+        assigned_state_ids enabled_state_ids
+        attachment_num
+    } {
+        set $elm $task_array($elm)
     }
-
-    if { ![empty_string_p $recipient_role_id] } {
-        set recipient_role [workflow::role::get_element -role_id $recipient_role_id -element short_name]
-    } else {
-        set recipient_role {}
-    }
-
-    set assigned_role $task_array(assigned_role)
-
-    set assigned_state_ids $task_array(assigned_state_ids)
-    set enabled_state_ids $task_array(enabled_state_ids)
 } -new_request {
     permission::require_write_permission -object_id $workflow_id
 
@@ -162,63 +152,37 @@ ad_form -extend -name task -form {
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 
-    if { ![empty_string_p $recipient_role] } {
-        set recipient_role_id [workflow::role::get_id -workflow_id $workflow_id -short_name $recipient_role]
-    } else {
-        set recipient_role_id [db_null]
+    foreach elm { 
+        pretty_name assigned_role description description_mime_type
+        enabled_state_ids assigned_state_ids new_state_id 
+        recipient_role attachment_num
+    } {
+        set row($elm) [set $elm]
     }
+    set row(short_name) {}
+
 } -new_data {
     permission::require_write_permission -object_id $workflow_id
-    # create the task
+    set operation "insert"
 
-    db_transaction {
-        set action_id [workflow::action::fsm::new \
-                           -workflow_id $workflow_id \
-                           -pretty_name $pretty_name \
-                           -assigned_role $assigned_role \
-                           -description $description \
-                           -description_mime_type $description_mime_type \
-                           -enabled_state_ids $enabled_state_ids \
-                           -assigned_state_ids $assigned_state_ids \
-                           -new_state_id $new_state_id]
-        
-        # TODO - put this stuff into simulation api and change previous call
-        # and then add extra data for simulation
-        # because workflow::action::fsm::new wants role.short_name instead of
-        # role_id, we stay consistent for recipient_role
-
-        array unset row
-        set row(recipient_role) $recipient_role
-        set row(attachment_num) $attachment_num
-
-        simulation::action::edit \
-            -action_id $action_id \
-            -workflow_id $workflow_id \
-            -array row
-    }
 } -edit_data {
     # We use task_array(workflow_id) here, which is gotten from the DB, and not
     # workflow_id, which is gotten from the form, because the workflow_id from the form 
     # could be spoofed
-    permission::require_write_permission -object_id $task_array(workflow_id)
+    set workflow_id $task_array(workflow_id)
 
-    # TODO: Set short_name right,
-    # or leave blank and have the workflow API construct a short_name
+    permission::require_write_permission -object_id $workflow_id
 
-    # TODO: enabled_states, assigned_states
-    array unset row
-    foreach col { pretty_name assigned_role recipient_role description description_mime_type enabled_state_ids assigned_state_ids attachment_num } {
-        set row($col) [set $col]
-    }
-    set row(short_name) {}
-    set row(new_state_id) $new_state_id
-
-    simulation::action::edit \
-        -action_id $action_id \
-        -workflow_id $task_array(workflow_id) \
-        -array row
+    set operation "update"
 
 } -after_submit {
+
+    set action_id [simulation::action::edit \
+                       -operation $operation \
+                       -workflow_id $workflow_id \
+                       -action_id $action_id \
+                       -array row]
+
     ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
 }

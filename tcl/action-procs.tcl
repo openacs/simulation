@@ -8,67 +8,152 @@ ad_library {
 
 namespace eval simulation::action {}
 
-
-# TODO: add simulation::action::new
-
 ad_proc -public simulation::action::edit {
-    {-action_id:required}
+    {-operation "update"}
+    {-action_id {}}
     {-workflow_id {}}
-    {-array:required}
+    {-array {}}
     {-internal:boolean}
 } {
-    Edit an action.  Mostly a wrapper for FSM, plus some simulation-specific stuff.
+    Edit an action. 
 
-    Available attributes: recipient (role_id), recipient_role (role short_name), attachment_num
+    @param operation    insert, update, delete
+
+    @param action_id    For update/delete: The action to update or delete. 
+                        For insert: Optionally specify a pre-generated action_id for the action.
+
+    @param workflow_id  For update/delete: Optionally specify the workflow_id. If not specified, we will execute a query to find it.
+                        For insert: The workflow_id of the new action.
+    
+    @param array        For insert/update: Name of an array in the caller's namespace with attributes to insert/update.
+
+    @param internal     Set this flag if you're calling this proc from within the corresponding proc 
+                        for a particular workflow model. Will cause this proc to not flush the cache 
+                        or call workflow::definition_changed_handler, which the caller must then do.
+
+    @return action_id
+    
+    @see workflow::action::fsm::edit
 } {
-    upvar 1 $array org_row
-    if { ![array exists org_row] } {
-        error "Array $array does not exist or is not an array"
+    switch $operation {
+        update - delete {
+            if { [empty_string_p $action_id] } {
+                error "You must specify the action_id of the action to $operation."
+            }
+        }
+        insert {}
+        default {
+            error "Illegal operation '$operation'"
+        }
     }
-    array set row [array get org_row]
+    switch $operation {
+        insert - update {
+            upvar 1 $array org_row
+            if { ![array exists org_row] } {
+                error "Array $array does not exist or is not an array"
+            }
+            array set row [array get org_row]
+        }
+    }
+    switch $operation {
+        insert {
+            if { [empty_string_p $workflow_id] } {
+                error "You must supply workflow_id"
+            }
+        }
+        update - delete {
+            if { [empty_string_p $workflow_id] } {
+                set workflow_id [workflow::action::get_element \
+                                     -action_id $action_id \
+                                     -element workflow_id]
+            }
+        }
+    }
 
-    set set_clauses [list]
-
-    # Handle attributes in sim_tasks table
-    if { [info exists row(recipient_role)] } {
-        if { [empty_string_p $row(recipient_role)] } {
-            set row(recipient) [db_null]
-        } else {
-            # Get role_id by short_name
-            set row(recipient) [workflow::role::get_id \
+    # Parse column values
+    switch $operation {
+        insert - update {
+            # Special-case: array entry recipient_role (short_name) and recipient (state_id) -- DB column is recipient (state_id)
+            if { [info exists row(recipient_role)] } {
+                if { [info exists row(role)] } {
+                    error "You cannot supply both recipient_role (takes short_name) and recipient (takes state_id)"
+                }
+                if { [empty_string_p $row(recipient_role)] } {
+                    set row(recipient) [db_null]
+                } else {
+                    # Get role_id by short_name
+                    set row(recipient) [workflow::role::get_id \
                                             -workflow_id $workflow_id \
                                             -short_name $row(recipient_role)]
-        }
-        unset row(recipient_role)
-    }
+                }
+                unset row(recipient_role)
+            }
 
-    foreach attr { 
-        recipient attachment_num
-    } {
-        if { [info exists row($attr)] } {
-            set varname attr_$attr
-            # Convert the Tcl value to something we can use in the query
-            set $varname $row($attr)
-            # Add the column to the SET clause
-            lappend set_clauses "$attr = :$varname"
-            unset row($attr)
+            set update_clauses [list]
+            set insert_names [list]
+            set insert_values [list]
+
+            # Handle columns in the sim_tasks table
+            foreach attr { 
+                recipient attachment_num
+            } {
+                if { [info exists row($attr)] } {
+                    set varname attr_$attr
+                    # Convert the Tcl value to something we can use in the query
+                    switch $attr {
+                        default {
+                            set $varname $row($attr)
+                        }
+                    }
+                    # Add the column to the insert/update statement
+                    switch $attr {
+                        default {
+                            lappend update_clauses "$attr = :$varname"
+                            lappend insert_names $attr
+                            lappend insert_values :$varname
+                        }
+                    }
+                    unset row($attr)
+                }
+            }
         }
     }
-
+    
     db_transaction {
-        if { [llength $set_clauses] > 0 } {
-            db_dml edit_sim_role "
-                update sim_tasks
-                set    [join $set_clauses ", "]
-                where  task_id = :action_id
-            "
-        }
+        # Base row
+        set action_id [workflow::action::fsm::edit \
+                           -internal \
+                           -operation $operation \
+                           -action_id $action_id \
+                           -workflow_id $workflow_id \
+                           -array row]
 
-        workflow::action::fsm::edit \
-            -internal \
-            -action_id $action_id \
-            -workflow_id $workflow_id \
-            -array row
+        # sim_tasks row
+        switch $operation {
+            insert {
+                lappend insert_names task_id
+                lappend insert_values :action_id
+
+                db_dml insert_action "
+                    insert into sim_tasks
+                    ([join $insert_names ", "])
+                    values
+                    ([join $insert_values ", "])
+                "
+            }
+            update {
+                if { [llength $update_clauses] > 0 } {
+                    db_dml update_action "
+                        update sim_tasks
+                        set    [join $update_clauses ", "]
+                        where  task_id = :action_id
+                    "
+                }
+            }
+            delete {
+                # Handled through cascading delete
+            }
+        }
         
         if { !$internal_p } {
             workflow::definition_changed_handler -workflow_id $workflow_id
@@ -78,4 +163,30 @@ ad_proc -public simulation::action::edit {
     if { !$internal_p } {
         workflow::flush_cache -workflow_id $workflow_id
     }
+
+    return $action_id
+}
+
+
+ad_proc -public simulation::action::get {
+    {-action_id:required}
+    {-array:required}
+} {
+    Get information about a simulation action
+} {
+    upvar 1 $array row
+
+    workflow::action::fsm::get -action_id $action_id -array row
+    
+    db_1row select_action {
+        select recipient, 
+               (select short_name 
+                from   workflow_roles 
+                where  role_id = recipient) as recipient_role,
+               attachment_num
+        from   sim_tasks
+        where  task_id = :action_id
+    } -column_array local_row
+
+    array set row [array get local_row]
 }

@@ -46,11 +46,15 @@ ad_form -name role -form {
         {html {size 20}}
     }
 } -edit_request {
-    workflow::role::get -role_id $role_id -array role_array
+    simulation::role::get -role_id $role_id -array role_array
     set workflow_id $role_array(workflow_id)
+
     permission::require_write_permission -object_id $workflow_id
+
     set pretty_name $role_array(pretty_name)
+
     workflow::get -workflow_id $workflow_id -array sim_template_array
+
     set page_title "Edit Role template $pretty_name"
     set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
 
@@ -62,26 +66,27 @@ ad_form -name role -form {
 
 } -new_data {
     permission::require_write_permission -object_id $workflow_id
-    simulation::role::new \
-        -template_id $workflow_id \
-        -pretty_name $pretty_name
+    set operation "insert"
 
 } -edit_data {
-    workflow::role::get -role_id $role_id -array role_array
     # We use role_array(workflow_id) here, which is gotten from the DB, and not
     # workflow_id, which is gotten from the form, because the workflow_id from the form 
     # could be spoofed
-    permission::require_write_permission -object_id $role_array(workflow_id)
+    workflow::role::get -role_id $role_id -array role_array
+    set workflow_id $role_array(workflow_id)
+    permission::require_write_permission -object_id $workflow_id
+    set operation "update"
+} -after_submit {
 
     set row(pretty_name) $pretty_name
     set row(short_name) {}
 
-    workflow::role::edit \
-        -role_id $role_id \
-        -workflow_id $workflow_id \
-        -array row
-    
-} -after_submit {
+    set role_id [simulation::role::edit \
+                     -operation $operation \
+                     -role_id $role_id \
+                     -workflow_id $workflow_id \
+                     -array row]
+
     ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
 }

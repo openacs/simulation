@@ -1,14 +1,14 @@
 ad_page_contract {
-    Delete a task
+    Delete a state
 
 } {
-    action_id:integer
+    state_id:integer
     {return_url ""}
 }
 
-set workflow_id [workflow::action::get_element -action_id $action_id -element workflow_id]
+set workflow_id [workflow::state::fsm::get_element -state_id $state_id -element workflow_id]
 permission::require_write_permission -object_id $workflow_id
-simulation::action::edit -operation "delete" -action_id $action_id
+workflow::state::fsm::edit -operation "delete" -state_id $state_id
 
 if { [empty_string_p $return_url] } {
     set return_url [export_vars -base template-edit { workflow_id }]

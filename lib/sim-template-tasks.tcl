@@ -87,7 +87,7 @@ db_foreach select_states {
 } {
     set "label_state_$state_id" $pretty_name
     lappend elements state_$state_id \
-        [list label "<a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a> \${label_state_$state_id}" \
+        [list label "<a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a> \${label_state_$state_id} <a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a>" \
              html { align center } \
              display_template "
                  <switch @tasks.state_$state_id@>

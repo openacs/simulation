@@ -22,21 +22,200 @@ ad_proc -public simulation::template::new {
 
     @author Peter Marklund
 } {
+    # Wrapper for simulation::template::edit
+    
+    foreach elm { pretty_name short_name sim_type suggested_duration package_key object_id } {
+        set row($elm) [set $elm]
+    }
+    
+    set workflow_id [simulation::template::edit \
+                         -operation "insert" \
+                         -array row]
+                     
+    return $workflow_id
+}
+
+ad_proc -public simulation::template::edit {
+    {-operation "update"}
+    {-workflow_id {}}
+    {-array {}}
+    {-internal:boolean}
+} {
+    Edit a workflow.
+
+    @param operation    insert, update, delete
+
+    @param workflow_id  For update/delete: The workflow to update or delete. 
+
+    @param array        For insert/update: Name of an array in the caller's namespace with attributes to insert/update.
+
+    @param internal     Set this flag if you're calling this proc from within the corresponding proc 
+                        for a particular workflow model. Will cause this proc to not flush the cache 
+                        or call workflow::definition_changed_handler, which the caller must then do.
+
+    @return workflow_id
+    
+    @see workflow::edit
+} {
+    switch $operation {
+        update - delete {
+            if { [empty_string_p $workflow_id] } {
+                error "You must specify the workflow_id of the workflow to $operation."
+            }
+        }
+        insert {}
+        default {
+            error "Illegal operation '$operation'"
+        }
+    }
+    switch $operation {
+        insert - update {
+            upvar 1 $array org_row
+            if { ![array exists org_row] } {
+                error "Array $array does not exist or is not an array"
+            }
+            array set row [array get org_row]
+        }
+    }
+
+    # Parse column values
+    switch $operation {
+        insert - update {
+            set update_clauses [list]
+            set insert_names [list]
+            set insert_values [list]
+
+            # Handle columns in the sim_tasks table
+            foreach attr { 
+                sim_type suggested_duration
+                enroll_type casting_type
+                enroll_start enroll_end send_start_note_date case_start case_end
+            } {
+                if { [info exists row($attr)] } {
+                    set varname attr_$attr
+                    # Convert the Tcl value to something we can use in the query
+                    switch $attr {
+                        suggested_duration {
+                            if { [empty_string_p $row($attr)] } {
+                                set $varname [db_null]
+                            } else {
+                                set $varname "interval '[db_quote $row($attr)]'"
+                            }
+                        }
+                        default {
+                            set $varname $row($attr)
+                        }
+                    }
+                    # Add the column to the insert/update statement
+                    switch $attr {
+                        enroll_start - enroll_end - send_start_note_date - case_start - case_end {
+                            lappend update_clauses "$attr = to_date('[db_quote $row($attr)]', 'YYYY-MM-DD')"
+                            lappend insert_names $attr
+                            lappend insert_values "to_date('[db_quote $row($attr)]', 'YYYY-MM-DD')"
+                        }
+                        suggested_duration {
+                            if { [empty_string_p $row($attr)] } {
+                                lappend update_clauses "$attr = :$varname"
+                                lappend insert_names $attr
+                                lappend insert_values :$varname
+                            } else {
+                                lappend update_clauses "$attr = [set $varname]"
+                                lappend insert_names $attr
+                                lappend insert_values [set $varname]
+                            }
+                        }
+                        default {
+                            lappend update_clauses "$attr = :$varname"
+                            lappend insert_names $attr
+                            lappend insert_values :$varname
+                        }
+                    }
+                    unset row($attr)
+                }
+            }
+            # Handle auxillary rows
+            array set aux [list]
+            foreach attr { 
+                enrolled invited auto-enroll
+            } {
+                if { [info exists row($attr)] } {
+                    set aux($attr) $row($attr)
+                    unset row($attr)
+                }
+            }
+
+        }
+    }
+    
     db_transaction {
-        set workflow_id [workflow::new \
-                             -short_name $short_name \
-                             -pretty_name $pretty_name \
-                             -package_key $package_key \
-                             -object_id $object_id]
+        # Base row
+        set workflow_id [workflow::edit \
+                           -internal \
+                           -operation $operation \
+                           -workflow_id $workflow_id \
+                           -array row]
+
+        # sim_tasks row
+        switch $operation {
+            insert {
+                lappend insert_names simulation_id
+                lappend insert_values :workflow_id
+
+                db_dml insert_workflow "
+                    insert into sim_simulations
+                    ([join $insert_names ", "])
+                    values
+                    ([join $insert_values ", "])
+                "
+            }
+            update {
+                if { [llength $update_clauses] > 0 } {
+                    db_dml update_workflow "
+                        update sim_simulations
+                        set    [join $update_clauses ", "]
+                        where  simulation_id = :workflow_id
+                    "
+                }
+            }
+            delete {
+                # Handled through cascading delete
+            }
+        }
         
-        insert_sim \
-            -workflow_id $workflow_id \
-            -sim_type $sim_type \
-            -suggested_duration $suggested_duration
+        # Update sim_party_sim_map table
+        foreach map_type { enrolled invited auto-enroll } {
+            if { [info exists aux($map_type)] } {
+                # Clear out old mappings first
+                db_dml clear_old_mappings {
+                    delete from sim_party_sim_map
+                    where simulation_id = :workflow_id
+                      and type = :map_type
+                }
+
+                # Map each party
+                foreach party_id $aux(enroll_groups) {
+                    db_dml map_party_to_template {
+                        insert into sim_party_sim_map
+                        (simulation_id, party_id, type)
+                        values (:workflow_id, :party_id, :map_type)
+                    }
+                }
+            }
+            unset aux($map_type)
+        }
+
+        if { !$internal_p } {
+            workflow::definition_changed_handler -workflow_id $workflow_id
+        }
+    }
+
+    if { !$internal_p } {
+        workflow::flush_cache -workflow_id $workflow_id
     }
 
     return $workflow_id
 }
+
 
 ad_proc -public simulation::template::new_from_spec {
     {-package_key {}}
@@ -70,6 +249,7 @@ ad_proc -public simulation::template::new_from_spec {
     return $workflow_id
 }
 
+# TODO: Get rid of this -- still called from clone and new_from_spec
 ad_proc -private simulation::template::insert_sim {
     {-workflow_id:required}
     {-sim_type "dev_template"}
@@ -91,108 +271,9 @@ ad_proc -private simulation::template::insert_sim {
         db_dml new_sim "
         insert into sim_simulations
         (simulation_id, sim_type, suggested_duration)
-        values (:workflow_id, :sim_type, interval '[db_quote $suggested_duration]')"            
+        values (:workflow_id, :sim_type, interval '[db_quote $suggested_duration]')"
     }
 }
-
-ad_proc -public simulation::template::edit {
-    {-workflow_id:required}
-    {-array:required}
-} {
-    Edit a new simulation template.  TODO: need better tests for duration before passing it into the database.
-    
-    @param workflow_id The id of the template to edit.
-    @param array The name of an array in the callers scope that contains properties to edit.
-
-    @return nothing
-
-    @author Joel Aufrecht
-} {
-    upvar $array edit_array
-
-    db_transaction {
-
-        # Update workflows table
-
-        # TODO: this should be in a new API call, workflow::edit
-        set set_clauses [list]
-        foreach col {short_name pretty_name package_key object_id description} {
-            if { [info exists edit_array($col)] } {
-                lappend set_clauses "$col = :$col"
-                set $col $edit_array($col)
-            }
-        }
-
-        if { [llength $set_clauses] > 0 } {
-            db_dml edit_workflow "
-            update workflows
-               set [join $set_clauses ", "]
-             where workflow_id=:workflow_id"
-        }
-
-        # Update sim_simulations table
-
-        set set_clauses [list]
-        foreach col {sim_type enroll_type casting_type} {
-            if { [info exists edit_array($col)] } {
-                lappend set_clauses "$col = :$col"
-                set $col $edit_array($col)
-            }
-        }
-
-        if { [info exists edit_array(suggested_duration)] } {
-            if { [empty_string_p $edit_array($col)] } {
-                lappend set_clauses "$col = null"
-            } else {
-                lappend set_clauses "$col = (interval '$edit_array($col)')"
-            }
-            
-            set parties $edit_array(suggested_duration)
-        }
-
-        foreach col {enroll_start enroll_end send_start_note_date case_start case_end} {
-            if { [info exists edit_array($col)] } {
-                lappend set_clauses "$col = to_date(:$col, 'YYYY-MM-DD')"
-                set $col $edit_array($col)
-            }
-        }
-        
-        if { [llength $set_clauses] > 0 } {
-            db_dml edit_sim "
-                    update sim_simulations
-                    set [join $set_clauses ", "]
-                    where simulation_id=:workflow_id
-                "
-        }
-
-        # Update sim_party_sim_map table
-
-        foreach map_type {enrolled invited auto-enroll} {
-
-            if { [info exists edit_array($map_type)] } {
-
-                # Clear out old mappings first
-                db_dml clear_old_mappings {
-                    delete from sim_party_sim_map
-                    where simulation_id = :workflow_id
-                      and type = :map_type
-                }
-
-                # Map each party
-                foreach party_id $edit_array(enroll_groups) {
-                    db_dml map_party_to_template {
-                        insert into sim_party_sim_map
-                        (simulation_id, party_id, type)
-                        values (:workflow_id, :party_id, :map_type)
-                    }
-                }
-            }
-        }
-
-        # TODO: invite_groups
-    }
-}
-
 
 ad_proc -public simulation::template::delete_role_group_mappings {
     {-workflow_id}
@@ -239,6 +320,7 @@ ad_proc -public simulation::template::get_role_group_mappings {
     }
 }
  
+# TODO: Fix the cascading clone API situation
 ad_proc -public simulation::template::clone {
     {-workflow_id:required}
     {-package_key {}}
@@ -312,7 +394,10 @@ ad_proc -public simulation::template::get {
 } {
     upvar $array row
 
-    db_1row select_template {} -column_array row
+    workflow::get -array row -workflow_id $workflow_id
+
+    db_1row select_template {} -column_array local_row
+    array set row [array get local_row]
 }
 
 ad_proc -public simulation::template::get_parties {
@@ -387,20 +472,6 @@ ad_proc -public simulation::template::ready_for_casting_p {
     return [expr [string equal $role_empty_count 0] && [string equal $prop_empty_count 0]]
 }
 
-ad_proc -public simulation::template::get_workflow_id_from_action {
-    {-action_id:required}
-} {
-    Given an action_id, return the workflow_id
-
-    @param action_id ID of action in workflow
-} {
-    return [db_string select_workflow_id {
-        select wa.workflow_id
-          from workflow_actions wa
-         where wa.action_id = :action_id
-    }]
-}
-
 ad_proc -public simulation::template::delete {
     {-workflow_id:required}
 } {
@@ -408,7 +479,7 @@ ad_proc -public simulation::template::delete {
 
     @author Peter Marklund
 } {
-    workflow::delete -workflow_id $workflow_id
+    simulation::template::edit -workflow_id $workflow_id -operation delete
 }
 
 ad_proc -public simulation::template::associate_object {
@@ -444,7 +515,6 @@ ad_proc -public simulation::template::dissociate_object {
               and object_id = :object_id
     }
     # no special error handling because the delete is pretty safe
-
 }
 
 ad_proc -public simulation::template::start {

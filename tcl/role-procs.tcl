@@ -8,52 +8,147 @@ ad_library {
 
 namespace eval simulation::role {}
 
-ad_proc -public simulation::role::new {
-    {-template_id:required}
-    {-short_name {}}
-    {-pretty_name:required}
-} {
-    Create a new simulation role for a given simulation template. 
-    Will map the character to the template if this
-    is not already done.
-
-    @author Peter Marklund
-} {
-    db_transaction {
-        set role_id [workflow::role::new \
-                         -workflow_id $template_id \
-                         -short_name $short_name \
-                         -pretty_name $pretty_name]
-
-        db_dml insert_sim_role {
-            insert into sim_roles (role_id) values (:role_id)
-        }
-    }    
-}
-
-ad_proc -public simulation::role::delete {
-    {-role_id:required}
-} {
-    db_transaction {
-        workflow::role::delete -role_id $role_id
-
-        db_dml delete_sim_role {
-            delete from sim_roles where role_id = :role_id
-        }
-    }
-}
-
 ad_proc -public simulation::role::edit {
-    {-role_id:required}
-    {-character_id:required}
+    {-operation "update"}
+    {-role_id {}}
+    {-workflow_id {}}
+    {-array {}}
+    {-internal:boolean}
 } {
-    Edit a simulation role.
+    Edit a role. 
+
+    @param operation    insert, update, delete
+
+    @param role_id      For update/delete: The role to update or delete. 
+                        For insert: Optionally specify a pre-generated role_id for the role.
+
+    @param workflow_id  For update/delete: Optionally specify the workflow_id. If not specified, we will execute a query to find it.
+                        For insert: The workflow_id of the new role.
+    
+    @param array        For insert/update: Name of an array in the caller's namespace with attributes to insert/update.
+
+    @param internal     Set this flag if you're calling this proc from within the corresponding proc 
+                        for a particular workflow model. Will cause this proc to not flush the cache 
+                        or call workflow::definition_changed_handler, which the caller must then do.
+
+    @return role_id
+    
+    @see workflow::role::fsm::edit
 } {
-    db_dml edit_sim_role {
-        update sim_roles
-        set    character_id = :character_id
-        where  role_id = :role_id
+    switch $operation {
+        update - delete {
+            if { [empty_string_p $role_id] } {
+                error "You must specify the role_id of the role to $operation."
+            }
+        }
+        insert {}
+        default {
+            error "Illegal operation '$operation'"
+        }
     }
+    switch $operation {
+        insert - update {
+            upvar 1 $array org_row
+            if { ![array exists org_row] } {
+                error "Array $array does not exist or is not an array"
+            }
+            array set row [array get org_row]
+        }
+    }
+    switch $operation {
+        insert {
+            if { [empty_string_p $workflow_id] } {
+                error "You must supply workflow_id"
+            }
+        }
+        update {
+            if { [empty_string_p $workflow_id] } {
+                set workflow_id [workflow::role::get_element \
+                                     -role_id $role_id \
+                                     -element workflow_id]
+            }
+        }
+    }
+
+    # Parse column values
+    switch $operation {
+        insert - update {
+            set update_clauses [list]
+            set insert_names [list]
+            set insert_values [list]
+
+            # Handle columns in the sim_tasks table
+            foreach attr { 
+                character_id
+            } {
+                if { [info exists row($attr)] } {
+                    set varname attr_$attr
+                    # Convert the Tcl value to something we can use in the query
+                    switch $attr {
+                        default {
+                            set $varname $row($attr)
+                        }
+                    }
+                    # Add the column to the insert/update statement
+                    switch $attr {
+                        default {
+                            lappend update_clauses "$attr = :$varname"
+                            lappend insert_names $attr
+                            lappend insert_values :$varname
+                        }
+                    }
+                    unset row($attr)
+                }
+            }
+        }
+    }
+    
+    db_transaction {
+        # Base row
+        set role_id [workflow::role::edit \
+                         -internal \
+                         -operation $operation \
+                         -role_id $role_id \
+                         -workflow_id $workflow_id \
+                         -array row]
+
+        # sim_roles row
+        switch $operation {
+            insert {
+                lappend insert_names role_id
+                lappend insert_values :role_id
+
+                db_dml insert_role "
+                    insert into sim_roles
+                    ([join $insert_names ", "])
+                    values
+                    ([join $insert_values ", "])
+                "
+            }
+            update {
+                if { [llength $update_clauses] > 0 } {
+                    db_dml update_role "
+                        update sim_roles
+                        set    [join $update_clauses ", "]
+                        where  task_id = :role_id
+                    "
+                }
+            }
+            delete {
+                # Handled through cascading delete
+            }
+        }
+        
+        if { !$internal_p } {
+            workflow::definition_changed_handler -workflow_id $workflow_id
+        }
+    }
+
+    if { !$internal_p } {
+        workflow::flush_cache -workflow_id $workflow_id
+    }
+
+    return $role_id
 }
 
 ad_proc -public simulation::role::get {
@@ -63,10 +158,16 @@ ad_proc -public simulation::role::get {
     Get information about a simulation role
 } {
     upvar 1 $array row
+
+    workflow::role::get -role_id $role_id -array row
+
     db_1row select_sim_role {
         select role_id,
                character_id
         from   sim_roles
         where  role_id = :role_id
-    } -column_array row
+    } -column_array local_row
+
+    array set row [array get local_row]
 }
+
