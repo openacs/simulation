@@ -21,6 +21,11 @@ foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
     lappend from_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
 }
 
+set all_role_options [list]
+foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
+    lappend all_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+}
+
 set to_role_options [list]
 foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
     lappend to_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
@@ -63,7 +68,7 @@ ad_form \
         {item_id:key}
         {sender_role_id:text(select)
             {label "From"}
-            {options $from_role_options}
+            {options $all_role_options}
         }
     }
 
@@ -92,11 +97,6 @@ ad_form -extend -name message -form {
         {label "Attachments"}
         {value "TODO"}
     }
-} -on_request {
-    if { [llength $from_role_options] == 1 } {
-        set sender_role_id [lindex [lindex $from_role_options 0] 1]
-        element set_properties message sender_role_id -mode display
-    }
 } -new_request {
     if { [info exists body_text] } {
         if { ![info exists body_mime_type] } {
@@ -104,6 +104,13 @@ ad_form -extend -name message -form {
         }
         set body [template::util::richtext::create $body_text $body_mime_type]
         set focus "message.body"
+    }
+
+    if { [llength $from_role_options] == 1 } {
+        set sender_role_id [lindex [lindex $from_role_options 0] 1]
+        element set_properties message sender_role_id -mode display
+    } else {
+        element set_properties message sender_role_id -options $from_role_options
     }
 } -edit_request {
     
