@@ -45,38 +45,38 @@ ad_proc -public simulation::ui::forms::document_upload::insert_document {
 } {
     db_transaction {
 
-            set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
+        set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
 
-            set existing_items [db_list select_items { select name from cr_items where parent_id = :parent_id }]
-            set name [util_text_to_url -existing_urls $existing_items -text $title]
+        set existing_items [db_list select_items { select name from cr_items where parent_id = :parent_id }]
+        set name [util_text_to_url -existing_urls $existing_items -text $title]
 
-            set content_type sim_prop
-            set storage_type file
+        set content_type sim_prop
+        set storage_type file
 
-            set item_id [bcms::item::create_item \
+        set item_id [bcms::item::create_item \
+                         -item_id $item_id \
+                         -item_name $name \
+                         -parent_id $parent_id \
+                         -content_type $content_type \
+                         -storage_type $storage_type]
+        
+        set revision_id [bcms::revision::upload_file_revision \
                              -item_id $item_id \
-                             -item_name $name \
-                             -parent_id $parent_id \
+                             -title $title \
                              -content_type $content_type \
-                             -storage_type $storage_type]
-            
-            set revision_id [bcms::revision::upload_file_revision \
-                                 -item_id $item_id \
-                                 -title $title \
-                                 -content_type $content_type \
-                                 -upload_file $document_file \
-                                 -description $description]
+                             -upload_file $document_file \
+                             -description $description]
 
-            bcms::revision::set_revision_status \
-                -revision_id $revision_id \
-                -status "live"
+        bcms::revision::set_revision_status \
+            -revision_id $revision_id \
+            -status "live"
 
-            set relation_tag "portfolio"
-            db_dml add_document_to_portfolio {
-                insert into sim_case_role_object_map
-                (case_id, object_id, role_id, relation_tag)
-                values
-                (:case_id, :item_id, :role_id, :relation_tag)
-            }
+        set relation_tag "portfolio"
+        db_dml add_document_to_portfolio {
+            insert into sim_case_role_object_map
+            (case_id, object_id, role_id, relation_tag)
+            values
+            (:case_id, :item_id, :role_id, :relation_tag)
+        }
     }
 }

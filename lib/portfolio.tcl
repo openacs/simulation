@@ -9,6 +9,8 @@ simulation::include_contract {
     role_id {}
 }
 
+simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
+
 set upload_url [export_vars -base document-upload { case_id role_id  }]
 
 if { [exists_and_not_null case_id] } {

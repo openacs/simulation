@@ -38,16 +38,32 @@ set elements {
     }
     max_n_users {
         label "Target # users"
+        html { align center }
     }
     assigned_action {
         label "Assigned action"
         hide_p {[expr !$assigned_only_p]}
     }
+    portfolio {
+        label "Portfolio"
+        display_template {
+            @roles.num_documents@ documents
+        }
+        link_url_eval {[export_vars -base case-admin-portfolio { case_id role_id }]}
+        html { align center }
+    }
+    messages {
+        label "Messages"
+        display_template {
+            @roles.num_messages@ messages
+        }
+        link_url_eval {[export_vars -base case-admin-messages { case_id role_id }]}
+        html { align center }
+    }
 }
 
 template::list::create \
     -name roles \
-    -multirow roles \
     -no_data "There are no roles or users in this simulation case" \
     -elements $elements \
     -pass_properties { case_id } \
@@ -86,6 +102,12 @@ db_multirow -extend { add_url move_url remove_url user_url } roles select_case_i
            wr.pretty_name as role,
            cu.user_id,
            cu.first_names || ' ' || cu.last_name as user_name,
+           (select count(*) 
+            from   sim_messages
+            where  (to_role_id = wr.role_id or from_role_id = wr.role_id)) as num_messages,
+           (select count(*) 
+            from   sim_case_role_object_map
+            where  role_id = wr.role_id) as num_documents,
            sr.users_per_case as max_n_users
            $select_clause
     from workflow_roles wr,
@@ -133,5 +155,52 @@ ad_form -name add_user \
 set case_delete_url [export_vars -base case-delete { case_id { return_url [ad_return_url] } }]
 
 
+#----------------------------------------------------------------------
+# Case activity history
+#----------------------------------------------------------------------
 
-set activity_html [workflow::case::get_activity_html -case_id $case_id]
+template::list::create \
+    -name log \
+    -elements {
+        timestamp {
+            label "Time"
+            display_eval {[lc_time_fmt $creation_date_ansi "%X %x"]}
+        }
+        role_pretty {
+            label "Role"
+        }
+        user_name {
+            label "User"
+            link_url_eval {[acs_community_member_url -user_id $creation_user]}
+        }
+        action_pretty {
+            label "Action"
+        }
+    }
+
+db_multirow -extend { message } log select_log {
+    select l.entry_id,
+           l.case_id,
+           l.action_id,
+           a.short_name as action_short_name,
+           a.pretty_name as action_pretty,
+           a.pretty_past_tense as action_pretty_past_tense,
+           role.pretty_name as role_pretty,
+           io.creation_user,
+           iou.first_names || ' ' || iou.last_name as user_name,
+           to_char(io.creation_date, 'YYYY-HH-MM HH24:MI:SS') as creation_date_ansi
+    from   workflow_case_log l join 
+           workflow_actions a using (action_id) join 
+           cr_items i on (i.item_id = l.entry_id) join 
+           acs_objects io on (io.object_id = i.item_id) join 
+           cc_users iou on (iou.user_id = io.creation_user) join
+           cr_revisions r on (r.revision_id = i.live_revision),
+           workflow_roles role
+    where  l.case_id = :case_id
+    and    role.role_id = a.assigned_role
+    and    a.trigger_type = 'user'
+    order  by io.creation_date
+} {
+
+}
+

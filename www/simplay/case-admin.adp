@@ -19,4 +19,4 @@
 
 <h2>Case History</h2>
 
-@activity_html;noquote@
+<listtemplate name="log"></listtemplate>
