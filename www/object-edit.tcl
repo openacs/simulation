@@ -258,8 +258,9 @@ ad_form -extend -name object -new_request {
 
     set attributes [list]
     foreach attribute_name $attr_names {
-        lappend attributes $attribute_name [set attr__${content_type}__${attribute_name}]
+        lappend attributes [list $attribute_name [set attr__${content_type}__${attribute_name}]]
     }
+
 
 } -new_data {
     
@@ -276,38 +277,41 @@ ad_form -extend -name object -new_request {
         }
     }
 
-    set item_id [bcms::item::create_item \
-                     -item_name $name \
-                     -parent_id $parent_id \
-                     -content_type $content_type]
-    
-    switch $content_method($content_type) {
-        richtext {
-            set content_text [template::util::richtext::get_property contents $content_elm]
-            set mime_type [template::util::richtext::get_property format $content_elm]
-        }
-        textarea {
-            set content_text $content_elm
-            set mime_type "text/plain"
-        }
-    }
+    db_transaction {
 
-    if { $content_type == "sim_stylesheet" } {
-        set mime_type "text/css"
-    }
-    
-    set revision_id [bcms::revision::add_revision \
-                         -item_id $item_id \
-                         -title $title \
-                         -content_type $content_type \
-                         -mime_type $mime_type \
-                         -content $content_text \
-                         -description $description \
-                         -additional_properties $attributes]
+        set item_id [bcms::item::create_item \
+                         -item_name $name \
+                         -parent_id $parent_id \
+                         -content_type $content_type]
+        
+        switch $content_method($content_type) {
+            richtext {
+                set content_text [template::util::richtext::get_property contents $content_elm]
+                set mime_type [template::util::richtext::get_property format $content_elm]
+            }
+            textarea {
+                set content_text $content_elm
+                set mime_type "text/plain"
+            }
+        }
 
-    bcms::revision::set_revision_status \
-        -revision_id $revision_id \
-        -status "live"
+        if { $content_type == "sim_stylesheet" } {
+            set mime_type "text/css"
+        }
+        
+        set revision_id [bcms::revision::add_revision \
+                             -item_id $item_id \
+                             -title $title \
+                             -content_type $content_type \
+                             -mime_type $mime_type \
+                             -content $content_text \
+                             -description $description \
+                             -additional_properties $attributes]
+
+        bcms::revision::set_revision_status \
+            -revision_id $revision_id \
+            -status "live"
+    }
 
 } -edit_request {
     
@@ -342,21 +346,21 @@ ad_form -extend -name object -new_request {
         }
     }
 
+    db_transaction {
 
-    set revision_id [bcms::revision::add_revision \
-                         -item_id $item_id \
-                         -title $title \
-                         -content_type $content_type \
-                         -mime_type $mime_type \
-                         -content $content_text \
-                         -description $description \
-                         -additional_properties $attributes]
+        set revision_id [bcms::revision::add_revision \
+                             -item_id $item_id \
+                             -title $title \
+                             -content_type $content_type \
+                             -mime_type $mime_type \
+                             -content $content_text \
+                             -description $description \
+                             -additional_properties $attributes]
 
-    bcms::revision::set_revision_status \
-        -revision_id $revision_id \
-        -status "live"
-
-    
+        bcms::revision::set_revision_status \
+            -revision_id $revision_id \
+            -status "live"
+    }
     
 } -after_submit {
     ad_returnredirect object-list

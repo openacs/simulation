@@ -1,11 +1,12 @@
 ad_page_contract {
-    Add/edit template.
+    Add/edit role.
 
-    @creation-date 2003-10-13
+    @creation-date 2003-10-27
     @cvs-id $Id$
 } {
     workflow_id:optional
     role_id:optional
+    {limit_characters_p "0"}
 } -validate {
     workflow_id_or_role_id {
         if { ![exists_and_not_null workflow_id] &&
@@ -20,9 +21,6 @@ ad_page_contract {
 # preparation
 #
 ######################################################################
-# TODO: one of workflow_id or role_id is required
-#       enforce this in page contract validation
-#       redirect to sim-template-list if both missing
 
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
@@ -30,19 +28,43 @@ set package_id [ad_conn package_id]
 #---------------------------------------------------------------------
 # Get a list of relevant characters
 #---------------------------------------------------------------------
-# TODO: make sure this query (and other queries to cr) get only the live
-# record from cr_revisions
 # deliberately not checking to see if character is already cast in sim
 # because no reason not to have same character in multiple roles (?)
 
-set char_options [db_list_of_lists character_option_list "
+# if we are limiting to only characters already in the sim,
+# create the sql filter and generate a link to end the filter
+# if not, create the opposite filter and link
+
+if { $limit_characters_p } {
+    set char_options [db_list_of_lists character_option_list {
     select ci.name,
-           cr.item_id
-      from cr_revisions cr,
-           cr_items ci
+           ci.item_id
+      from cr_items ci,
+           sim_workflow_object_map swom
      where ci.content_type = 'sim_character'
-       and ci.item_id = cr.item_id
-"]
+       and ci.item_id = swom.object_id
+       and swom.workflow_id = :workflow_id
+     order by upper(ci.name)
+    }]
+    set toggle_text "show all"
+} else {
+    set char_options [db_list_of_lists character_option_list {
+    select ci.name,
+           ci.item_id
+      from cr_items ci
+     where ci.content_type = 'sim_character'
+     order by upper(ci.name)
+    }]
+
+    set toggle_text "(<small>limit to characters<br>in template</small>)"
+}
+
+set character_filter_html "<a href=\"[export_vars -base "role-edit" { 
+       role_id 
+       workflow_id {limit_characters_p {[expr ![template::util::is_true $limit_characters_p]]}}
+
+} ]\">$toggle_text</a>"
+
 
 ######################################################################
 #
@@ -61,13 +83,13 @@ set char_options [db_list_of_lists character_option_list "
 ad_form -name role -cancel_url sim-template-list -form {
     {role_id:key}
     {workflow_id:integer(hidden),optional}
+    {character_id:text(select)
+        {label "Character<br>$character_filter_html"}
+        {options $char_options}
+    }
     {name:text
         {label "Role Name"}
         {html {size 20}}
-    }
-    {character_id:text(select)
-        {label "Character"}
-        {options $char_options}
     }
 } -edit_request {
     workflow::role::get -role_id $role_id -array role_array
@@ -81,6 +103,13 @@ ad_form -name role -cancel_url sim-template-list -form {
     set page_title "Add Role to $sim_template_array(pretty_name)"
     set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
 } -new_data {
+
+    db_transaction {
+
+        simulation::template::associate_object \
+            -template_id $workflow_id \
+            -object_id $character_id
+
     # create the role
     set role_id [workflow::role::new \
                      -workflow_id $workflow_id \
@@ -91,6 +120,8 @@ ad_form -name role -cancel_url sim-template-list -form {
         insert into sim_roles
         values (:role_id, :character_id)
     }
+
+}    
 } -after_submit {
     ad_returnredirect [export_vars -base "sim-template-edit" { workflow_id }]
     ad_script_abort

@@ -15,9 +15,8 @@ set package_id [ad_conn package_id]
 #
 ######################################################################
 
-db_dml add_object_to_workflow_insert "
-insert into sim_workflow_object_map
-values (:workflow_id, :item_id)
-"
+simulation::template::associate_object \
+    -template_id $workflow_id \
+    -object_id $item_id
 
 ad_returnredirect "sim-template-edit?workflow_id=$workflow_id"

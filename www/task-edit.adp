@@ -3,4 +3,5 @@
   <property name="context">@context;noquote@</property>
   <property name="focus">object.title</property>
 
-<formtemplate id="role"></formtemplate>
+<formtemplate id="task"></formtemplate>
+

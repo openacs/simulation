@@ -11,4 +11,5 @@
 <h4>Roles</h4>
 <include src="sim-template-roles" workflow_id=@workflow_id@ package_id=@package_id@>
 <h4>Tasks</h4>
+<include src="sim-template-tasks" workflow_id=@workflow_id@ package_id=@package_id@>
 </if>
