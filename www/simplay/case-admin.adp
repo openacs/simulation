@@ -7,7 +7,7 @@
 <p></p>
 
 <if @uncast_role_options@ not nil and @assigned_only_p@ false>
-  <h3>Add users in uncast role</h3>
+  <h2>Add users in uncast role</h2>
 
   <formtemplate id="add_user"></formtemplate>
   <p></p>
@@ -16,3 +16,7 @@
 <ul class="action-links">
   <li><a href="@case_delete_url@">Delete this case</a></li>
 </ul>
+
+<h2>Case History</h2>
+
+@activity_html;noquote@

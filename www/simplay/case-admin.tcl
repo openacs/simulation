@@ -130,3 +130,6 @@ ad_form -name add_user \
 
 set case_delete_url [export_vars -base case-delete { case_id { return_url [ad_return_url] } }]
 
+
+
+set activity_html [workflow::case::get_activity_html -case_id $case_id]
