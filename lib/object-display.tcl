@@ -9,6 +9,7 @@ ad_page_contract {
     {printer_friendly_p:optional 0}
 }
 
+set package_id [ad_conn package_id]
 set root_id [bcms::folder::get_id_by_package_id -parent_id 0]
 
 # This little exercise removes the object/ part from the extra_url
