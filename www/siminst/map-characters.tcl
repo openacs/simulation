@@ -9,8 +9,7 @@ ad_page_contract {
 }
 
 # TODO: Permission check?
-# TODO: set title
-# TODO: add 
+# TODO: add new character
 set page_title "Assign Roles to Characters"
 set context [list [list "." "SimInst"] $page_title]
 
@@ -36,6 +35,9 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
               ]]
 }
 
+
+wizard submit characters -buttons { back next }
+
 ad_form -extend -name characters -on_request {
     # Less than terribly efficient
     foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
@@ -52,7 +54,5 @@ ad_form -extend -name characters -on_request {
         }
     }
     
-    # Proceed to the task page
-    ad_returnredirect [export_vars -base map-tasks {workflow_id}]
-    ad_script_abort
+    wizard forward
 }

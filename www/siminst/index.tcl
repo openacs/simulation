@@ -9,7 +9,6 @@ set package_id [ad_conn package_id]
 permission::require_permission -object_id $package_id -privilege sim_inst
 set admin_p [permission::permission_p -object_id $package_id -privilege admin]
 set base_url [apm_package_url_from_id $package_id]
-set add_url "${base_url}/siminst/simulation-new"
 
 #---------------------------------------------------------------------
 # dev_sims: simulations in development
@@ -18,14 +17,14 @@ set add_url "${base_url}/siminst/simulation-new"
 template::list::create \
     -name dev_sims \
     -multirow dev_sims \
-    -actions "{New Simulation From Template} $add_url" \
+    -actions "{New Simulation From Template} simulation-new" \
     -no_data "No Simulations are in Development" \
     -sub_class "narrow" \
     -elements {
         pretty_name {
-            link_url_col edit_url
             label "Simulation"
             orderby upper(w.pretty_name)
+            link_url_eval {[export_vars -base wizard { workflow_id }]}
         }
         description {
             label "Description"
@@ -138,9 +137,9 @@ template::list::create \
     -no_data "No Simulations are in Casting" \
     -elements {
         pretty_name {
-            link_url_col edit_url
             label "Simulation"
             orderby upper(w.pretty_name)
+            link_url_col edit_url
         }
         groups {
             label {Groups}

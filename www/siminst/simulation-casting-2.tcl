@@ -125,6 +125,7 @@ ad_form -export { workflow_id } -name simulation -form {
         -workflow_id $workflow_id \
         -array row
 
-    ad_returnredirect .
-    ad_script_abort
+    wizard forward
 }
+
+wizard submit simulation -buttons { back next }

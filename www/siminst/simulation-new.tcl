@@ -35,12 +35,15 @@ template::list::create \
         number_of_roles {
             label "Roles"
             orderby number_of_roles
+            html { align center }
         }
         min_number_of_human_roles {
             label "Min \# of players"
             orderby min_number_of_human_roles
+            html { align center }
         }
         map {
+            label "Begin"
             link_url_col map_url
             display_template {
                 Begin Development
