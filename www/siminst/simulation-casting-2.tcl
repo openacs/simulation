@@ -10,11 +10,8 @@ set page_title "Cast $sim_template(pretty_name)"
 set context [list [list "." "SimInst"] $page_title]
 set package_id [ad_conn package_id]
 
-
-# TODO: only one aplication group per package - need different solution
-set group_id [application_group::group_id_from_package_id -package_id $package_id]
-set group_name [group::get_element -group_id $group_id -element group_name]
-set group_options [list [list $group_name $group_id]]
+subsite::get -array closest_subsite    
+set group_admin_url "${closest_subsite(url)}admin/group-types/one?group_type=group"
 
 # TODO: provide more sensible default dates?
 # Notification send could be start date minus some parameter
@@ -47,7 +44,7 @@ ad_form -export { workflow_id } -name simulation -form {
     }
     {enroll_type:text(radio)
         {label "Enrollment type"}
-        {options {{Invite invite} {Open open}}}
+        {options {{"By invitation only" closed} {Open open}}}
         {value $sim_template(enroll_type)}
     }
     {casting_type:text(radio)
@@ -55,12 +52,20 @@ ad_form -export { workflow_id } -name simulation -form {
         {options {{Automatic auto} {Group group} {Open open}}}
         {value $sim_template(casting_type)}
     }
-    {user_group:integer(checkbox),multiple,optional
-        {label "Invite all users in these groups"}
-        {options $group_options}
-        #TODO: this link should use a function to find the subsite path
-        {help_text {Use <a href="/admin/groups/?view_by=rel_type">Group Administration</a> to add groups}}
+    {enroll_groups:integer(checkbox),multiple,optional
+        {label "Enroll all users in these groups"}
+        {options {[simulation::groups_eligible_for_casting]}}
+        {help_text {Use <a href="$group_admin_url">Group Administration</a> to add groups}}
     }    
+    {invite_groups:integer(checkbox),multiple,optional
+        {label "Invite all users in these groups"}
+        {options {[simulation::groups_eligible_for_casting]}}
+        {help_text {Use <a href="$group_admin_url">Group Administration</a> to add groups}}
+    }    
+} -on_request {
+    
+    set enroll_groups [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto-enroll]
+
 } -on_submit {
     # Convert dates to ANSI format
     foreach var_name {enroll_start enroll_end notification_date case_start case_end} {
@@ -75,7 +80,8 @@ ad_form -export { workflow_id } -name simulation -form {
     set sim_template(case_end) $case_end_ansi
     set sim_template(enroll_type) $enroll_type
     set sim_template(casting_type) $casting_type
-    set sim_template(parties $user_group
+    set sim_template(enroll_groups) $enroll_groups
+    set sim_template(invite_gropus) $invite_groups
 
     simulation::template::edit \
         -workflow_id $workflow_id \

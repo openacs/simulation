@@ -167,22 +167,29 @@ ad_proc -public simulation::template::edit {
 
         # Update sim_party_sim_map table
 
-        if { [info exists edit_array(parties)] } {
+        if { [info exists edit_array(enroll_groups)] } {
 
             # Clear out old mappings first
             db_dml clear_old_mappings {
                 delete from sim_party_sim_map
                 where simulation_id = :workflow_id
+                  and type = 'auto-enroll'                   
             }
 
-            foreach party_id $edit_array(parties) {
+            # Map each group as auto-enrolled
+            foreach party_id $edit_array(enroll_groups) {
                 db_dml map_party_to_template {
                     insert into sim_party_sim_map
-                    (simulation_id, party_id)
-                    values (:workflow_id, :party_id)
+                    (simulation_id, party_id, type)
+                    values (:workflow_id, :party_id, 'auto-enroll')
                 }
+
+                # TODO: Do we need to map each user in the group as enrolled?
+                # use party_approved_member_map
             }
         }
+
+        # TODO: invite_groups
     }
 }
 
@@ -254,10 +261,34 @@ ad_proc -public simulation::template::get {
     @param workflow_id ID of simulation template.
     @param array name of array in which the info will be returned
                  Array will contain keys from the tables workflows and sim_simulations.
+
+    @see simulation::template::get_parties
 } {
     upvar $array row
 
     db_1row select_template {} -column_array row
+}
+
+ad_proc -public simulation::template::get_parties {
+    {-workflow_id:required}
+    {-rel_type "auto-enroll"}
+} {
+    Return a list of parties related to the given simulation.
+
+    @param rel_type The type of relationship of the party to the
+                    simulation template. Permissible values are
+                    enrolled, invited, and auto-enroll
+    
+    @return A list of party_id:s
+} {
+    ad_assert_arg_value_in_list rel_type {enrolled invited auto-enroll}
+
+    return [db_list template_parties {
+        select party_id
+        from sim_party_sim_map
+        where simulation_id = :workflow_id
+          and type = :rel_type
+    }]
 }
 
 ad_proc -public simulation::template::ready_for_casting_p {

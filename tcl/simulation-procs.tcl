@@ -134,6 +134,33 @@ ad_proc simulation::get_object_options {
     }]
 }
 
+ad_proc simulation::groups_eligible_for_casting {} {
+    Return a list of groups eligible for enrollment and invitation
+    for the current simulation package.
+
+    @return A list of lists, with label-id pairs, suitable to be passed
+            as the options attribute of a form builder select widget.
+
+    @author Peter Marklund
+} {
+    # lookup package_id of the nearest subsite
+    subsite::get -array closest_subsite    
+
+    # Lookup the application group of the subsite
+    set subsite_group_id [application_group::group_id_from_package_id \
+                              -package_id $closest_subsite(package_id)]
+
+    # Get all groups related to (children of) the subsite group (only one level down)
+    return [db_list_of_lists subsite_group_options {
+        select g.group_name,
+               g.group_id
+        from   acs_rels ar,
+               groups   g
+        where  ar.object_id_one = :subsite_group_id
+          and  ar.object_id_two = g.group_id
+    }]
+}
+
 ad_proc -public simulation::cast {
     {-workflow_id:required}
     {-pretty_name:required}
