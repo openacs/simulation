@@ -793,7 +793,7 @@ ad_proc -public simulation::template::clone {
         # We use the first state as the initial state
         set action_row(new_state_id) [lindex $states 0]
         
-        workflow::action::edit \
+        workflow::action::fsm::edit \
             -operation "insert" \
             -array action_row \
             -workflow_id $workflow_id
