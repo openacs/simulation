@@ -11,6 +11,10 @@ set action_id $enabled_action(action_id)
 
 simulation::action::get -action_id $action_id -array action
 
+if { ![empty_string_p $action(assigned_role_id)] } {
+    set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $action(assigned_role_id)]
+}
+
 set title "Task"
 set context [list [list . "SimPlay"] [list [export_vars -base case { case_id }] "Case"] [list [export_vars -base tasks { case_id }] "Tasks"] $title]
 
@@ -25,11 +29,11 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
     {documents:text(inform),optional
         {label "Documents"}
     }
-    {recipient_name:text(inform),optional
-        {label "To"}
-    }
     {sender_name:text(inform),optional
         {label "From"}
+    }
+    {recipient_name:text(inform),optional
+        {label "To"}
     }
     {subject:text
         {label "Subject"}
@@ -39,9 +43,9 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
         {label "Body"}
         {html {cols 60 rows 20}}
     }
-    {attachments:text(inform)
+    {attachments:integer(checkbox),multiple,optional
         {label "Attachments"}
-        {value "TODO"}
+        {options $attachment_options}
     }
 } -on_request {
     set pretty_name $action(pretty_name)
@@ -69,7 +73,8 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
         set recipient_name [simulation::role::get_element -role_id $action(recipient) -element pretty_name]
     }
     if { ![empty_string_p $action(assigned_role_id)] } {
-        set sender_name [simulation::role::get_element -role_id $action(assigned_role_id) -element pretty_name]
+        simulation::role::get -role_id $action(assigned_role_id) -array sender_role
+        set sender_name $sender_role(pretty_name)
     }
 } -on_submit {
 
@@ -90,7 +95,8 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
             -case_id $case_id \
             -subject $subject \
             -body $body_text \
-            -body_mime_type $body_mime_type
+            -body_mime_type $body_mime_type \
+            -attachments $attachments
     }
 
     ad_returnredirect [export_vars -base tasks { case_id }]

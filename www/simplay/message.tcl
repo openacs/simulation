@@ -38,18 +38,7 @@ foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
     }
 }
 
-set attachment_options [db_list_of_lists attachment_for_role {
-    select cr.title as document_title,
-           scrom.object_id as document_id
-    from sim_case_role_object_map scrom,
-         cr_items ci,
-         cr_revisions cr
-    where scrom.case_id = :case_id
-      and scrom.role_id = :sender_role_id
-      and scrom.object_id = ci.item_id
-      and ci.live_revision = cr.revision_id
-    order by scrom.order_n
-}]
+set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $sender_role_id]
 
 set action [form::get_action message]
 
@@ -78,12 +67,14 @@ Subject: $content(title)
     ad_returnredirect [export_vars -base [ad_conn url] { case_id sender_role_id recipient_role_id subject body_text body_mime_type }]
 }
 
+set form_mode [ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"]
+
 ad_form \
     -name message \
     -edit_buttons { { Send ok } } \
     -actions { { Reply reply } } \
     -export { case_id } \
-    -mode [ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"] \
+    -mode $form_mode \
     -form {
         {sender_role_id:text(select)
             {label "From"}
@@ -116,12 +107,23 @@ ad_form -extend -name message -form {
 }
 
 if { [llength $attachment_options] > 0 } {
-    ad_form -extend -name message -form {
-        {attachments:integer(checkbox),multiple,optional
-            {label "Attachments"}
-            {options $attachment_options}
+    if { ![string equal $form_mode "display"] } {
+        # edit/new mode - show checkboxes        
+        ad_form -extend -name message -form {
+            {attachments:integer(checkbox),multiple,optional
+                {label "Attachments"}
+                {options $attachment_options}
+            }
+        }
+    } else {
+        # display mode - show a list of attached documents
+        ad_form -extend -name message -form {
+            {attachments:text(inform),optional
+                {label "Attachments"}
+            }
         }
     }
+
 } else {
     ad_form -extend -name message -form {
         {attachments:integer(hidden),optional}
@@ -158,12 +160,25 @@ ad_form -extend -name message -new_request {
     set body [template::util::richtext::create $content(text) $content(mime_type)]
 
     set attachments_set_list [bcms::item::list_related_items \
-                             -item_id $item_id \
-                             -relation_tag attachment \
-                             -return_list]
-    set attachments [list]
-    foreach attachment_set $attachments_set_list {
-        lappend attachments [ns_set get $attachment_set item_id]
+                                  -revision live \
+                                  -item_id $item_id \
+                                  -relation_tag attachment \
+                                  -return_list]
+
+    if { ![string equal $form_mode "display"] } {
+        # edit/new mode - set checkbox integer values
+        set attachments [list]
+        foreach attachment_set $attachments_set_list {
+            lappend attachments [ns_set get $attachment_set item_id]
+        }
+    } else {
+        # display mode - show a list of attached documents
+        set attachments ""
+        foreach attachment_set $attachments_set_list {
+            set object_url [simulation::object::url -name [ns_set get $attachment_set name]]
+            set object_title [ns_set get $attachment_set title]
+            append attachments "<a href=\"$object_url\">$object_title</a><br>"
+        }        
     }
 
 } -on_submit {

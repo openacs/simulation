@@ -84,3 +84,28 @@ ad_proc -public simulation::case::new {
 
     return $sim_case_id
 }
+
+
+ad_proc -public simulation::case::attachment_options {
+    {-case_id:required}
+    {-role_id:required}
+} {
+    Get labels and ids of attachments associated with the given case and role.
+
+    @return A list of label-id pairs suitable for the options attribute of a form builder select widget.
+
+    @author Peter Marklund
+} {
+    return [db_list_of_lists attachment_for_role {
+        select cr.title as document_title,
+               scrom.object_id as document_id
+        from sim_case_role_object_map scrom,
+             cr_items ci,
+             cr_revisions cr
+        where scrom.case_id = :case_id
+          and scrom.role_id = :role_id
+          and scrom.object_id = ci.item_id
+          and ci.live_revision = cr.revision_id
+        order by scrom.order_n
+    }]
+}
