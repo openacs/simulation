@@ -96,12 +96,22 @@ db_multirow -extend $extend messages select_messages "
            w.pretty_name as sim_name,
            sm.creation_date,
            to_char(sm.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date_ansi,
-           (select fr.pretty_name
-              from workflow_roles fr
-             where fr.role_id = sm.from_role_id) as from,
-           (select tr.pretty_name
-              from workflow_roles tr
-             where tr.role_id = sm.to_role_id) as to,
+           (select scx.title
+              from sim_roles fr, 
+                   sim_charactersx scx,
+                   cr_items ci
+             where fr.role_id = sm.from_role_id
+             and   scx.item_id = fr.character_id
+             and   ci.item_id = scx.item_id
+             and   ci.live_revision = scx.object_id) as from,
+           (select scx.title
+              from sim_roles tr,
+                   sim_charactersx scx,
+                   cr_items ci
+             where tr.role_id = sm.to_role_id
+             and   scx.item_id = tr.character_id
+             and   ci.item_id = scx.item_id
+             and   ci.live_revision = scx.object_id) as to,
            (select count(*) 
               from cr_item_rels
              where item_id = sm.item_id

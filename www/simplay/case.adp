@@ -4,7 +4,7 @@
 
 <div class="simplay_case_messages">
 <h3>Recent Messages</h3>
-<include src="/packages/simulation/lib/messages"  user_id="@user_id@" case_id="@case_id@" role_id="@role_id@" limit="5">
+<include src="/packages/simulation/lib/messages" case_id="@case_id@" role_id="@role_id@" limit="5">
 </div>
 
 <div class="simplay_case_action-links">
@@ -15,7 +15,7 @@
 
 <div class="simplay_case_tasks">
 <h3>Tasks</h3>
-<include src="/packages/simulation/lib/tasks" user_id="@user_id@" case_id="@case_id@" role_id="@role_id@">
+<include src="/packages/simulation/lib/tasks" case_id="@case_id@" role_id="@role_id@">
 </div>
 <p></p>
 

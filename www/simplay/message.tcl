@@ -20,13 +20,13 @@ set workflow_id [workflow::case::get_element -case_id $case_id -element workflow
 
 set all_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-    set pretty_name [workflow::role::get_element -role_id $one_role_id -element pretty_name]
+    set pretty_name [simulation::role::get_element -role_id $one_role_id -element character_title]
     lappend all_role_options [list $pretty_name $one_role_id]
 }
 
 set to_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-        lappend to_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
+        lappend to_role_options [list [simulation::role::get_element -role_id $one_role_id -element character_title] $one_role_id]
 }
 
 set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $role_id]
@@ -48,9 +48,9 @@ if { [string equal $action "reply"] } {
 
 
 -----Original Message-----
-From: [workflow::role::get_element -role_id $content(from_role_id) -element pretty_name]
+From: [simulation::role::get_element -role_id $content(from_role_id) -element character_title]
 Sent: [lc_time_fmt $content(creation_date) "%x %X"]
-To: [workflow::role::get_element -role_id $content(to_role_id) -element pretty_name]
+To: [simulation::role::get_element -role_id $content(to_role_id) -element character_title]
 Subject: $content(title)
 
 [ad_html_text_convert -from $content(mime_type) -to "text/plain" $content(text)]"
