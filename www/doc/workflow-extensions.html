@@ -1,0 +1,217 @@
+<html>
+<head>
+  <title>
+    Simuation Design - Workflow Extensions
+  </title>
+</head>
+<body bgcolor="white">
+
+<h1>Simuation Design - Workflow Extensions</h1>
+
+By <a href="http://www.pinds.com/lars/">Lars Pind</a>
+
+<hr>
+
+
+<h2>Timers</h2>
+
+<h3>Requirements</h3>
+
+<p>
+  Use cases:
+</p>
+
+<ul>
+  <li>
+    A student has one week to send a document to another role. If
+    he/she fails to do so, a default action executes.
+  </li>
+  <li>
+    An OpenACS OCT member has one week to vote on a TIP. If he/she does not
+    vote within that week, a default "Abstain" action is executed.
+  </li>
+</ul>
+
+<p>
+  The timer will always be of the form "This action will automatically
+  execute x number of seconds after it becomes enabled". If it is
+  later un-enabled (disabled) because another action (e.g. a vote
+  action in the second use casae above) was executed, then the timer
+  will be reset. If the action later becomes enabled, the timer will start 
+  anew.
+</p>
+
+<h3>Design</h3>
+
+<p>
+  We currently do not have any information on which actions are
+  enabled, and when they're enabled. We will probably need a table,
+  perhaps one just for timed actions, in which a row is created when a
+  timed action is enabled, and the row is deleted again when the state
+  changes.
+</p>
+
+<h4>Extending workflow_actions:</h4>
+
+<pre>
+create table workflow_case_timed_actions(
+    ...
+    -- The number of seconds after having become enabled the action
+    -- will automatically execute
+    timeout_seconds         integer
+    ...
+);
+</pre>
+
+<h4>The table:</h4>
+
+<pre>
+create table workflow_case_timed_actions(
+    case_id                 integer
+                            constraint wf_case_time_act_case_id_nn
+                            not null
+                            constraint wf_case_time_act_case_id_fk
+                            references workflow_cases(case_id)
+                            on delete cascade,
+    action_id               integer
+                            constraint wf_case_time_act_action_id_nn
+                            not null
+                            constraint wf_case_time_act_action_id_fk
+                            references workflow_actions(action_id)
+                            on delete cascade,
+    -- the timestamp when this action fires
+    fire_timestamp          timestamp
+                            constraint wf_case_time_act_timeout_nn
+                            not null,
+    constraint workflow_case_timed_actions_pk
+    primary key (case_id, action_id)
+);
+</pre>
+
+<h4>The logic:</h4>
+
+<p>
+  After executing an action, <code>workflow::case::action::execute</code> will:
+</p>
+
+<ol>
+  <li>
+    Delete all actions from <code>worklfow_case_timed_actions</code> which are no longer enabled.
+  </li>
+  <li>
+    Insert a row for all enabled actions with timeouts which are not
+    already in <code>workflow_case_timed_actions</code>, with
+    <code>fire_timestamp = current_timestamp + workflow_actions.timeout_seconds</code> .
+  </li>
+  <li>
+    Run the sweeper immediately, so if timeout_seconds is
+    zero (automatic action), the action will execute right away, and
+    not at the next sweep.
+  </li>
+</ol>
+
+<h4>The sweeper</h4>
+
+<p>
+  The sweeper will find rows in
+  <code>workflow_case_timed_actions</code> with <code>fire_timetsamp <
+  current_timestamp</code>, order by fire_timstamp, and execute them.
+</p>
+
+<p>
+  It should do a query to find the action to fire first, then release
+  the db-handle and execute it. Then do a fresh query to find the
+  next, etc. That way we will handle the situation correctly where the
+  first action firing causes the second action to no longer be
+  enabled.
+</p>
+
+<h4>The Optimization</h4>
+
+<p>
+  Every time the sweeper runs, at least one DB query will be made,
+  even if there are no timed actions to be executed.
+</p>
+
+<p>
+  Possible optimizations:
+</p>
+
+<ul>
+  <li>
+    When keep an NSV with the timestamp (in [clock seconds] format)
+    and (case_id, action_id) of the first action to fire. That way,
+    the sweeper need not hit the DB at all most of the time.  When a
+    new timed action is inserted, we compare with the NSV, and update
+    if the new action fires before the old action. When the timed
+    action referred to in the NSV is either deleted because it gets
+    un-enabled, or executed, we'll clear the NSV, causing the next hit
+    to the sweeper to execute the query to find the (case_id,
+    action_id, fire_timestamp) of the first action to fire. Finally,
+    we would need an NSV value to represent the fact that there are no
+    rows in this table, so we don't keep executing the query in that
+    case.
+  </li>
+  <li>
+    I thought I thought of something else, but now I can't recall.
+  </li>
+</ul>
+
+<h2>Triggers/Events/Related Actions/Find Good Term</h2>
+
+<h3>Requirements</h3>
+
+<p>
+  Use cases:
+</p>
+
+<ul>
+  <li>
+    Voting. After all the individual vote cases are complete,
+    the master workflow will look at the votes and determine whether to
+    go to state Approved, Rejected, or Full Vote, or something else like
+    that.
+  </li>
+  <li>
+    After having received a document, the workflow automatically
+    scans the document for the presence of certain words, and goes to
+    one of two states depending on whether they were found or not.
+  </li>
+</ul>
+
+<h2>Relating Tasks</h2>
+
+
+<p> IS THIS DIFFERENT FROM THE TRIGGER/EVENT/WHATNOT STUFF ABOVE?</a>
+
+<h3>Requirements</h3>
+
+<p>
+  Some process is triggered by typically a timer on an action being
+  enabled. 
+</p>
+
+
+
+<h2>Relating Workflows/Cases</h2>
+
+<h3>Requirements</h3>
+
+<p>
+  Use cases:
+</p>
+
+<ul>
+  <li>
+    TIP Voting: There's a master workflow case for the TIP
+    itself. When voting, there'll be a sub-workflow case for each TIP
+    member to vote on the issue, with timeouts so if they don't vote
+    within a week, their vote is automatically 'Abstained'.
+  </li>
+</ul>
+
+
+<hr>
+
+</body>
+</html>
