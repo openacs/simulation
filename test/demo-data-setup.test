@@ -1,0 +1,42 @@
+if { [catch {
+    source ../../../etc/install/tcl/test-procs.tcl
+
+    # Test Execution START
+
+    # TODO: Create users with different roles and for different
+    # actions below be logged in with an appropriate user
+
+    ::twt::log_section "Login the site wide admin"
+    ::twt::user::login_site_wide_admin
+
+    # Create sim objects
+
+    # Create a new image object
+    do_request /simulation/object-list
+    link follow ~u object-edit?.*parent
+    form find ~n object
+    field find ~n content_type
+    field select2 ~v image
+    field find ~n __refreshing_p
+    field fill 1
+    form submit
+    
+    field find ~n title
+    field fill "New Jersey Lawyers"
+    field find ~n description
+    field fill "New Jersey Lawyers and Consumers"
+    field find ~n content_file
+    field fill /web/simulation/packages/simulation/test/new-jersey-lawyer-logo.gif
+    form submit
+
+} result] } {
+    global errorInfo
+
+    # Output error stack trace and HTML response body
+    ::twt::log $result
+    ::twt::log "*** Tcl TRACE ***"
+    ::twt::log $errorInfo
+    ::twt::log "The response body is: [response body]"
+
+    error "Test failed: $result"
+}
