@@ -10,8 +10,11 @@ set simulation_name [simulation::template::get_element -workflow_id $workflow_id
 workflow::role::get -role_id $role_id -array role_array
 simulation::case::get -case_id $case_id -array case_array
 
-set title "Portfolio for $role_array(pretty_name) in $case_array(label)"
-set context [list [list . "SimPlay"] [list [export_vars -base case-admin { case_id }] "Administer $case_array(label)"] "Portfolio for $role_array(pretty_name)"]
+set title [_ simulation.lt_Portfolio_for_role_ar]
+set context [list [list . [_ simulation.SimPlay] ] \
+                  [list [export_vars -base case-admin { case_id }] \
+                    [_ simulation.lt_Administer_case_array]] \
+                  [_ simulation.lt_Portfolio_for_role_ar_1]]
 
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]

@@ -65,18 +65,23 @@ db_1row your_role {
 
 set role(character_url) [simulation::object::url -name $role(character_name)]
 
-array set thumbnail [lindex [util_list_of_ns_sets_to_list_of_lists -list_of_ns_sets [bcms::item::list_related_items -item_id $role(character_item_id) -relation_tag "thumbnail" -return_list]] 0]
+array set thumbnail [lindex \
+  [util_list_of_ns_sets_to_list_of_lists -list_of_ns_sets \
+    [bcms::item::list_related_items -item_id $role(character_item_id) \
+      -relation_tag "thumbnail" -return_list]] 0]
 
-if { [exists_and_not_null thumbnail(name)] && [exists_and_not_null thumbnail(live_revision)] } {
-    set role(thumbnail_url) [simulation::object::content_url -name $thumbnail(name)]
-    set role(thumbnail_name) $thumbnail(name)
+if { [exists_and_not_null thumbnail(name)] \
+     && [exists_and_not_null thumbnail(live_revision)] } {
+      set role(thumbnail_url) \
+        [simulation::object::content_url -name $thumbnail(name)]
+      set role(thumbnail_name) $thumbnail(name)
 
-    array set thumbnail_rev [bcms::revision::get_revision \
-                                 -revision_id $thumbnail(live_revision) \
-                                 -additional_properties { width height }]
-                             
-    set role(thumbnail_height) $thumbnail_rev(height)
-    set role(thumbnail_width) $thumbnail_rev(width)
+      array set thumbnail_rev [bcms::revision::get_revision \
+                                   -revision_id $thumbnail(live_revision) \
+                                   -additional_properties { width height }]
+                               
+      set role(thumbnail_height) $thumbnail_rev(height)
+      set role(thumbnail_width) $thumbnail_rev(width)
 }
 
 db_multirow -unclobber -extend { character_url } contacts select_contacts "

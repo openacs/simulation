@@ -1,6 +1,7 @@
 ad_page_contract {
-    Remove a user from role in a workflow case. If this makes the role the user was playing
-    not mapped to any users it will be mapped to the admin removing the user.
+    Remove a user from role in a workflow case. If this makes the role the
+    user was playing not mapped to any users it will be mapped to the admin
+    removing the user.
 
     @author Peter Marklund
 } {

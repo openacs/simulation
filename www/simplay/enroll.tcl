@@ -13,7 +13,9 @@ set user_id [ad_conn user_id]
 simulation::template::get -workflow_id $workflow_id -array simulation
 
 if { ![string equal $simulation(sim_type) "casting_sim"] } {
-    ad_return_forbidden "Cannot enroll in simulation" "Simulation \"$simulation(pretty_name)\" is in state $simulation(sim_type) and you cannot enroll in it now. Contact your administrator if you believe this is an error. Thank you!"
+    ad_return_forbidden [_ simulation.lt_Cannot_enroll_in_simu] \
+      [_ simulation.lt_Simulation_simulation]
+
     ad_script_abort
 }
 
@@ -25,9 +27,11 @@ if { [string equal $simulation(enroll_type) "open"] } {
 
     if { !$user_invited_p } {
         # User not invited - check that we are within the enrollment period
-        if { [clock scan $simulation(enroll_start)] > [clock seconds] || [clock scan $simulation(enroll_end)] < [clock seconds] } {
+        if { [clock scan $simulation(enroll_start)] > [clock seconds] \
+             || [clock scan $simulation(enroll_end)] < [clock seconds] } {
             # We are not in the enrollment period
-            ad_return_forbidden "Cannot enroll in simulation" "The enrollment period for simulation \"$simulation(pretty_name)\" is between $simulation(enroll_start) and $simulation(enroll_end) and you cannot enroll at this time. Contact your administrator if you believe this is an error. Thank you!"
+            ad_return_forbidden [_ simulation.lt_Cannot_enroll_in_simu] \
+              [_ simulation.lt_The_enrollment_period]
             ad_script_abort
         }
     }
@@ -38,10 +42,9 @@ if { [string equal $simulation(enroll_type) "open"] } {
         acs_user::get -user_id $user_id -array user
 
         ad_return_forbidden \
-                "Cannot enroll in simulation \"$simulation(pretty_name)\"" \
-                "<blockquote>
-  We are sorry, but simulation \"$simulation(pretty_name)\" is not open to enrollment and you are not invited to join the simulation so you cannot enroll at this time.
-</blockquote>"
+                [_ simulation.lt_Cannot_enroll_in_simu_1] \
+                [_ simulation.lt_blockquote_We_are_sor]
+
         ad_script_abort        
     }
 }
@@ -51,7 +54,9 @@ simulation::template::enroll_user \
     -workflow_id $workflow_id \
     -user_id $user_id    
 
-# If there are casting decisions open to the user, redirect to the casting page (casting_type group or open)
+# If there are casting decisions open to the user, redirect to the casting page
+# (casting_type group or open)
+
 if { [string equal $simulation(casting_type) "auto"] } {
     # Auto casting
     # The user will be automatically cast right before the simulation starts
@@ -61,5 +66,6 @@ if { [string equal $simulation(casting_type) "auto"] } {
     ad_script_abort
 }
 
-set page_title "You have been enrolled in simulation \"$simulation(pretty_name)\""
-set context [list [list "." "SimPlay"] $page_title]
+set page_title [_ simulation.lt_You_have_been_enrolle_1]
+
+set context [list [list "." [_ simulation.SimPlay]] $page_title]

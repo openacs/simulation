@@ -12,9 +12,13 @@ set simulation_id $case(workflow_id)
 
 workflow::role::get -role_id $role_id -array role
 
-set page_title "Choose new users for role $role(pretty_name)"
-set context [list [list . "SimPlay"] [list [export_vars -base case-admin { case_id }] "Administer $case(label)"] $page_title]
+set page_title [_ simulation.lt_Choose_new_users_for]
+set context [list [list . [_ simulation.SimPlay]] \
+                  [list [export_vars -base case-admin { case_id }] \
+                    [_ simulation.lt_Administer_caselabel]]
+                  $page_title]
 
+# I18N TODO - what are these? Do they need to be i18ned?
 set user_options [db_list_of_lists user_options_for_case {
     select cu.first_names || ' ' || cu.last_name,
            cu.user_id
@@ -29,7 +33,7 @@ ad_form \
     -name new_user \
     -form {
         {users:integer(checkbox),multiple
-            {label "New Users"}
+            {label {[_ simulation.New_Users]}}
             {options {$user_options}}
         }
     } \

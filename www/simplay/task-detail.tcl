@@ -152,7 +152,10 @@ Subject: $subject
 }
 
 set page_title $action(pretty_name)
-set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] [list [export_vars -base tasks { case_id role_id }] "Tasks"] $page_title]
+set context [list [list . [_ simulation.SimPlay]] \
+            [list [export_vars -base case { case_id role_id }] [_ simulation.Case]] \
+            [list [export_vars -base tasks { case_id role_id }] [_ simulation.Tasks]] \
+            $page_title]
 set documents_pre_form ""
 
 set document_upload_url [export_vars -base document-upload {case_id role_id {return_url {[ad_return_url]}}}]
@@ -173,31 +176,31 @@ if { ![empty_string_p $action(recipients)] } {
     ad_form -name $form_id -edit_buttons { { Send ok } } -export { case_id role_id {enabled_action_ids $enabled_action_id} bulk_p} \
         -form {
             {pretty_name:text(inform)
-                {label "Task"}
+                {label {[_ simulation.Task]}}
             }
             {description:richtext,optional
-                {label "Description"}
+                {label {[_ simulation.Description]}}
                 {mode display}
             }
             {documents:text(inform),optional
-                {label "Documents"}
+                {label {[_ simulation.Documents]}}
             }
             {sender_name:text(inform),optional
-                {label "From"}
+                {label {[_ simulation.From]}}
             }
             {recipient_names:text(inform),optional
-                {label "To"}
+                {label {[_ simulation.To]}}
             }
             {subject:text
-                {label "Subject"}
+                {label {[_ simulation.Subject]}}
                 {html {size 80}}
             }
             {body:richtext
-                {label "Body"}
+                {label {[_ simulation.Body]}}
                 {html {cols 60 rows 20}}
             }
             {attachments:integer(checkbox),multiple,optional
-                {label "Attachments"}
+                {label {[_ simulation.Attachments]}}
                 {options $attachment_options}
             }        
         } -on_request {
@@ -267,8 +270,11 @@ if { ![empty_string_p $action(recipients)] } {
 
     set form_id document
 
-    ad_form -name $form_id -export { case_id role_id workflow_id {enabled_action_ids $enabled_action_id} bulk_p} -html {enctype multipart/form-data} \
-        -form [concat {{pretty_name:text(inform) {label "Task"}}} [simulation::ui::forms::document_upload::form_block]] \
+    ad_form -name $form_id \
+        -export { case_id role_id workflow_id {enabled_action_ids $enabled_action_id} bulk_p} \
+        -html {enctype multipart/form-data} \
+        -form [concat {{pretty_name:text(inform) {label {[_ simulation.Task]}}}} \
+           [simulation::ui::forms::document_upload::form_block]] \
         -on_request {
             set pretty_name $action(pretty_name)
             set documents_pre_form [simulation::ui::forms::document_upload::documents_element_value $action_id]
@@ -279,10 +285,11 @@ if { ![empty_string_p $action(recipients)] } {
                 foreach one_action $common_enabled_action_ids {
                     set case_id [lindex $one_action 1]
 
+                    set document [lindex $document_file 0]
                     set entry_id [workflow::case::action::execute \
                                   -case_id $case_id \
                                   -action_id $action_id \
-                                  -comment "Document [lindex $document_file 0] uploaded" \
+                                  -comment [_ simulation.lt_Document_document_upl] \
                                   -comment_mime_type "text/plain"]
 
                     simulation::ui::forms::document_upload::insert_document \
