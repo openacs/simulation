@@ -2,32 +2,6 @@
 -- @creation-date 2003-10-12
 -- @cvs-id $Id$
 
-create table sim_workflow_object_map (
-    workflow_id         integer         constraint sim_workflows_object_map_fk
-                                        references workflows(workflow_id)
-                                        on delete cascade,
-    object_id           integer         constraint sim_workflows_object_map_2_fk
-                                        references acs_objects(object_id)
-                                        on delete cascade,
-    constraint sim_workflow_object_map_pk
-      primary key (workflow_id, object_id)
-);
-
-comment on table sim_workflow_object_map is 'Each record indicates that one object is used in one simulation template.  If a sim_object is a child of another sim_object which is in this table, the child sim_object should not be in the table.';
-
-create table sim_tasks (
-    task_id             integer         constraint sim_tasks_fk
-                                        references workflow_actions
-                                        on delete cascade
-                                        constraint sim_tasks_pk
-                                        primary key,
-    recipient           integer         constraint sim_tasks_recipient_fk
-                                        references workflow_roles
-                                        on delete cascade
-);
-
-comment on table sim_tasks is 'A 1-1 extension of workflow_actions.  Each record is a task that a role must perform, possibly upon another role.';
-
 create table sim_simulations (
     simulation_id         integer       constraint sim_simulations_fk
                                         references workflows
@@ -66,6 +40,32 @@ select acs_object_type__create_type (
         
 comment on table sim_simulations is 'Each record is an instantiation of a simulation template, and the parent of zero to many simulation cases.';
 
+create table sim_roles (
+    role_id             integer         constraint sim_roles_ri_fk
+                                        references workflow_roles(role_id)
+                                        on delete cascade
+                                        constraint sim_roles_pk
+                                        primary key,
+    character_id        integer         constraint sim_roles_character_fk
+                                        references cr_items
+                                        on delete cascade
+);
+
+comment on table sim_roles is 'Each record is a role within a simulation template to be played by one or more users or a computer agent when the template is instantiated into cases.';
+  
+create table sim_tasks (
+    task_id             integer         constraint sim_tasks_fk
+                                        references workflow_actions
+                                        on delete cascade
+                                        constraint sim_tasks_pk
+                                        primary key,
+    recipient           integer         constraint sim_tasks_recipient_fk
+                                        references workflow_roles
+                                        on delete cascade
+);
+
+comment on table sim_tasks is 'A 1-1 extension of workflow_actions.  Each record is a task that a role must perform, possibly upon another role.';
+
 create table sim_party_sim_map (
     simulation_id       integer         constraint sim_party_sim_map_sim_fk
                                         references sim_simulations
@@ -78,4 +78,3 @@ create table sim_party_sim_map (
 );
 
 comment on table sim_party_sim_map is 'Each record is an invitation to a party to participate in a simulation.';
-

@@ -2,18 +2,15 @@
 -- @creation-date 2003-10-12
 -- @cvs-id $Id$
 
-
 --drop independent tables
 drop table sim_party_sim_map;
 drop table sim_tasks;
-drop table sim_workflow_object_map;
-drop table sim_simulations;
-
+drop table sim_roles;
 select acs_object_type__drop_type(
 	   'simulation',
 	   't'
     );
-
+drop table sim_simulations;
 
 -- drop content_types
 create function inline_0 () returns integer as '
