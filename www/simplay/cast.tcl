@@ -1,8 +1,10 @@
 ad_page_contract {
     This page allows users to choose which group to join.  It is only relevant for simulations with casting type of group.
 } {
-    {case_id:integer ""}
+    {workflow_id:integer ""}
 }
+
+# TODO: check that user is enrolled and that casting_type is not auto_cast
 
 set title "Join a Case in Simulation SIMNAME"
 set context [list $title]

@@ -691,11 +691,13 @@ ad_proc -public simulation::template::autocast {
      {-workflow_id:required}
 } {
     Takes a mapped simulation template and converts it into a cast simulation
-    with simulation cases. This procedure expects to be called after enrollment is complete.
+    with simulation cases. This procedure expects to be called right before the simulation starts.    
 
     @author Peter Marklund
 } {
-    # TODO (8h): also handle auto-casting when casting_type is not auto, but not all users self-cast
+    # TODO (8h): also handle casting when casting_type is not auto, but not all users self-cast
+    # TODO (3h): handle casting when casting_type is auto, and some users have enrolled, either through
+    # invitation or because enroll_type is open. 
 
     simulation::template::role_party_mappings \
         -workflow_id $workflow_id \

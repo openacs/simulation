@@ -1,10 +1,12 @@
 <master>
+  <property name="title">@page_title;noquote@</property>
+  <property name="context">@context;noquote@</property>
 
-Does enrollment and then displays results based on sim type
-<ul>
-<li><b>auto</b>    "You have been enrolled in simulation.name.  When
-the simulation begins on begin_date, you will receive an email
-notification (manage notification url)"
-<li><b>group</b> or <b>open</b>    Redirect to <a href="cast">cast</a>
+<p>
+  You have been enrolled in "@simulation.pretty_name@".  The simulation will
+  begin on @simulation.case_start@ and you will be notified by email at this time.
+</p>
 
-</ul>
+<p>
+  Thank you!
+</p>
