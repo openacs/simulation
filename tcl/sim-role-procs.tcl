@@ -79,7 +79,7 @@ ad_proc -public simulation::role::edit {
 
             # Handle columns in the sim_tasks table
             foreach attr { 
-                character_id
+                character_id users_per_case
             } {
                 if { [info exists row($attr)] } {
                     set varname attr_$attr
@@ -102,7 +102,7 @@ ad_proc -public simulation::role::edit {
             }
         }
     }
-    
+
     db_transaction {
         # Base row
         set role_id [workflow::role::edit \

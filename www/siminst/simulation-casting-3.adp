@@ -12,9 +12,3 @@ instead of in pairs of rows
 list</p>
 <p>TODO: at the bottom, show a list of all groups that are
 auto-enrolled but are not assigned anywhere (and hence won't be in any cases)
-
-
-
-<p>
-  <a href="cast-complete?workflow_id=@workflow_id@">Instantiate</a>
-</p>

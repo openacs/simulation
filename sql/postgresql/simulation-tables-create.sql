@@ -49,20 +49,20 @@ create table sim_roles (
                                         primary key,
     character_id        integer         constraint sim_roles_character_fk
                                         references cr_items
-                                        on delete cascade
+                                        on delete cascade,
+    users_per_case      integer         default 1
 );
 
 comment on table sim_roles is 'Each record is a role within a simulation template to be played by one or more users or a computer agent when the template is instantiated into cases.';
   
-create table sim_role_group_map (
-    role_id             integer         constraint sim_role_group_map_ri_fk
+create table sim_role_party_map (
+    role_id             integer         constraint sim_role_party_map_ri_fk
                                         references workflow_roles(role_id)
                                         on delete cascade,
-    party_id            integer         constraint sim_role_group_map_party_fk
+    party_id            integer         constraint sim_role_party_map_party_fk
                                         references parties
                                         on delete cascade,
-    group_size          integer         default 1,
-    constraint sim_role_group_map_pk
+    constraint sim_role_party_map_pk
     primary key(role_id, party_id)
 );
 

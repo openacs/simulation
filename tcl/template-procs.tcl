@@ -242,11 +242,16 @@ ad_proc -public simulation::template::delete {
 # Additional API implementations
 #----------------------------------------------------------------------
 
-ad_proc -public simulation::template::delete_role_group_mappings {
+ad_proc -public simulation::template::delete_role_party_mappings {
     {-workflow_id}
 } {
+    Clear out all role-party mappings for a template. Used when editing
+    the mappings before adding the new ones.
+
+    @author Peter Marklund
+} {
         db_dml clear_old_group_mappings {
-            delete from sim_role_group_map
+            delete from sim_role_party_map
             where role_id in (select role_id
                               from workflow_roles
                               where workflow_id = :workflow_id
@@ -254,40 +259,78 @@ ad_proc -public simulation::template::delete_role_group_mappings {
         }
 }
 
-ad_proc -public simulation::template::new_role_group_mapping {
+ad_proc -public simulation::template::new_role_party_mappings {
     {-role_id:required}
-    {-group_id:required}
-    {-group_size:required}
+    {-parties:required}
 } {
-    db_dml map_group_to_role {
-        insert into sim_role_group_map (role_id, party_id, group_size)
-            values (:role_id, :group_id, :group_size)
+    Map a list of parties to a role
+
+    @param parties A list of party ids to map to the role
+
+} {
+    foreach party_id $parties {   
+        db_dml map_group_to_role {
+            insert into sim_role_party_map (role_id, party_id)
+            values (:role_id, :party_id)
+        }
     }
 }
 
-ad_proc -public simulation::template::get_role_group_mappings {
+ad_proc -public simulation::template::role_party_mappings {
     {-workflow_id}
     {-array:required}
+} {
+    Return a nested array list with the parties mapped to roles and
+    the desired number of users to play a role per case for the given simulation
+    template
+
+    @param array The name of the array to put the information in. The array list
+                 will be nested on the following format:
+                 <pre>
+                {
+                    $role_id1 {
+                        parties {$group_id1 $group_id2 ...}
+                        users_per_case $users_per_case1
+                    }
+
+                    $role_id2 {
+                        parties {$group_id1 $group_id2 ...}
+                        users_per_case $users_per_case2
+                    }
+                }              
+               </pre>
 } {    
     upvar $array roles
 
     array set roles {}
 
-    db_foreach select_group_mappings {
-            select role_id,
-            party_id,
-            group_size
-            from sim_role_group_map
-            where role_id in (select role_id
-                              from workflow_roles
-                              where workflow_id = :workflow_id
-                              )
+    db_foreach select_party_mappings {
+            select srpm.role_id,
+            srpm.party_id,
+            sr.users_per_case
+            from sim_role_party_map srpm,
+                 sim_roles sr,
+                 workflow_roles wr
+            where srpm.role_id = wr.role_id
+              and wr.workflow_id = :workflow_id
+              and srpm.role_id = sr.role_id
     } {
-        set roles($role_id) [list $party_id $group_size]
+        array unset one_role
+        array set one_role {}
+        if { [info exists roles($role_id)] } {
+            array set one_role $roles($role_id)
+        }
+
+        set one_role(users_per_case) $users_per_case
+        lappend one_role(parties) $party_id
+
+
+        set roles($role_id) [array get one_role]
     }
 }
  
 ad_proc -public simulation::template::get_parties {
+    {-members:boolean}
     {-workflow_id:required}
     {-rel_type "auto-enroll"}
 } {
@@ -296,17 +339,31 @@ ad_proc -public simulation::template::get_parties {
     @param rel_type The type of relationship of the party to the
                     simulation template. Permissible values are
                     enrolled, invited, and auto-enroll
+    @param members  Provide this switch if you want all members of
+                    the simulation parties rather than the parties
+                    themselves.
     
     @return A list of party_id:s
 } {
     ad_assert_arg_value_in_list rel_type {enrolled invited auto-enroll}
 
-    return [db_list template_parties {
-        select party_id
-        from sim_party_sim_map
-        where simulation_id = :workflow_id
-          and type = :rel_type
-    }]
+    if { $members_p } {
+        return [db_list template_parties {
+            select pamm.member_id
+            from sim_party_sim_map spsm,
+                 party_approved_member_map pamm
+            where spsm.simulation_id = :workflow_id
+             and spsm.type = :rel_type
+             and pamm.party_id = spsm.party_id
+        }]
+    } else {
+        return [db_list template_parties {
+            select party_id
+            from sim_party_sim_map
+            where simulation_id = :workflow_id
+             and type = :rel_type
+        }]
+    }
 }
 
 ad_proc -public simulation::template::ready_for_casting_p {
@@ -394,11 +451,15 @@ ad_proc -public simulation::template::dissociate_object {
     # no special error handling because the delete is pretty safe
 }
 
-ad_proc -public simulation::template::start {
+ad_proc -public simulation::template::force_start {
      {-workflow_id:required}
 } {
-    Make a simulation go live immediately. Does enrollment and
-    casting and sets sim_type attribute to live_sim.
+    Force a simulation to start immediately by updating case_start,
+    enroll_end, and enroll_start properties to reflect an immediate start
+    and then directly invoking simulation::template::start.
+
+    TODO: make sure the sweeper doesn't pick up simulations that
+          have been forced to start.
 
     @author Peter Marklund
 } {
@@ -420,17 +481,29 @@ ad_proc -public simulation::template::start {
         # Set start_date to now
         set simulation_edit(case_start) $today
 
+        simulation::template::edit -workflow_id $workflow_id -array simulation_edit
+
+        simulation::template::start -workflow_id $workflow_id
+    }
+}
+
+ad_proc -public simulation::template::start {
+     {-workflow_id:required}
+} {
+    Make a simulation go live. Does enrollment and
+    casting and sets sim_type attribute to live_sim.
+
+    TODO: invoke this proc from a sweep
+
+    @author Peter Marklund
+} {
+    simulation::template::get -workflow_id $workflow_id -array simulation
+
+    db_transaction {
         # Auto enroll users in auto-enroll groups
         set simulation_edit(enrolled) [list]
-        foreach party_id [simulation::template::get_parties -workflow_id $workflow_id] {
-            set simulation_edit(enrolled) [concat $simulation_edit(enrolled) \
-                                                   [db_list party_users {
-                                                       select u.user_id
-                                                       from party_approved_member_map pamm,
-                                                       users u
-                                                       where pamm.party_id = :party_id
-                                                       and pamm.member_id = u.user_id
-                                                   }]]
+        foreach users_list [simulation::template::get_parties -members -type auto-enroll -workflow_id $workflow_id] {
+            set simulation_edit(enrolled) [concat $simulation_edit(enrolled) $users_list]
         }
 
         # Change sim_type to live_sim
@@ -457,14 +530,13 @@ ad_proc -public simulation::template::cast {
     @author Peter Marklund
 } {
     # Assuming here that mapped parties with type enrolled are users
-    set user_list [db_list select_users {
-        select party_id
+    set total_n_users [db_list select_users {
+        select count(*)
         from sim_party_sim_map
         where type = 'enrolled'
     }]
-    set total_n_users [llength $user_list]
 
-    simulation::template::get_role_group_mappings -workflow_id $workflow_id -array roles
+    simulation::template::role_party_mappings -workflow_id $workflow_id -array roles
 
     set n_users_per_case 0
     foreach role_id [array names roles] {
@@ -475,40 +547,53 @@ ad_proc -public simulation::template::cast {
     set n_cases [expr ($total_n_users - $mod_n_users) / $n_users_per_case]
 
     if { $mod_n_users == "0" } {
-        # No rest in dividing, the cases add up nicely
-        
+        # No rest in dividing, the cases add up nicely        
     } else {
         # We are missing mod_n_users to fill up the simulation. Create a new simulation
         # for those students.
         set n_cases [expr $n_cases + 1]
     }
 
-    # Create the cases and for each case assign roles to parties
-    set users_start_index 0
+    error "total_n_users=$total_n_users n_users_per_case=$n_users_per_case n_cases=$n_cases mod_n_users=$mod_n_users"
+
+    # Create the cases and for each case assign users to roles    
     for { set case_counter 0 } { $case_counter < $n_cases } { incr case_counter } {
-        # TODO: what should object_id be here?
         set object_id [ad_conn package_id]
         set case_id [workflow::case::new \
                          -workflow_id $workflow_id \
                          -object_id $object_id]
 
-        # Assign a group of users to each role in the case
-        set party_array_list [list]
+        # Assign users from the specified group for each role
+        set roles_assign_list [list]
         foreach role_id [array names roles] {
+            set group_id [lindex $roles($role_id) 0]
+            set n_users_to_assign [lindex $roles($role_id) 1]
+
+            if { ![info exists group_members($group_id)] } {
+                set group_members($group_id) [party::approved_members -party_id $party_id -object_type user]
+            }
+            set n_users_in_group [llength $group_members($group_id)]
+
+            if { ![info exists user_index($group_id)] } {
+                set user_index($group_id) 0
+            }
+
+            for {set i 0} {$i < $n_users_to_assign} {incr i} {
+                lappend users_to_assign [lindex $group_members($group_id) $user_index]
+                
+                incr user_index                
+                if { $user_index >= $n_users_in_group } {
+                    set user_index 0
+                }
+            }
+
             set role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
-
-            set users_end_index [expr $users_start_index + $groupings_array($role_id) - 1]
-
-            set parties_list [lrange $user_list $users_start_index $users_end_index]
-
-            lappend parties_array_list $role_short_name $parties_list
-
-            set users_start_index [expr $users_end_index + 1]
+            lappend roles_assign_list $role_short_name $users_to_assign
         }
 
         workflow::case::role::assign \
             -case_id $case_id \
-            -array $parties_array_list \
+            -array roles_assign_list \
             -replace
     }
 }

@@ -7,6 +7,6 @@ ad_page_contract {
     workflow_id:integer
 }
 
-simulation::template::start -workflow_id $workflow_id
+simulation::template::force_start -workflow_id $workflow_id
 
 ad_returnredirect "../simplay"

@@ -172,11 +172,8 @@ ad_proc simulation::casting_groups_with_counts {
     @param enrolled_only Provide this switch to only get groups selected for 
                          auto enrollment.
 
-    @return An array lists on the format
+    @return A nested array lists on the format
             [list group_id1 [list group_name1 n_users1] group_id2 [list group_name2 n_users2] ...]
-
-with label-id pairs, suitable to be passed
-            as the options attribute of a form builder select widget.
 
     @author Peter Marklund
 } {
