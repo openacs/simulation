@@ -3,7 +3,7 @@ ad_page_contract {
 
 } {
     action_id:integer
-    {return_url "sim-template-list"}
+    {return_url "."}
 }
 
 workflow::action::fsm::delete -action_id $action_id

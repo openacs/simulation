@@ -30,7 +30,7 @@ set package_id [ad_conn package_id]
 #
 # a form showing fields for a role in a workflow
 # includes add and edit modes and handles form submission
-# display mode is only in list form via sim-template-edit
+# display mode is only in list form via template-edit
 #
 ######################################################################
 
@@ -51,11 +51,11 @@ ad_form -name role -cancel_url index -form {
     set name $role_array(pretty_name)
     workflow::get -workflow_id $workflow_id -array sim_template_array    
     set page_title "Edit Role template $name"
-    set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
+    set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
 } -new_request {
     workflow::get -workflow_id $workflow_id -array sim_template_array
     set page_title "Add Role to $sim_template_array(pretty_name)"
-    set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
+    set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
 } -new_data {
 
     simulation::role::new \
@@ -64,7 +64,7 @@ ad_form -name role -cancel_url index -form {
         -role_pretty_name $name
 
 } -after_submit {
-    ad_returnredirect [export_vars -base "sim-template-edit" { workflow_id }]
+    ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
 }
 

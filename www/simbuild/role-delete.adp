@@ -6,7 +6,7 @@
 and all related tasks?<?p>
 
 <h4>Related Tasks</h4>
-<include src="sim-template-tasks" workflow_id=@workflow_id@ package_id=@package_id@>
+<include src="/packages/simulation/lib/sim-template-tasks" workflow_id=@workflow_id@ package_id=@package_id@>
 </if>
 
 <p>

@@ -6,7 +6,7 @@ ad_page_contract {
 } {
     {confirm_p:boolean "f"}
     role_id:integer
-    {return_url "sim-template-list"}
+    {return_url "."}
 }
 
 set package_id [ad_conn package_id]
@@ -31,7 +31,7 @@ set workflow_id $role_array(workflow_id)
 workflow::get -workflow_id $workflow_id -array sim_template_array    
 
 set page_title "Delete $name"
-set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
+set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
 
 set delete_url [export_vars -base [ad_conn url] { role_id return_url { confirm_p 1 } }]
 set cancel_url $return_url

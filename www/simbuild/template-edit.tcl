@@ -25,7 +25,7 @@ set package_id [ad_conn package_id]
 # sim_template form
 #---------------------------------------------------------------------
 
-ad_form -name sim_template -cancel_url sim-template-list -form {
+ad_form -name sim_template -cancel_url . -form {
     {workflow_id:key}
     {name:text,optional
         {label "Template Name"}
@@ -34,11 +34,6 @@ ad_form -name sim_template -cancel_url sim-template-list -form {
 } -edit_request {
     workflow::get -workflow_id $workflow_id -array sim_template_array
     set name $sim_template_array(pretty_name)
-    set page_title "Edit template $name"
-    set context [list [list "sim-template-list" "Templates"] $page_title]
-} -new_request {
-    set page_title "Create template"
-    set context [list [list "sim-template-list" "Templates"] $page_title]
 } -new_data {
     set workflow_id [simulation::template::new \
                          -short_name $name \
@@ -46,7 +41,7 @@ ad_form -name sim_template -cancel_url sim-template-list -form {
                          -package_key $package_key \
                          -object_id $package_id]
 } -after_submit {
-    ad_returnredirect sim-template-edit?workflow_id=$workflow_id
+    ad_returnredirect template-edit?workflow_id=$workflow_id
     ad_script_abort
 }
 
@@ -74,6 +69,6 @@ switch $mode {
     }
 }
 
-set context [list [list "sim-template-list" "Simulation Templates"] $page_title] 
+set context [list [list "." "SimBuild"] $page_title] 
 
-set delete_url [export_vars -base sim-template-delete { workflow_id }]
+set delete_url [export_vars -base template-delete { workflow_id }]

@@ -11,7 +11,7 @@ set template_name [workflow::get_element -workflow_id $workflow_id -element pret
 set package_id [ad_conn package_id]
 
 set page_title "Deleting template \"$template_name\""
-set template_list_url sim-template-list
+set template_list_url .
 set context [list [list $template_list_url "Templates"] $page_title]
 
 simulation::template::delete -workflow_id $workflow_id

@@ -4,7 +4,7 @@ ad_page_contract {
     @creation-date 2003-10-27
     @cvs-id $Id$
 } {
-    workflow_id:optional
+    workflow_id
     action_id:optional
 } -validate {
     workflow_id_or_task_id {
@@ -21,19 +21,20 @@ ad_page_contract {
 #
 ######################################################################
 
+workflow::get -workflow_id $workflow_id -array sim_template_array    
+
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
 
-# this part may be superfluous since we do the same thing in edit mode
-# TODO - if so, cut it
-if { ![exists_and_not_null workflow_id] } {
-    set workflow_id [db_string get_workflow_from_role "select workflow_id
-                                                         from workflow_actions
-                                                        where action_id = :action_id"
-                    ]
-}
+if { ![ad_form_new_p -key action_id] } {
+    workflow::action::fsm::get -action_id $action_id -array task_array
 
-workflow::get -workflow_id $workflow_id -array workflow
+    set page_title "Edit Task $task_array(pretty_name)"
+} else {
+    set page_title "Add Task to $sim_template_array(pretty_name)"
+}
+set context [list [list "." "SimBuild"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
+
 
 #---------------------------------------------------------------------
 # Get a list of relevant roles
@@ -56,7 +57,7 @@ set role_options [db_list_of_lists role_option_list "
 #
 # a form showing fields for a task in a workflow
 # includes add and edit modes and handles form submission
-# display mode is only in list form via sim-template-edit
+# display mode is only in list form via template-edit
 #
 ######################################################################
 
@@ -87,28 +88,16 @@ ad_form -name task -edit_buttons [
     }
 } -edit_request {
 
-    # Retrieve the task and populate the form
-    workflow::action::fsm::get -action_id $action_id -array task_array
     # TODO - get the recipient (and put all this in simulation api)
     set workflow_id $task_array(workflow_id)
     set name $task_array(pretty_name)
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
-    workflow::get -workflow_id $workflow_id -array sim_template_array    
-    set page_title "Edit Task $name"
-    set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
     set recipient_role [db_string select_recipient {
         select recipient
         from sim_tasks
         where task_id = :action_id
     }]
    set assigned_role $task_array(assigned_role)
-
-} -new_request {
-
-    # Set up the page for a new task
-    workflow::get -workflow_id $workflow_id -array sim_template_array
-    set page_title "Add Task to $sim_template_array(pretty_name)"
-    set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
 
 } -on_submit {
     
@@ -150,7 +139,6 @@ ad_form -name task -edit_buttons [
 	-description_mime_type $description_mime_type
 
 } -after_submit {
-    ad_returnredirect [export_vars -base "sim-template-edit" { workflow_id }]
+    ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
 }
-
