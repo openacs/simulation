@@ -28,6 +28,11 @@ create table sim_simulations (
       constraint sim_show_contacts_p_ck
         check(show_contacts_p in ('t','f'))
       constraint sim_show_contacts_p_nn
+        not null,
+    show_states_p       boolean default 't'
+      constraint sim_show_states_p_ck
+        check(show_states_p in ('t','f'))
+      constraint sim_show_states_p_nn
         not null
 );
 

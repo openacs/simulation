@@ -6,6 +6,7 @@
 
 <p>
 
+<if @show_states_p@>
 <h4>#simulation.States#</h4>
 
 <ul>
@@ -13,6 +14,7 @@
     <li><if @states.state_id@ eq @states.current_state@><b>@states.pretty_name@</b></if><else>@states.pretty_name@</else></li>
   </multiple>
 </ul>
+</if>
 
 <h4>#simulation.Your_Options#</if></h4>
 <ul class="action-links">

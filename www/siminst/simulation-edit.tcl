@@ -39,7 +39,10 @@ ad_form -export { workflow_id } -name simulation -form {
         {html {cols 60 rows 8}}
         {help_text "This description is visible to users during enrollment."}
     }
-
+    {show_states_p:boolean(radio),optional
+      {label "Should we show states?<br>(i.e. Started, Open, Written...)"}
+      {options {{"Show states" t} {"Don't show states" f}}}
+    }
 } -on_request {
 
     foreach elm { 
@@ -89,6 +92,11 @@ ad_form -export { workflow_id } -name simulation -form {
     if { [empty_string_p $enroll_end] } {
         set enroll_end [clock format [expr [clock seconds] + 2*$one_week + $default_duration] -format "%Y-%m-%d"]
     }
+
+    set show_states_p [db_string gettheflag_states {
+      select show_states_p
+        from sim_simulations
+       where simulation_id=:workflow_id}]
 
 } -on_submit {
 
@@ -162,6 +170,12 @@ ad_form -export { workflow_id } -name simulation -form {
     simulation::template::edit \
         -workflow_id $workflow_id \
         -array row
+
+    db_dml show_states_p {
+      update sim_simulations
+         set show_states_p = :show_states_p
+         where simulation_id = :workflow_id
+    }
 
     simulation::template::flush_inst_state -workflow_id $workflow_id
     wizard forward

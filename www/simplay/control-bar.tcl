@@ -17,10 +17,10 @@ simulation::case::get -case_id $case_id -array case
 
 set workflow_id $case(workflow_id)
 
-set show_contacts_p [db_string getflag {
-    select show_contacts_p
+db_1row getflags {
+    select show_contacts_p, show_states_p
       from sim_simulations
-     where simulation_id=:workflow_id}]
+     where simulation_id=:workflow_id}
 
 set case_home_url [export_vars -base "case" { case_id role_id }]
 
