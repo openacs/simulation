@@ -12,7 +12,7 @@ set context ""
 set user_id [auth::get_user_id]
 
 set citybuild_p [permission::permission_p -object_id $package_id -privilege sim_object_create]
-set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_inst]
+set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_template_read]
 set siminst_p [permission::permission_p -object_id $package_id -privilege sim_inst]
 
 ######################################################################
