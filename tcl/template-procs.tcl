@@ -712,7 +712,13 @@ ad_proc -public simulation::template::generate_spec {
                       states workflow::state::fsm
                   }]
 
-    # TODO: Add sim_template attributes to the spec
+    simulation::template::get -workflow_id $workflow_id -array simulation
+    
+    set inner_spec [lindex $spec 1]
+
+    lappend inner_spec suggested_duration $simulation(suggested_duration)
+
+    set spec [list [lindex $spec 0] $inner_spec]
 
     return $spec
 }
