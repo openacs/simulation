@@ -958,7 +958,7 @@ ad_proc -private simulation::template::cast_users_in_case {
             set n_users_to_assign [expr $one_role(users_per_case) - $users_already_in_case]
         }
         
-        #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - beginning of role loop role_id=$role_id n_users_to_assign=$n_users_to_assign"
+        #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - beginning of role loop role_id=$role_id n_users_to_assign=$n_users_to_assign group_members=[array get group_members]"
 
         set assignees [list]
         for { set i 0 } { $i < $n_users_to_assign } { incr i } {
@@ -974,6 +974,7 @@ ad_proc -private simulation::template::cast_users_in_case {
             # a) User is in non-multiple case group mapped to role (group_members)
             # b) User is in multi case group mapped to role (group_members)
             # c) User is not in any group (users_to_cast_not_in_groups)           
+            #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - before users_to_cast loop, users_to_cast=$users_to_cast role_group_users=$role_group_users"
             foreach user_id $users_to_cast {
                 
                 set cast_user_p 0
@@ -989,6 +990,7 @@ ad_proc -private simulation::template::cast_users_in_case {
                         -groups_array group_members \
                         -full_groups_array full_group_members \
                         -multiple_case_groups $multiple_case_groups
+                    #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - in users_to_cast loop, after remove_users_from_casting_groups, group_members=[array get group_members]"
 
                 } elseif { [lsearch $users_to_cast_not_in_groups $user_id] != -1 } {
                     # Case c) - user not in a group mapped to any role
@@ -1017,9 +1019,11 @@ ad_proc -private simulation::template::cast_users_in_case {
             # 2. Get user from multiple group mapped to role (a user who is not in the users_to_cast list because he has been cast before)
             if { !$user_was_cast_p } {
                 foreach group_id $one_role(parties) {
-                    if { [lsearch $multiple_case_groups $group_id] == -1 } {
+                    if { [lsearch $multiple_case_groups $group_id] != -1 } {
                         # We have a non-empty (they are refilled) multiple group mapped to the role
                         # Cast random user from that group
+                        set user_id [lindex $group_members($group_id) 0]
+
                         #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - in users to assign loop, role_id=$role_id i=$i casting already cast user_id=$user_id from multi case group $group_id"
         
                         set user_was_cast_p 1
@@ -1046,18 +1050,24 @@ ad_proc -private simulation::template::cast_users_in_case {
                 #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - in users to assign loop, role_id=$role_id i=$i casting resorting to cast admin_user_id=$admin_user_id"
                 set user_was_cast_p 1
                 lappend assignees $admin_user_id
+                # Only cast admin once
+                break
             }        
         }
 
         # Keep track of which users we decided to assign to the role and move on to the next one
-        set row($role_short_name($role_id)) $assignees    
+        # It can happen with multi groups that a user gets mapped multiple times to one role. However, there is
+        # a role-party unique constraint in workflow that we mustn't violate.
+        # TODO: If we are removing a user here it means we are one of more users short
+        # of the targeted number of users for the role. In that case we should assign the admin as well if we haven't already done so.
+        set row($role_short_name($role_id)) [template::util::spellcheck::get_sorted_list_with_unique_elements -the_list $assignees]
     }
 
     # Do all the user-role assignments in the case
     workflow::case::role::assign \
         -case_id $case_id \
         -array row \
-    }
+}
 
 ad_proc -private simulation::template::remove_user_from_casting_groups {
     {-user_id:required}
@@ -1080,7 +1090,7 @@ ad_proc -private simulation::template::remove_user_from_casting_groups {
         set group_members($group_id) [lreplace $group_members($group_id) $group_index $group_index]
         
         # Refill the group if it's now empty and multi-case
-        if { [llength $group_members($group_id)] == 0 && [lsearch $multiple_case_groups $group_id] == -1 } {
+        if { [llength $group_members($group_id)] == 0 && [lsearch $multiple_case_groups $group_id] != -1 } {
             set group_members($group_id) $full_group_members($group_id)            
         }
     }
