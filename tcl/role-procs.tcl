@@ -10,8 +10,8 @@ namespace eval simulation::role {}
 
 ad_proc -public simulation::role::new {
     {-template_id:required}
-    {-role_short_name:required}
-    {-role_pretty_name:required}
+    {-short_name {}}
+    {-pretty_name:required}
 } {
     Create a new simulation role for a given simulation template. 
     Will map the character to the template if this
@@ -20,11 +20,10 @@ ad_proc -public simulation::role::new {
     @author Peter Marklund
 } {
     db_transaction {
-        set role_short_name [util_text_to_url -replacement "_" $role_short_name]
         set role_id [workflow::role::new \
                          -workflow_id $template_id \
-                         -short_name $role_short_name \
-                         -pretty_name $role_pretty_name]
+                         -short_name $short_name \
+                         -pretty_name $pretty_name]
 
         db_dml insert_sim_role {
             insert into sim_roles (role_id) values (:role_id)

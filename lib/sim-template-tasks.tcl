@@ -37,7 +37,8 @@ switch $display_mode {
 # how is type going to work?  open question pending prototyping
 
 if { $display_mode == "edit"} {
-    set actions [list "Add a Task" [export_vars -base task-edit {workflow_id} ]]
+    set actions [list "Add a Task" [export_vars -base task-edit {workflow_id} ] {}]
+    lappend actions "Add a State" [export_vars -base state-edit { workflow_id}] {}
 } else {
     set actions ""
 }
@@ -69,6 +70,11 @@ lappend elements name {
     link_url_col {[ad_decode $display_mode edit view_url ""]}
 }
 
+lappend elements assigned_name { 
+    label "Assignee"
+    link_url_col assigned_role_edit_url
+}
+
 set states [list]
 
 db_foreach select_states {
@@ -86,15 +92,19 @@ db_foreach select_states {
              display_template "
                  <switch @tasks.state_$state_id@>
                    <case value=\"assigned\">
-                     <b>Assigned</b>
+                     <span title=\"The task is enabled in this state\">&loz;</span>
+                     <b title=\"We will harass the role to come perform this task\">&diams;</b>
                    </case>
                    <case value=\"enabled\">
-                     Enabled
+                     <span title=\"The task is enabled in this state\">&loz;</span>
                    </case>
                    <default>
                      &nbsp;
                    </default>
                 </switch>
+                <if @tasks.move_to_$state_id@ true>
+                  <b title=\"Go to this state after completing the task\">&uarr;</b>
+                </if>
              "]
 
     lappend states $state_id
@@ -104,7 +114,7 @@ lappend elements add_state {
     label {
         <form action="state-edit" style="margin: 0px;">
         [export_vars -form { workflow_id}]
-        <input type="submit" value="Add a state">
+        <input type="submit" value="Add a State">
         </form>
     }
     display_template {&nbsp;}
@@ -132,17 +142,17 @@ template::list::create \
 #-------------------------------------------------------------
 # tasks db_multirow
 #-------------------------------------------------------------
-# TODO: fix this so it returns rows when it should  
 
 set initial_action_id [workflow::get_element \
                            -workflow_id $workflow_id \
                            -element initial_action_id]
 
 set extend [list]
-lappend extend edit_url view_url delete_url initial_p set_initial_url
+lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url
 
 foreach state_id $states {
     lappend extend state_$state_id
+    lappend extend move_to_$state_id
 }
 
 array set enabled_in_state [list]
@@ -161,12 +171,10 @@ db_foreach select_enabled_in_states {
     set enabled_in_state($action_id,$state_id) $assigned_p
 }
 
-ds_comment [array get enabled_in_state]
-
-
 db_multirow -extend $extend tasks select_tasks "
     select wa.action_id,
            wa.pretty_name,
+           wa.assigned_role,
            (select pretty_name 
               from workflow_roles
              where role_id = wa.assigned_role) as assigned_name,
@@ -174,32 +182,37 @@ db_multirow -extend $extend tasks select_tasks "
               from workflow_roles
              where role_id = st.recipient) as recipient_name,
            wa.sort_order,
-           wa.always_enabled_p
+           wa.always_enabled_p,
+           wfa.new_state
       from workflow_actions wa,
+           workflow_fsm_actions wfa,
            sim_tasks st
      where wa.workflow_id = :workflow_id
+       and wfa.action_id = wa.action_id       
        and st.task_id = wa.action_id
      order by wa.sort_order
 " {
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
     set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url [ad_return_url]} }]
+
+    set assigned_role_edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
+
     set initial_p [string equal $initial_action_id $action_id]
     set set_initial_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/initial-action-set" { action_id {return_url [ad_return_url]} }]
     
     foreach state_id $states {
-        ds_comment "enabled_in_state($action_id,$state_id)"
         if { [info exists enabled_in_state($action_id,$state_id)] } {
             if { [template::util::is_true $enabled_in_state($action_id,$state_id)] } {
-                ds_comment "Assigned"
                 set state_$state_id assigned
-                ds_comment "set state_$state_id assigned -- $extend"
             } else {
-                ds_comment "Enabled"
                 set state_$state_id enabled
-                ds_comment "set state_$state_id enabled -- $extend"
             }
+        }
+        if { $new_state == $state_id } {
+            set move_to_$state_id 1
         }
     }
 }
+
 

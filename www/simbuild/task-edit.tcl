@@ -26,6 +26,7 @@ set package_id [ad_conn package_id]
 
 if { ![ad_form_new_p -key action_id] } {
     workflow::action::fsm::get -action_id $action_id -array task_array
+
     set workflow_id $task_array(workflow_id)
 }
 
@@ -65,11 +66,11 @@ ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode 
         {label "Task Name"}
         {html {size 20}}
     }
-    {assigned_role:text(select)
+    {assigned_role:text(select),optional
         {label "Assigned To"}
         {options $role_options}
     }
-    {recipient_role:text(select)
+    {recipient_role:text(select),optional
         {label "Recipient"}
         {options $role_options}
     }
@@ -80,15 +81,18 @@ ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode 
 }
 
 set enabled_options [list]
+set state_options [list]
+lappend state_options [list "--Unchanged--" {}]
 foreach state_id [workflow::fsm::get_states -workflow_id $workflow_id] {
     array unset state_array
     workflow::state::fsm::get -state_id $state_id -array state_array
     lappend enabled_options [list $state_array(pretty_name) $state_id]
+    lappend state_options [list $state_array(pretty_name) $state_id]
 }
 
 ad_form -extend -name task -form {
     {assigned_state_ids:text(checkbox),optional,multiple
-        {label "Assigned"}
+        {label "Assigned<br>TODO: Find a better<br>way to show the<br>assigned/enabled states"}
         {options $enabled_options}
     }
     {enabled_state_ids:text(checkbox),optional,multiple
@@ -97,17 +101,28 @@ ad_form -extend -name task -form {
     }
 }
 
-ad_form -extend -name task -edit_request {
+ad_form -extend -name task -form {
+    {new_state_id:integer(select),optional
+        {label "New state"}
+        {options $state_options}
+    }
+} -edit_request {
     set workflow_id $task_array(workflow_id)
     permission::require_write_permission -object_id $workflow_id
     set pretty_name $task_array(pretty_name)
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
+    set new_state_id $task_array(new_state_id)
+    
     set recipient_role_id [db_string select_recipient {
         select recipient
         from sim_tasks
         where task_id = :action_id
     }]
-    set recipient_role [workflow::role::get_element -role_id $recipient_role_id -element short_name]
+    if { ![empty_string_p $recipient_role_id] } {
+        set recipient_role [workflow::role::get_element -role_id $recipient_role_id -element short_name]
+    } else {
+        set recipient_role {}
+    }
 
     set assigned_role $task_array(assigned_role)
 
@@ -120,6 +135,11 @@ ad_form -extend -name task -edit_request {
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 
+    if { ![empty_string_p $recipient_role] } {
+        set recipient_role_id [workflow::role::get_id -workflow_id $workflow_id -short_name $recipient_role]
+    } else {
+        set recipient_role_id [db_null]
+    }
 } -new_data {
     permission::require_write_permission -object_id $workflow_id
     # create the task
@@ -127,25 +147,28 @@ ad_form -extend -name task -edit_request {
     # TODO IMPORTANT:
     # Set short_name right -- or leave blank and have the workflow API construct a short_name
 
-    set action_id [workflow::action::fsm::new \
-		       -workflow_id $workflow_id \
-		       -pretty_name $pretty_name \
-		       -assigned_role $assigned_role \
-		       -description $description_content \
-		       -description_mime_type $description_mime_type \
-                       -enabled_state_ids $enabled_state_ids \
-                       -assigned_state_ids $assigned_state_ids]
+    db_transaction {
 
-    # TODO: enabled_states, assigned_states
-
-    # TODO - put this stuff into simulation api and change previous call
-    # and then add extra data for simulation
-    # because workflow::action::fsm::new wants role.short_name instead of
-    # role_id, we stay consistent for recipient_role
-    set recipient_role_id [workflow::role::get_id -workflow_id $workflow_id -short_name $recipient_role]
-    db_dml set_role_recipient {
-        insert into sim_tasks
-        values (:action_id, :recipient_role_id)
+        set action_id [workflow::action::fsm::new \
+                           -workflow_id $workflow_id \
+                           -pretty_name $pretty_name \
+                           -assigned_role $assigned_role \
+                           -description $description \
+                           -description_mime_type $description_mime_type \
+                           -enabled_state_ids $enabled_state_ids \
+                           -assigned_state_ids $assigned_state_ids \
+                           -new_state_id $new_state_id]
+        
+        # TODO: enabled_states, assigned_states
+        
+        # TODO - put this stuff into simulation api and change previous call
+        # and then add extra data for simulation
+        # because workflow::action::fsm::new wants role.short_name instead of
+        # role_id, we stay consistent for recipient_role
+        db_dml set_role_recipient {
+            insert into sim_tasks
+            values (:action_id, :recipient_role_id)
+        }
     }
 } -edit_data {
     # We use task_array(workflow_id) here, which is gotten from the DB, and not
@@ -162,6 +185,7 @@ ad_form -extend -name task -edit_request {
         set row($col) [set $col]
     }
     set row(short_name) {}
+    set row(new_state_id) $new_state_id
 
     simulation::action::edit \
         -action_id $action_id \

@@ -21,10 +21,13 @@ ad_proc -public simulation::action::edit {
     
     db_transaction {
         if { [info exists row(recipient_role)] } {
-            set recipient_role_id [workflow::role::get_id \
-                                       -workflow_id $workflow_id \
-                                       -short_name $row(recipient_role)]
-            
+            if { ![empty_string_p $row(recipient_role)] } {
+                set recipient_role_id [workflow::role::get_id \
+                                           -workflow_id $workflow_id \
+                                           -short_name $row(recipient_role)]
+            } else {
+                set recipient_role_id [db_null]
+            }
             db_dml edit_sim_role {
                 update sim_tasks
                 set    recipient = :recipient_role_id

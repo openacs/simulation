@@ -44,6 +44,7 @@ template::list::create \
         name { 
             label "Name"
             display_col pretty_name
+            link_url_col edit_url
         }
         delete {
             sub_class narrow
