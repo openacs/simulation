@@ -154,6 +154,7 @@ db_multirow -extend { edit_url view_url delete_url edit_p } objects select_objec
     and    i.parent_id = f.folder_id
     and    r.revision_id = i.live_revision
     and    ot.object_type = i.content_type
+    and    ot.object_type != 'sim_message'
            $filter_sql
     [template::list::orderby_clause -orderby -name "objects"]
 " {
