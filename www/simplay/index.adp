@@ -6,16 +6,16 @@
     TODO: show list of valid cases
 </if>
 <else>
-     <include src="/packages/simulation/lib/messages" user_id="@user_id@ case_id="@case_id""></include>
-     <include src="/packages/simulation/lib/tasks" user_id="@user_id@ case_id="@case_id""></include>
+     <include src="/packages/simulation/lib/messages" user_id="@user_id@" case_id="@case_id@"></include>
+     <include src="/packages/simulation/lib/tasks" user_id="@user_id@" case_id="@case_id@"></include>
 </else>
-<if adminplayer_p>
 
+<if @adminplayer_p@>
+    TODO: in playeradmin, show all tasks.  (Still segregate messages by case?)
 </if>
 <pre>  
 TODO: playeradmin mode shows all cases; player mode shows one case
 
-in playeradmin, show all tasks.  (Still segregate messages by case?)
 in player mode, show "desk" - ie, list of messages and list of tasks,
 plus links to archive
 
