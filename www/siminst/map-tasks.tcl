@@ -29,56 +29,63 @@ db_foreach tasks {
            a.description,
            a.description_mime_type,
            st.attachment_num,
-           (select pretty_name from workflow_roles where role_id = a.assigned_role) as assigned_role_pretty,
-           (select pretty_name from workflow_roles where role_id = st.recipient) as recipient_role_pretty,
-           (select count(*) from workflow_initial_action where action_id = a.action_id) as initial_p
+           (select pretty_name from workflow_roles where role_id = a.assigned_role) as assigned_role_pretty
     from   workflow_actions a,
            sim_tasks st
     where  a.workflow_id = :workflow_id
     and    st.task_id = a.action_id
+    and    a.trigger_type = 'user'
     order  by a.sort_order
 } -column_array row {
-    if { !$row(initial_p) } {
-        set section_name "Task $row(pretty_name)"
-        if { ![empty_string_p $row(assigned_role_pretty)] || ![empty_string_p $row(recipient_role_pretty)] } {
-            append section_name " ("
-            if { ![empty_string_p $row(assigned_role_pretty)] } {
-                append section_name $row(assigned_role_pretty)
-            }
-            if { ![empty_string_p $row(recipient_role_pretty)] } {
-                append section_name "-> $row(recipient_role_pretty))"
-            }
+    set section_name "Task $row(pretty_name)"
+    # TODO B: use a grouping query instead of this query in a query
+    set action_id $row(action_id)
+    set recipient_role_list [db_list select_recipient_roles {
+        select wr.pretty_name
+        from sim_task_recipients str,
+             workflow_roles wr
+        where str.task_id = :action_id
+          and str.recipient = wr.role_id
+    }]
+    set recipient_role_pretty [join $recipient_role_list ", "]
+    if { ![empty_string_p $row(assigned_role_pretty)] || ![empty_string_p $recipient_role_pretty] } {
+        append section_name " ("
+        if { ![empty_string_p $row(assigned_role_pretty)] } {
+            append section_name $row(assigned_role_pretty)
         }
-        
-        ad_form -extend -name tasks -form \
-            [list [list description_$row(action_id):richtext,optional \
-                       {label "Task Description"} \
-                       {help_text "This is the text that users will see while attempting to complete a task."} \
-                       {html {cols 60 rows 4}} \
-                       {section $section_name} ]]
-        set description_$row(action_id) [template::util::richtext::create $row(description) $row(description_mime_type)]
-        
-        # Save attachment_num for later
-        ad_form -extend -name tasks -form \
-            [list [list attachment_num_$row(action_id):integer(hidden),optional \
-                       {value $row(attachment_num)}]]
-
-        for { set i 1 } { $i <= $row(attachment_num) } { incr i } {
-            if { $prop_count == "1" } {
-                set missing_props_p 1
-                break
-            }
-
-            ad_form -extend -name tasks -form \
-                [list [list attachment_$row(action_id)_${i}:integer(select) \
-                           {label "Attachment $i"} \
-                           {options $prop_options} \
-                           {help_text "Select from existing attachments or <a
-href=\"../citybuild/object-edit\">add a new prop</a> and refresh this page."}]]
-        }    
-
-        lappend actions $row(action_id)
+        if { ![empty_string_p $recipient_role_pretty] } {
+            append section_name "-> $recipient_role_pretty)"
+        }
     }
+    
+    ad_form -extend -name tasks -form \
+        [list [list description_$row(action_id):richtext,optional \
+                   {label "Task Description"} \
+                   {help_text "This is the text that users will see while attempting to complete a task."} \
+                   {html {cols 60 rows 4}} \
+                   {section $section_name} ]]
+    set description_$row(action_id) [template::util::richtext::create $row(description) $row(description_mime_type)]
+    
+    # Save attachment_num for later
+    ad_form -extend -name tasks -form \
+        [list [list attachment_num_$row(action_id):integer(hidden),optional \
+                   {value $row(attachment_num)}]]
+
+    for { set i 1 } { $i <= $row(attachment_num) } { incr i } {
+        if { $prop_count == "1" } {
+            set missing_props_p 1
+            break
+        }
+
+        ad_form -extend -name tasks -form \
+            [list [list attachment_$row(action_id)_${i}:integer(select) \
+                       {label "Attachment $i"} \
+                       {options $prop_options} \
+                       {help_text "Select from existing attachments or <a
+href./citybuild/object-edit\">add a new prop</a> and refresh this page."}]]
+    }    
+
+    lappend actions $row(action_id)
 }
 
 if { $missing_props_p } {

@@ -47,6 +47,8 @@ template::list::create \
             display_template {
                 <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
             }
+            link_url_col clone_url
+            link_html { title "Clone this template" }
         }
         delete {
             sub_class narrow
@@ -65,7 +67,7 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url sim_tasks_url delete_url prop_empty_count } dev_sims select_dev_sims "
+db_multirow -extend { state state_pretty clone_url cast_url map_roles_url map_props_url sim_tasks_url delete_url prop_empty_count } dev_sims select_dev_sims "
     select w.workflow_id,
            w.pretty_name,
            w.description,
@@ -105,6 +107,8 @@ db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url si
     set sim_tasks_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
     set state_pretty [simulation::template::get_state_pretty -state $state]
+
+    set clone_url [export_vars -base "${base_url}siminst/template-clone" { workflow_id }]
 }
 
 
