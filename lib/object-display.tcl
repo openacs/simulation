@@ -62,6 +62,7 @@ foreach name [lsort [array names content]] {
 
 if { [permission::write_permission_p -object_id $item(item_id)] } {
     set edit_url [export_vars -base [ad_conn package_url]object-edit { { item_id $item(item_id) } }]
+    set delete_url [export_vars -base [ad_conn package_url]object-delete { { item_id $item(item_id) } }]
 }
 
 

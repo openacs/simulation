@@ -164,7 +164,8 @@ db_foreach select_attributes {
     set elm_decl "attr__${content_type}__${attribute_name}:$form_datatype($datatype)($form_widget($datatype))"
 
     set optional_p [expr ![empty_string_p $default_value] || $min_n_values == 0]
-    if { $optional_p } {
+    # LARS hack: Make extra attributes optional
+    if { 1 || $optional_p } {
         append elm_decl ",optional"
     }
 
@@ -184,6 +185,8 @@ ad_form -extend -name object -new_request {
 
 } -new_data {
     
+    permission::require_permission -privilege create -object_id [ad_conn package_id]
+
     set existing_items [db_list select_items { select name from cr_items where parent_id = :parent_id }]
 
     if { [empty_string_p $name] } {
@@ -218,6 +221,8 @@ ad_form -extend -name object -new_request {
 
 } -edit_request {
     
+    permission::require_write_permission -object_id $item_id
+
     foreach elm { title name description } {
         set $elm $content($elm)
     }

@@ -15,6 +15,16 @@ select content_type__create_type(
     null                           -- name_method
 );
 
+select content_type__create_attribute(
+    'sim_character',               -- content_type
+    'stylesheet',                  -- attribute_name
+    'text',                        -- datatype
+    'Stylesheet',                  -- pretty_name
+    'Stylesheets',                 -- pretty_plural
+    1,                             -- sort_order
+    null,                          -- default_value
+    'text'                         -- column_spec
+);
 
 
 
@@ -29,6 +39,18 @@ select content_type__create_type(
     'prop_id',                     -- id_column
     null                           -- name_method
 );
+
+select content_type__create_attribute(
+    'sim_prop',                    -- content_type
+    'stylesheet',                  -- attribute_name
+    'text',                        -- datatype
+    'Stylesheet',                  -- pretty_name
+    'Stylesheets',                 -- pretty_plural
+    1,                             -- sort_order
+    null,                          -- default_value
+    'text'                         -- column_spec
+);
+
 
 
 
@@ -83,13 +105,7 @@ select content_type__create_attribute(
     'text',                        -- datatype
     'Stylesheet',                  -- pretty_name
     'Stylesheets',                 -- pretty_plural
-    5,                             -- sort_order
+    4,                             -- sort_order
     null,                          -- default_value
     'text'                         -- column_spec
 );
-
-
-
-
-
-

@@ -20,8 +20,9 @@ template::list::create \
     -elements {
         edit {
             sub_class narrow
+            link_url_col edit_url
             display_template {
-                <a href="@objects.edit_url@"><img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit"></a>
+                <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
             }
         }
         object_type_pretty {
@@ -37,12 +38,19 @@ template::list::create \
 	    label "Description"
 	    orderby r.description
 	}
+        delete {
+            sub_class narrow
+            link_url_col delete_url
+            display_template {
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
+            }
+        }
     }
 
 
 set package_id [ad_conn package_id]
 
-db_multirow -extend { edit_url view_url } objects select_objects "
+db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     select i.item_id,
            i.name,
            r.title,
@@ -62,6 +70,7 @@ db_multirow -extend { edit_url view_url } objects select_objects "
     set description [string_truncate -len 200 $description]
     set edit_url [export_vars -base "object-edit" { item_id }]
     set view_url [export_vars -base "object/$name"]
+    set delete_url [export_vars -base "object-delete" { item_id }]
 }
 
 set sim_types { sim_character sim_prop sim_home }
