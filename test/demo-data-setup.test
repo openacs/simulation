@@ -6,6 +6,9 @@ if { [catch {
 
     # Test Execution START
 
+    global __demo_users_password
+    set __demo_users_password 1
+
     # Demo data start
     set actors_list {
         Teacher
@@ -228,10 +231,102 @@ if { [catch {
     field fill "Template loaded from spec" ~n pretty_name
     field fill [::twt::simulation::get_template_spec] ~n spec
     form submit
-
-    # TODO: Check permissions with different users
-
+    
     # TODO: click the ready_p link for the templates
+
+    ###################################
+    #
+    # Permission testing with anonymous user
+    #
+    ###################################
+
+    ::twt::log_section "Permission testing with anonymouse user"
+    ::twt::user::logout
+
+    # The anonymous user can access the index page with the flash map
+    ::twt::simulation::assert_page_accessible /simulation
+
+    # TODO: Should see a list of all simulation open for enrollment
+
+    # The anonymous user can access an object view page
+    ::twt::simulation::assert_page_accessible /simulation/object/motorhome
+
+    # The anonymous user can not access any of the four modules
+    foreach disallowed_url {simplay siminst simbuild citybuild} {
+        do_request /simulation/$disallowed_url
+        if { ![regexp {/register/} $::tclwebtest::url] } {
+            error "Anonymous user was not redirected to login page for url $disallowed_url"
+        }
+    }
+
+    ###################################
+    #
+    # Permission testing with city admin
+    #
+    ###################################
+
+    # login user
+
+    # city admin can access index page
+
+    # can access citybuild
+    # can create/edit/delete object
+    # SPECIAL: can set the on_map_p attribute
+       
+    # can't access any of the other three modules
+
+    ###################################
+    #
+    # Permission testing with sim admin (simulation super user)
+    #
+    ###################################
+
+    # can do anything within the package
+    # including the on_map_p attribute
+
+    ###################################
+    #
+    # Permission testing with template author
+    #
+    ###################################
+
+    # read/create templates, only own templates
+    # cannot edit other people's templates
+    
+    # can access all modules, can do anything in siminst
+
+    # cannot see case logs
+
+    ###################################
+    #
+    # Permission testing with case author
+    #
+    ###################################
+
+    # cannot access modules: simbuild
+
+    # can see case logs
+
+    # cannot set on_map_p attribute
+
+    ###################################
+    #
+    # Permission testing with service admin
+    #
+    ###################################
+
+    # can add users
+    # can make users eligible for enrollment
+
+    ###################################
+    #
+    # Permission testing Actor (playing in a sim)
+    #
+    ###################################
+    
+    # participate in the simulation in simplay
+
+    # cannot access citybuild, simbuild, siminst
 
 } result] } {
     global errorInfo
