@@ -262,6 +262,10 @@ db_multirow -extend $extend tasks select_tasks "
     }
 
     lappend actions $action_id
+
+    if { [empty_string_p $new_state_pretty] } {
+        set new_state_pretty "unchanged"
+    }
 }
 
 # Get rid of the last down_url
