@@ -515,7 +515,7 @@ ad_proc -public simulation::template::start {
     }
 }
 
-ad_proc -public simulation::template::cast {
+ad_proc -public simulation::template::autocast {
      {-workflow_id:required}
 } {
     Takes a mapped simulation template and converts it into a cast simulation
@@ -529,71 +529,64 @@ ad_proc -public simulation::template::cast {
 
     @author Peter Marklund
 } {
-    # Assuming here that mapped parties with type enrolled are users
-    set total_n_users [db_list select_users {
-        select count(*)
-        from sim_party_sim_map
-        where type = 'enrolled'
-    }]
-
-    simulation::template::role_party_mappings -workflow_id $workflow_id -array roles
-
-    set n_users_per_case 0
+    simulation::template::role_party_mappings \
+        -workflow_id $workflow_id \
+        -array roles
+    
+    set total_users 0
     foreach role_id [array names roles] {
-        set n_users_per_case [expr $n_users_per_case + [lindex $roles($role_id) 1]]
+        # Still just one group per role
+        set group_id [lindex $roles($role_id) 0]
+
+        set role_short_name($role_id) [workflow::role::get_element -role_id $role_id -element short_name]
+        set group_members($group_id) [party::approved_members -party_id $party_id -object_type user]
+        set group_members($group_id) [util::randomize_list $group_members($group_id)]
+        
+        incr total_users [llength $group_members($group_id)]
     }
 
-    set mod_n_users [expr $total_n_users % $n_users_per_case]
-    set n_cases [expr ($total_n_users - $mod_n_users) / $n_users_per_case]
-
-    if { $mod_n_users == "0" } {
-        # No rest in dividing, the cases add up nicely        
-    } else {
-        # We are missing mod_n_users to fill up the simulation. Create a new simulation
-        # for those students.
-        set n_cases [expr $n_cases + 1]
-    }
-
-    error "total_n_users=$total_n_users n_users_per_case=$n_users_per_case n_cases=$n_cases mod_n_users=$mod_n_users"
+    set workflow_short_name [workflow::get_element -workflow_id $workflow_id -element short_name]
 
     # Create the cases and for each case assign users to roles    
-    for { set case_counter 0 } { $case_counter < $n_cases } { incr case_counter } {
-        set object_id [ad_conn package_id]
-        set case_id [workflow::case::new \
-                         -workflow_id $workflow_id \
-                         -object_id $object_id]
+    while { $total_users > 0 } {
 
+        set object_id [simulation::case::new \
+                           -workflow_id $workflow_id]
+
+        set case_id [workflow::case::get_id \
+                         -object_id $object_id \
+                         -workflow_short_name $workflow_short_name]
+        
         # Assign users from the specified group for each role
-        set roles_assign_list [list]
+        array unset row
+        array set row [list]
+
         foreach role_id [array names roles] {
             set group_id [lindex $roles($role_id) 0]
-            set n_users_to_assign [lindex $roles($role_id) 1]
-
-            if { ![info exists group_members($group_id)] } {
-                set group_members($group_id) [party::approved_members -party_id $party_id -object_type user]
-            }
-            set n_users_in_group [llength $group_members($group_id)]
-
-            if { ![info exists user_index($group_id)] } {
-                set user_index($group_id) 0
-            }
-
-            for {set i 0} {$i < $n_users_to_assign} {incr i} {
-                lappend users_to_assign [lindex $group_members($group_id) $user_index]
-                
-                incr user_index                
-                if { $user_index >= $n_users_in_group } {
-                    set user_index 0
+            set n_users_in_role [lindex $roles($role_id) 1]
+            
+            set assignees [list]
+            for { set i 0 } { $i < $n_users_in_role } { incr i } {
+                if { [llength $group_members($group_id)] > 0 } {
+                    # Add assignee
+                    lappend assignees [lindex $group_members($group_id) 0]
+                    # Remove the user from the group member list
+                    set group_members($group_id) [lreplace $group_members($group_id) 0 0]
+                    # Reduce the total_users count
+                    incr total_users -1
+                } else {
+                    # Current group exhausted, use current user
+                    lappend assignees [ad_conn user_id]
+                    # Don't add the admin more than once
+                    break
                 }
             }
-
-            set role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
-            lappend roles_assign_list $role_short_name $users_to_assign
+            set row($role_short_name($role_id)) $assignees
         }
 
         workflow::case::role::assign \
             -case_id $case_id \
-            -array roles_assign_list \
+            -array row \
             -replace
     }
 }
