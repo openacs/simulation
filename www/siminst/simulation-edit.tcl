@@ -14,7 +14,7 @@ ad_form -export { workflow_id } -name simulation -form {
         {html {size 60}}
     }
     {send_start_note_date:date,to_sql(ansi),from_sql(ansi),optional
-        {label "Date to send start notification (mockup only)"}
+        {label "Date to send start notification"}
     }
     {case_start:date,to_sql(ansi),from_sql(ansi),optional
         {label "Simulation start date"}
