@@ -25,7 +25,7 @@ template::list::create \
         }
         user_name {
             label "User"
-            link_url_eval {[acs_community_member_url -user_id $creation_user]}
+            link_url_eval {[ad_decode $creation_user "" "" [acs_community_member_url -user_id $creation_user]]}
         }
         action_pretty {
             label "Task"
@@ -56,13 +56,11 @@ db_multirow -extend { action_url } log select_log {
     from   workflow_case_log l join 
            workflow_actions a using (action_id) join 
            cr_items i on (i.item_id = l.entry_id) join 
-           acs_objects io on (io.object_id = i.item_id) join 
-           cc_users iou on (iou.user_id = io.creation_user) join
-           cr_revisions r on (r.revision_id = i.live_revision),
-           workflow_roles role
+           acs_objects io on (io.object_id = i.item_id) left outer join 
+           acs_users_all iou on (iou.user_id = io.creation_user) join
+           cr_revisions r on (r.revision_id = i.live_revision) left outer join
+           workflow_roles role on (role.role_id = a.assigned_role)
     where  l.case_id = :case_id
-    and    role.role_id = a.assigned_role
-    and    a.trigger_type = 'user'
     order  by io.creation_date
 } {
     if { ![empty_string_p $message_item_id] } {
@@ -71,6 +69,10 @@ db_multirow -extend { action_url } log select_log {
         set action_url [simulation::object::content_url -name $document_name]
     } else {
         set action_url {}
+    }
+
+    if { [empty_string_p $creation_user] } {
+        set user_name "Timeout"
     }
 }
 

@@ -20,7 +20,7 @@
 
         <provides url="simulation" version="1.0.0b1"/>
         <requires url="bcms" version="0.2"/>
-        <requires url="workflow" version="2.0.0b1"/>
+        <requires url="workflow" version="2.0.0b2"/>
         <requires url="acs-mail-lite" version="0.2a"/>
 
         <callbacks>
