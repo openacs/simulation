@@ -28,6 +28,7 @@ set elements {
     }
     user_name {
         label "User"
+        link_url_col user_url
     }
     user_actions {
         label ""
@@ -80,7 +81,7 @@ if { $assigned_only_p } {
 }
 
 set cast_roles [list]
-db_multirow -extend {add_url move_url remove_url} roles select_case_info "
+db_multirow -extend { add_url move_url remove_url user_url } roles select_case_info "
     select wr.role_id,
            wr.pretty_name as role,
            cu.user_id,
@@ -105,7 +106,8 @@ db_multirow -extend {add_url move_url remove_url} roles select_case_info "
     set add_url [export_vars -base case-admin-user-add { case_id role_id }]
     set move_url [export_vars -base case-admin-user-move { case_id user_id }]
     set remove_url [export_vars -base case-admin-user-remove { case_id role_id user_id }]
-
+    set user_url [acs_community_member_url -user_id $user_id]
+    
     lappend cast_roles $role_id
 }
 
