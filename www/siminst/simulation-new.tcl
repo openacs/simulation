@@ -63,7 +63,7 @@ select workflow_id,
        workflows w
  where ss.simulation_id = w.workflow_id
    and w.object_id = :package_id
-   and ready_p = 't'
+   and ss.sim_type = 'ready_template'
 } {
     set map_url [export_vars -base "map-create" { workflow_id }]
 

@@ -18,7 +18,7 @@ switch $display_mode {
     display {}
 
     edit {
-	set add_task_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { workflow_id } ]
+	set add_task_url [export_vars -base "[apm_package_url_from_id $package_id]jsimbuild/task-edit" { workflow_id } ]
     }
 }
 

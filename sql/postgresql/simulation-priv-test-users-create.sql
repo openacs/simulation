@@ -1,4 +1,4 @@
-1-- create dummy users for permissions testing
+-- create dummy users for permissions testing
 -- create each user and then assign appropriate privs directly
 
 -- this is a temp solution - should instead create all the groups 

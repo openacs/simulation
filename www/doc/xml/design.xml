@@ -121,31 +121,30 @@ f            a bit, is the object fertile?
         </itemizedlist>
       </sect2>
     </sect1>
-
     <sect1 id="simulation-lifecycle">
       <title>Lifecycle of a Simulation</title>
       <orderedlist>
         <listitem>
           <formalpara>
-            <title>Template Not ready.</title>
+            <title>Template Not ready (<emphasis role="bold">dev_template</emphasis>)</title>
             <para>  ready_p not true.  Only shows up in SimBuild lists.</para>
           </formalpara>
         </listitem>
         <listitem>
           <formalpara>
-            <title>Template Ready</title>
+            <title>Template Ready (<emphasis role="bold">ready_template</emphasis>)</title>
             <para>Ready_p is true.  Shows up in list of available templates in SimBuild.</para>
           </formalpara>
         </listitem>
         <listitem>
           <formalpara>
-            <title>Simulation in Development.</title>
-            <para>Owned by a single person.  Shows up only in their Siminst page. between zero and all of the roles are mapped to characters.  Between zero and all of the tasks are developed (description added, attachment slots linked to sim objects).</para>
+            <title>Simulation in Development (<emphasis role="bold">dev_sim</emphasis>)</title>
+            <para>Owned by a single party.  Shows up only in their Siminst page. between zero and all of the roles are mapped to characters.  Between zero and all of the tasks are developed (description added, attachment slots linked to sim objects).</para>
           </formalpara>
         </listitem>
         <listitem>
           <formalpara>
-            <title>Simulation in Casting.</title>
+            <title>Simulation in Casting (<emphasis role="bold">casting_sim</emphasis>)</title>
             <para>Several paths depending on enrollment and casting type.</para>
           </formalpara>
           <table>
@@ -194,20 +193,16 @@ f            a bit, is the object fertile?
         </listitem>
         <listitem>
           <formalpara>
-            <title>Live Simulation</title>
+            <title>Live Simulation (<emphasis role="bold">live_sim</emphasis>)</title>
             <para>start date &lt; now &lt; end date.  Shows up in list of sims in Simplay for admin.  </para>
           </formalpara>
         </listitem>
         <listitem>
           <formalpara>
-            <title>Finished Simulation</title>
+            <title>Finished Simulation (<emphasis role="bold">live_sim</emphasis>)</title>
             <para>now &gt; end date.  Shows up in special list in simplay.</para>
           </formalpara>
         </listitem>
       </orderedlist>
     </sect1>
   </article>
-  
-
-
-

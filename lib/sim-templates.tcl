@@ -120,9 +120,13 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
            (select count(action_id)
               from workflow_actions
              where workflow_id = w.workflow_id) as task_count
-      from workflows w, acs_objects a
+      from workflows w, 
+           sim_simulations ss,
+           acs_objects a
      where w.workflow_id = a.object_id
+       and ss.simulation_id = w.workflow_id
        and w.object_id = :package_id 
+       and ss.sim_type in ('dev_template','ready_template')
    [template::list::orderby_clause -orderby -name sim_templates]
 " {
     set description [string_truncate -len 200 $description]

@@ -6,7 +6,7 @@ simulation::include_contract {
     @cvs-id $Id$
 } {
     display_mode {
-        allowed_values {edit display display-grouped}
+        allowed_values {edit display}
         default_value display
     }
     size {

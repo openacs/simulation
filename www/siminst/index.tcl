@@ -8,7 +8,8 @@ set package_id [ad_conn package_id]
 
 permission::require_permission -object_id $package_id -privilege sim_inst
 set admin_p [permission::permission_p -object_id $package_id -privilege admin]
-set add_url "simulation-new"
+set base_url [apm_package_url_from_id $package_id]
+set add_url "${base_url}/siminst/simulation-new"
 
 #---------------------------------------------------------------------
 # dev_sims: simulations in development
