@@ -15,5 +15,8 @@
       <xi:include href="design.xml" xmlns:xi="http://www.w3.org/2001/XInclude">
         <xi:fallback>Design Section Missing</xi:fallback>
       </xi:include>
-
+  <appendix>
+    <title>Licencing</title>
+    <para>TODO</para>
+  </appendix>
 </book>
