@@ -2,10 +2,6 @@
   <property name="title">@title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-<p>
-  Show list of cases and make user pick one before proceeding.  However, if there is only one valid case, use it.
-<p>
-
 <include src="/packages/simulation/lib/cases" party_id="@user_id@"/>
 <p></p>
 
