@@ -749,3 +749,5 @@ foreach elm $rel_elements {
     
     element set_properties object $elm -before_html $elm_before_html -after_html $elm_after_html
 }
+
+# TODO B: (0.1h) default Show in Directory to No (it's defaulted in the acs_attributes table, but the value doesn't show in the form ...)

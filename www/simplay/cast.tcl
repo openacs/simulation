@@ -88,27 +88,35 @@ template::list::create \
     -elements {
         case_pretty {
             label "Case"
+        }
+        case_action {
             display_template {
-                @roles.case_pretty@ <if @roles.can_join_case_p@ and @roles.join_case_url@ ne ""><font size="-1">\[\<a href="@roles.join_case_url@">join case</a>]</font></if>
+                <if @roles.can_join_case_p@ and @roles.join_case_url@ ne ""><a href="@roles.join_case_url@" class="button">join case</a></if>
             }
         }
         role_name {
             label "Role"
+        }
+        role_action {
             display_template {
-                @roles.role_name@ <if @roles.can_join_role_p@ and @roles.join_role_url@ ne ""><font size="-1">\[\<a href="@roles.join_role_url@">join role</a>]</font></if>
+                <if @roles.can_join_role_p@ and @roles.join_role_url@ ne ""><a href="@roles.join_role_url@" class="button">join role</a></if>
             }
         }
         n_users {
             label "# Users"
+            display_template {
+                <if @roles.n_users@ gt 0><a href="@roles.users_url@">@roles.n_users@</a></if><else>@roles.n_users@</else>
+            }
         }
         max_n_users {
             label "Max # users"
         }
     }
 
-db_multirow -extend { can_join_role_p join_case_url join_role_url } roles select_case_info {
+db_multirow -extend { can_join_role_p join_case_url join_role_url users_url } roles select_case_info {
     select wc.case_id,
            wr.role_id,
+          sc.label||'/'||wr.pretty_name as case_role,
            sc.label as case_pretty,
            wr.pretty_name as role_name,
            sr.users_per_case as max_n_users,
@@ -158,6 +166,8 @@ db_multirow -extend { can_join_role_p join_case_url join_role_url } roles select
             set join_role_url [export_vars -base cast-join { case_id role_id }]
         }
     }
+
+    set users_url [export_vars -base cast-users-list { case_id role_id }]
 }
 
 template::multirow extend roles can_join_case_p
@@ -170,4 +180,3 @@ template::multirow foreach roles {
 if { !$already_cast_p } {
     set join_new_case_url [export_vars -base cast-join { workflow_id }]
 }
-

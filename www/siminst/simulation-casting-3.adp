@@ -24,11 +24,3 @@
 </if>
 
 </else>
-
-<P>
-  TODO: B: (1h) Show total number of users per case. Javascript. Lars?
-</p>
-
-<p>
-  TODO: B: Some data needs to be read only if you return to the wizard after you've clicked the finish button. Test this.
-</p>

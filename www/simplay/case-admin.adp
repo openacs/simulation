@@ -15,11 +15,3 @@
       <formtemplate id="add_user"></formtemplate>
     </p>
   </if>
-
-<p>
-TODO: Lars Remove the assigned filter and make the table always show all roles and any assigned actions for each role. Lars?
-</p>
-
-<p>
-TODO: Lars Group by role_id. Need some help from Lars.
-</p>

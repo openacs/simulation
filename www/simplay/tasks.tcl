@@ -12,3 +12,5 @@ set title "Tasks"
 set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "$simulation_name"] $title]
 
 set user_id [ad_conn user_id]
+
+# TODO B (1h): make sure to show all completed tasks (one reason is that this is the only way to see documents that are part of tasks)

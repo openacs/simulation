@@ -179,3 +179,6 @@ if { $all_tabs_complete_p } {
 } else {
     wizard submit actors -buttons { back next }
 }
+
+# TODO: B: (1h) Show total number of users per case. Javascript. Lars?
+# TODO: B: Some data needs to be read only if you return to the wizard after you've clicked the finish button. Test this.

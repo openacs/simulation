@@ -17,16 +17,18 @@ set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set elements {
-        role {
-            label "Role"
-            display_template {
-                @roles.role@ <font size="-1">\[\<a href="@roles.add_url@">add user</a>]</font>
-            }
-       }    
-        user_name {
+    role {
+        label "Role"
+    }    
+    role_action {
+        display_template {
+            <a href="@roles.add_url@" class="button">Add user to role</a>
+        }
+    }
+    user_name {
             label "User"
             display_template {
-                @roles.user_name@ &nbsp; <font size="-1">\[<a href="@roles.move_url@">move</a>|<a href="@roles.remove_url@">remove</a>\]</font>
+                @roles.user_name@ &nbsp; <a href="@roles.move_url@" class="button">Move</a> <a href="@roles.remove_url@" class="button">remove</a>
             }
         }
         max_n_users {
@@ -88,6 +90,7 @@ db_multirow -extend {add_url move_url remove_url} roles select_case_info "
       and cu.user_id = wcrpm.party_id
       and sr.role_id = wr.role_id
       $where_clause
+   order by wr.sort_order, lower(cu.first_names), lower(cu.last_name)
 " {
     set add_url [export_vars -base case-admin-user-add { case_id role_id }]
     set move_url [export_vars -base case-admin-user-move { case_id user_id }]

@@ -39,7 +39,3 @@
     </tr>
   </multiple>
 </table>
-
-<p>
-  <a href="@manage_url@" class="action">Manage your notifications</a>
-</p>
