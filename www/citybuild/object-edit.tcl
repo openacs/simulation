@@ -745,18 +745,20 @@ foreach elm $rel_elements {
             append elm_before_html [ad_quotehtml "Remove this $relation_tag"] 
             append elm_before_html {"><img src="/resources/acs-subsite/Delete24.gif" width="24" height="24" border="0">}
             append elm_before_html {</a>}
-            append elm_before_html {<a href="javascript:CopyText('}
-            append elm_before_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
-            append elm_before_html {');" title="} 
-            append elm_before_html [ad_quotehtml "Copy a tag for this $relation_tag to the clipboard"]
-            append elm_before_html {"><img src="/resources/acs-subsite/stock_copy.png" width="24" height="24" }
-            append elm_before_html {alt="Copy" border="0"></a>}
+
+            append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
+            append elm_after_html {<a href="javascript:CopyText('}
+            append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
+            append elm_after_html {');" title="} 
+            append elm_after_html [ad_quotehtml "Copy a tag for this $relation_tag to the clipboard"]
+            append elm_after_html {"><img src="/resources/acs-subsite/stock_copy.png" width="24" height="24" }
+            append elm_after_html {alt="Copy" border="0"></a>}
         }
 
     } else {
         append elm_before_html {<img src="/resources/acs-subsite/spacer.gif" height="1" width="50">}
         append elm_before_html {&nbsp;}
-        append elm_before_html {<img src="/resources/acs-subsite/spacer.gif" height="1" width="48">}
+        append elm_before_html {<img src="/resources/acs-subsite/spacer.gif" height="1" width="24">}
     }
     append elm_before_html {&nbsp;&nbsp;&nbsp;Choose:}
     
