@@ -41,6 +41,7 @@ db_multirow -extend { document_url } documents select_documents "
          cr_items ci,
          cr_revisions cr
     where scrom.case_id = :case_id
+      and scrom.role_id = :role_id
       and scrom.role_id = wr.role_id
       and scrom.object_id = ci.item_id
       and ci.live_revision = cr.revision_id

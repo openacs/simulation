@@ -4,6 +4,7 @@ ad_page_contract {
 } {
     case_id:integer
     {assigned_only_p 0}
+    {actions_only_p 1}
 }
 
 set package_id [ad_conn package_id]
@@ -104,10 +105,12 @@ db_multirow -extend { add_url move_url remove_url user_url } roles select_case_i
            cu.first_names || ' ' || cu.last_name as user_name,
            (select count(*) 
             from   sim_messages
-            where  (to_role_id = wr.role_id or from_role_id = wr.role_id)) as num_messages,
+            where  (to_role_id = wr.role_id or from_role_id = wr.role_id)
+              and case_id = :case_id) as num_messages,
            (select count(*) 
             from   sim_case_role_object_map
-            where  role_id = wr.role_id) as num_documents,
+            where  role_id = wr.role_id
+              and  case_id = :case_id) as num_documents,
            sr.users_per_case as max_n_users
            $select_clause
     from workflow_roles wr,
@@ -158,6 +161,14 @@ set case_delete_url [export_vars -base case-delete { case_id { return_url [ad_re
 #----------------------------------------------------------------------
 # Case activity history
 #----------------------------------------------------------------------
+
+if { $actions_only_p } {
+    set toggle_url [export_vars -base case-admin { case_id assigned_only_p {actions_only_p 0}}]
+    set case_history_filter "Display \[ <b>Only actions</b> | <a href=\"$toggle_url\">Actions, messages, and documents</a> \]"
+} else {
+    set toggle_url [export_vars -base case-admin { case_id assigned_only_p {actions_only_p 1}}]
+    set case_history_filter "Display \[ <a href=\"$toggle_url\">Only actions</a> | <b>Actions, messages, and documents</b> \]"
+}
 
 template::list::create \
     -name log \
@@ -220,3 +231,47 @@ db_multirow -extend { action_url } log select_log {
     }
 }
 
+template::list::create \
+    -name documents \
+    -no_data "No documents uploaded in this simulation case" \
+    -elements {
+        timestamp {
+            label "Time"
+            display_eval {[lc_time_fmt $creation_date_ansi "%x %X"]}
+        }
+        role_pretty {
+            label "Role"
+        }
+        user_name {
+            label "User"
+            link_url_eval {[acs_community_member_url -user_id $creation_user]}
+        }
+        document_pretty {
+            label "Document"
+            link_url_col document_url
+        }        
+    }
+
+db_multirow -extend { document_url } documents select_documents {
+    select to_char(ao.creation_date, 'YYYY-HH-MM HH24:MI:SS') as creation_date_ansi,
+           wr.pretty_name as role_pretty,
+           cu.first_names || ' ' || cu.last_name as user_name,
+           cr.title as document_pretty,
+           ci.name as document_name,
+           ao.creation_user
+    from sim_case_role_object_map scrom,
+         workflow_roles wr,
+         acs_objects ao,
+         cc_users cu,
+         cr_items ci,
+         cr_revisions cr
+    where scrom.role_id = wr.role_id
+      and scrom.object_id = ao.object_id
+      and scrom.case_id = :case_id
+      and cu.user_id = ao.creation_user
+      and ci.item_id = ao.object_id
+      and ci.live_revision = cr.revision_id
+    order  by ao.creation_date
+} {
+    set document_url [simulation::object::content_url -name $document_name]
+}

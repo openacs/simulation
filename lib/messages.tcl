@@ -6,13 +6,13 @@ simulation::include_contract {
     @cvs-id $Id$
 } {
     user_id {
-        default_value ""
+        default_value {}
     }
     case_id {
-        required_p 0
+        default_value {}
     }
     role_id {
-        required_p 0
+        default_value {}
     }
     limit {
         default_value {}
@@ -61,7 +61,7 @@ set elements {
     }
 }
 
-if { [exists_and_not_null case_id] } {
+if { [exists_and_not_null case_id] && [exists_and_not_null role_id] } {
     set actions [list "Send new message" [export_vars -base message { case_id role_id }] {}]
 } else {
     set actions [list]
@@ -70,7 +70,7 @@ if { [exists_and_not_null case_id] } {
 template::list::create \
     -name messages \
     -multirow messages \
-    -no_data "You don't have any messages." \
+    -no_data "No messages." \
     -actions $actions \
     -elements $elements
 
@@ -101,19 +101,19 @@ db_multirow -extend { message_url creation_date_pretty } messages select_message
            sim_cases sc
     where  cr.revision_id = sm.message_id
     and    wc.case_id = sm.case_id
-    [ad_decode $mode "user" "and    (sm.to_role_id = :role_id or sm.from_role_id = :role_id)" ""]
+    [ad_decode $role_id "" "" "and    (sm.to_role_id = :role_id or sm.from_role_id = :role_id)"]
     and    wc.case_id = sm.case_id
     and    sc.sim_case_id = wc.object_id
     and    w.workflow_id = wc.workflow_id
-    [ad_decode $mode "user" "and wc.case_id = :case_id" "and    exists (select 1 from workflow_case_role_user_map where case_id = wc.case_id and (sm.to_role_id = role_id or sm.from_role_id = role_id) and user_id = :user_id)"]
+    [ad_decode $case_id "" "" "and wc.case_id = :case_id"]
+    [ad_decode $user_id "" "" "and exists (select 1 from workflow_case_role_user_map where case_id = wc.case_id and (sm.to_role_id = role_id or sm.from_role_id = role_id) and user_id = :user_id)"]
     order  by sm.creation_date desc
     [ad_decode $limit "" "" "limit $limit"]
 " {
-
-    if { [string equal $mode "admin"] } {
-        set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { item_id { case_id $msg_case_id } { role_id $to_role_id } }]
-    } else {
+    if { ![empty_string_p $role_id] } {
         set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { item_id case_id role_id }]
+    } else {
+        set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { item_id { case_id $msg_case_id } { role_id $to_role_id } }]
     }
     set creation_date_pretty [lc_time_fmt $creation_date_ansi "%x %X"]
 }
