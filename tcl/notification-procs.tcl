@@ -66,11 +66,11 @@ ad_proc -private simulation::notification::xml_map::type_description {} {
 ad_proc -public simulation::notification::xml_map::get_url {
     object_id
 } {
-    # Todo: Implement this proc
+    # This proc is not needed
 }
 
 ad_proc -public simulation::notification::xml_map::process_reply {
     reply_id
 } {
-    # Todo: Implement this proc
+    # This proc is not needed
 }    

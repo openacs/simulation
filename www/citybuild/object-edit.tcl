@@ -65,7 +65,7 @@ ad_form -extend -name object -form {
     {name:text,optional
         {label "URI"}
         {html {size 50}}
-        {help_text {[ad_decode [ad_form_new_p -key item_id] 1 "Leave blank to default to Title.  This will become part of the URL for the object." ""]}}
+        {help_text {[ad_decode [ad_form_new_p -key item_id] 1 "Leave blank to default to Title.  This will become part of the URL for the object. Spaces are replaced with dashes." ""]}}
         {mode {[ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"]}}
     }
     {description:text(textarea),optional
@@ -443,7 +443,7 @@ db_foreach select_attributes {
     if { !$elm_required_p } {
         append elm_decl ",optional"
     }
-    
+
     ad_form -extend -name object -form \
         [list [concat [list $elm_decl [list label \$pretty_name]] $extra]]
 }
@@ -552,8 +552,9 @@ ad_form -extend -name object -new_request {
     if { [empty_string_p $name] } {
         set name [util_text_to_url -existing_urls $existing_items -text $title]
     } else {
+        set name [util_text_to_url -text $name]
         if { [lsearch $existing_items $name] != -1 } {
-            form set_error object name "This name is already in use"
+            form set_error object name "The name \"$name\" is already in use"
             break
         }
     }
@@ -638,7 +639,6 @@ ad_form -extend -name object -new_request {
         from   cr_item_rels
         where  item_id = :item_id
     } {
-        ns_log Notice "pm debug $related_object_id $relation_tag"
         set "rel__${relation_tag}__${order_n}" $related_object_id
     }
     
@@ -725,13 +725,19 @@ foreach elm $rel_elements {
             append elm_before_html {"><img src="/resources/acs-subsite/Delete24.gif" width="24" height="24" border="0">}
             append elm_before_html {</a>}
 
-            append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
-            append elm_after_html {<a href="javascript:CopyText('}
-            append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
-            append elm_after_html {');" title="} 
-            append elm_after_html [ad_quotehtml "Copy a tag for this $relation_tag to the clipboard"]
-            append elm_after_html {"><img src="/resources/acs-subsite/stock_copy.png" width="24" height="24" }
-            append elm_after_html {alt="Copy" border="0"></a>}
+            if { ![string equal $relation_tag "stylesheet"] } {
+                append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
+                append elm_after_html {<a href="javascript:CopyText('}
+                append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
+                append elm_after_html {');" title="} 
+                append elm_after_html [ad_quotehtml "Copy a tag for this $relation_tag to the clipboard"]
+                append elm_after_html {"><img src="/resources/acs-subsite/stock_copy.png" width="24" height="24" }
+                append elm_after_html {alt="Copy" border="0"></a>}
+            }
+        }
+
+        if { [string equal $relation_tag "image"] } {
+            element set_properties object $elm help_text "To make this image appear when the object is viewed, put the html snippet in the Content field."            
         }
 
     } else {

@@ -520,13 +520,12 @@ ad_proc -public simulation::template::enroll_and_invite_users {
             set user_name [lindex $user 1]
 
             set subject "You have been enrolled in simulation $sim_template(pretty_name)"
-            # TODO: check that link to casting page is correct
             set package_id [ad_conn package_id]
             set casting_page_url \
-                [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { email }]
+                [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/cast" { workflow_id }]
             set body "Dear $user_name,
 This is to notify you that you have been enrolled in simulation $sim_template(pretty_name). You may visit the
-casting page at ${casting_page_url}.
+casting page at ${casting_page_url} to choose case or role.
 "
 
             acs_mail_lite::send \
@@ -542,10 +541,9 @@ casting page at ${casting_page_url}.
         set email [lindex $user 0]
         set user_name [lindex $user 1]        
 
-        # TODO: check that link to enrollment page is correct
         set package_id [ad_conn package_id]
         set enrollment_page_url \
-            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { email }]
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { workflow_id }]
         set subject "You have been invited to join simulation $sim_template(pretty_name)"
         set body "Dear $user_name,
 You have been invited to join simulation $sim_template(pretty_name). Please visit the enrollment page at $enrollment_page_url to accept the invitation. Thank you!"
@@ -672,10 +670,9 @@ ad_proc -public simulation::template::start {
         set email [lindex $user_item 1]
         set user_name [lindex $user_item 2]        
         
-        # TODO: check that link to enrollment page is correct
         set package_id [ad_conn package_id]
         set simplay_url \
-            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { email }]
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { workflow_id }]
         set subject "Simulation $simulation(pretty_name) has started"
         set body "Dear $user_name,
 Simulation $simulation(pretty_name) has now started. Please visit $simplay_url to participate. Thank you!"
