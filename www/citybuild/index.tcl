@@ -4,8 +4,8 @@ ad_page_contract {
   @cvs-id $Id$
 } {
     parent_id:optional
-    {orderby "title,asc"}
-    {type:optional}
+    orderby:optional
+    type:optional
 }
 
 set page_title "CityBuild"

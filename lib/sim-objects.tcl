@@ -9,6 +9,12 @@ simulation::include_contract {
         allowed_values {edit display}
         default_value display
     }
+    orderby {
+        required_p 0
+    }
+    type {
+        required_p 0
+    }
     size {
         allowed_values {short long}
         default_value long
@@ -61,7 +67,7 @@ if { $size == "yellow-pages"} {
 set elements {
     object_type_pretty {
         label "Type"
-        orderby upper(ot.pretty_name)
+        orderby lower(ot.pretty_name)
     }
     title { 
         label "Name"
@@ -123,7 +129,10 @@ template::list::create \
     -name objects \
     -multirow objects \
     -actions  $actions \
-    -elements $elements 
+    -elements $elements \
+    -orderby {
+        default_value title,asc
+    }
 
 #---------------------------------------------------------------------
 # database query

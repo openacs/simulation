@@ -53,7 +53,7 @@ lappend elements edit {
     }
 }
 lappend elements initialize {
-    label "Initialize"
+    label "Init"
     display_template {
         <if @tasks.initial_p@ true>
           <img src="/resources/acs-subsite/radiochecked.gif" height="13" width="13" border="0" alt="Initial action">
@@ -63,6 +63,7 @@ lappend elements initialize {
         </else>
     }
     html { align center }
+    sub_class narrow
 }
 lappend elements name { 
     label "Name"
@@ -114,16 +115,18 @@ db_foreach select_states {
     lappend states $state_id
 }
 
-lappend elements add_state {
-    label {
-        <form action="state-edit" style="margin: 0px;">
-        [export_vars -form { workflow_id}]
-        <input type="submit" value="Add a State">
-        </form>
+# LARS: Add state button in header removed
+if 0 { 
+    lappend elements add_state {
+        label {
+            <form action="state-edit" style="margin: 0px;">
+            [export_vars -form { workflow_id}]
+            <input type="submit" value="Add a State">
+            </form>
+        }
+        display_template {&nbsp;}
     }
-    display_template {&nbsp;}
 }
-
 
 
 lappend elements delete {
@@ -140,6 +143,7 @@ template::list::create \
     -name tasks \
     -multirow tasks \
     -no_data "No tasks in this Simulation Template" \
+    -sub_class narrow \
     -actions $actions \
     -elements $elements
 

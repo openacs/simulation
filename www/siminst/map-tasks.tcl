@@ -24,12 +24,11 @@ db_multirow -extend { description_html prop_missing_count } tasks select_taks {
            sim_tasks st
     where  a.workflow_id = :workflow_id
     and    st.task_id = a.action_id
+    order  by a.sort_order
 } {
     set description_html [ad_html_text_convert -maxlen 100 -from $description_mime_type -- $description]
     set prop_missing_count [expr $attachment_num - $prop_not_empty_count]
 }
-
-# TODO: Honor description_mime_type, fancy truncate
 
 template::list::create \
     -name "tasks" \
@@ -45,9 +44,12 @@ template::list::create \
         attachment_num {
             label "Number of attachments"
             display_template {<if @tasks.attachment_num@ gt 0>@tasks.attachment_num@</if>}
+            hide_p 1
+            html { align right }
         }
         prop_missing_count {
             label "Missing attachments"
             display_template {<if @tasks.prop_missing_count@ gt 0><b>@tasks.prop_missing_count@</b></if>}
+            html { align center }
         }
     }

@@ -6,11 +6,11 @@
 <p></p>
 
 <h2>Simulations in Casting</h2>
-<p>
-  <listtemplate name="casting_sims"></listtemplate>
-</p>
-<p>
-<a href="../simplay/">Live Simulations</a>
+
+<listtemplate name="casting_sims"></listtemplate>
+<p></p>
+
+<a href="../simplay/" class="action">Live Simulations</a>
 
 
 <p>TODO: page for the admin to see the groups that are created, and change them

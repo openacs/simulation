@@ -20,6 +20,7 @@ template::list::create \
     -multirow dev_sims \
     -actions "{New Simulation From Template} $add_url" \
     -no_data "No Simulations are in Development" \
+    -sub_class "narrow" \
     -elements {
         pretty_name {
             link_url_col edit_url
@@ -28,9 +29,7 @@ template::list::create \
         }
         description {
             label "Description"
-            display_template {
-                TODO: Description column
-            }
+            display_template {@dev_sims.description;noquote@}
 
         }
         role_count {
@@ -81,6 +80,8 @@ if { $admin_p } {
 db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_url prop_empty_count } dev_sims select_dev_sims "
     select w.workflow_id,
            w.pretty_name,
+           w.description,
+           w.description_mime_type,
            (select count(*) 
               from sim_roles sr,
                    workflow_roles wr
@@ -114,6 +115,7 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
        and ss.sim_type = 'dev_sim'
     $sim_in_dev_filter_sql
 " {
+    set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
     set prop_empty_count [expr $prop_count - $prop_not_empty_count]
     if { [simulation::template::ready_for_casting_p -role_empty_count $role_empty_count -prop_empty_count $prop_empty_count] } {
         set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id return_url {[ad_return_url]}}]

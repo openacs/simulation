@@ -1,2 +1,2 @@
-<p><listtemplate name="tasks"></listtemplate></p>
+<listtemplate name="tasks"></listtemplate>
 

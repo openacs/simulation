@@ -4,4 +4,8 @@
 
 <listtemplate name="tasks"></listtemplate>
 
+<p></p>
+
+<a href="." class="action">Back to simulation list</a>
+
 
