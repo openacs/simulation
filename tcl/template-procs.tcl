@@ -83,6 +83,7 @@ ad_proc -public simulation::template::edit {
                             if { [empty_string_p $row($attr)] } {
                                 set $varname [db_null]
                             } else {
+                                # TODO B: need better tests for duration before passing it into the database.
                                 set $varname "interval '[db_quote $row($attr)]'"
                             }
                         }
@@ -496,11 +497,10 @@ ad_proc -public simulation::template::force_start {
     enroll_end, and enroll_start properties to reflect an immediate start
     and then directly invoking simulation::template::start.
 
-    TODO: make sure the sweeper doesn't pick up simulations that
-          have been forced to start.
-
     @author Peter Marklund
 } {
+    # TODO (.25h): make sure the sweeper doesn't pick up simulations that have been forced to start.
+
     simulation::template::get -workflow_id $workflow_id -array simulation
 
     db_transaction {
@@ -531,10 +531,10 @@ ad_proc -public simulation::template::start {
     Make a simulation go live. Does enrollment and
     casting and sets sim_type attribute to live_sim.
 
-    TODO: invoke this proc from a sweep
-
     @author Peter Marklund
 } {
+    # TODO (.25h): invoke this proc from a sweep
+
     simulation::template::get -workflow_id $workflow_id -array simulation
 
     if { ![string equal $simulation(sim_type) "casting_sim"] } {
@@ -566,14 +566,12 @@ ad_proc -public simulation::template::autocast {
     Takes a mapped simulation template and converts it into a cast simulation
     with simulation cases. This procedure expects to be called after enrollment is complete.
 
-    TODO: agent support
-
-    TODO: taking actor type into account
-
-    TODO: other casting_type values than auto
-
     @author Peter Marklund
 } {
+    # TODO: taking actor type into account -- LARS: What is this? Setting to 2h to be safe (I think)
+
+    # TODO: other casting_type values than auto -- LARS: Why would we then do autocast, if casting_type is not auto?
+
     simulation::template::role_party_mappings \
         -workflow_id $workflow_id \
         -array roles
@@ -674,7 +672,7 @@ ad_proc -public simulation::template::new {
     {-package_key:required}
     {-object_id:required}
 } {
-    Create a new simulation template.  TODO: need better tests for duration before passing it into the database.
+    Create a new simulation template.  
 
     @return The workflow_id of the created simulation.
 
@@ -831,7 +829,7 @@ ad_proc -public simulation::template::get_inst_state {
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template
     
-    # TODO: Refactor
+    # TODO (1.5h): Refactor this and the corresponding wizard.tcl/adp page
     # What we really need to know is whether each step is complete
     # They're all independent of each other, except for casting, which is dependent on participants.
 

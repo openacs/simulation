@@ -67,7 +67,7 @@ ad_proc simulation::object::get_object_type_options {
         and    ancestor_type = 'content_revision'
     }]
 
-    # LARS TODO: We need to be able to scope this to a package, 
+    # TODO B: We need to be able to scope this to a package, 
     # possibly filter by other things, control the sort order,
     # we need to be able to control what the label looks like (e.g. include email for users)
     # and it needs to be intelligent about scaling issues

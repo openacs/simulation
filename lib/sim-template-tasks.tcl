@@ -33,8 +33,6 @@ switch $display_mode {
 #-------------------------------------------------------------
 # tasks list 
 #-------------------------------------------------------------
-# TODO: missing: discription, type
-# how is type going to work?  open question pending prototyping
 
 if { $display_mode == "edit"} {
     set list_actions [list "Add a Task" [export_vars -base task-edit {workflow_id} ] {}]

@@ -29,6 +29,7 @@ set elements {
     object_type {
         label "Type"
         orderby upper(ot.pretty_name)
+        display_col object_type_pretty
     }
     title { 
         label "Name"
@@ -54,23 +55,29 @@ template::list::create \
 db_multirow -extend {view_url} objects select_objects "
    select sl.object_id,
           sl.object_type,
+          ot.pretty_name as object_type_pretty,
           sl.title,
           sl.mime_type,
           sl.name,
           sl.item_id,
           sl.description
-     from sim_locationsx sl
+     from sim_locationsx sl,
+          acs_object_types ot
     where in_directory_p = 't'
+      and ot.object_type = sl.object_type
    UNION
    select sc.object_id,
           sc.object_type,
+          ot.pretty_name as object_type_pretty,
           sc.title,
           sc.mime_type,
           sc.name,
           sc.item_id,
           sc.description
-     from sim_charactersx sc
+     from sim_charactersx sc,
+          acs_object_types ot
     where in_directory_p = 't'
+      and ot.object_type = sc.object_type
 
     [template::list::orderby_clause -orderby -name "objects"]
 " {

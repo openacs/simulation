@@ -12,7 +12,7 @@ simulation::include_contract {
 
 set package_id [ad_conn package_id]
 
-    # TODO: if invited instead of open, say "accept invitation to enroll"
+# TODO (.25h): if invited instead of open, say "accept invitation to enroll"
 
 set elements {
     pretty_name {
@@ -40,8 +40,8 @@ template::list::create \
     -no_data "No simulations available to self-enroll." \
     -elements $elements 
 
-# TODO: verify that the first half of this query returns the sims to which the user is invited (data model may have changed since this was coded)
-# TODO: exclude simulations for which the user is currently enrolled
+# TODO (.25h): verify that the first half of this query returns the sims to which the user is invited (data model may have changed since this was coded)
+# TODO (.25h): exclude simulations for which the user is currently enrolled
 
 db_multirow -extend {enroll_url} avail_sims select_avail_sims "
     select w.workflow_id,

@@ -66,7 +66,6 @@ template::list::create \
     -no_data "You don't have any tasks." \
     -elements $elements
 
-# TODO: Honor role_id
 db_multirow -extend { task_url } tasks select_tasks "
     select wcea.enabled_action_id,
            wa.pretty_name as name,

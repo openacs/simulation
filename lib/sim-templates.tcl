@@ -5,10 +5,6 @@ simulation::include_contract {
     @creation-date 2003-11-12
     @cvs-id $Id$
 } {
-    display_mode {
-        allowed_values {edit display}
-        default_value display
-    }
     size {
         allowed_values {short long}
         default_value long
@@ -21,8 +17,6 @@ set create_p [permission::permission_p -object_id $package_id -privilege sim_tem
 
 set actions [list "Add a template" $add_url {} \
                  "Import a template" "[apm_package_url_from_id $package_id]simbuild/template-load" {}]
-
-# TODO: make this include honor the display_mode parameter
 
 switch $size {
     short {
@@ -115,7 +109,7 @@ template::list::create \
 # a list of templates
 #
 ######################################################################
-# TODO: limit this to see only your own templates
+# TODO (.25h): limit this to see only your own templates
 # If you are the admin, show all templates in long mode
 
 db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templates select_sim_templates "
@@ -148,14 +142,14 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
 " {
     set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
 
-    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" {workflow_id} ]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { workflow_id }]
 
-    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" {workflow_id} ]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { workflow_id }]
 
-    set clone_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-clone" {workflow_id} ]
+    set clone_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-clone" { workflow_id }]
 
     set edit_p [permission::write_permission_p -object_id $workflow_id]
 
-    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-delete" {workflow_id} ]
+    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-delete" { workflow_id }]
 
 }

@@ -10,7 +10,7 @@ simulation::include_contract {
     }
 }
 
-# TODO: add link to simplay/case for each case
+# TODO: add link to simplay/case for each case - LARS: We can't unless we list all the roles as well, 'cause simplay/case requires role_id
 set package_id [ad_conn package_id]
 set user_id [auth::get_user_id]
 
