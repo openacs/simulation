@@ -9,6 +9,40 @@ ad_library {
 namespace eval simulation::object {}
 namespace eval simulation::object::xml {}
 
+ad_proc -private simulation::object::url { 
+    {-package_id ""}
+    {-name:required}
+} {
+    The URL for the page displaying contents and name of
+    an item.
+} {
+    if { [empty_string_p $package_id] } {
+        set package_url [ad_conn package_url]
+    } else {
+        set package_id [ad_conn package_id]
+        set package_url "[ad_url][apm_package_url_from_id $package_id]"
+    }
+    
+    return "${package_url}object/${name}"
+}
+
+ad_proc -private simulation::object::content_url { 
+    {-package_id ""}
+    {-name:required}
+} {
+    The URL for serving up only the content of an item
+    with given name.
+} {
+    if { [empty_string_p $package_id] } {
+        set package_url [ad_conn package_url]
+    } else {
+        set package_id [ad_conn package_id]
+        set package_url "[ad_url][apm_package_url_from_id $package_id]"
+    }
+    
+    return "${package_url}object-content/${name}"
+}
+
 ad_proc -private simulation::object::xml::file_sweeper {} {
     Loop over all simulation package instances and re-generate
     XML map files for them. 
@@ -181,8 +215,6 @@ ad_proc -private simulation::object::xml::get_doc {
         set package_id [ad_conn package_id]
     }
 
-    set full_package_url "[ad_url][apm_package_url_from_id $package_id]"
-
     # Get table names and id column names for the on_map_p attribute of each object type
     # By using the multirow we avoid a nested db_foreach
     set parent_id [bcms::folder::get_id_by_package_id -package_id $package_id]
@@ -228,12 +260,12 @@ ad_proc -private simulation::object::xml::get_doc {
               order by ci.name
         "
         db_foreach select_on_map_objects $query {
-            set url "${full_package_url}object/$uri"
+            set url [simulation::object::content_url -package_id $package_id -name $uri]
 
             set thumbnail_url ""
             if { [lsearch -exact {sim_location sim_prop sim_character} $content_type] != -1 } {
                 if { ![empty_string_p $thumbnail_uri] } {
-                    set thumbnail_url "${full_package_url}object-content/${thumbnail_uri}"
+                    set thumbnail_url [simulation::object::content_url -package_id $package_id -name $thumbnail_uri]
                 }
             } 
             

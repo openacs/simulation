@@ -719,7 +719,7 @@ foreach elm $rel_elements {
 
         set rel_obj_name [db_string name { select name from cr_items where item_id = :related_object_id } -default {}]
         if { ![empty_string_p $rel_obj_name] } {
-            set thumb_url [export_vars -base "object-content/$rel_obj_name"]
+            set thumb_url [simulation::object::content_url -name $rel_obj_name]
             append elm_before_html {<img src="} $thumb_url {" width="50" height="50">}
             append elm_before_html {&nbsp;}
             append elm_before_html {<a href="javascript:document.forms['object'].elements['} $elm {'].value = '';}

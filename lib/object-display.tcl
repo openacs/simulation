@@ -12,7 +12,7 @@ ad_page_contract {
 set root_id [bcms::folder::get_id_by_package_id -parent_id 0]
 
 # This little exercise removes the object/ part from the extra_url
-set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 2 end]]
+set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 1 end]]
 
 if { [empty_string_p $extra_url] } {
     set extra_url "index"
@@ -76,7 +76,7 @@ template::list::create \
 multirow create attributes attribute value 
 
 set page_title $item(title)
-set context [list [list ../object-list "Objects"] $page_title]
+set context [list $page_title]
 
 foreach name [lsort [array names content]] {
     multirow append attributes $name $content($name)
@@ -97,11 +97,12 @@ set related_stylesheets [bcms::item::list_related_items \
                              -item_id $item(item_id) \
                              -relation_tag stylesheet \
                              -return_list]
-set first_stylesheet [lindex $related_stylesheets 0]
-set stylesheet_id [ns_set get $first_stylesheet item_id]
-if { [exists_and_not_null stylesheet_id] } {
+if { [llength $related_stylesheets] > 0 } {
+    set first_stylesheet [lindex $related_stylesheets 0]
+    set stylesheet_id [ns_set get $first_stylesheet item_id]
+
     array set item [bcms::item::get_item -item_id $stylesheet_id]
-    set stylesheet_url [file join [ad_conn package_url] object-content $item(name)]
+    set stylesheet_url [simulation::object::content_url -name $item(name)]
 } else {
     set stylesheet_url {}
 }

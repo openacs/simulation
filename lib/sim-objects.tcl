@@ -98,10 +98,10 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
 
     switch -glob $mime_type {
         text/* - {} {
-            set view_url [export_vars -base "object/$name"]
+            set view_url [simulation::object::url -name $name]
         }
         default {
-            set view_url [export_vars -base "object-content/$name"]
+            set view_url [simulation::object::content_url -name $name]
         }
     }
 }

@@ -1,0 +1,26 @@
+#if { [catch {
+    # Source Tcl libraries
+    set script_dir [file dirname [info script]]
+    source "${script_dir}/../../../etc/install/tcl/test-procs.tcl"
+    source "${script_dir}/simulation-test-procs.tcl"
+
+    # Test Execution START
+
+    ::twt::log_section "Login the site wide admin"
+    ::twt::user::login_site_wide_admin
+
+    set simulation_uri /simulation
+    ::twt::log_section "crawling links starting from $simulation_uri"        
+    ::twt::crawl_links $simulation_uri
+            
+# } result] } {
+#     global errorInfo
+
+#     # Output error stack trace and HTML response body
+#     ::twt::log $result
+#     ::twt::log "*** Tcl TRACE ***"
+#     ::twt::log $errorInfo
+#     ::twt::log "The response body is: [response body]"
+
+#     error "Test failed: $result"
+# }

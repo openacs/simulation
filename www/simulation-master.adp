@@ -8,7 +8,7 @@
 <if @admin_p@>
   <property name="subnavbar_link">
       <a href="@parameters_url@">Configuration</a> | <a
-       href="doc">Documentation</a> | <a href="/test/admin/index?by_package_key=simulation&view_by=testcase&quiet=0">Tests</a>
+       href="@documentation_url@">Documentation</a> | <a href="/test/admin/index?by_package_key=simulation&view_by=testcase&quiet=0">Tests</a>
 </property>
 </if>
 <slave>

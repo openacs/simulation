@@ -8,6 +8,14 @@ ad_library {
 set name [ad_generate_random_string]
 
 aa_register_case simulation__data_model {
+    Test the simulation::object:url and simulation::object::content_url
+    procs.
+} {
+    aa_log [simulation::object::url -name "test_name"]
+    aa_log [simulation::object::content_url -name "test_name"]
+}
+
+aa_register_case simulation__data_model {
     Checks that the data model is present.
 
     @author Joel Aufrecht
