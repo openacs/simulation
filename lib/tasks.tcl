@@ -29,6 +29,7 @@ set elements {
     }
     case_label {
         label "Case"
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
 }
 

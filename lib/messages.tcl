@@ -8,13 +8,17 @@ simulation::include_contract {
     user_id {
         default_value ""
     }
+    case_id {
+        required_p 0
+    }
 }
 
 set package_id [ad_conn package_id]
 
 set elements {
-    case_name {
+    case_label {
         label "Case"
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
     from {
         label "From"
@@ -24,11 +28,12 @@ set elements {
         message_url
         label "Subject"
     }
-    date {
-        label "Date"
+    creation_date_pretty {
+        label "Received"
     }
     attachment_count {
         label "Attachments"
+        html { align center }
     }
 }
 
@@ -39,11 +44,11 @@ template::list::create \
     -elements $elements 
 
 # TODO: make case_name be a combo of simulation name and case #
-db_multirow -extend { message_url } messages select_messages "
+db_multirow -extend { message_url creation_date_pretty } messages select_messages "
     select distinct sm.message_id,
            sm.title as subject,
-           sm.case_id as case_name,
-           creation_date as date,
+           sc.label as case_label,
+           to_char(creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date_ansi,
            (select p.first_names || ' ' || p.last_name
               from persons p
              where p.person_id = creation_user) as from,
@@ -53,10 +58,16 @@ db_multirow -extend { message_url } messages select_messages "
                and relation_tag = 'attachment') as  attachment_count
       from sim_messagesx sm,
            workflow_case_role_party_map wcrmp,
-           party_approved_member_map pamm
+           party_approved_member_map pamm,
+           workflow_cases wc,
+           sim_cases sc
      where pamm.member_id = :user_id
        and wcrmp.party_id = pamm.party_id
        and wcrmp.case_id = sm.case_id
+       and wc.case_id = sm.case_id
+       and sc.sim_case_id = wc.object_id
+     [ad_decode [exists_and_not_null case_id] 1 "and sm.case_id = :case_id" ""]
 " {
-    set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { message_id }]
+    set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { message_id case_id }]
+    set creation_date_pretty [lc_time_fmt $creation_date_ansi "%x %X"]
 }
