@@ -4,3 +4,14 @@
 .notloggedin {
     background-color: silver;
 }
+
+.help-link {
+	float: right;
+	clear: none;
+	margin-left: -200px;
+	margin-top: -30px;
+}
+
+#page-body td {
+	vertical-align: top;
+}

@@ -36,6 +36,14 @@ if { ![exists_and_not_null case_id] || ![exists_and_not_null role_id] } {
 }
 
 set elements {
+    sim_name {
+        label {[_ simulation.Simulation]}
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
+    }
+    case_label {
+        label {[_ simulation.Case]}
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
+    }
     from {
         label {[_ simulation.From]}
     }
@@ -54,14 +62,6 @@ set elements {
         label {[_ simulation.Attachments]}
         html { align center }
     }
-    case_label {
-        label {[_ simulation.Case]}
-        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
-    }
-    sim_name {
-        label {[_ simulation.Simulation]}
-        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
-    }
 }
 
 set extend { message_url creation_date_pretty }
@@ -75,7 +75,18 @@ if { $show_body_p } {
     lappend extend body
 }
 
-if { [exists_and_not_null case_id] && [exists_and_not_null role_id] } {
+if { [exists_and_not_null case_id] } {
+    set num_enabled_actions [db_string select_num_enabled_actions { 
+        select count(*) 
+        from   workflow_case_enabled_actions 
+        where  case_id = :case_id
+    }]
+    set complete_p [expr $num_enabled_actions == 0]
+} else {
+    set complete_p 0
+}
+
+if { [string match $complete_p "0"] && [exists_and_not_null role_id] } {
     set actions [list [_ simulation.Send_new_message] [export_vars -base message { case_id role_id }] {}]
 } else {
     set actions [list]
@@ -96,19 +107,23 @@ db_multirow -extend $extend messages select_messages "
            w.pretty_name as sim_name,
            sm.creation_date,
            to_char(sm.creation_date, 'YYYY-MM-DD HH24:MI:SS') as creation_date_ansi,
-           (select scx.title
+           (select wr.pretty_name || ' (' || scx.title || ')' as from
               from sim_roles fr, 
                    sim_charactersx scx,
-                   cr_items ci
+                   cr_items ci,
+                   workflow_roles wr
              where fr.role_id = sm.from_role_id
+             and   fr.role_id = wr.role_id
              and   scx.item_id = fr.character_id
              and   ci.item_id = scx.item_id
              and   ci.live_revision = scx.object_id) as from,
-           (select scx.title
+           (select wr.pretty_name || ' (' || scx.title || ')' as to
               from sim_roles tr,
                    sim_charactersx scx,
-                   cr_items ci
+                   cr_items ci,
+                   workflow_roles wr
              where tr.role_id = sm.to_role_id
+             and   tr.role_id = wr.role_id
              and   scx.item_id = tr.character_id
              and   ci.item_id = scx.item_id
              and   ci.live_revision = scx.object_id) as to,

@@ -25,14 +25,26 @@
 @action.description@
 </p>
 
-<p>
-@documents_pre_form;noquote@
-</p>
-
-<if @attachment_options@ nil>
+<if @message_p@ not true>
+<if @documents_pre_form_empty_p@>
   <p>
-    #simulation.to_attach_a_document#
+    <em>#simulation.no_attachments#</em>
   </p>
+</if>
+<else>
+  <p>
+    <h4>#simulation.Documents#</h4>
+    @documents_pre_form;noquote@
+  </p>
+</else>
+</if>
+
+<if @message_p@>
+  <if @attachment_options@ nil>
+    <p>
+      #simulation.to_attach_a_document#
+    </p>
+  </if>
 </if>
 
 <if @received_attachments@ not nil>
@@ -40,5 +52,6 @@
     #simulation.lt_Attachments_in_receiv# @received_attachments;noquote@
   </p>
 </if>
+
 
 <formtemplate id="@form_id@"></formtemplate>

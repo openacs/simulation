@@ -7,12 +7,14 @@
 
   <table width="100%" border="0">
     <tr>
-      <td width="100%" valign="top">
+      <td width="200" class="control-bar" valign="top">
       <slave>
       </td>
       <td width="500" valign="top">
-      <include src="map">
-          <div class="map-master_flash">Placeholder for flash map</div>
+          <div class="map-master_flash">
+		<include src="map">
+		<p><a href="@map_help_url@">#simulation.Map_help#</a></p>
+	  </div>
       </td>   
     </tr>   
   </table>    

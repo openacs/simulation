@@ -30,7 +30,7 @@ set package_id [ad_conn package_id]
 #-------------------------------------------------------------
 
 if { $display_mode == "edit"} {
-    set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url "[ad_return_url]\#tasks" } }] {}]
+    set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url "[ad_return_url]" } }] {}]
 } else {
     set list_actions [list]
 }
@@ -221,11 +221,11 @@ db_multirow -extend $extend tasks select_tasks "
      order by wa.sort_order
 " {
     incr counter
-    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]\#tasks"} }]
-    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]\#tasks"}}]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]"} }]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]"}}]
     set delete_url \
-        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url "[ad_return_url]\#tasks"} }]
-    set copy_url [export_vars -base task-copy { action_id {return_url "[ad_return_url]\#tasks"} }]
+        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id workflow_id {return_url "[ad_return_url]"} }]
+    set copy_url [export_vars -base task-copy { action_id workflow_id {return_url "[ad_return_url]"} }]
 
     set assigned_role_edit_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
@@ -239,9 +239,9 @@ db_multirow -extend $extend tasks select_tasks "
             } else {
                 set state_$state_id enabled
             }
-            set state_${state_id}_url [export_vars -base task-enabled-in-state-update { action_id state_id { enabled_p f } { return_url {[ad_return_url]\#tasks} } }]
+            set state_${state_id}_url [export_vars -base task-enabled-in-state-update { action_id state_id { enabled_p f } { return_url {[ad_return_url]} } }]
         } else {
-            set state_${state_id}_url [export_vars -base task-enabled-in-state-update { action_id state_id { return_url {[ad_return_url]\#tasks} } }]
+            set state_${state_id}_url [export_vars -base task-enabled-in-state-update { action_id state_id { return_url {[ad_return_url]} } }]
 
         }
         if { $new_state == $state_id } {
@@ -250,9 +250,9 @@ db_multirow -extend $extend tasks select_tasks "
     }
 
     if { $counter > 1 } {
-        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction up } { return_url "[ad_return_url]\#tasks" } }]
+        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction up } { return_url "[ad_return_url]" } { parent_action_id $parent_action_id } }]
     }
-    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction down } { return_url "[ad_return_url]\#tasks" } }]
+    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction down } { return_url "[ad_return_url]" } { parent_action_id $parent_action_id } }]
 
     switch $trigger_type {
         workflow - parallel - dynamic {

@@ -9,6 +9,7 @@ ad_page_contract {
 
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
+set package_url [ad_conn package_url]
 
 ######################################################################
 #
@@ -109,6 +110,12 @@ ad_form -extend -name sim_template -form {
     if { !$unique_p } {
         form set_error sim_template pretty_name "This name is already used by another simulation"
         break
+    }
+
+    if { [string match $template_ready_p "t"] && ![simulation::template::check_init_p -workflow_id $workflow_id] } {
+	form set_error sim_template template_ready_p "This template or one of its subworkflows or parallel tasks is missing an initial action. You can't mark a template ready for use until you have added all required initial actions."
+	break
+
     }
 
     set description_mime_type [template::util::richtext::get_property format $description]

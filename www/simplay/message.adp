@@ -4,9 +4,11 @@
   <property name="focus">@focus;noquote@</property>
 
 <if @attachment_options@ nil>
-  <p>
-    #simulation.to_attach_document_to_message#
-  </p>
+  <if @form_mode@ eq "edit">
+      <p>
+	#simulation.to_attach_document_to_message#
+      </p>
+  </if>
 </if>
   
 <formtemplate id="message"></formtemplate>

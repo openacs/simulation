@@ -8,8 +8,6 @@ permission::require_write_permission -object_id $workflow_id
 
 simulation::template::get -workflow_id $workflow_id -array sim_template
 
-set stylesheet_options [simulation::object::get_object_type_options -object_type sim_stylesheet]
-
 ad_form -export { workflow_id } -name simulation -form {
     {pretty_name:text
         {label "Simulation Name"}
@@ -45,10 +43,6 @@ ad_form -export { workflow_id } -name simulation -form {
       {label "Should we show states?<br>(i.e. Started, Open, Written...)"}
       {options {{"Show states" t} {"Don't show states" f}}}
     }
-    {stylesheet:integer(select),optional
-        {label "CSS Stylesheet"}
-        {options $stylesheet_options}
-    }
 } -on_request {
 
     foreach elm { 
@@ -60,7 +54,6 @@ ad_form -export { workflow_id } -name simulation -form {
         enroll_start
         enroll_end
         show_states_p
-        stylesheet
     } { 
         set $elm $sim_template($elm)
     }
@@ -167,7 +160,7 @@ ad_form -export { workflow_id } -name simulation -form {
     }
 
     foreach elm { send_start_note_date case_start case_end pretty_name description description_mime_type enroll_type enroll_start enroll_end 
-                  show_states_p stylesheet } {
+                  show_states_p } {
         set row($elm) [set $elm]
     }
  

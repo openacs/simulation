@@ -19,6 +19,7 @@ ad_proc -private simulation::object::url {
     {-package_id ""}
     {-name:required}
     {-mime_type ""}
+    {-simplay ""}
 } {
     The URL for the page displaying contents and name of
     an item.
@@ -29,9 +30,17 @@ ad_proc -private simulation::object::url {
         set package_id [ad_conn package_id]
         set package_url "[ad_url][apm_package_url_from_id $package_id]"
     }
+
+    if { [empty_string_p $simplay] } {
+	set simplay 0
+    }
     
     if { [empty_string_p $mime_type] || [string match "text/*" $mime_type] } {
-        return "${package_url}object/${name}"
+	if { !$simplay } {
+	    return "${package_url}object/${name}"
+	} else {
+	    return "${package_url}simplay/object/${name}"
+	}
     } else {
         return "${package_url}object-content/${name}"
     }

@@ -1324,16 +1324,11 @@ ad_proc -private simulation::template::get_inst_state_not_cached {
             } 
 
             # 3. Tasks
-            set prop_empty_count [db_string prop_empty_count {
-                select sum((select count(*) from sim_task_object_map where task_id = wa.action_id) - st.attachment_num)
-                from   sim_tasks st,
-                       workflow_actions wa
-                where  st.task_id = wa.action_id
-                and    wa.workflow_id = :workflow_id
-            }]                
-            if { $prop_empty_count == 0 } {
-                set tab_complete_p(map-tasks) 1
-            } 
+
+            # Jarkko: I took away the check because the attachments shouldn't
+	    # be obligatory
+	    set tab_complete_p(map-tasks) 1
+
 
             # 4. Participants
             set num_parties [db_string num_parties { select count(*) from sim_party_sim_map where simulation_id = :workflow_id}]
@@ -1513,3 +1508,46 @@ ad_proc -public simulation::template::user_mapped_to_role_p {
           and pamm.member_id = :user_id
     }]
 }
+
+ad_proc -public simulation::template::check_init_p {
+    {-workflow_id:required}
+} {
+    Checks that given simulation template and all its subworkflows
+    and parallel tasks have an initial action. Returns 1 if everything
+    is ok and 0 if an init action is missing.
+
+    @param workflow_id ID of simulation template.
+} {
+    set ret_val 1
+
+    if { ![db_string get_init "
+        select count(*)
+        from workflow_actions
+        where workflow_id = :workflow_id and
+              trigger_type = 'init' and
+              parent_action_id is null"] } {
+        return 0
+    }
+    
+    db_foreach get_subworkflows {
+        select action_id 
+        from workflow_actions
+        where workflow_id = :workflow_id and
+	      trigger_type in ('workflow')
+    } {
+        if { ![db_string get_sub_init "
+                select count(*) 
+                from workflow_actions
+                where workflow_id = :workflow_id and
+                      trigger_type = 'init' and
+                      parent_action_id = :action_id"] } {
+	    set ret_val 0
+	    break
+        }
+    }
+    
+    return $ret_val
+}
+
+
+

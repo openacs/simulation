@@ -8,6 +8,9 @@ simulation::include_contract {
     party_id {
         default_value ""
     }
+    as_orderby {
+	required_p 0
+    }
 }
 
 set package_id [ad_conn package_id]
@@ -15,19 +18,19 @@ set user_id [ad_conn user_id]
 
 set elements {
     pretty_name {
-        label "Simulation"
+        label "[_ simulation.Simulation]"
         orderby upper(w.pretty_name)
     }
     description {
-        label "Description"
+        label "[_ simulation.Description]"
         display_template {
             @avail_sims.description;noquote@
         }
     }
     enroll {
-        label "Join"
+        label "[_ simulation.Join]"
         display_template {
-            <a href="@avail_sims.enroll_url@">Join</a> 
+            <a href="@avail_sims.enroll_url@">[_ simulation.Join]</a> 
         }
     }
     
@@ -35,8 +38,9 @@ set elements {
 
 template::list::create \
     -name avail_sims \
+    -orderby_name as_orderby \
     -multirow avail_sims \
-    -no_data "No simulations available to join." \
+    -no_data "[_ simulation.lt_No_simulations_availa]" \
     -elements $elements 
 
 db_multirow -extend { enroll_url } avail_sims select_avail_sims "

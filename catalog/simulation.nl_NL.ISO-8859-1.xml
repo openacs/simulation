@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="simulation" package_version="1.0.0b3" locale="nl_NL" charset="ISO-8859-1">
+<message_catalog package_key="simulation" package_version="1.0.0b4" locale="nl_NL" charset="ISO-8859-1">
 
   <msg key="Cancel">Annuleren</msg>
   <msg key="Delete_this_template">Verwijder dit sjabloon</msg>

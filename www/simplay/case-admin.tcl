@@ -20,6 +20,8 @@ set context [list [list . [_ simulation.SimPlay]] $title]
 set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
+set complete_p [simulation::case::complete_p -case_id $case_id]
+
 set elements {
     role {
         label {[_ simulation.Role]}
@@ -27,7 +29,7 @@ set elements {
     }    
     role_action {
         display_template {
-            <a href="@roles.add_url@" class="button">Add user to role</a>
+            [ad_decode $complete_p 1 "" "<a href=\"@roles.add_url@\" class=\"button\">Add user to role</a>"]
         }
     }
     user_name {
@@ -37,8 +39,9 @@ set elements {
     user_actions {
         label ""
         display_template {
-          <a href="@roles.move_url@" class="button">[_ simulation.Move_user]</a> \
-          <a href="@roles.remove_url@" class="button">[_ simulation.Remove_user] </a>
+	    [ad_decode $complete_p 1 "" " \
+          <a href=\"@roles.move_url@\" class=\"button\">[_ simulation.Move_user]</a> \
+          <a href=\"@roles.remove_url@\" class=\"button\">[_ simulation.Remove_user] </a>"]
         }
     }
     max_n_users {

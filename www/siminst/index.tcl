@@ -1,15 +1,21 @@
 ad_page_contract {
     The index page for SimInst
+} {
+    ds_orderby:optional
+    cs_orderby:optional
 } 
 
 set page_title "SimInst"
 set context [list $page_title]
 set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
+set package_uri [apm_package_url_from_id $package_id]
+
+set help_url "${package_uri}object/[parameter::get -package_id $package_id -parameter SimInstHelpFile]"
 
 permission::require_permission -object_id $package_id -privilege sim_inst
 set admin_p [permission::permission_p -object_id $package_id -privilege admin]
-set base_url [apm_package_url_from_id $package_id]
+set base_url $package_uri
 
 #---------------------------------------------------------------------
 # dev_sims: simulations in development
@@ -18,9 +24,9 @@ set base_url [apm_package_url_from_id $package_id]
 template::list::create \
     -name dev_sims \
     -multirow dev_sims \
-    -actions "{New Simulation From Template} simulation-new" \
     -no_data "No Simulations are in Development" \
     -sub_class "narrow" \
+    -orderby_name ds_orderby \
     -elements {
         edit {
             sub_class narrow
@@ -41,14 +47,6 @@ template::list::create \
             label "Description"
             display_template {@dev_sims.description;noquote@}
 
-        }
-        copy {
-            sub_class narrow
-            display_template {
-                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
-            }
-            link_url_col clone_url
-            link_html { title "Clone this template" }
         }
         delete {
             sub_class narrow
@@ -93,6 +91,7 @@ db_multirow -extend { state state_pretty clone_url cast_url map_roles_url map_pr
        and ao.object_id = w.workflow_id
        and ss.sim_type = 'dev_sim'
     $sim_in_dev_filter_sql
+    [template::list::orderby_clause -orderby -name "dev_sims"]
 " {
     set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
 
@@ -120,18 +119,11 @@ template::list::create \
     -name casting_sims \
     -multirow casting_sims \
     -no_data "No Simulations are in Casting" \
+    -orderby_name cs_orderby \
     -elements {
-        edit {
-            sub_class narrow
-            link_url_eval {[export_vars -base wizard { workflow_id }]}
-            display_template {
-                <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
-            }
-        }
         pretty_name {
             label "Simulation"
             orderby upper(w.pretty_name)
-            link_url_eval {[export_vars -base wizard { workflow_id }]}
         }
         n_users {
             label "Users enrolled"
@@ -143,18 +135,13 @@ template::list::create \
         }
         case_start {
             label "Start date"            
+	    orderby case_start
         }
         start_now {
             label "Start"
             sub_class narrow
             display_template {
                 <a href="@casting_sims.start_url@">Start immediately</a>
-            }
-        }
-        copy {
-            sub_class narrow
-            display_template {
-                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
             }
         }
         delete {
@@ -197,6 +184,7 @@ db_multirow -extend { edit_url delete_url start_url } casting_sims select_castin
        and ao.object_id = w.workflow_id
        and ss.sim_type = 'casting_sim'
     $sim_in_dev_filter_sql
+    [template::list::orderby_clause -orderby -name "casting_sims"]
 " {
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
     set start_url [export_vars -base "simulation-start" { workflow_id }]

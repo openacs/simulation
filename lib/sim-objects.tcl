@@ -74,6 +74,11 @@ set elements {
         orderby r.title
         link_url_col view_url
     }
+    name {
+	label "URI"
+	orderby lower(i.name)
+    }
+
 }
 
 #---------------------------------------------------------------------
@@ -120,7 +125,7 @@ if { [string equal $display_mode "edit"] } {
                <if @objects.edit_p@ true>
                 <a href="@objects.delete_url@" title="Delete this object"
                 ><img src="/resources/acs-subsite/Delete16.gif" height="16" 
-                width="16" border="0" alt="Edit"></a>
+                width="16" border="0" alt="Delete"></a>
                 </if>        
             }
         }
@@ -167,6 +172,9 @@ db_multirow -extend { edit_url view_url delete_url edit_p } objects select_objec
     set edit_p [expr $write_p || [permission::write_permission_p -object_id $item_id]]
 
     switch -glob $mime_type {
+	text/calendar - text/rtf {
+            set view_url [simulation::object::content_url -name $name]
+	}
         text/* - {} {
             set view_url [simulation::object::url -name $name]
         }

@@ -9,7 +9,16 @@ simulation::case::get -case_id $case_id -array case
 set case_url [export_vars -base case { case_id role_id }]
 
 set page_title [_ simulation.Notifications]
-set context [list [list . [_ simulation.SimPlay]] [list $case_url $case(label)] $page_title]
+
+set workflow_id [simulation::case::get_element -case_id $case_id \
+                   -element workflow_id]
+
+set simulation_name [simulation::template::get_element \
+                      -workflow_id $workflow_id -element pretty_name]
+
+set sim_title [_ simulation.simulation_name]
+
+set context [list [list . [_ simulation.SimPlay]] [list [export_vars -base case {case_id role_id }] $sim_title] $page_title]
 
 set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
@@ -66,7 +75,7 @@ foreach type $types {
         multirow append notifications \
             $url \
             [string totitle $pretty_name] \
-            [ad_decode $subscribed_p 1 [_ simulation.lt_Unsubscribe_from_pret] "Subscribe to %pretty_name%"] \
+            [ad_decode $subscribed_p 1 [_ simulation.lt_Unsubscribe_from_pret] [_ simulation.lt_Subscribe_to_pretty_n]] \
             $subscribed_p
     }
 }

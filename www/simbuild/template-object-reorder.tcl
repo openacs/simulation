@@ -5,6 +5,7 @@ ad_page_contract {
     state_id:optional
     action_id:optional
     role_id:optional
+    parent_action_id:optional
     {direction down}
     {return_url "."}
 }
@@ -16,18 +17,36 @@ ad_page_contract {
 switch $type {
     state {
         set object_id $state_id
-        set workflow_id [workflow::state::fsm::get_element -state_id $state_id -element workflow_id]
-        set all_ids [workflow::state::fsm::get_ids -workflow_id $workflow_id]
+        set workflow_id [workflow::state::fsm::get_element \
+			     -state_id $state_id -element workflow_id]
+	# Use parent_action_id if we're not on the top-level
+	if { [exists_and_not_null parent_action_id] } {
+	    set all_ids [workflow::state::fsm::get_ids \
+			     -workflow_id $workflow_id \
+			     -parent_action_id $parent_action_id]
+	} else {
+	    set all_ids [workflow::state::fsm::get_ids -workflow_id $workflow_id]
+	}
     }
     role {
         set object_id $role_id
         set workflow_id [workflow::role::get_element -role_id $role_id -element workflow_id]
+
+	# Roles are only available on a top-level workflow so we don't need the 
+	# parent_action_id here
         set all_ids [workflow::role::get_ids -workflow_id $workflow_id]
     }
     action {
         set object_id $action_id
         set workflow_id [workflow::action::get_element -action_id $action_id -element workflow_id]
-        set all_ids [workflow::action::get_ids -workflow_id $workflow_id]
+
+	# Use parent_action_id if we're not on the top-level     
+	if { [exists_and_not_null parent_action_id] } {
+	    set all_ids [workflow::action::get_ids -workflow_id $workflow_id \
+			    -parent_action_id $parent_action_id]
+	} else {
+	    set all_ids [workflow::action::get_ids -workflow_id $workflow_id]
+	}        
     }
     default {
         error "Invalid type, $type, only implemented for 'state', 'role', and 'action'."
@@ -89,4 +108,7 @@ if { $new_index >= 0 && $new_index < [llength $all_ids] } {
     }
 }
 
-ad_returnredirect $return_url
+# Let's mark this template edited
+set sim_type "dev_template"
+
+ad_returnredirect [export_vars -base "template-sim-type-update" { workflow_id sim_type return_url }]

@@ -9,20 +9,24 @@ simulation::include_contract {
     role_id {}
 }
 
+set current_url [export_vars -base [ad_conn url] { case_id role_id }]
 set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
+set page_role_id $role_id
 
 simulation::case::get -case_id $case_id -array case
 
 set workflow_id $case(workflow_id)
+
+set case_name $case(label)
 
 db_1row getflags {
     select show_contacts_p, show_states_p
       from sim_simulations
      where simulation_id=:workflow_id}
 
-set case_home_url [export_vars -base "case" { case_id role_id }]
+set case_home_url [export_vars -base ${section_uri}case { case_id role_id }]
 
 set message_count [db_string message_count_sql "
     select count(*) 
@@ -60,7 +64,7 @@ db_1row your_role {
        and ci.live_revision = scx.object_id
 } -column_array role
 
-set role(character_url) [simulation::object::url -name $role(character_name)]
+set role(character_url) [export_vars -base [simulation::object::url -name $role(character_name) -simplay 1] { case_id role_id }]
 
 array set thumbnail [lindex \
   [util_list_of_ns_sets_to_list_of_lists -list_of_ns_sets \
@@ -99,18 +103,30 @@ db_multirow -unclobber -extend { character_url } contacts select_contacts "
        and ci.live_revision = scx.object_id
        and wr.role_id != :role_id
 " {
-    set character_url [simulation::object::url -name $character_name]
+    set character_url [export_vars -base [simulation::object::url -name $character_name -simplay 1] { case_id {role_id $page_role_id} {recipient_role_id $role_id} }]
 }
 
-set notifications_url [export_vars -base notifications { case_id role_id }]
+set notifications_url [export_vars -base ${section_uri}notifications { case_id role_id }]
 
-db_multirow -unclobber states select_states {
-    select wfs.pretty_name,
-           wfs.state_id,
-           wcf.current_state
-    from workflow_case_fsm wcf,
-         workflow_fsm_states wfs
-    where wfs.workflow_id = :workflow_id
-      and wcf.case_id = :case_id
-    order by wfs.sort_order
+set yp_url [export_vars -base ${section_uri}yellow-pages { case_id role_id }]
+
+set map_url [export_vars -base ${section_uri}map { case_id role_id }]
+
+set help_url [export_vars -base "${section_uri}object/[parameter::get -parameter SimPlayHelpFile]" { case_id role_id }]
+
+set curr_state [_ simulation.curr_state]
+
+db_1row get_state {
+    select wfs.pretty_name as state_name, 
+           s.show_states_p
+    from   workflow_fsm_states wfs,
+           workflow_case_fsm wcf,
+           workflow_cases wc,
+           sim_simulations s
+    where  wcf.case_id = wc.case_id and
+           wcf.current_state = wfs.state_id and
+           s.simulation_id = wc.workflow_id and
+           wc.workflow_id = :workflow_id and
+           wcf.case_id = :case_id and
+           wcf.parent_enabled_action_id is NULL
 }

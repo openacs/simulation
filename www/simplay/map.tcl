@@ -23,3 +23,5 @@ set package_id [ad_conn package_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set messages_url [export_vars -base messages { case_id role_id }]
+
+set map_help_url [export_vars -base [ad_conn package_url]simplay/object/[parameter::get -package_id $package_id -parameter MapHelpFile] { case_id role_id }]

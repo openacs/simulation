@@ -1,5 +1,7 @@
 ad_page_contract {
     A list of available simulation templates
+} {
+    orderby:optional
 }
 
 set page_title "New Simulation From Template"
@@ -31,6 +33,7 @@ template::list::create \
         number_of_tasks {
             label "Tasks"
             html { align center }
+	    orderby number_of_tasks
         }
         map {
             label ""
@@ -41,7 +44,7 @@ template::list::create \
         }    
     }
 
-db_multirow -extend {map_url} ready_templates select_ready_templates {
+db_multirow -extend {map_url} ready_templates select_ready_templates "
 select workflow_id,
        suggested_duration,
        pretty_name,
@@ -57,7 +60,8 @@ select workflow_id,
  where ss.simulation_id = w.workflow_id
    and w.object_id = :package_id
    and ss.sim_type = 'ready_template'
-} {
+    [template::list::orderby_clause -orderby -name "ready_templates"]
+" {
     set map_url [export_vars -base "map-create" { workflow_id }]
 
     if { [empty_string_p $suggested_duration] } {

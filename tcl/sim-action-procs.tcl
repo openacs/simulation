@@ -87,7 +87,7 @@ ad_proc -public simulation::action::edit {
 
             # Handle columns in the sim_tasks table
             foreach attr { 
-                attachment_num 
+                attachment_num default_text default_text_mime_type
             } {
                 if { [info exists row($attr)] } {
                     set varname attr_$attr
@@ -136,6 +136,16 @@ ad_proc -public simulation::action::edit {
         }
     }
     
+    switch $operation {
+	update {
+	    if { [info exists row(trigger_type)] } {
+		if { [empty_string_p $row(trigger_type)] } {
+		    unset row(trigger_type)
+		}
+	    }
+	}
+    }
+
     db_transaction {
         # Base row
         set action_id [workflow::action::fsm::edit \
@@ -224,7 +234,7 @@ ad_proc -public simulation::action::get {
     }
     
     db_1row select_action {
-        select attachment_num
+        select attachment_num, default_text, default_text_mime_type
         from   sim_tasks
         where  task_id = :action_id
     } -column_array local_row
@@ -283,10 +293,22 @@ ad_proc -private simulation::action::generate_spec {
     }
     array set row [workflow::action::fsm::generate_spec -action_id $action_id -handlers $handlers]
 
+    ############
+    # DEBUGGING
+    if { [exists_and_not_null row(parent_action_id)] } {
+	ns_log notice "simulation::action::generate_spec: row(parent_action_id) is $row(parent_action_id)"
+    } else {
+	ns_log notice "simulation::action::generate_spec: no paren_action_id in sight :("
+    }
+    # STOP DEBUGGING
+    ###############
+
+
     # Get local spec, remove unwanted entries
     get -action_id $action_id -array local_row -local_only
     array unset local_row recipients
     
+
     # Copy local stuff in over the parent stuff
     array set row [array get local_row]
 
@@ -362,6 +384,10 @@ ad_proc -public simulation::action::clone {
     array set action_spec [simulation::action::generate_spec -action_id $action_id]
 
     set action_spec(pretty_name) "Copy of $action_spec(pretty_name)"
+
+    if { [exists_and_not_null action(parent_action_id)] } {
+	set action_spec(parent_action_id) $action(parent_action_id)
+    }
 
     foreach type { child_actions child_states child_roles } {
         if { [info exists action_spec($type)] } {

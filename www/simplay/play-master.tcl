@@ -9,6 +9,17 @@ if { ![exists_and_not_null role_id] } {
     set role_id [ns_queryget role_id]
 }
 
+simulation::case::get -case_id $case_id -array case
+
+if { ![exists_and_not_null workflow_id] } {
+    set workflow_id $case(workflow_id)
+}
+
+set simulation_name [simulation::template::get_element \
+                      -workflow_id $workflow_id -element pretty_name]
+
+set simulation_title "${simulation_name} &mdash; $case(label)"
+
 # Get any simulation specific Stylesheet
 # 
 set stylesheet_link ""

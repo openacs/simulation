@@ -24,6 +24,8 @@
         <requires url="bcms" version="0.2"/>
         <requires url="workflow" version="2.0.0b3"/>
 
+	<maturity>1</maturity>
+
         <callbacks>
             <callback type="before-unmount"  proc="simulation::apm::before_unmount"/>
             <callback type="after-mount"  proc="simulation::apm::after_mount"/>

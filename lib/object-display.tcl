@@ -7,19 +7,33 @@ ad_page_contract {
 } {
     revision_id:optional,naturalnum
     {printer_friendly_p:optional 0}
+    case_id:optional
+    role_id:optional
+    recipient_role_id:optional
 }
 
 set package_id [ad_conn package_id]
+set package_url [ad_conn package_url]
+
 set root_id [bcms::folder::get_id_by_package_id -parent_id 0]
 
+set base_url [ad_conn urlv]
+
+set simplay 1
+if { [lsearch -exact $base_url "simplay"] == -1 } { 
+    set simplay 0
+}
+
 # This little exercise removes the object/ part from the extra_url
-set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 1 end]]
+# Let's just use path_info
+# set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 1 end]]
+set extra_url [ad_conn path_info]
 
 if { [empty_string_p $extra_url] } {
     set extra_url "index"
 }
 
-# get the item by url if now revision id is given
+# get the item by url if no revision id is given
 if { ![info exists revision_id] } {
     array set item [bcms::item::get_item_by_url -root_id $root_id -url $extra_url -revision live]
 } else {
@@ -78,6 +92,28 @@ multirow create attributes attribute value
 
 set page_title $item(title)
 set context [list $page_title]
+
+set recipient_p 0
+
+# We are in simplay/object, so we need stuff for the control and context bars
+if { $simplay } {
+    # We do have case_id, it's required by simplay/object/index.vuh
+    simulation::case::get -case_id $case_id -array case
+    set section_uri [apm_package_url_from_id $package_id]simplay/
+    set case_url [export_vars -base ${section_uri}case { case_id role_id }]
+
+    if { [exists_and_not_null recipient_role_id] } {
+	set role_name [simulation::role::get_element -role_id $recipient_role_id -element pretty_name]
+	set recipient_p 1
+	set message_url [export_vars -base ../message { role_id case_id recipient_role_id }]
+	set page_title "${item(title)} (${role_name})"
+    }
+
+    set context [list [list $section_uri [_ simulation.SimPlay]] [list $case_url $case(label)] $page_title]
+    
+}
+
+
 
 foreach name [lsort [array names content]] {
     multirow append attributes $name $content($name)

@@ -28,6 +28,8 @@ db_foreach tasks {
            a.pretty_name,
            a.description,
            a.description_mime_type,
+           st.default_text,
+           st.default_text_mime_type,
            st.attachment_num,
            (select pretty_name from workflow_roles where role_id = a.assigned_role) as assigned_role_pretty
     from   workflow_actions a,
@@ -66,7 +68,18 @@ db_foreach tasks {
                    {html {cols 60 rows 4}} \
                    {section $section_name} ]]
     set description_$row(action_id) [template::util::richtext::create $row(description) $row(description_mime_type)]
-    
+
+    # Show default message text field if this is a message-type task
+    if { ![empty_string_p $recipient_role_pretty] } {
+	ad_form -extend -name tasks -form \
+	    [list [list default_text_$row(action_id):richtext,optional \
+		       {label "Task Default message"} \
+		       {help_text "This is the default text that will appear in a message-type task form."} \
+		       {html {cols 60 rows 4}} \
+		       {section $section_name} ]]
+	set default_text_$row(action_id) [template::util::richtext::create $row(default_text) $row(default_text_mime_type)]
+    }
+
     # Save attachment_num for later
     ad_form -extend -name tasks -form \
         [list [list attachment_num_$row(action_id):integer(hidden),optional \
@@ -79,7 +92,7 @@ db_foreach tasks {
         }
 
         ad_form -extend -name tasks -form \
-            [list [list attachment_$row(action_id)_${i}:integer(select) \
+            [list [list attachment_$row(action_id)_${i}:integer(select),optional \
                        {label "Attachment $i"} \
                        {options $prop_options} \
                        {help_text "Select from existing attachments or <a
@@ -124,6 +137,12 @@ ad_form \
                 set row(description_mime_type) [template::util::richtext::get_property format [set description_${action_id}]]
                 set row(description) [template::util::richtext::get_property contents [set description_${action_id}]]
                 
+
+		if { [exists_and_not_null default_text_${action_id}] } {
+		    set row(default_text_mime_type) [template::util::richtext::get_property format [set default_text_${action_id}]]
+		    set row(default_text) [template::util::richtext::get_property contents [set default_text_${action_id}]]
+		}
+
                 simulation::action::edit \
                     -action_id $action_id \
                     -workflow_id $workflow_id \

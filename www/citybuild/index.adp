@@ -2,6 +2,8 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
+<div class="help-link"><a href="@help_url@">#simulation.CityBuild_Help#</a></div>
+
 <include src="/packages/simulation/lib/sim-objects" size="long" display_mode="edit" &="orderby" &="type">
 <p></p>
 
@@ -20,3 +22,6 @@
   </ul>
 </if>
 
+<ul class="action-links">
+<li><a href="@package_url@">#simulation.lt_Return_to_Simulation__1#</a></li>
+</ul>

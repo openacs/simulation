@@ -12,8 +12,8 @@ acs_user::get -user_id $user_id -array user
 
 set page_title [_ simulation.lt_Choose_new_roles_for]
 set context [list [list . [_ simulation.SimPlay]] \
-                  [list [export_vars -base case-admin { case_id }]
-                    [_ simulation.lt_Administer_caselabel]]
+                  [list [export_vars -base case-admin { case_id }] \
+                    [_ simulation.lt_Administer_caselabel]] \
                   $page_title]
 
 workflow::case::get -case_id $case_id -array case
