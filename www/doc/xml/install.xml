@@ -6,7 +6,7 @@
 
   <article id="install">
     <title>Installation</title>
-    <sect1 id="install-sect1">
+    <sect1 id="package-install">
       <title>Package installation</title>
       <para>Requires workflow and bcms and their prerequisites.</para>
       <itemizedlist>
