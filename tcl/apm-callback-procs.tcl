@@ -21,6 +21,6 @@ ad_proc -private simulation::apm::after_instantiate {
                        -folder_label "${instance_name} Root" \
                        -parent_id 0 \
                        -package_id $package_id \
-                       -content_types { sim_character sim_prop sim_home sim_contact file_storage_object }]
+                       -content_types { sim_character sim_prop sim_home file_storage_object content_template }]
 }
 

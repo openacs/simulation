@@ -60,11 +60,11 @@ db_multirow -extend { edit_url view_url } objects select_objects "
     [template::list::orderby_clause -orderby -name "objects"]
 " {
     set description [string_truncate -len 200 $description]
-    set edit_url [export_vars -base "object-edit" { { object_id $item_id } }]
+    set edit_url [export_vars -base "object-edit" { item_id }]
     set view_url [export_vars -base "object/$name"]
 }
 
-set sim_types { sim_character sim_prop sim_home sim_contact file_storage_object }
+set sim_types { sim_character sim_prop sim_home }
 
 db_multirow -extend { create_url label } object_types select_object_types "
     select ot.object_type as content_type,
@@ -74,4 +74,7 @@ db_multirow -extend { create_url label } object_types select_object_types "
 " {
     set create_url [export_vars -base object-edit { content_type parent_id }]
     set label "Create new $pretty_name"
+
 }
+
+#multirow append object_types content_template  "Template" [export_vars -base template-edit] "Upload new Template"

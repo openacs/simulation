@@ -80,12 +80,12 @@ select content_type__create_attribute(
 select content_type__create_attribute(
     'sim_home',                    -- content_type
     'stylesheet',                  -- attribute_name
-    'string',                      -- datatype
+    'text',                        -- datatype
     'Stylesheet',                  -- pretty_name
     'Stylesheets',                 -- pretty_plural
     5,                             -- sort_order
     null,                          -- default_value
-    'varchar(4000)'                -- column_spec
+    'text'                         -- column_spec
 );
 
 
@@ -93,25 +93,3 @@ select content_type__create_attribute(
 
 
 
--- sim_contact
-
-select content_type__create_type(
-    'sim_contact',                 -- content_type
-    'content_revision',            -- supertype
-    'Contact',                     -- pretty_name,
-    'Contacts',                    -- pretty_plural
-    'sim_contacts',                -- table_name
-    'contact_id',                  -- id_column
-    null                           -- name_method
-);
-
-select content_type__create_attribute(
-    'sim_contact',                 -- content_type
-    'internal_mail_adress',        -- attribute_name
-    'string',                      -- datatype
-    'Internal Mail Addresss',      -- pretty_name
-    'Internal Mail Addresses',     -- pretty_plural
-    1,                             -- sort_order
-    null,                          -- default_value
-    'varchar(1000)'                -- column_spec
-);

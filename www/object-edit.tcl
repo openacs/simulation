@@ -4,27 +4,24 @@ ad_page_contract {
     @creation-date 2003-10-13
     @cvs-id $Id$
 } {
-    object_id:integer,optional
+    item_id:integer,optional
     parent_id:integer,optional
     content_type:optional
 } -validate {
-    not_object_id {
-        if { ![exists_and_not_null object_id] } {
+    not_item_id {
+        if { ![exists_and_not_null item_id] } {
             if { ![exists_and_not_null parent_id] } {
-                ad_complain parent_id "parent_id is required"
+                ad_complain "parent_id is required"
             }
             if { ![exists_and_not_null content_type] } {
-                ad_complain content_type "parent_id is required"
+                ad_complain "content_type is required"
             }
         }
     }
 }
 
-set page_title "Create Object"
-set context [list [list "object-list" "Objects"] $page_title]
-
-ad_form -name object -form {
-    {object_id:key}
+ad_form -name object -cancel_url object-list -form {
+    {item_id:key}
     {content_type:text(hidden)}
     {parent_id:integer(hidden),optional}
     {title:text
@@ -34,8 +31,8 @@ ad_form -name object -form {
     {name:text,optional
         {label "URL name"}
         {html {size 50}}
-        {help_text {[ad_decode [ad_form_new_p -key object_id] 1 "This will become part of the URL for the object." ""]}}
-        {mode {[ad_decode [ad_form_new_p -key object_id] 1 "edit" "display"]}}
+        {help_text {[ad_decode [ad_form_new_p -key item_id] 1 "This will become part of the URL for the object." ""]}}
+        {mode {[ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"]}}
     }
     {description:text(textarea),optional
         {label "Description"}
@@ -43,13 +40,55 @@ ad_form -name object -form {
     }
 }
 
-if { ![ad_form_new_p -key object_id] } {
+if { ![ad_form_new_p -key item_id] } {
     # Get data for existing object
-    array set item_info [bcms::item::get_item -item_id $object_id -revision live]
+    array set item_info [bcms::item::get_item -item_id $item_id -revision live]
     item::get_revision_content $item_info(revision_id)
     set content_type $item_info(content_type)
+    set page_title "Edit Object"
+} else {
+    set object_type_pretty [db_string pretty { select pretty_name from acs_object_types where object_type = :content_type }]
+    set page_title "Create $object_type_pretty"
+}
+set context [list [list "object-list" "Objects"] $page_title]
+
+
+#####
+#
+# Content edit/upload method
+#
+#####
+
+array set content_method {
+    sim_character richtext
+    sim_home richtext
+    sim_prop richtext
 }
 
+if { [info exists content_method($content_type)] } {
+
+    switch $content_method($content_type) {
+        richtext {
+            ad_form -extend -name object -form {
+                {content_elm:richtext(richtext),optional
+                    {label "Content"}
+                    {html {cols 60 rows 8}}
+                }
+            }
+        }
+        upload {
+            
+        }
+    }
+
+}
+
+
+#####
+#
+# Dynamic attributes for the content type
+#
+#####
 
 # LARS: I'm doing this as a proof-of-concept type thing. If it works well enough for us, 
 # we'll want to generalize and move into acs-content-repository
@@ -161,11 +200,15 @@ ad_form -extend -name object -new_request {
                      -parent_id $parent_id \
                      -content_type $content_type]
     
+    set content_text [template::util::richtext::get_property contents $content_elm]
+    set mime_type [template::util::richtext::get_property format $content_elm]
+
     set revision_id [bcms::revision::add_revision \
                          -item_id $item_id \
                          -title $title \
                          -content_type $content_type \
-                         -mime_type "text/plain" \
+                         -mime_type $mime_type \
+                         -content $content_text \
                          -description $description \
                          -additional_properties $attributes]
 
@@ -183,13 +226,18 @@ ad_form -extend -name object -new_request {
         set attr__${content_type}__${attribute_name} $content($attribute_name)
     }
     
+    set content_elm [template::util::richtext::create $content(text) $content(mime_type)]
 } -edit_data {
 
+    set content_text [template::util::richtext::get_property contents $content_elm]
+    set mime_type [template::util::richtext::get_property format $content_elm]
+
     set revision_id [bcms::revision::add_revision \
-                         -item_id $object_id \
+                         -item_id $item_id \
                          -title $title \
                          -content_type $content_type \
-                         -mime_type "text/plain" \
+                         -mime_type $mime_type \
+                         -content $content_text \
                          -description $description \
                          -additional_properties $attributes]
 

@@ -20,15 +20,22 @@ if { [empty_string_p $extra_url] } {
 
 # get the item by url if now revision id is given
 if { ![info exists revision_id] } {
-    array set current_item [bcms::item::get_item_by_url -root_id $root_id -url $extra_url -revision live]
+    array set item [bcms::item::get_item_by_url -root_id $root_id -url $extra_url -revision live]
 } else {
-    array set current_item [bcms::revision::get_revision -revision_id $revision_id]
+    array set item [bcms::revision::get_revision -revision_id $revision_id]
 }
+item::get_content \
+    -revision_id $item(revision_id) \
+    -array content
 
-item::get_revision_content $current_item(revision_id)
+set content_html [ad_html_text_convert -from $content(mime_type) -to "text/html" -- $content(text)] 
 
-# TODO: Render using template
-#set rendered [publish::merge_with_template $current_item(item_id)]
+
+######
+#
+# Temporary hack to dipslay attributes
+#
+#####
 
 template::list::create \
     -name attributes \
@@ -42,12 +49,44 @@ template::list::create \
         }
     }
 
+
 multirow create attributes attribute value 
 
-set page_title $current_item(title)
+set page_title $item(title)
 set context [list [list ../object-list "Objects"] $page_title]
 
 foreach name [lsort [array names content]] {
     multirow append attributes $name $content($name)
 }
+
+
+if { [permission::write_permission_p -object_id $item(item_id)] } {
+    set edit_url [export_vars -base [ad_conn package_url]object-edit { { item_id $item(item_id) } }]
+}
+
+
+#####
+#
+# Render using template
+#
+#####
+
+# Dropped
+return
+
+item::get_content \
+    -revision_id [item::get_live_revision [item::get_template_id $item(item_id)]] \
+    -array template
+
+# Make content available to rendered page
+foreach __elm [array names content] { 
+    set $__elm $content($__elm)
+}
+
+
+publish::push_id $item_id $revision_id
+set code [template::adp_compile -string $template(text)]
+set rendered_page [template::adp_eval code]
+publish::pop_id
+
 
