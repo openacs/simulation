@@ -32,8 +32,15 @@
 
           </div>
         </div>
+
+        <div class="portlet">
+          <h2>States</h2>
+          <div class="portlet-body">
+            <include src="/packages/simulation/lib/sim-template-states" workflow_id="@workflow_id@">
+          </div>
+        </div>
       </td>
-      <td valign="top">
+      <td>
         <div class="portlet">
           <a name="roles"><h2>Roles</h2></a>
           <div class="portlet-body">

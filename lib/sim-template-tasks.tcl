@@ -37,8 +37,7 @@ switch $display_mode {
 # how is type going to work?  open question pending prototyping
 
 if { $display_mode == "edit"} {
-    set list_actions [list "Add a State" [export_vars -base state-edit { workflow_id}] {}]
-    lappend list_actions "Add a Task" [export_vars -base task-edit {workflow_id} ] {}
+    set list_actions [list "Add a Task" [export_vars -base task-edit {workflow_id} ] {}]
 } else {
     set list_actions [list]
 }
