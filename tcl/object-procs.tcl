@@ -118,7 +118,7 @@ ad_proc -private simulation::object::xml::generate_file {
     }
 
     if { $wrote_file_p } {
-        ns_log Notice "simulation::object::xml::generate_file - generated new XML file for package $package_id"
+        ns_log Notice "simulation::object::xml::generate_file - generated new XML file for package $package_id at \$file_path\""
     } else {
         ns_log Notice "simulation::object::xml::generate_file - Did not generate new XML file for package $package_id"        
     }
@@ -185,7 +185,7 @@ ad_proc -private simulation::object::xml::get_doc {
 
     # Get table names and id column names for the on_map_p attribute of each object type
     # By using the multirow we avoid a nested db_foreach
-    set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
+    set parent_id [bcms::folder::get_id_by_package_id -package_id $package_id]
     db_multirow -local sim_table_list select_sim_tables {
         select aot.table_name,
                aot.id_column
@@ -205,7 +205,7 @@ ad_proc -private simulation::object::xml::get_doc {
 
     # Object type loop.
     template::multirow -local foreach sim_table_list {
-        db_foreach select_on_map_objects "
+        set query "
             select ci.item_id as id,
                    cr.title as name,
                    ci.name as uri,
@@ -226,7 +226,8 @@ ad_proc -private simulation::object::xml::get_doc {
               and ci.live_revision = cr.revision_id
               and ci.parent_id = :parent_id
               order by ci.name
-        " {
+        "
+        db_foreach select_on_map_objects $query {
             set url "${full_package_url}object/$uri"
 
             set thumbnail_url ""
@@ -235,10 +236,10 @@ ad_proc -private simulation::object::xml::get_doc {
                     set thumbnail_url "${full_package_url}object-content/${thumbnail_uri}"
                 }
             } 
-
+            
             append xml_doc "  <object>\n"
             # Assuming var names are identical to XML tag names
-            set xml_tag_names {name url thumbnail_url description}
+            set xml_tag_names {id name url thumbnail_url description}
             foreach tag_name $xml_tag_names {
                 append xml_doc "    <${tag_name}>[ad_quotehtml [set ${tag_name}]]</${tag_name}>\n"
             }            
