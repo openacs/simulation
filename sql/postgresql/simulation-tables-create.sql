@@ -12,7 +12,7 @@ create table sim_simulations (
     sim_type              varchar(20)   constraint sim_simulations_type_ck
                                           check (sim_type in ('dev_template','ready_template','dev_sim','casting_sim','live_sim')),
     enroll_type           varchar(20)   constraint sim_simulations_enroll_type_ck
-                                        check (enroll_type in ('invite','open')),
+                                        check (enroll_type in ('closed','open')),
     casting_type          varchar(20)   constraint sim_simulations_casting_type_ck
                                         check (casting_type in ('auto','group','open')),
     enroll_start          timestamptz,
@@ -90,6 +90,8 @@ create table sim_party_sim_map (
     party_id            integer         constraint sim_party_sim_map_party_fk
                                         references parties
                                         on delete cascade,
+    type                varchar(20)     constraint sim_party_sim_map_type_ck
+                                        (check type in ('enrolled', 'invited', 'auto-enroll')),    
     constraint sim_party_sim_map_pk
     primary key (simulation_id, party_id)
 );
