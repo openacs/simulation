@@ -8,6 +8,7 @@ ad_page_contract {
     workflow_id:integer
 }
 
+set user_id [ad_conn user_id]
 permission::require_write_permission -object_id $workflow_id
 
 set page_title "Assign Characters to Roles"
@@ -25,12 +26,15 @@ ad_form \
         }
     }
 
-# Only show characters in the yellow pages
+# Only show characters in the yellow pages and characters that admin has created
+# himself
 set character_options [db_list_of_lists character_options {
     select sc.title,
            sc.item_id
-    from   sim_charactersx sc
-    where  sc.in_directory_p = 't'
+    from   sim_charactersx sc,
+           acs_objects ao
+    where  sc.item_id = ao.object_id
+      and  (sc.in_directory_p = 't' or ao.creation_user = :user_id)
     order by sc.title
 }]
 
