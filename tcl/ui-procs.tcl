@@ -31,6 +31,34 @@ ad_proc -public simulation::ui::forms::document_upload::form_block {} {
     }
 }
 
+ad_proc -public simulation::ui::forms::document_upload::documents_element_value { action_id } {
+    Get a piece of HTML with links to documents for the documents form element.    
+} {
+    set documents "<ul>"
+    
+    db_foreach documents {
+        select cr.title as object_title,
+        ci.name as object_name
+        from   sim_task_object_map m,
+        cr_items ci,
+        cr_revisions cr
+        where  m.task_id = :action_id
+        and    m.relation_tag = 'attachment'
+        and    ci.item_id = m.object_id
+        and    cr.revision_id = ci.live_revision
+        order by m.order_n
+    } {
+        set object_url [simulation::object::url \
+                            -name $object_name]
+        append documents "<li><a href=\"$object_url\">$object_title</a></li>"
+    }
+
+    append documents "</ul>"
+
+    return $documents
+}
+
+
 ad_proc -public simulation::ui::forms::document_upload::insert_document {
     case_id
     role_id

@@ -8,4 +8,8 @@
 @action.description@
 </p>
 
+<p>
+@documents_pre_form;noquote@
+</p>
+
 <formtemplate id="@form_id@"></formtemplate>

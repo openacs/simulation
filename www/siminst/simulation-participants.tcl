@@ -77,6 +77,7 @@ db_multirow -extend { group_radio } participants select_participants {
 template::list::create \
     -name "participants" \
     -key group_id \
+    -no_data "There are no user groups set up" \
     -elements {
         group_name {
             label "Group Name"

@@ -60,23 +60,8 @@ if { ![empty_string_p $action(recipients)] } {
             set pretty_name $action(pretty_name)
             set description [template::util::richtext::create $action(description) $action(description_mime_type)]
 
-            set documents {}
-            db_foreach documents {
-                select cr.title as object_title,
-                       ci.name as object_name
-                from   sim_task_object_map m,
-                       cr_items ci,
-                       cr_revisions cr
-                where  m.task_id = :action_id
-                and    m.relation_tag = 'attachment'
-                and    ci.item_id = m.object_id
-                and    cr.revision_id = ci.live_revision
-                order by m.order_n
-            } {
-                set object_url [simulation::object::url \
-                                    -name $object_name]
-                append documents "<a href=\"$object_url\">$object_title</a><br>"
-            }
+            set documents [simulation::ui::forms::document_upload::documents_element_value $action_id]
+            set documents_pre_form ""
 
             set recipient_list [list]
             foreach recipient_id $action(recipients) {
@@ -127,6 +112,8 @@ if { ![empty_string_p $action(recipients)] } {
         -form [concat {{pretty_name:text(inform) {label "Task"}}} [simulation::ui::forms::document_upload::form_block]] \
         -on_request {
             set pretty_name $action(pretty_name)
+            set documents_pre_form [simulation::ui::forms::document_upload::documents_element_value $action_id]
+
         } -on_submit {
 
             db_transaction {
