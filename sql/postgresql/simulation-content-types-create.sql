@@ -44,11 +44,22 @@ select content_type__create_attribute(
 
 select content_type__create_attribute(
     'sim_location',                -- content_type
+    'in_directory_p',              -- attribute_name
+    'boolean',                     -- datatype
+    'Show in directory',           -- pretty_name
+    'Show in directory',           -- pretty_plural
+    2,                             -- sort_order
+    'f',                           -- default_value
+    'boolean'                      -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_location',                -- content_type
     'address',                     -- attribute_name
     'string',                      -- datatype
     'Addresss',                    -- pretty_name
     'Addresses',                   -- pretty_plural
-    2,                             -- sort_order
+    3,                             -- sort_order
     null,                          -- default_value
     'varchar(4000)'                -- column_spec
 );
@@ -59,7 +70,7 @@ select content_type__create_attribute(
     'string',                      -- datatype
     'City',                        -- pretty_name
     'Cities',                      -- pretty_plural
-    3,                             -- sort_order
+    4,                             -- sort_order
     null,                          -- default_value
     'varchar(4000)'                -- column_spec
 );
@@ -70,7 +81,7 @@ select content_type__create_attribute(
     'text',                        -- datatype
     'History',                     -- pretty_name
     'Histories',                   -- pretty_plural
-    4,                             -- sort_order
+    5,                             -- sort_order
     null,                          -- default_value
     'text'                         -- column_spec
 );
@@ -115,6 +126,14 @@ select content_type__register_relation_type (
     1                              -- max_n
 );
 
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'sim_location',                -- target_type
+    'is_located_in',               -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
 
 ----------------------------------------------------------------------
 -- sim_character
@@ -128,6 +147,17 @@ select content_type__create_type(
     'sim_characters',              -- table_name
     'character_id',                -- id_column
     null                           -- name_method
+);
+
+select content_type__create_attribute(
+    'sim_character',               -- content_type
+    'in_directory_p',              -- attribute_name
+    'boolean',                     -- datatype
+    'Show in directory',           -- pretty_name
+    'Show in directory',           -- pretty_plural
+    1,                             -- sort_order
+    'f',                           -- default_value
+    'boolean'                      -- column_spec
 );
 
 select content_type__register_relation_type (
@@ -157,7 +187,15 @@ select content_type__register_relation_type (
 select content_type__register_relation_type (
     'sim_character',               -- content_type
     'sim_location',                -- target_type
-    'associated',                  -- relation_tag
+    'works_for',                   -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_character',               -- content_type
+    'sim_location',                -- target_type
+    'resides_at',                  -- relation_tag
     1,                             -- min_n
     1                              -- max_n
 );

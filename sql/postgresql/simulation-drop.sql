@@ -43,6 +43,12 @@ drop function inline_0 ();
 
 select content_type__unregister_relation_type (
     'sim_location',                -- content_type
+    'sim_location',                -- target_type
+    'is_located_in'                -- relation_tag
+);
+
+select content_type__unregister_relation_type (
+    'sim_location',                -- content_type
     'image',                       -- target_type
     'thumbnail'                    -- relation_tag
 );
@@ -128,6 +134,19 @@ select content_type__drop_type(
 ----------------------------------------------------------------------
 -- sim_character
 ----------------------------------------------------------------------
+
+select content_type__unregister_relation_type (
+    'sim_character',               -- content_type
+    'sim_location',                -- target_type
+    'resides_at'                   -- relation_tag
+);
+
+
+select content_type__unregister_relation_type (
+    'sim_character',               -- content_type
+    'sim_location',                -- target_type
+    'works_for'                    -- relation_tag
+);
 
 select content_type__unregister_relation_type (
     'sim_character',               -- content_type
