@@ -84,7 +84,7 @@ foreach name [lsort [array names content]] {
 }
 
 
-if { [permission::write_permission_p -object_id $item(item_id) -party_id [ad_conn untrusted_user_id]] } {
+if { [permission::write_permission_p -object_id $item(item_id) -party_id [ad_conn user_id]] } {
     set edit_url [export_vars -base [apm_package_url_from_id $package_id]citybuild/object-edit { { item_id $item(item_id) } }]
     set delete_url [export_vars -base [apm_package_url_from_id $package_id]/citybuild/object-delete { { item_id $item(item_id) } }]
 }
