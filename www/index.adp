@@ -60,7 +60,6 @@ Join a Simulation:
 <li><a href="sim-template-list">20 templates</a>
 </ul>
 <hr>
-<<<<<<< index.adp
 <div class="notloggedin">
 <h3>If not logged in:</h3>
 Sieberdam currently has 
