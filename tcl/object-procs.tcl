@@ -322,7 +322,7 @@ ad_proc -private simulation::object::xml::get_doc {
               order by ci.name
         "
         db_foreach select_on_map_objects $query {
-            set url [simulation::object::content_url -package_id $package_id -name $uri]
+            set url [simulation::object::url -package_id $package_id -name $uri]
 
             set thumbnail_url ""
             if { [lsearch -exact {sim_location sim_prop sim_character} $content_type] != -1 } {
