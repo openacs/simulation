@@ -183,23 +183,23 @@ if { [string equal $trigger_type "user"] && [string equal $task_type "message"] 
 switch $trigger_type {
     user - message - workflow - parallel - dynamic {
         ad_form -extend -name task -form { 
-            {timeout_seconds:integer(text),optional
+            {timeout_hours:integer(text),optional
                 {label "Timeout"}
-                {after_html "seconds"}
+                {after_html "hours"}
             }
         }
     }
     time {
         ad_form -extend -name task -form { 
-            {timeout_seconds:integer(text)
+            {timeout_hours:integer(text)
                 {label "Timeout"}
-                {after_html "seconds"}
+                {after_html "hours"}
             }
         }
     }
     default {
         ad_form -extend -name task -form { 
-            {timeout_seconds:integer(hidden),optional}
+            {timeout_hours:integer(hidden),optional}
         }
     }
 }
@@ -266,9 +266,14 @@ ad_form -extend -name task -edit_request {
     foreach elm { 
         pretty_name new_state_id 
         assigned_role recipient_roles
-        attachment_num trigger_type timeout_seconds parent_action_id
+        attachment_num trigger_type parent_action_id
     } {
         set $elm $task_array($elm)
+    }
+
+    set timeout_hours ""
+    if { ![empty_string_p $task_array(timeout_seconds)] } {
+        set timeout_hours [expr $task_array(timeout_seconds) / 3600]
     }
 
 } -new_request {
@@ -311,12 +316,16 @@ ad_form -extend -name task -edit_request {
 
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
-        new_state_id timeout_seconds
+        new_state_id
         recipient_roles attachment_num trigger_type parent_action_id
     } {
         if { [info exists $elm] } {
             set row($elm) [set $elm]
         }
+    }
+    set row(timeout_seconds) ""
+    if { ![empty_string_p $timeout_hours] } {
+        set row(timeout_seconds) [expr $timeout_hours * 3600]
     }
     set row(short_name) {}
 
