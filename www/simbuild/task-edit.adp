@@ -6,3 +6,5 @@
 <formtemplate id="task"></formtemplate>
 TODO: If there are no states, show a message "This task cannot be
 fully developed because its workflow has no states" and link to add states
+<p>TODO: B: "add a state" option next to "next state" which adds a new
+state and selects it in the dropdown without losing form info

@@ -66,6 +66,7 @@ ad_form -name state -edit_buttons [list [list [ad_decode [ad_form_new_p -key sta
     {pretty_name:text
         {label "State Name"}
         {html {size 20}}
+        {help_text "Each simulation can be in only one state at a time.  The list of available tasks can be different in each state."}
     }
 } -edit_request {
     set workflow_id $state_array(workflow_id)

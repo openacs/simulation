@@ -20,7 +20,7 @@ set add_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/te
 set create_p [permission::permission_p -object_id $package_id -privilege sim_template_create]
 
 set actions [list "Add a template" $add_url {} \
-                 "Load a template" "[apm_package_url_from_id $package_id]simbuild/template-load" {}]
+                 "Import a template" "[apm_package_url_from_id $package_id]simbuild/template-load" {}]
 
 # TODO: make this include honor the display_mode parameter
 
@@ -115,6 +115,8 @@ template::list::create \
 # a list of templates
 #
 ######################################################################
+# TODO: limit this to see only your own templates
+# If you are the admin, show all templates in long mode
 
 db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templates select_sim_templates "
     select w.workflow_id,

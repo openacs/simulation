@@ -717,3 +717,5 @@ foreach elm $rel_elements {
     
     element set_properties object $elm -before_html $elm_before_html -after_html $elm_after_html
 }
+
+#TODO: if a URI is submitted, filter it the same way as implicit URI from title.  ie, replace spaces with dashes.

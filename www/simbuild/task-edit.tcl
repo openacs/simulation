@@ -82,7 +82,7 @@ ad_form \
     -export { workflow_id } \
     -edit_buttons [list \
                        [list \
-                            [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] \
+                            [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_finish]] \
                             ok]] \
     -form {
         {action_id:key}
@@ -99,13 +99,13 @@ ad_form \
             {label "Task is complete when"}
             {options { 
                 { "Assignee sends message to recipient" message }
-                { "Assignee uploads document" normal } 
+                { "Assignee adds document to portfolio (TODO: implement portfolio tasks)" normal } 
                 { "Child workflow is complete" workflow }
             }}
             {html {onChange "javascript:acs_FormRefresh('task');"}}
         }
         {assigned_role:text(select),optional
-            {label "Assigned To"}
+            {label "Assignee"}
             {options $role_options_with_null}
         }
         {recipient_role:text(select),optional

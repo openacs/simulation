@@ -91,7 +91,7 @@ lappend elements delete {
 }
 
 lappend elements state_spacer { 
-    label "<br />States:"
+    label "<br />Enabled in States:"
     sub_class narrow
     display_template " "
     html { style "border-left: 2px dotted #A0BDEB;" }
@@ -107,7 +107,7 @@ db_foreach select_states {
     where  workflow_id = :workflow_id
     order  by s.sort_order
 } {
-    set "label_state_$state_id" $pretty_name
+    set "label_state_$state_id" "<span style=\"background-color: lightblue\">$pretty_name</span>"
     lappend elements state_$state_id \
         [list label "<a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a><a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a><br/>\${label_state_$state_id}" \
              html { align center } \
