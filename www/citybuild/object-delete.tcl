@@ -11,7 +11,7 @@ array set item [bcms::item::get_item -item_id $item_id -revision live]
 if { [template::util::is_true $confirm_p] } {
     permission::require_write_permission -object_id $item_id    
     bcms::item::delete_item -item_id $item_id
-    ad_returnredirect -message "\"$item(title)\" has been deleted." -break $return_url
+    ad_returnredirect -message "\"$item(title)\" has been deleted." -abort $return_url
 }
 
 set page_title "Delete object \"$item(title)\""
