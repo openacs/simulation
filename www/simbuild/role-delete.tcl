@@ -20,7 +20,7 @@ select count(*)
    "
                   ]
 if { [template::util::is_true $confirm_p] || $num_of_tasks == 0 } {
-    
+    permission::require_write_permission -object_id $role_id    
     simulation::role::delete -role_id $role_id
     ad_returnredirect $return_url
 }

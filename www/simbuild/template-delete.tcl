@@ -7,6 +7,8 @@ ad_page_contract {
     workflow_id
 }
 
+permission::require_write_permission -object_id $workflow_id
+
 set template_name [workflow::get_element -workflow_id $workflow_id -element pretty_name]
 set package_id [ad_conn package_id]
 

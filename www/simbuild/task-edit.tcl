@@ -82,7 +82,7 @@ ad_form -name task -edit_buttons [
         {html {cols 60 rows 8}}
     }
 } -edit_request {
-
+    permission::require_write_permission -object_id $action_id
     # TODO - get the recipient (and put all this in simulation api)
     set workflow_id $task_array(workflow_id)
     set name $task_array(pretty_name)
@@ -95,13 +95,15 @@ ad_form -name task -edit_buttons [
     set recipient_role [workflow::role::get_element -role_id $recipient_role_id -element short_name]
 
    set assigned_role $task_array(assigned_role)
+} -new_request {
+    permission::require_write_permission -object_id $workflow_id
 } -on_submit {
     
     set description_content [template::util::richtext::get_property contents $description]
     set description_mime_type [template::util::richtext::get_property format $description]
 
 } -new_data {
-
+    permission::require_write_permission -object_id $workflow_id
     # create the task
 
     set action_id [workflow::action::fsm::new \
@@ -122,7 +124,7 @@ ad_form -name task -edit_buttons [
         values (:action_id, :recipient_role_id)
     }
 } -edit_data {
-
+    permission::require_write_permission -object_id $action_id
     simulation::action::edit \
         -action_id $action_id \
         -short_name $name \

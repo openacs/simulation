@@ -6,9 +6,8 @@ ad_page_contract {
     {return_url "."}
 }
 
-permission::require_permission -object_id $item_id -privilege write
-
 if { [template::util::is_true $confirm_p] } {
+    permission::require_write_permission -object_id $item_id    
     bcms::item::delete_item -item_id $item_id
     ad_returnredirect $return_url
 }

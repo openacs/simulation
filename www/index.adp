@@ -34,7 +34,9 @@
 
   <include src="/packages/simulation/lib/sim-templates" size="short" display_mode="display"/>
 </div>
+</if>
 
+<if @siminst_p@>
 <div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid
 black;">
   <h3><a href="siminst/">SimInst</a></h3>

@@ -45,11 +45,15 @@ ad_form -name sim_template -mode $mode -cancel_url . -form {
         {label "Suggested Duration"}
     }
 } -edit_request {
+    permission::require_write_permission -object_id $workflow_id
     simulation::template::get -workflow_id $workflow_id -array sim_template_array
     set name $sim_template_array(pretty_name)
     set ready_p $sim_template_array(ready_p)
     set suggested_duration $sim_template_array(suggested_duration)
+} -new_request {
+    permission::require_permission -object_id $package_id -privilege sim_template_create
 } -new_data {
+    permission::require_permission -object_id $package_id -privilege sim_template_create
     set workflow_id [simulation::template::new \
                          -short_name $name \
                          -pretty_name $name \
@@ -58,6 +62,7 @@ ad_form -name sim_template -mode $mode -cancel_url . -form {
                          -package_key $package_key \
                          -object_id $package_id]
 } -edit_data {
+    permission::require_write_permission -object_id $workflow_id
     simulation::template::edit \
         -workflow_id $workflow_id \
         -short_name $name \
