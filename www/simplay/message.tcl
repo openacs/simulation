@@ -28,6 +28,7 @@ foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
 
 set action [form::get_action message]
 
+
 if { [string equal $action "reply"] } {
 
     item::get_content \
@@ -94,7 +95,7 @@ ad_form -extend -name message -form {
 } -on_request {
     if { [llength $from_role_options] == 1 } {
         set sender_role_id [lindex [lindex $from_role_options 0] 1]
-        element set_properties message mode display
+        element set_properties message sender_role_id -mode display
     }
 } -new_request {
     if { [info exists body_text] } {
@@ -141,3 +142,4 @@ ad_form -extend -name message -form {
     ad_returnredirect [export_vars -base case { case_id }]
     ad_script_abort
 }
+
