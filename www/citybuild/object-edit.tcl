@@ -702,6 +702,19 @@ ad_form -extend -name object -new_request {
             -status "live"
 
         # FIXME: The way we do this update is not very pretty: Delete all relations and re-add the new ones
+	# We need to also delete from acs_objects table, otherwise we get a context_id integrity violation
+	# when trying to delete the item
+	set old_relations [db_list select_old_relations {
+	    select rel_id
+	    from cr_item_rels
+	    where item_id = :item_id
+	}]
+	foreach rel_id $old_relations {
+	    db_exec_plsql delete_relation {
+		select acs_object__delete(:rel_id)
+	    }
+	}
+
         db_dml delete_all_relations {
             delete from cr_item_rels
             where  item_id = :item_id
