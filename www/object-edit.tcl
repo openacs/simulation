@@ -322,7 +322,7 @@ ad_form -extend -name object -new_request {
         richtext {
             set content_elm [template::util::richtext::create $content(text) $content(mime_type)]
         } 
-        textara {
+        textarea {
             set content_elm $content(text)
         }
     }
