@@ -24,10 +24,6 @@ ad_proc -public simulation::ui::forms::document_upload::form_block {} {
             {label "Title"}
             {html {size 50}}
         }
-        {description:text(textarea),optional
-            {label "Description"}
-            {html {cols 60 rows 8}}
-        }
     }
 }
 
@@ -65,7 +61,6 @@ ad_proc -public simulation::ui::forms::document_upload::insert_document {
     item_id 
     document_file 
     title 
-    description
     {entry_id {}}
 } {
     Does the document insertion in the DB.
@@ -93,8 +88,7 @@ ad_proc -public simulation::ui::forms::document_upload::insert_document {
                              -item_id $item_id \
                              -title $title \
                              -content_type $content_type \
-                             -upload_file $document_file \
-                             -description $description]
+                             -upload_file $document_file]
 
         bcms::revision::set_revision_status \
             -revision_id $revision_id \

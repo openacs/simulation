@@ -186,6 +186,7 @@ db_multirow -extend { action_url } log select_log {
            a.short_name as action_short_name,
            a.pretty_name as action_pretty,
            a.pretty_past_tense as action_pretty_past_tense,
+           role.role_id,
            role.pretty_name as role_pretty,
            io.creation_user,
            iou.first_names || ' ' || iou.last_name as user_name,

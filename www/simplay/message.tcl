@@ -190,7 +190,7 @@ ad_form -extend -name message -new_request {
         # display mode - show a list of attached documents
         set attachments ""
         foreach attachment_set $attachments_set_list {
-            set object_url [simulation::object::url -name [ns_set get $attachment_set name]]
+            set object_url [simulation::object::content_url -name [ns_set get $attachment_set name]]
             set object_title [ns_set get $attachment_set title]
             append attachments "<a href=\"$object_url\">$object_title</a><br>"
         }
@@ -228,4 +228,3 @@ if { ![ad_form_new_p -key item_id] } {
     element set_properties message recipient_role_id -options $all_role_options
 }
 
-#TODO B (0.5h): add "select all" javascript checkbox for To field -- add as separate 'inform' form element.

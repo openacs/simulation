@@ -125,7 +125,7 @@ if { ![empty_string_p $action(recipients)] } {
                                   -comment_mime_type "text/plain"]
 
                 simulation::ui::forms::document_upload::insert_document \
-                    $case_id $role_id $item_id $document_file $title $description $entry_id
+                    $case_id $role_id $item_id $document_file $title $entry_id
             }
 
             ad_returnredirect [export_vars -base tasks { case_id role_id }]
@@ -134,4 +134,3 @@ if { ![empty_string_p $action(recipients)] } {
     set focus "document.document_file"    
 }
 
-# TODO B (0.5h): show task attachment links beneath the action description
