@@ -109,7 +109,7 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
     $sim_in_dev_filter_sql
 " {
     if { [string equal $role_empty_count 0] && [string equal $prop_empty_count 0]} {
-        set cast_url [export_vars -base "${base_url}siminst/simulation-casting-2" { workflow_id }]
+        set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
     } else {
         set cast_url ""
     }
@@ -181,6 +181,6 @@ db_multirow -extend { edit_url delete_url edit_p } casting_sims select_casting_s
        and ss.sim_type = 'casting_sim'
     $sim_in_dev_filter_sql
 " {
-    set edit_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
+    set edit_url [export_vars -base "${base_url}siminst/simulation-casting-2" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
 }
