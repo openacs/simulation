@@ -108,7 +108,7 @@ ad_proc ::twt::simulation::setup::all_templates {} {
     ::twt::simulation::setup::elementary_private_law_template   
     ::twt::simulation::setup::legislative_drafting_template
     ::twt::simulation::setup::tilburg_template_from_spec    
-    # TODO: click the ready_p link for the templates
+    # TODO B: click the ready_p link for the templates
 }
 
 ad_proc ::twt::simulation::setup::elementary_private_law_template {} {
@@ -266,7 +266,7 @@ ad_proc ::twt::simulation::test::permissions_anonymous {} {
     # The anonymous user can access the index page with the flash map
     ::twt::simulation::assert_page_accessible /simulation
 
-    # TODO: Should see a list of all simulation open for enrollment
+    # TODO B: Should see a list of all simulation open for enrollment
 
     # The anonymous user can access an object view page
     ::twt::simulation::assert_page_accessible /simulation/object/motorhome
@@ -330,14 +330,14 @@ ad_proc ::twt::simulation::test::permissions_template_author {} {
     # read/create templates, only own templates
     # cannot edit other people's templates
     
-    # TODO: can do anything in siminst
+    # TODO B: can do anything in siminst
 
     # Access each module
     foreach module {citybuild simbuild siminst simplay} {
         ::twt::simulation::assert_page_accessible /simulation/$module
     }
 
-    # TODO: cannot see case logs
+    # TODO B: cannot see case logs
 }
 
 ad_proc ::twt::simulation::test::permissions_case_author {} {
@@ -354,7 +354,7 @@ ad_proc ::twt::simulation::test::permissions_case_author {} {
         ::twt::simulation::assert_page_accessible /simulation/$module
     }
 
-    # TODO: can see case logs
+    # TODO B: can see case logs
 
     # cannot set on_map_p attribute
 }
@@ -367,7 +367,7 @@ ad_proc ::twt::simulation::test::permissions_service_admin {} {
 
     # can add users
 
-    # TODO: can make users eligible for enrollment
+    # TODO B: can make users eligible for enrollment
 }
 
 ad_proc ::twt::simulation::test::permissions_actor {} {
@@ -376,7 +376,7 @@ ad_proc ::twt::simulation::test::permissions_actor {} {
     ::twt::log_section "Permission testing for $group_name user"
     ::twt::user::login [::twt::simulation::permission_user_email $group_name]
 
-    # TODO: participate in the simulation in simplay
+    # TODO B: participate in the simulation in simplay
 
     foreach module {citybuild simbuild siminst} {
         ::twt::simulation::assert_page_not_accessible /simulation/$module
