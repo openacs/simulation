@@ -389,39 +389,53 @@ ad_proc ::twt::simulation::test::permissions_actor {} {
 #
 ##############################
 
-ad_proc ::twt::simulation::play::tilburg_template_user_1 {} {
-    set user_name "Demo User 1"
+ad_proc ::twt::simulation::play::tilburg_template {} {
+    # First find the user with the assigned action
+
+    ::twt::log_section "Play Tilburg template"
+
+    # Find the user with the assigned task
+    set group_name "Case Authors"
+    ::twt::log_section "Logging in case author to find the user with assigned action"
+    ::twt::user::login [::twt::simulation::permission_user_email $group_name]
+    do_request /simulation/simplay
+    # Follow first case admin link
+    link follow ~u case-admin
+    # Show the assigned task
+    link follow ~u {case-admin.*assigned%5fonly%5fp=1}
+    # Regexp out the user name
+    regexp {Demo User [0-9]+} [response body] user_name
+
     ::twt::log_section "Login with $user_name and play tilburg simulation"
 
     ::twt::user::login [::twt::simulation::email_from_user_name $user_name]
 
     do_request /simulation/simplay
-    link follow ~u "case.+case"
 
-    # Execute the ask client task
+    ::twt::log "Execute the ask client task"
     link follow ~u task-detail
     form find ~n action
     field fill "ask client subject" ~n subject
     field fill "ask client body" ~n body
     form submit
 
-    # Execute the finalizing task
+    ::twt::log " Execute the finalizing task"
     link follow ~c "Write legal advice"
     form find ~n action
     field fill "legal advice subject" ~n subject
     field fill "legal advice body" ~n body
     form submit
 
-    # Legal advice was the last task so there shouldn't be any left
+    ::twt::log "Legal advice was the last task so there shouldn't be any left"
     if { [regexp {task-detail\?} [response body]] } {
         error "Completed last task ask legal advice but there are still tasks remaining"
     }
 
-    # Visit case index page again
+    ::twt::log "Visit case index page again"
     do_request /simulation/simplay
     link follow ~u "case.+case"    
 
-    # Send a message
+    ::twt::log "Send a message"
     link follow ~u "message\\?"
     form find ~n message
     field find ~n recipient_role_id ~t checkbox
@@ -430,7 +444,7 @@ ad_proc ::twt::simulation::play::tilburg_template_user_1 {} {
     field fill "message body" ~n body
     form submit
 
-    # Upload a document
+    ::twt::log "Upload a document"
     link follow ~u document-upload
     form find ~n document
     field find ~n document_file

@@ -50,28 +50,6 @@ ad_form \
                     -role_id $role_id \
                     -party_ids [list $user_id]
             }
-
-            # TODO: this should removed because we don't want to put the admin user
-            # in when the admin is trying to swap two users
-            # Assign the admin to any unassigned roles after the move
-#             set unassigned_roles [db_list unassigned_roles {
-#                 select wr.role_id
-#                 from workflow_roles wr,
-#                      workflow_cases wc
-#                 where wc.case_id = :case_id
-#                   and wc.workflow_id = wr.workflow_id
-#                   and not exists (select 1
-#                                   from workflow_case_role_party_map wcrpm
-#                                   where wcrpm.case_id = :case_id
-#                                     and wcrpm.role_id = wr.role_id
-#                                   )
-#             }]
-#             foreach role_id $unassigned_roles {
-#                 workflow::case::role::assignee_insert \
-#                     -case_id $case_id \
-#                     -role_id $role_id \
-#                     -party_ids [list [ad_conn user_id]]
-#             }            
         }
         
         ad_returnredirect [export_vars -base case-admin { case_id }]

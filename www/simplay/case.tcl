@@ -5,6 +5,8 @@ ad_page_contract {
     role_id:integer,notnull
 }
 
+simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
+
 set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]
 set simulation_name [simulation::template::get_element -workflow_id $workflow_id -element pretty_name]
 
@@ -13,7 +15,5 @@ set context [list [list . "SimPlay"] $title]
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
-
-set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
 
 set messages_url [export_vars -base messages { case_id role_id }]

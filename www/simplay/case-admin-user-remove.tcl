@@ -15,17 +15,4 @@ workflow::case::role::assignee_remove \
     -role_id $role_id \
     -party_id $user_id
 
-# TODO: this should removed because we don't want to put the admin user
-# in when the admin is trying to swap two users
-# # Assign the admin if the role is now unmapped
-# set remaining_assignees [workflow::case::role:get_assignees \
-#                              -case_id $case_id \
-#                              -role_id $role_id]
-# if { [llength $remaining_assignees] == 0 } {
-#     workflow::case::role::assignee_insert \
-#         -case_id $case_id \
-#         -role_id $role_id \
-#         -party_ids [list [ad_conn user_id]]
-# }
-
 ad_returnredirect [export_vars -base case-admin { case_id }]

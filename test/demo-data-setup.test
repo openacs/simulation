@@ -12,7 +12,7 @@ if { [catch {
 
     ::twt::simulation::setup::all_templates   
 
-    ::twt::simulation::play::tilburg_template_user_1
+    ::twt::simulation::play::tilburg_template
 
     ::twt::simulation::test::permissions_all
 

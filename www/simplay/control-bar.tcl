@@ -12,7 +12,6 @@ simulation::include_contract {
 set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
-set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
 
 set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]    
 
@@ -93,4 +92,3 @@ db_multirow -unclobber -extend { character_url } contacts select_contacts "
 " {
     set character_url [simulation::object::url -name $character_name]
 }
-

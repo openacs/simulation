@@ -109,3 +109,45 @@ ad_proc -public simulation::case::attachment_options {
         order by scrom.order_n
     }]
 }
+
+ad_proc -public simulation::case::assert_user_may_play_role {
+    {-case_id:required}
+    {-role_id:required}
+} {
+    Check that the currently logged in user is authorized to play a certain role
+    in a simulation case. Display a permission denied page if the user is not authorized.
+
+    @author Peter Marklund
+} {
+    # If the user is an admin player he may play the role
+    set package_id [ad_conn package_id]
+    set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]    
+    if { $adminplayer_p } {
+        return 1
+    }
+
+    # The user is not an admin player, he needs to play the role
+    set user_id [ad_conn user_id]
+    set user_plays_role_p 0
+    foreach assignee_list [workflow::case::role::get_assignees -case_id $case_id -role_id $role_id] {
+        array set assignee $assignee_list
+        if { [string equal $assignee(party_id) $user_id] } {
+            set user_plays_role_p 1
+            break
+        }
+    }
+
+    if { !$user_plays_role_p } {
+        simulation::role::get -role_id $role_id -array role
+        simulation::case::get -case_id $case_id -array case_array
+        ad_return_forbidden \
+                "Permission Denied" \
+                "<blockquote>
+  You don't have permission to play role $role(pretty_name) in case $case_array(label).
+</blockquote>"
+
+        ad_script_abort
+    }
+
+    return 1
+}

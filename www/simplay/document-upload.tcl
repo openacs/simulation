@@ -8,6 +8,8 @@ ad_page_contract {
     item_id:optional
 }
 
+simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
+
 set page_title "Upload new document to portfolio"
 set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] $page_title]
 

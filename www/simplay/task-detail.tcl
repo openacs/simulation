@@ -6,6 +6,8 @@ ad_page_contract {
     enabled_action_id:integer
 }
 
+simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
+
 workflow::case::enabled_action_get -enabled_action_id $enabled_action_id -array enabled_action
 
 set action_id $enabled_action(action_id)
