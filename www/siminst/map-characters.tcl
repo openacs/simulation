@@ -47,7 +47,8 @@ ad_form -extend -name characters -on_request {
     db_transaction {
         # Map each role to chosen character
         foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
-            simulation::role::edit -role_id $role_id -character_id [set role_${role_id}]
+            set row(character_id) [set role_${role_id}]
+            simulation::role::edit -role_id $role_id -array row
         }
     }
     
