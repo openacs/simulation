@@ -2,9 +2,10 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-<p> Are you sure you want to delete this object? </p>
+<p> #simulation.lt_Are_you_sure_you_want# </p>
 
-<a href="@delete_url@" class="button">Yes, delete the object</a> 
+<a href="@delete_url@" class="button">#simulation.lt_Yes_delete_the_object#</a> 
 &nbsp;&nbsp;&nbsp;&nbsp;
-<a href="@cancel_url@" class="button">No, cancel</a>
+<a href="@cancel_url@" class="button">#simulation.No_cancel#</a>
+
 

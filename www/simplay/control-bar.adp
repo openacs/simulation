@@ -1,5 +1,4 @@
-You are <a href="@role.character_url@">@role.character_title@</a>
-(@role.role_pretty@)
+#simulation.control_bar_current_player#
 
 <if @role.thumbnail_url@ not nil>
   <img src="@role.thumbnail_url@" width="@role.thumbnail_width@" height="@role.thumbnail_height@">
@@ -7,7 +6,7 @@ You are <a href="@role.character_url@">@role.character_title@</a>
 
 <p>
 
-<h4>States</h4>
+<h4>#simulation.States#</h4>
 
 <ul>
   <multiple name="states">
@@ -15,20 +14,21 @@ You are <a href="@role.character_url@">@role.character_title@</a>
   </multiple>
 </ul>
 
-<h4>Your Options</if></h4>
+<h4>#simulation.Your_Options#</if></h4>
 <ul class="action-links">
-  <li><a href="@case_home_url@">Case home</a>
-  <li><a href="@messages_url@">@message_count@ message<if @message_count@ ne 1>s</if></a>
-  <li><if @task_count@ eq 1><a href="@tasks_url@">@task_count@ task</a></if><else><a href="@tasks_url@">@task_count@ tasks</a></else>
-  <li><a href="@portfolio_url@">Portfolio</a>
-  <li><a href="@about_sim_url@">About this simulation</a>
-  <li><a href="@notifications_url@">My Notifications</a>
+  <li><a href="@case_home_url@">#simulation.Case_home#</a>
+  <li><a href="@messages_url@">@message_count@ <if @message_count@ eq 1>#simulation.message#</if><else>#simulation.messages#</else></a>
+  <li><a href="@tasks_url@">@task_count@ <if @task_count@ eq 1>#simulation.task#</if><else>#simulation.tasks#</else></a>
+  <li><a href="@portfolio_url@">#simulation.Portfolio#</a>
+  <li><a href="@about_sim_url@">#simulation.lt_About_this_simulation#</a>
+  <li><a href="@notifications_url@">#simulation.My_Notifications#</a>
 </ul>
 <if @show_contacts_p@>
-<h4>Contacts</h4>
+<h4>#simulation.Contacts#</h4>
 <ul class="action-links">
   <multiple name="contacts">
     <li><a href="@contacts.character_url@">@contacts.character_title@</a> (@contacts.role_pretty@)</li>
   </multiple>
 </ul>
 </if>
+

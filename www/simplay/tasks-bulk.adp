@@ -5,6 +5,5 @@
   <include src="/packages/simulation/lib/tasks" workflow_id="@workflow_id@" &="role_id">
 
   <p>
-    If you are using the respond button to respond to multiple tasks
-    then all checked tasks must share the same task name.
+    #simulation.lt_If_you_are_using_the_#
   </p>

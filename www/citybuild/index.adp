@@ -6,16 +6,17 @@
 <p></p>
 
 <if @map_p@>
-  <h2>Map XML</h2>
+  <h2>#simulation.Map_XML#</h2>
 
   <ul class="action-links">
     <if @subscribe_url@ not nil>
-      <li><a href="@subscribe_url@">Notify me of changes to map XML</a></li>
+      <li><a href="@subscribe_url@">#simulation.lt_Notify_me_of_changes_#</a></li>
     </if>
     <if @unsubscribe_url@ not nil>
-      <li><a href="@unsubscribe_url@">Stop notifying me of changes to map XML</a></li>
+      <li><a href="@unsubscribe_url@">#simulation.lt_Stop_notifying_me_of_#</a></li>
     </if>
-    <li><a href="map-xml">View Map XML</a></li>
-    <li><a href="generate-xml">Generate Map XML file and send notifications</a></li>
+    <li><a href="map-xml">#simulation.View_Map_XML#</a></li>
+    <li><a href="generate-xml">#simulation.lt_Generate_Map_XML_file#</a></li>
   </ul>
 </if>
+

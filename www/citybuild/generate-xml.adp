@@ -4,20 +4,21 @@
 
 <if @result.wrote_file_p@>
   <p>
-    Generated map XML file and sent any notifications.
+    #simulation.lt_Generated_map_XML_fil#
   </p>
 </if>
 <else>
   <p>
-    Did not generate an XML file.
+    #simulation.lt_Did_not_generate_an_X#
   </p>  
 </else>
 
 <if @result.errors@ not nil>
-The following errors were encountered:
+#simulation.lt_The_following_errors_#
 
 <pre>
 @error_text@
 </pre>
 
 </if>
+

@@ -3,13 +3,11 @@
   <listtemplate name="participants"></listtemplate>
 
   <ul class="action-links">
-    <li><a href="@group_admin_url@">Manage groups</a></li>
+    <li><a href="@group_admin_url@">#simulation.Manage_groups#</a></li>
   </ul>
 
   <p class="form-help-text">
-    <b>Invitations</b> are sent, 
-    when this wizard is completed and
-    casting begins.
+    #simulation.Invitations_are_sent#
   </p>
 
   <formwidget id="wizard_submit_back"> <formwidget id="wizard_submit_next">

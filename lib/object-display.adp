@@ -9,6 +9,7 @@
 
 <if @edit_url@ not nil>
   <p>
-    <a href="@edit_url@" class="button">Edit</a>
+    <a href="@edit_url@" class="button">#simulation.Edit#</a>
   </p>
 </if>
+

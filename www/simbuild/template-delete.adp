@@ -3,9 +3,10 @@
   <property name="context">@context;noquote@</property>
 
 <p>
-  You have deleted template "@template_name@".
+  #simulation.lt_You_have_deleted_temp#
 </p>
 
 <ul class="action-links">
-  <li><a href="@template_list_url@">Return to template list page</a></li>
+  <li><a href="@template_list_url@">#simulation.lt_Return_to_template_li#</a></li>
 </ul>
+

@@ -1,6 +1,5 @@
 <formtemplate id="clone"></formtemplate>
 
 <p>
-  Make a copy of the selected template, including all tasks and
-  roles, but not any objects.
+  #simulation.lt_Make_a_copy_of_the_se#
 </p>

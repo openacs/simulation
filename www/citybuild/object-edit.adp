@@ -4,3 +4,4 @@
   <property name="focus">object.title</property>
 
 <formtemplate id="object"></formtemplate>
+

@@ -11,14 +11,12 @@
 
 <if @bulk_p@>
   <p>
-    You are doing a bulk response to @common_actions_count@ tasks.
+    #simulation.lt_You_are_doing_a_bulk_#
   </p>
 
   <if @ignored_actions_count@ gt 0>
     <p>
-      <strong>Note:</strong> Ignoring @ignored_actions_count@ tasks that don't have the task
-      name "@action.pretty_name@". Please back up your browser if you
-      want to change the selection of tasks.
+      #simulation.ignoring_actions#
     </p>
   </if>
 </if>
@@ -33,15 +31,13 @@
 
 <if @attachment_options@ nil>
   <p>
-    <font color="red"><em>NOTE</em></font>: To attach a document to your message you need to <a
-    href="@document_upload_url@">upload a document</a> to your
-    portfolio before writing the message.
+    #simulation.to_attach_a_document#
   </p>
 </if>
 
 <if @received_attachments@ not nil>
   <p>
-    Attachments in received message: @received_attachments;noquote@
+    #simulation.lt_Attachments_in_receiv# @received_attachments;noquote@
   </p>
 </if>
 

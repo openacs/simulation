@@ -13,5 +13,5 @@ set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -
 
 set simulation_name [simulation::template::get_element -workflow_id $workflow_id -element pretty_name]
 
-set title "About $simulation_name"
-set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "$simulation_name"] $title]
+set title [_ simulation.lt_About_simulation_name]
+set context [list [list . [_ simulation.SimPlay]] [list [export_vars -base case { case_id role_id }] "$simulation_name"] $title]

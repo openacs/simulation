@@ -1,5 +1,5 @@
 <if @complete_p@ true>
-  <i>This case has been completed.</i>
+  <i>#simulation.lt_This_case_has_been_co#</i>
 </if>
 <else>
   <if @workflow_id@ not nil>
@@ -9,3 +9,4 @@
   <listfilters name="tasks" style="inline-filters"></listfilters>
   <listtemplate name="tasks"></listtemplate></p>
 </else>
+

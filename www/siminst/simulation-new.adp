@@ -7,5 +7,5 @@
 </p>
 
 <p>
-  Templates must be marked ready for use by template authors in order to appear on this list.
+  #simulation.lt_Templates_must_be_mar#
 </p>
