@@ -98,8 +98,9 @@ ad_form -export { workflow_id } -name simulation -form {
     if { [string equal $enroll_type "open"] } {
         lappend dates_to_check enroll_start enroll_end
     }
+    set now_ansi [clock format [clock seconds] -format "%Y-%m-%d"]
     foreach date_var $dates_to_check {
-        if { [clock scan [set $date_var]] < [clock seconds] } {
+        if { [clock scan [set $date_var]] < [clock scan $now_ansi] } {
             template::form::set_error simulation $date_var "The date needs to be in the future"
             set error_p 1                            
         }        

@@ -176,13 +176,14 @@ ad_proc -public simulation::template::edit {
         # Update sim_party_sim_map table
         foreach map_type { enrolled invited auto_enroll } {
             if { [info exists aux($map_type)] } {
-                # Clear out old mappings first
-                db_dml clear_old_mappings {
-                    delete from sim_party_sim_map
-                    where simulation_id = :workflow_id
-                      and type = :map_type
+                # Clear out old mappings first if we are updating
+                if { [string equal $operation "update"] } {
+                    db_dml clear_old_mappings {
+                        delete from sim_party_sim_map
+                        where simulation_id = :workflow_id
+                        and type = :map_type
+                    }
                 }
-
                 # Map each party
                 foreach party_id $aux($map_type) {
                     db_dml map_party_to_template {
@@ -900,7 +901,7 @@ ad_proc -private simulation::template::cast_users_in_case {
                     lappend assignees $user_id
                     
                     # Remove user from the not-in-group list
-                    set users_to_cast_not_in_groups [lreplace $users_to_cast_not_in_gruops 0 0]                        
+                    set users_to_cast_not_in_groups [lreplace $users_to_cast_not_in_groups 0 0]                        
 
                     # Remove the user from the users_to_cast list
                     set cast_list_index [lsearch -exact $users_to_cast $user_id]
@@ -924,7 +925,6 @@ ad_proc -private simulation::template::cast_users_in_case {
     workflow::case::role::assign \
         -case_id $case_id \
         -array row \
-        -replace
 }
 
 
@@ -1290,9 +1290,11 @@ ad_proc -public simulation::template::user_invited_p {
 
     return [db_string user_invited_p {
         select count(*)
-        from sim_party_sim_map
-        where simulation_id = :workflow_id
-          and party_id = :user_id
-          and type = 'invited'
+        from sim_party_sim_map spsm,
+             party_approved_member_map pamm
+        where spsm.simulation_id = :workflow_id
+          and spsm.type = 'invited'
+          and spsm.party_id = pamm.party_id
+          and pamm.member_id = :user_id
     }]
 }

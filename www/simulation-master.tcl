@@ -62,6 +62,9 @@ if { ![empty_string_p [ad_conn extra_url]] } {
 # Build a link bar for the subsite
 #
 ######################################################################
+if { ![info exists header_stuff] } {
+    set header_stuff {}
+}
 
 if { !$citybuild_p && !$simbuild_p && !$siminst_p && !$admin_p } {
     set subnavbar_link {}
@@ -76,10 +79,6 @@ if { !$citybuild_p && !$simbuild_p && !$siminst_p && !$admin_p } {
 
     if { $siminst_p } {
         lappend subnavbar_list [list "${base_url}siminst" "SimInst"]
-    }
-
-    if { ![info exists header_stuff] } {
-        set header_stuff {}
     }
 
     lappend subnavbar_list [list "${base_url}simplay" "SimPlay"]
