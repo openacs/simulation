@@ -33,7 +33,7 @@ ad_form \
         set new_workflow_array(sim_type) "dev_sim"
         
         set workflow_id [simulation::template::clone \
-                            -workflow_id $workflow_id \
+                             -workflow_id $workflow_id \
                              -package_key "simulation" \
                              -object_id [ad_conn package_id] \
                              -array new_workflow_array]
