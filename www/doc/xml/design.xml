@@ -6,13 +6,44 @@
 
   <article id="design">
     <title>Design</title>
-    <sect1 id="data-model">
-      <title>Data Model</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="data-model.png" format="png"/>
-        </imageobject>
-      </mediaobject>
+
+    <sect1 id="interfaces">
+      <title>Interfaces</title>
+      <sect2 id="page-map">
+        <title>Page Map</title>
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="page-map.png" format="png"/>
+          </imageobject>
+        </mediaobject>
+      </sect2>
+      <sect2 id="tcl-api">
+        <title>TCL API</title>
+        <para><ulink url="/api-doc...">link to auto-generated TCL
+        API</ulink></para>
+        <para>Each TCL API item should include inputs, outputs, and a
+        comment block describing any non-obvious internal issues.</para>
+      </sect2>
+      <sect2 id="sql api">
+        <title>SQL API</title>
+        <para><ulink url="/api-doc...">link to public sql
+        procs</ulink></para>
+      </sect2>
+    </sect1>
+    <sect1 id="internals">
+      <title>Internal Design</title>
+      <sect2 id="data-model">
+        <mediaobject>
+          <imageobject>
+            <imagedata fileref="data-model.png" format="png"/>
+          </imageobject>
+        </mediaobject>
+      </sect2>
+      <sect2 id="other-data">
+        <title>Other Data Issues</title>
+        <para>Describe other persistent data requirements, such as
+        package parameters and configuration.</para>
+      </sect2>
     </sect1>
     <sect1 id="object-orientation-notes">
       <title>Notes on an object-oriented simulated space</title>
