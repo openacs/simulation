@@ -17,16 +17,18 @@
   <include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" display_mode="edit" >
   
 <p>
-  <p>TODO: B: Allow reordering of roles, tasks.</p>
-  <p>TODO: Hide the init state and init task.  Auto-create and
-  maintain an init task pointing to the first state column.
-  <p>TODO: Allow reordering of state columns.
-  <p>TODO: B: When Ready for Use Checkbox is in display (not edit)
-  mode, show only the text "yes" or "no" instead of showing a disabled checkbox </p>
-  <a class="action">TODO: If !ready_p, display "Mark this template ready for use" link</a>
+  <p>TODO: B: Allow reordering of roles, tasks, states.</p>
+
   <a href="@spec_url@" class="action">Download a specification for this template</a>
+
+  <if @mark_ready_url@ not nil>
+    <a href="@mark_ready_url@" class="action">Mark this template ready for use</a>
+  </if>
+
   <if @inst_url@ not nil>
     <a href="@inst_url@" class="action">Start a simulation with this template</a>
   </if>
+
   <a href="@delete_url@" class="action" onclick="return confirm('Are you sure you want to delete the template?');">Delete this template</a>
+
 </if>

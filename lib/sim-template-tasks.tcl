@@ -37,10 +37,10 @@ switch $display_mode {
 # how is type going to work?  open question pending prototyping
 
 if { $display_mode == "edit"} {
-    set actions [list "Add a State" [export_vars -base state-edit { workflow_id}] {}]
-    lappend actions "Add a Task" [export_vars -base task-edit {workflow_id} ] {}
+    set list_actions [list "Add a State" [export_vars -base state-edit { workflow_id}] {}]
+    lappend list_actions "Add a Task" [export_vars -base task-edit {workflow_id} ] {}
 } else {
-    set actions ""
+    set list_actions [list]
 }
 
 set elements [list]
@@ -53,25 +53,36 @@ lappend elements edit {
     }
 }
 lappend elements name { 
-    label "Name"
+    label "<br />Name"
     display_col pretty_name
     link_url_col {[ad_decode $display_mode edit view_url ""]}
 }
 
 lappend elements assigned_name { 
-    label "Assignee"
+    label "<br />Assignee"
     link_url_col assigned_role_edit_url
 }
 
 lappend elements recipient_name { 
-    label "Recipient"
+    label "<br />Recipient"
     link_url_col recipient_role_edit_url
 }
 
+lappend elements delete {
+    sub_class narrow
+    hide_p {[ad_decode $display_mode edit 0 1]}
+    display_template {
+        <a href="@tasks.delete_url@" onclick="return confirm('Are you sure you want to delete task @tasks.pretty_name@?');">
+          <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
+        </a>
+    }
+}
+
 lappend elements state_spacer { 
-    label "|&nbsp;&nbsp;&nbsp;States:"
+    label "<br />States:"
     sub_class narrow
     display_template " "
+    html { style "border-left: 2px dotted #A0BDEB;" }
 }
 
 set states [list]
@@ -86,10 +97,15 @@ db_foreach select_states {
 } {
     set "label_state_$state_id" $pretty_name
     lappend elements state_$state_id \
-        [list label "\${label_state_$state_id}<br/> <a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a><a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a>" \
+        [list label "<a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a><a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a><br/>\${label_state_$state_id}" \
              html { align center } \
              display_template "
-<input type=checkbox TODO=\"make this real\"></input>
+                 <if @tasks.state_$state_id@ not nil>
+                   <input type=\"checkbox\" name=\"__enabled__@tasks.action_id@__${state_id}\" value=\"t\" checked>
+                 </if>
+                 <else>
+                   <input type=\"checkbox\" name=\"__enabled__@tasks.action_id@__${state_id}\" value=\"t\">
+                 </else>
              "]
 
     lappend states $state_id
@@ -101,22 +117,13 @@ db_foreach select_states {
     }
 }
 
-lappend elements delete {
-    sub_class narrow
-    hide_p {[ad_decode $display_mode edit 0 1]}
-    display_template {
-        <a href="@tasks.delete_url@" onclick="return confirm('Are you sure you want to delete task @tasks.pretty_name@?');">
-          <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
-        </a>
-    }
-}
 
 template::list::create \
     -name tasks \
     -multirow tasks \
     -no_data "No tasks in this Simulation Template" \
     -sub_class narrow \
-    -actions $actions \
+    -actions $list_actions \
     -elements $elements
 
 #-------------------------------------------------------------
@@ -150,6 +157,17 @@ db_foreach select_enabled_in_states {
 } {
     set enabled_in_state($action_id,$state_id) $assigned_p
 }
+
+ad_form -name enabled_tasks -form {
+    {workflow_id:integer(hidden) {value $workflow_id}}
+} -edit_buttons {
+    { "Save changes" ok }
+}
+
+
+
+
+set actions [list]
 
 db_multirow -extend $extend tasks select_tasks "
     select wa.action_id,
@@ -187,7 +205,12 @@ db_multirow -extend $extend tasks select_tasks "
     set set_initial_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/initial-action-set" { action_id {return_url [ad_return_url]} }]
     
     foreach state_id $states {
+
+        ad_form -extend -name enabled_tasks -form \
+            [list [list __enabled__${action_id}__${state_id}:text,optional]]
+
         if { [info exists enabled_in_state($action_id,$state_id)] } {
+            set __enabled__${action_id}__${state_id} "t"
             if { [template::util::is_true $enabled_in_state($action_id,$state_id)] } {
                 set state_$state_id assigned
             } else {
@@ -198,6 +221,57 @@ db_multirow -extend $extend tasks select_tasks "
             set move_to_$state_id 1
         }
     }
+
+    lappend actions $action_id
 }
 
+ad_form \
+    -extend \
+    -name enabled_tasks \
+    -form { 
+        {actions:text(hidden),optional {value $actions}}
+        {states:text(hidden),optional {value $states}}
+    } \
+    -on_request {
+        # Grab values from local vars 
+        #error request
+    } \
+    -on_submit {
+        db_transaction {
+            foreach state_id $states {
+                foreach action_id $actions {
+                    set currently_enabled_p [db_string enabled_p { 
+                        select 1
+                        from   workflow_fsm_action_en_in_st
+                        where  action_id = :action_id
+                        and    state_id = :state_id
+                    } -default 0]
+                    
+                    set should_be_enabled_p [exists_and_equal __enabled__${action_id}__${state_id} "t"]
+
+                    ds_comment "Action=$action_id, State=$state_id. Today=$currently_enabled_p, Tomorrow=$should_be_enabled_p"
+
+                    if { $currently_enabled_p != $should_be_enabled_p} {
+                        if { $should_be_enabled_p } {
+                            db_dml enabled {
+                                insert into workflow_fsm_action_en_in_st (action_id, state_id, assigned_p)
+                                values (:action_id, :state_id, 't')
+                            }
+                        } else {
+                            db_dml disable {
+                                delete 
+                                from   workflow_fsm_action_en_in_st 
+                                where  action_id = :action_id
+                                and    state_id = :state_id
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    } -after_submit {
+        ad_returnredirect [export_vars -base [ad_conn url] { workflow_id }]
+        ad_script_abort
+    }
 

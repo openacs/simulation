@@ -42,10 +42,19 @@ ad_form -name sim_template -mode $mode -cancel_url $cancel_url -form {
 }
 
 if { ![ad_form_new_p -key workflow_id] } {
-    ad_form -extend -name sim_template -form {
-        {template_ready_p:boolean(checkbox),optional
-            {label "Ready for use?"}
-            {options {{"Yes" t}}}
+    if { [empty_string_p [form get_action sim_template]] } {
+        ad_form -extend -name sim_template -form {
+            {template_ready_p:boolean(select),optional
+                {label "Ready for use?"}
+                {options {{"Yes" t} { "No" f }}}
+            }
+        }
+    } else {
+        ad_form -extend -name sim_template -form {
+            {template_ready_p:boolean(checkbox),optional
+                {label "Ready for use?"}
+                {options {{"Yes" t}}}
+            }
         }
     }
 } else {
@@ -163,3 +172,7 @@ set delete_url [export_vars -base template-delete { workflow_id }]
 
 set spec_url [export_vars -base template-spec { workflow_id }]
 
+
+if { [string equal $sim_template_array(sim_type) "dev_template"] } {
+    set mark_ready_url [export_vars -base "template-sim-type-update" { workflow_id }]
+}
