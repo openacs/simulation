@@ -16,7 +16,7 @@ set elements {
     label {
         label "Case"
         orderby upper(w.pretty_name)
-        link_url_eval {[export_vars -base case { case_id }]}
+        link_url_eval {[export_vars -base [ad_conn package_url]simplay/case { case_id }]}
     }
     pretty_name {
         label "Simulation"
