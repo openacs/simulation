@@ -11,6 +11,8 @@ set page_title "Simulation"
 set context ""
 set user_id [auth::get_user_id]
 
+set login_url [ad_get_login_url -return]
+
 set citybuild_p [permission::permission_p -object_id $package_id -privilege sim_object_create]
 set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_template_read]
 set siminst_p [permission::permission_p -object_id $package_id -privilege sim_inst]

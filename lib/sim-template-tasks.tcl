@@ -17,14 +17,6 @@ simulation::include_contract {
 
 set package_id [ad_conn package_id]
 
-switch $display_mode {
-    display {}
-
-    edit {
-	set add_task_url [export_vars -base "[apm_package_url_from_id $package_id]jsimbuild/task-edit" { workflow_id } ]
-    }
-}
-
 ##############################################################
 #
 # tasks
@@ -38,7 +30,7 @@ switch $display_mode {
 #-------------------------------------------------------------
 
 if { $display_mode == "edit"} {
-    set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url [ad_return_url] } }] {}]
+    set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url "[ad_return_url]\#tasks" } }] {}]
 } else {
     set list_actions [list]
 }
@@ -76,14 +68,6 @@ lappend elements up {
         </if>
     }
 }
-lappend elements copy {
-    hide_p {[ad_decode $display_mode edit 0 1]}
-    sub_class narrow
-    link_url_col copy_url
-    display_template {
-        <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
-    }
-}
 
 lappend elements name { 
     label "<br />Name"
@@ -101,6 +85,15 @@ lappend elements trigger_type {
 lappend elements assigned_name { 
     label "<br />Assignee"
     link_url_col assigned_role_edit_url
+}
+
+lappend elements copy {
+    hide_p {[ad_decode $display_mode edit 0 1]}
+    sub_class narrow
+    link_url_col copy_url
+    display_template {
+        <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
+    }
 }
 
 lappend elements delete {
@@ -228,8 +221,8 @@ db_multirow -extend $extend tasks select_tasks "
      order by wa.sort_order
 " {
     incr counter
-    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]} }]
-    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]}}]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]\#tasks"} }]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" -anchor tasks { action_id {return_url "[ad_return_url]\#tasks"}}]
     set delete_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url "[ad_return_url]\#tasks"} }]
     set copy_url [export_vars -base task-copy { action_id {return_url "[ad_return_url]\#tasks"} }]

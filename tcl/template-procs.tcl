@@ -474,12 +474,13 @@ ad_proc -public simulation::template::force_start {
     }
 }
 
-ad_proc -public simulation::template::enroll_user {
+ad_proc -public simulation::template::enroll_user {    
     {-workflow_id:required}    
     {-user_id:required}
     {-simulation_array ""}
     {-email ""}
     {-user_name ""}
+    {-admin:boolean}
 } {
     Enroll a user in a simulation. Sends out an email to the user for casting type
     open and group. Creates a SimPlay message notification for the user.
@@ -525,22 +526,33 @@ casting page at ${casting_page_url} to choose case or role.
             -subject $subject\
             -body $body
     }
+    
+    if { $admin_p } {
+        # Notify admin of all activity in the workflow. In particular this includes timed out tasks.
+        notification::request::new \
+            -type_id [notification::type::get_type_id -short_name "workflow"] \
+            -user_id $user_id \
+            -object_id [ad_conn package_id] \
+            -interval_id [notification::get_interval_id -name "instant"] \
+            -delivery_method_id [notification::get_delivery_method_id -name "email"]
+        
+    } else {
+        # Sign up the user for email notification of received messages
+        notification::request::new \
+            -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
+            -user_id $user_id \
+            -object_id [ad_conn package_id] \
+            -interval_id [notification::get_interval_id -name "instant"] \
+            -delivery_method_id [notification::get_delivery_method_id -name "email"]
 
-    # Sign the user up for email notification of received messages
-    notification::request::new \
-        -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
-        -user_id $user_id \
-        -object_id [ad_conn package_id] \
-        -interval_id [notification::get_interval_id -name "instant"] \
-        -delivery_method_id [notification::get_delivery_method_id -name "email"]
-
-    # Sign up the user for email notification of assigned tasks
-    notification::request::new \
-        -type_id [notification::type::get_type_id -short_name "workflow_assignee"] \
-        -user_id $user_id \
-        -object_id [ad_conn package_id] \
-        -interval_id [notification::get_interval_id -name "instant"] \
-        -delivery_method_id [notification::get_delivery_method_id -name "email"]
+        # Sign up the user for email notification of assigned tasks
+        notification::request::new \
+            -type_id [notification::type::get_type_id -short_name "workflow_assignee"] \
+            -user_id $user_id \
+            -object_id [ad_conn package_id] \
+            -interval_id [notification::get_interval_id -name "instant"] \
+            -delivery_method_id [notification::get_delivery_method_id -name "email"]
+    }
 }
 
 ad_proc -public simulation::template::enroll_and_invite_users {
@@ -580,7 +592,13 @@ ad_proc -public simulation::template::enroll_and_invite_users {
     # Always enroll the admin creating the simulation
     set admin_user_id [ad_conn user_id]
     acs_user::get -user_id $admin_user_id -array admin_user
-    lappend enroll_user_list [list $admin_user_id $admin_user(email) $admin_user(name)]
+    simulation::template::enroll_user \
+        -admin \
+        -workflow_id $workflow_id \
+        -user_id $admin_user_id \
+        -simulation_array sim_template \
+        -user_name $admin_user(name) \
+        -email $admin_user(email)
 
     # Enroll users
     foreach user $enroll_user_list {
@@ -981,8 +999,6 @@ ad_proc -private simulation::template::cast_users_in_case {
         # Keep track of which users we decided to assign to the role and move on to the next one
         set row($role_short_name($role_id)) $assignees
     }
-
-    ns_log Notice "pm debug row = [array get row]"
 
     # Do all the user-role assignments in the case
     workflow::case::role::assign \
