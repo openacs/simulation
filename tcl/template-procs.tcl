@@ -93,9 +93,15 @@ ad_proc -public simulation::template::edit {
                     # Add the column to the insert/update statement
                     switch $attr {
                         enroll_start - enroll_end - send_start_note_date - case_start - case_end {
-                            lappend update_clauses "$attr = to_date('[db_quote $row($attr)]', 'YYYY-MM-DD')"
-                            lappend insert_names $attr
-                            lappend insert_values "to_date('[db_quote $row($attr)]', 'YYYY-MM-DD')"
+                            if { [empty_string_p $row($attr)] } {
+                                lappend update_clauses "$attr = null"
+                                lappend insert_names $attr
+                                lappend insert_values "null"
+                            } else {
+                                lappend update_clauses "$attr = to_date('[db_quote $row($attr)]', 'YYYY-MM-DD')"
+                                lappend insert_names $attr
+                                lappend insert_values "to_date('[db_quote $row($attr)]', 'YYYY-MM-DD')"
+                            }
                         }
                         suggested_duration {
                             if { [empty_string_p $row($attr)] } {
