@@ -92,11 +92,10 @@ db_foreach select_states {
              display_template "
                  <switch @tasks.state_$state_id@>
                    <case value=\"assigned\">
-                     <span title=\"The task is enabled in this state\">&loz;</span>
-                     <b title=\"We will harass the role to come perform this task\">&diams;</b>
+                     Enabled and Assigned
                    </case>
                    <case value=\"enabled\">
-                     <span title=\"The task is enabled in this state\">&loz;</span>
+                     Enabled
                    </case>
                    <default>
                      &nbsp;
