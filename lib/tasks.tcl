@@ -75,6 +75,15 @@ if { ![empty_string_p $workflow_id] } {
     # We are listing tasks across cases in a workflow. 
     # Enable the role filter.
 
+    ad_page_contract {
+    } {
+        search_terms:optional
+    }
+
+    ad_form -name search -export { workflow_id } -form {
+        {search_terms:text,optional {label "Restrict to previous task matching word or phrase"}}
+    }
+
     set role_values [db_list_of_lists select_roles {
         select wr.pretty_name,
                wr.role_id
@@ -148,6 +157,29 @@ template::list::create \
 # NOTE: Our "pick case and role" design of simplay doesn't work if a child workflow uses per_user mapping
 # because the role in the child workflow will then no longer match any role in the top case.
 
+set search_clause ""
+if { [exists_and_not_null search_terms] } {
+    set search_terms_lower [string trim [string tolower $search_terms]]
+    set search_clause "
+       exists (select 1
+              from workflow_case_log wcl1,
+                   cr_items ci,
+                   cr_revisions cr
+              where wcl1.entry_id = ci.item_id
+                and ci.live_revision = cr.revision_id
+                and wcl1.entry_id = (select max(wcl2.entry_id)
+                                    from workflow_case_log wcl2,
+                                         workflow_fsm_actions wfa,
+                                         workflow_case_fsm wcf
+                                    where wcl2.case_id = wcl1.case_id
+                                    and wcl2.action_id = wfa.action_id
+                                    and wcf.case_id = wcl2.case_id
+                                    and wfa.new_state = wcf.current_state)
+                and wcl1.case_id = wcaa.case_id
+                and lower(cr.content) like '%$search_terms_lower%'
+             )"
+}
+
 db_multirow -extend { task_url } tasks select_tasks "
     select wcaa.enabled_action_id,
            wa.pretty_name as name,
@@ -167,6 +199,7 @@ db_multirow -extend { task_url } tasks select_tasks "
        and sc.sim_case_id = topwc.object_id
        and w.workflow_id = topwc.workflow_id
        and wr.role_id = wcaa.role_id
+       [ad_decode $search_clause "" "" "and $search_clause"]
        [ad_decode [exists_and_not_null workflow_id] 1 "and w.workflow_id = :workflow_id" ""]
        [ad_decode [exists_and_not_null role_id] 1 "and wcaa.role_id = :role_id" ""]
        [ad_decode [exists_and_not_null case_id] 1 "and wcaa.case_id = :case_id" "and exists (select 1 
