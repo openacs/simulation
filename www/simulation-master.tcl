@@ -4,12 +4,56 @@ set return_url [ad_return_url]
 set parameters_url [export_vars -base "/shared/parameters" {package_id return_url}]
 set base_url [apm_package_url_from_id $package_id]
 
+######################################################################
+#
+# Permission checking
+#
+######################################################################
+
 # Anonymous users should only be allowed to access the index page (with the flash map)
 # and the object view urls
 # We are assuming here that all pages in the package use this master template
 if { [string equal [ad_conn user_id] 0] } {
     if { ![regexp "^object/" [ad_conn extra_url]] && ![empty_string_p [ad_conn extra_url]] } {
         ad_redirect_for_registration
+    }
+}
+
+set admin_p [permission::permission_p -object_id $package_id -privilege admin]
+set citybuild_p [permission::permission_p -object_id $package_id -privilege sim_object_create]
+set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_inst]
+set siminst_p [permission::permission_p -object_id $package_id -privilege sim_inst]
+
+# If we are in any of the modules - check that the user
+# has permission to be there
+if { ![empty_string_p [ad_conn extra_url]] } {
+    regexp {^([^/]+)} [ad_conn extra_url] dir
+
+    set page_forbidden_p 0
+    switch $dir {
+        citybuild {
+            if { !$citybuild_p } {
+                set page_forbidden_p 1
+            }
+        }
+        simbuild {
+            if { !$simbuild_p } {
+                set page_forbidden_p 1
+            }
+
+        }
+        siminst {
+            if { !$siminst_p } {
+                set page_forbidden_p 1
+            }
+
+        }
+    }
+
+    if { $page_forbidden_p } {
+        ad_return_forbidden \
+            "Permission Denied" \
+            "You don't have permission to access this page"
     }
 }
 
@@ -20,11 +64,6 @@ if { [string equal [ad_conn user_id] 0] } {
 ######################################################################
 
 #  TODO: kill link bar for players
-
-set admin_p [permission::permission_p -object_id $package_id -privilege admin]
-set citybuild_p [permission::permission_p -object_id $package_id -privilege sim_object_create]
-set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_object_create]
-set siminst_p [permission::permission_p -object_id $package_id -privilege sim_inst]
 
 if { $citybuild_p } {
     lappend subnavbar_list [list "${base_url}citybuild" "CityBuild"]

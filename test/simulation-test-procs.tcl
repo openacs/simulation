@@ -69,8 +69,7 @@ ad_proc ::twt::simulation::add_user {
 } {
     do_request /acs-admin/users/user-add
     field find ~n email
-    set email_account [string map {" " _} "$first_names $last_name"]
-    set email "${email_account}@test.test"
+    set email [email_from_user_name "$first_names $last_name"]
     field fill $email
     field find ~n first_names
     field fill $first_names
@@ -82,6 +81,34 @@ ad_proc ::twt::simulation::add_user {
     field fill [::twt::user::get_password $email]
 
     form submit
+}
+
+ad_proc ::twt::simulation::email_from_user_name { user_name } {
+    set email_account [string map {" " _} $user_name]
+    set email "${email_account}@test.test"
+
+    return $email
+}
+
+ad_proc ::twt::simulation::permission_user_email { group_name } {
+    Given the name of one of the permission groups, i.e. "Sim Admins",
+    return the email of the demo user in that group.
+} {
+    return [email_from_user_name "[permission_user_first_names $group_name] [permission_user_last_name $group_name]"]
+}
+
+ad_proc ::twt::simulation::permission_user_first_names { group_name } {
+    Given the name of one of the permission groups, i.e. "Sim Admins",
+    return the first names of the demo user in that group.
+} {
+    return $group_name
+}
+
+ad_proc ::twt::simulation::permission_user_last_name { group_name } {
+    Given the name of one of the permission groups, i.e. "Sim Admins",
+    return the last name of the demo user in that group.
+} {
+    return "Test User"
 }
 
 ad_proc ::twt::simulation::add_user_to_group_url {
@@ -299,4 +326,36 @@ ad_proc ::twt::simulation::add_tasks_to_template {
         field fill "This is the task description for task $task_name"
         form submit
     }
+}
+
+ad_proc ::twt::simulation::assert_page_accessible {url} {
+    Access the given url and throw an error if it's not accessible.
+
+    @see ::twt::simulation::page_accessible_p
+} {
+    if { ![page_accessible_p $url] } {
+        error "The page at url $url should be accessible but doesn't seem to be (status=[response status] response_url=[response url])"
+    }
+}
+
+ad_proc ::twt::simulation::assert_page_not_accessible {url} {
+    Access the given url and throw an error if it's accessible.
+
+    @see ::twt::simulation::page_accessible_p
+} {
+    if { [page_accessible_p $url] } {
+        error "The page at url $url should not be accessible but seems to be (status=[response status] response_url=[response url])"
+    }
+}
+
+ad_proc ::twt::simulation::page_accessible_p {url} {
+    Access the given url and return 1 if there is no permission violation,
+    breakage, or redirection. Returns 0 otherwise.
+} {
+    # Tclwebtest will throw an error for status 403 and this catch is a workaround for that
+    catch {do_request $url}
+
+    return [expr [string equal [response status] 200] && \
+                [regexp $url [response url]] && \
+                ![regexp "Permission Denied" [response body]]]
 }
