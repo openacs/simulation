@@ -723,7 +723,8 @@ ad_form -extend -name object -new_request {
     }
     
 } -after_submit {
-    ad_returnredirect -message "\"$title\" has been saved." -abort "."
+    ad_returnredirect -message "\"$title\" has been saved." "."
+    ad_script_abort
 }
 
 

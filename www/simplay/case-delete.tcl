@@ -13,7 +13,8 @@ simulation::case::get -case_id $case_id -array case
 
 if { [template::util::is_true $confirm_p] } {
     workflow::case::delete -case_id $case_id
-    ad_returnredirect -message "Case \"$case(label)\" has been deleted." -abort "."
+    ad_returnredirect -message "Case \"$case(label)\" has been deleted." "."
+    ad_script_abort
 }
 
 set page_title "Delete case \"$case(label)\""
