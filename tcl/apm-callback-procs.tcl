@@ -76,7 +76,7 @@ ad_proc -private simulation::apm::setup_permission_groups {
         foreach {group_name privilege_list} {
             "Sim Admins" {sim_admin}
             "Template Authors" {sim_template_creator sim_inst sim_object_create}
-            "Case Authors" {sim_inst sim_object_create}
+            "Case Authors" {sim_inst sim_object_create sim_adminplayer}
             "Service Admins" {}
             "City Admins" {sim_set_map_p sim_object_writer}
             "Actors" {}
