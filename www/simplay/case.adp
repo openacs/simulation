@@ -5,8 +5,10 @@
 <h3>Recent Messages</h3>
 
 <include src="/packages/simulation/lib/messages"  user_id="@user_id@" case_id="@case_id@" role_id="@role_id@" limit="5">
-<p></p>
-<a href="@messages_url@" class="action">All messages...</a>
+
+<ul class="action-links">
+  <li><a href="@messages_url@">All messages...</a></li>
+</ul>
 
 <h3>Tasks</h3>
 

@@ -2,7 +2,9 @@
 
   <listtemplate name="participants"></listtemplate>
 
-  <a href="@group_admin_url@" class="action">Manage groups</a>
+  <ul class="action-links">
+    <li><a href="@group_admin_url@">Manage groups</a></li>
+  </ul>
 
   <p class="form-help-text">
     <b>Invitations</b> are sent, 

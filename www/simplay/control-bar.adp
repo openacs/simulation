@@ -8,7 +8,7 @@ You are <a href="@role.character_url@">@role.character_title@</a>
 <p>
 
 <h4>Your Options</if></h4>
-<ul>
+<ul class="action-links">
   <li><a href="@case_home_url@">Case home</a>
   <li><a href="@messages_url@">@message_count@ message<if @message_count@ ne 1>s</if></a>
   <li><if @task_count@ eq 1><a href="@tasks_url@">@task_count@ task</a></if><else><a href="@tasks_url@">@task_count@ tasks</a></else>
@@ -17,7 +17,7 @@ You are <a href="@role.character_url@">@role.character_title@</a>
   <li><a href="@notifications_url@">My Notifications</a>
 </ul>
 <h4>Contacts</h4>
-<ul>
+<ul class="action-links">
   <multiple name="contacts">
     <li><a href="@contacts.character_url@">@contacts.character_title@</a> (@contacts.role_pretty@)</li>
   </multiple>
