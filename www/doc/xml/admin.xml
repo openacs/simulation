@@ -1,0 +1,39 @@
+<?xml version='1.0' ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [ 
+<!-- Global variables are defined in variables.ent -->
+]>
+
+  <article id="admin">
+    <title>Admin Guide</title>
+
+    <sect1 id="map_xml">
+      <title>Map XML</title>
+
+      <para>
+        The simulation package will nightly generate an XML file with information needed
+        for the SIMBUILD flash map. The objects in the XML file will be those that are supposed
+        to appear on the map, i.e. those that have the on_map_p attribute set to true. The file
+        will only be regenerated if the contents of the file (i.e. the map objects) have changed
+        since last time the file was generated. The object attributes stored in the XML file
+        will be object id, name, url, thumbnail url, and description.
+      </para>
+
+      <para>
+        To activate this feature you need to specify the location
+        of the XML file by visiting the parameters page of the package and setting the 
+        MapXMLFilePath parameter.
+      </para>
+
+      <para>
+        You may view the XML file from a link on the object list page and you may also manually trigger the
+        recreation of the XML file from there.
+      </para>
+
+      <para>
+        On the object list page you may sign up for notifications for the Map XML file. You will then be notified
+        by email everytime the XML file is regenerated (because something has changed) or everytime there is a problem
+        generating the XML file.
+      </para>
+
+  </article>
