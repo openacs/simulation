@@ -289,7 +289,7 @@ select content_type__create_attribute(
     'from_role_id',                -- attribute_name
     'integer',                     -- datatype
     'From role_id',                -- pretty_name
-    'From rase_ids',               -- pretty_plural
+    'From role_ids',               -- pretty_plural
     2,                             -- sort_order
     null,                          -- default_value
     'integer'                      -- column_spec
@@ -297,10 +297,10 @@ select content_type__create_attribute(
 
 select content_type__create_attribute(
     'sim_message',                 -- content_type
-    'case_id',                  -- attribute_name
+    'case_id',                     -- attribute_name
     'integer',                     -- datatype
-    'Case ID',                  -- pretty_name
-    'case IDs',                 -- pretty_plural
+    'Case ID',                     -- pretty_name
+    'Case IDs',                    -- pretty_plural
     3,                             -- sort_order
     null,                          -- default_value
     'integer'                      -- column_spec
