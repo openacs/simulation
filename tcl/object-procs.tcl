@@ -311,8 +311,7 @@ ad_proc -private simulation::object::xml::get_doc {
                     where cir.item_id = ci.item_id
                       and cir.related_object_id = ci2.item_id
                       and cir.relation_tag = 'thumbnail') as thumbnail_uri
-            from cr_items ci
-                 left outer join cr_item_rels cir on (cir.item_id = ci.item_id),
+            from cr_items ci,
                  cr_revisions cr,
                  $table_name st           
             where st.on_map_p = 't'
