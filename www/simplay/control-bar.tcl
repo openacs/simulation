@@ -34,12 +34,10 @@ set message_count [db_string message_count_sql "
 set messages_url [export_vars -base ${section_uri}messages { case_id role_id }]
 
 set task_count [db_string task_count_sql {
-    select count(wcea.enabled_action_id) 
-      from workflow_case_enabled_actions wcea,
-           workflow_actions wa
-     where wa.assigned_role = :role_id
-       and wa.action_id = wcea.action_id
-       and wcea.case_id = :case_id
+    select count(wcaa.action_id) 
+      from workflow_case_assigned_actions wcaa
+     where wcaa.role_id = :role_id
+       and wcaa.case_id = :case_id
 }]
 
 set tasks_url [export_vars -base ${section_uri}tasks { case_id role_id }]
