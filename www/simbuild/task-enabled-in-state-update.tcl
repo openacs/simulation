@@ -4,7 +4,7 @@ ad_page_contract {
     action_id:integer
     state_id:integer
     {enabled_p:boolean t}
-    {assigned_p:boolean f}
+    {assigned_p:boolean t}
     {return_url {}}
 }
 

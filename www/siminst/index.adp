@@ -7,7 +7,9 @@
 <listtemplate name="dev_sims"></listtemplate>
 <p></p>
 
-<a href="../simplay/" class="action">Live Simulations</a>
+<ul class="action-links">
+  <li><a href="../simplay/">Live Simulations</a></li>
+</ul>
 
 <h2>Simulations in Casting</h2>
 

@@ -13,12 +13,12 @@ simulation::include_contract {
 set package_id [ad_conn package_id]
 
 set elements {
-    pretty_name {
-        label "Simulation"
-        link_url_eval {[export_vars -base [ad_conn package_url]simplay/case { case_id role_id }]}
-    }
     label {
         label "Case"
+        link_url_eval {[export_vars -base "[ad_conn package_url]simplay/case" { case_id role_id }]}
+    }
+    pretty_name {
+        label "Simulation"
     }
     role_pretty {
         label "Role"
