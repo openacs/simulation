@@ -133,11 +133,10 @@ template::list::create \
             label "Simulation"
             orderby upper(w.pretty_name)
         }
-        enroll_type {
-            label "Enrollment Type"
-        }
-        casting_type {
-            label "Casting Type"
+        groups {
+            display_template {
+                <a href="@casting_sims.groups_url@">Edit groups</a>
+            }
         }
         n_users {
             label "Users enrolled"
@@ -157,6 +156,11 @@ template::list::create \
                 <u>Copy</u>
             }
         }
+        start_now {
+            display_template {
+                <a href="@casting_sims.start_url@">Start immediately</a>
+            }
+        }
     }
 
 # if admin, show all.  otherwise, filter
@@ -166,11 +170,9 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { edit_url delete_url edit_p } casting_sims select_casting_sims "
+db_multirow -extend { edit_url delete_url start_url groups_url } casting_sims select_casting_sims "
     select w.workflow_id,
            w.pretty_name,
-           ss.enroll_type,
-           ss.casting_type,
            (select count(*) 
               from sim_party_sim_map spsm,
                    party_approved_member_map pamm,
@@ -191,4 +193,6 @@ db_multirow -extend { edit_url delete_url edit_p } casting_sims select_casting_s
 " {
     set edit_url [export_vars -base "${base_url}siminst/simulation-casting-2" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
+    set start_url [export_vars -base "simulation-start" { workflow_id }]
+    set groups_url [export_vars -base "simulation-casting-3" { workflow_id }]
 }

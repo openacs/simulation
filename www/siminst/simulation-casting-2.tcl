@@ -21,6 +21,8 @@ set in_two_and_a_half_months_date [clock format [expr [clock seconds] + 3*3600*2
 set in_three_months_date [clock format [expr [clock seconds] + 3*3600*24*31] -format "%Y %m %d"]
 set in_four_months_date [clock format [expr [clock seconds] + 4*3600*24*31] -format "%Y %m %d"]
 
+set eligible_groups [simulation::groups_eligible_for_casting]
+
 ad_form -export { workflow_id } -name simulation -form {
     {enroll_start:date,optional
         {label "Enrollment start date"}
@@ -54,12 +56,12 @@ ad_form -export { workflow_id } -name simulation -form {
     }
     {enroll_groups:integer(checkbox),multiple,optional
         {label "Enroll all users in these groups"}
-        {options {[simulation::groups_eligible_for_casting]}}
+        {options $eligible_groups}
         {help_text {Use <a href="$group_admin_url">Group Administration</a> to add groups}}
     }    
     {invite_groups:integer(checkbox),multiple,optional
-        {label "Invite all users in these groups"}
-        {options {[simulation::groups_eligible_for_casting]}}
+        {label "Invite all users in these groups (mockup only)"}
+        {options $eligible_groups}
         {help_text {Use <a href="$group_admin_url">Group Administration</a> to add groups}}
     }    
 } -on_request {
@@ -80,8 +82,9 @@ ad_form -export { workflow_id } -name simulation -form {
     set sim_template(case_end) $case_end_ansi
     set sim_template(enroll_type) $enroll_type
     set sim_template(casting_type) $casting_type
-    set sim_template(enroll_groups) $enroll_groups
-    set sim_template(invite_gropus) $invite_groups
+    set sim_template(auto-enroll) $enroll_groups
+    # TODO:
+    #set sim_template(invite_gropus) $invite_groups
 
     simulation::template::edit \
         -workflow_id $workflow_id \
