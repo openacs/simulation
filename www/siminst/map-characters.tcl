@@ -8,39 +8,49 @@ ad_page_contract {
     workflow_id:integer
 }
 
+# TODO: Permission check?
+
 set page_title "Map to Characters"
 set context [list [list "." "SimInst"] $page_title]
 
-# Loop over all workflow roles and add a character select widget for each
-set form [list]
-set character_options [simulation::get_object_options -content_type sim_character]
-foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
-    set role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
-    set role_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
-    lappend form [list role_${role_short_name}:text(select) \
-                      [list label $role_pretty_name] \
-                      [list options $character_options]
-                 ]
-}
-
 ad_form \
     -name characters \
-    -export { workflow_id } \
-    -form $form \
-    -on_submit {
-
-        db_transaction {
-            # Create a new template that is clone of the existing one
-            set workflow_id [simulation::template::clone -workflow_id $workflow_id]
-
-            # Map each role to chosen character
-            foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
-                set role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
-                simulation::role::edit -role_id $role_id -character_id [set role_${role_short_name}]
-            }
+    -edit_buttons { { Map ok } } \
+    -form {
+        {workflow_id:integer(hidden)
+            {value $workflow_id}
         }
-
-        # Proceed to the task page
-        ad_returnredirect [export_vars -base map-tasks {workflow_id}]
-        ad_script_abort
     }
+
+set character_options [simulation::get_object_options -content_type sim_character]
+
+# Loop over all workflow roles and add a character select widget for each
+foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
+    set role_pretty_name_$role_id [workflow::role::get_element -role_id $role_id -element pretty_name]
+
+    ad_form -extend -name characters -form \
+        [list [list role_${role_id}:text(select) \
+                   [list label \$role_pretty_name_$role_id] \
+                   [list options $character_options]
+              ]]
+}
+
+ad_form -extend -name characters -on_request {
+    # Less than terribly efficient
+    foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
+        array unset sim_role_array
+        simulation::role::get -role_id $role_id -array sim_role_array
+        set role_$role_id $sim_role_array(character_id)
+    }
+} -on_submit {
+    db_transaction {
+        # Map each role to chosen character
+        foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
+            simulation::role::edit -role_id $role_id -character_id [set role_${role_id}]
+        }
+    }
+    
+    # Proceed to the task page
+    ad_returnredirect [export_vars -base map-tasks {workflow_id}]
+    ad_script_abort
+}
