@@ -24,7 +24,4 @@ set case_list [db_list_of_lists case_count {
 if { [llength $case_list] == 1 } {
     set case_id [lindex [lindex $case_list 0] 0]
     set role_id [lindex [lindex $case_list 0] 1]
-# TODO REMOVE
-#    ad_returnredirect [export_vars -base case { case_id role_id }]
-#    ad_script_abort
 }

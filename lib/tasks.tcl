@@ -73,8 +73,7 @@ template::list::create \
 db_multirow -extend { task_url } tasks select_tasks "
     select wcaa.enabled_action_id,
            wa.pretty_name as name,
-           wcaa.top_case_id as case_id,
-           wcaa.real_role_id as role_id,
+           wcaa.case_id,
            sc.label as case_label,
            w.pretty_name as sim_name,
            wr.pretty_name as role_pretty,
@@ -86,15 +85,15 @@ db_multirow -extend { task_url } tasks select_tasks "
            workflows w,
            workflow_roles wr
      where wa.action_id = wcaa.action_id
-       and topwc.case_id = wcaa.top_case_id
+       and topwc.case_id = wcaa.case_id
        and sc.sim_case_id = topwc.object_id
        and w.workflow_id = topwc.workflow_id
-       and wr.role_id = wcaa.real_role_id
-       [ad_decode [exists_and_not_null role_id] 1 "and wcaa.real_role_id = :role_id" ""]
-       [ad_decode [exists_and_not_null case_id] 1 "and wcaa.top_case_id = :case_id" "and exists (select 1 
+       and wr.role_id = wcaa.role_id
+       [ad_decode [exists_and_not_null role_id] 1 "and wcaa.role_id = :role_id" ""]
+       [ad_decode [exists_and_not_null case_id] 1 "and wcaa.case_id = :case_id" "and exists (select 1 
                    from   workflow_case_role_user_map 
-                   where  case_id = wcaa.real_case_id 
-                   and    role_id = wcaa.real_role_id 
+                   where  case_id = wcaa.case_id 
+                   and    role_id = wcaa.role_id 
                    and    user_id = :user_id)"]
     order by wa.sort_order
 " {
