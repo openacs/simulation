@@ -1,0 +1,15 @@
+ad_page_contract {
+    Displays a Simulation Object
+    
+    @author Jarkko Laine (jarkko@jlaine.net)
+    @creation-date 2003-10-14
+    @cvs-id $Id$
+} {
+    role_id:integer,notnull
+    case_id:integer,notnull
+    recipient_role_id:integer,optional
+}
+
+set path [file join [acs_package_root_dir "simulation"] lib object-display]
+
+rp_internal_redirect -absolute_path $path
