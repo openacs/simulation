@@ -28,11 +28,14 @@
         <div style="margin: 4px; padding: 4px; border: 1px solid black;">
           <h3><a href="simplay/">SimPlay</a></h3>
           <if @user_id@ ne 0>
+          <h4>Your Current Simulations</h4>
             <include src="/packages/simulation/lib/cases" party_id="@user_id@"/>
           </if>
           <else>
             <u>Log in</u> to see your active cases.
           </else>
+          <p>
+          <h4>Join a Simulations</h4>
           <include src="/packages/simulation/lib/simulations-available" party_id="@user_id@"/>
         </div>
 

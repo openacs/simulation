@@ -1,5 +1,8 @@
-<h4>Your Options</if></h4>
+<br>You are <a href="/simulation/object/bernadette">Bernadette</a> (Plaintiff)
+<img src="/simulation/object-content/new-jersey-lawyers">
 
+
+<h4>Your Options</if></h4>
 <ul>
   <li><a href="@case_home_url@">Case home</a>
   <li><a href="@messages_url@">@message_count@ Messages</a>
@@ -7,12 +10,10 @@
   <li><a href="@portfolio_url@">Portfolio</a>
   <li>About this simulation
 </ul>
-<p>TODO: link Archive to "portfolio" of all objects this actor owns
-  (since the actor is specific to role and case, these are objects in the same case)
-<p>TODO: Link "about this simulation" to something
-<h4>Your Role<if @roles:rowcount@ gt 1>s</if></h4>
-
+<p>TODO: Link "about this simulation" to simplay/about-sim?sim_id=
+<h4>Contacts<if @roles:rowcount@ gt 1>s</if></h4>
 <ul>
+<li><a href="">Susie Smith</a> (Defense Lawyer)
   <multiple name="roles">
     <li>@roles.pretty_name@</li>
   </multiple>

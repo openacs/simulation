@@ -11,17 +11,23 @@ simulation::include_contract {
 }
 
 # TODO: add link to simplay/case for each case
+# TODO: hide case if not admin
+
 set package_id [ad_conn package_id]
 
 set elements {
-    label {
-        label "Case"
-        orderby upper(w.pretty_name)
-        link_url_eval {[export_vars -base [ad_conn package_url]simplay/case { case_id }]}
-    }
     pretty_name {
         label "Simulation"
         orderby upper(w.pretty_name)
+        link_url_eval {[export_vars -base [ad_conn package_url]simplay/case { case_id }]}
+    }
+    label {
+        label "Case"
+        orderby upper(w.pretty_name)
+    }
+    role {
+        label "Role"
+        display_template { Lawyer 1 }
     }
     status {
         label "Status"

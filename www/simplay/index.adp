@@ -5,8 +5,8 @@
 <include src="/packages/simulation/lib/cases" party_id="@user_id@"/>
 
 <if @adminplayer_p@ true>
-
-  <h3>Cases in Simulations you Administer</h3>
+<h3>Administration</h3>
+  <h3>You administer these cases</h3>
 
   <include src="/packages/simulation/lib/cases-admin"/>
 

@@ -4,6 +4,8 @@ ad_page_contract {
     workflow_id:integer
 }
 
+# TODO: finish implementing description field (I cut-paste from template-edit.tcl and may have left out stuff)
+
 simulation::template::get -workflow_id $workflow_id -array sim_template
 
 ad_form -export { workflow_id } -name simulation -form {
@@ -20,6 +22,13 @@ ad_form -export { workflow_id } -name simulation -form {
     {case_end:date,to_sql(ansi),from_sql(ansi),optional
         {label "Simulation end date"}
     }
+    {description:richtext(richtext),optional
+        {label "Description"}
+        {html {cols 60 rows 8}}
+        {help_text "This description is visible to users during enrollment."}
+    }
+} -edit_request {
+    set description [template::util::richtext::create $simulation(description) $simulation(description_mime_type)]
 } -on_request {
 
     foreach elm { 
@@ -45,6 +54,9 @@ ad_form -export { workflow_id } -name simulation -form {
         set case_end [clock format [expr [clock seconds] + 4*$one_month] -format "%Y-%m-%d"]
     }
 } -on_submit {
+    set description_mime_type [template::util::richtext::get_property format $description]
+    set description [template::util::richtext::get_property contents $description]
+
     set unique_p [simulation::template::pretty_name_unique_p \
                       -workflow_id $workflow_id \
                       -package_id [ad_conn package_id] \
@@ -58,7 +70,7 @@ ad_form -export { workflow_id } -name simulation -form {
     foreach elm { send_start_note_date case_start case_end pretty_name } {
         set row($elm) [set $elm]
     }
-    
+ 
     simulation::template::edit \
         -workflow_id $workflow_id \
         -array row

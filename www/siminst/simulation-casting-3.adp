@@ -6,24 +6,17 @@
 
 <else>
 
-<p
-
-    Each role may be played by one or b
-
+<p>
+    Each role may be played by one or by
     many users.  Each role can only be played by users in the group
-
     specified below.  If a group is not selected for any role, user
-
     in that group will not be cast in the simulation
-
 </p>
 
+<formtemplate id="actors"></formtemplate>
+<P>TODO: Show total number of users per case
 
-
-
-<formtemplate id="actors"></formtemplate
-
-    <p>In <b>Automatic</b> casting, onl
+    <p>In <b>Automatic</b> casting, only
 
     users from these groups will be assigned to the roles.  All user
 
@@ -53,4 +46,6 @@
 
 
 <P>TODO: Finish button should say "Done (Begin Casting)"
+<P>TODO: Number of users should by greater than 0.
+
 
