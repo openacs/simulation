@@ -5,6 +5,10 @@ set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
 
+if { ![info exists case_id] } {
+    set case_id {}
+}
+
 if { !$adminplayer_p } {
     # TODO: constrain queries based on case_id, which (another TODO) should be passed in
 }
@@ -38,6 +42,7 @@ set task_count [db_string task_count_sql "
        and wcrmp.case_id = wcea.case_id
        and wcrmp.role_id = wa.assigned_role
        and wa.action_id = wcea.action_id
+    [ad_decode $case_id "" "" "and wcea.case_id = :case_id"]
 "]
 
-set tasks_url ${section_uri}tasks
+set tasks_url [export_vars -base ${section_uri}tasks { case_id }]

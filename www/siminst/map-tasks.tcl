@@ -10,7 +10,7 @@ workflow::get -workflow_id $workflow_id -array workflow_array
 set page_title "Tasks for $workflow_array(pretty_name)"
 set context [list [list "." "SimInst" ] $page_title]
 
-db_multirow -extend { description_html } tasks select_taks {
+db_multirow -extend { description_html prop_missing_count } tasks select_taks {
     select a.action_id,
            a.short_name,
            a.pretty_name,
@@ -26,6 +26,7 @@ db_multirow -extend { description_html } tasks select_taks {
     and    st.task_id = a.action_id
 } {
     set description_html [ad_html_text_convert -maxlen 100 -from $description_mime_type -- $description]
+    set prop_missing_count [expr $attachment_num - $prop_not_empty_count]
 }
 
 # TODO: Honor description_mime_type, fancy truncate
@@ -43,8 +44,10 @@ template::list::create \
         }
         attachment_num {
             label "Number of attachments"
+            display_template {<if @tasks.attachment_num@ gt 0>@tasks.attachment_num@</if>}
         }
-        prop_not_empty_count {
-            label "Number of attachments populated"
+        prop_missing_count {
+            label "Missing attachments"
+            display_template {<if @tasks.prop_missing_count@ gt 0><b>@tasks.prop_missing_count@</b></if>}
         }
     }
