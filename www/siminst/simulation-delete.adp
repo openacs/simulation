@@ -3,3 +3,5 @@
   <property name="context">@context;noquote@</property>
 
 <p>Confirmation page for cascading delete of simulation and all cases</p>
+
+<p>TODO: Make confirmation page real.</p>
