@@ -6,6 +6,8 @@ ad_page_contract {
 } {
     {workflow_id:integer ""}
     state_id:integer,optional
+    parent_action_id:integer,optional
+    return_url:optional
 } -validate {
     workflow_id_or_state_id {
         if { ![exists_and_not_null workflow_id] &&
@@ -27,6 +29,7 @@ set package_id [ad_conn package_id]
 if { ![ad_form_new_p -key state_id] } {
     workflow::state::fsm::get -state_id $state_id -array state_array
     set workflow_id $state_array(workflow_id)
+    set parent_action_id $state_array(parent_action_id)
 }
 
 workflow::get -workflow_id $workflow_id -array sim_template_array
@@ -58,8 +61,29 @@ set role_options [workflow::role::get_options -workflow_id $workflow_id]
 # state form
 #---------------------------------------------------------------------
 
-ad_form -name state -edit_buttons [list [list [ad_decode [ad_form_new_p -key state_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]] -form {
+ad_form \
+    -name state \
+    -edit_buttons [list [list [ad_decode [ad_form_new_p -key state_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]] \
+    -export { return_url } \
+    -form {
     {state_id:key}
+}
+
+if { [exists_and_not_null parent_action_id] } {
+    ad_form -extend -name state -form {
+        {parent_action_id:integer(select)
+            {label "Parent task"}
+            {mode display}
+            {options {[workflow::action::get_options -workflow_id $workflow_id]}}
+        }
+    }
+} else {
+    ad_form -extend -name state -form {
+        {parent_action_id:integer(hidden),optional {value {}}}
+    }
+}
+
+ad_form -extend -name state -form {
     {workflow_id:integer(hidden)
         {value $workflow_id}
     }
@@ -78,6 +102,18 @@ ad_form -name state -edit_buttons [list [list [ad_decode [ad_form_new_p -key sta
     permission::require_write_permission -object_id $workflow_id
 
     set operation "insert"
+} -on_submit {
+    # Check that pretty_name is unique
+    set unique_p [workflow::state::fsm::pretty_name_unique_p \
+                      -workflow_id $workflow_id \
+                      -state_id $state_id \
+                      -pretty_name $pretty_name]
+    
+    if { !$unique_p } {
+        form set_error state pretty_name "This name is already used by another state"
+        break
+    }
+
 } -edit_data {
     # We use state_array(workflow_id) here, which is gotten from the DB, and not
     # workflow_id, which is gotten from the form, because the workflow_id from the form 
@@ -87,6 +123,7 @@ ad_form -name state -edit_buttons [list [list [ad_decode [ad_form_new_p -key sta
     set operation "update"
 } -after_submit {
     set row(pretty_name) $pretty_name
+    set row(parent_action_id) $parent_action_id
     set row(short_name) {}
 
     set state_id [workflow::state::fsm::edit \
@@ -95,6 +132,9 @@ ad_form -name state -edit_buttons [list [list [ad_decode [ad_form_new_p -key sta
                       -workflow_id $workflow_id \
                       -array row]
 
-    ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
+    if { ![exists_and_not_null return_url] } {
+        set return_url [export_vars -base "template-edit" { workflow_id }] 
+    } 
+    ad_returnredirect $return_url
     ad_script_abort
 }

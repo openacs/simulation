@@ -1238,7 +1238,7 @@ ad_proc -public simulation::template::pretty_name_unique_p {
     {-workflow_id {}}
 } {
     Check if suggested pretty_name is unique. 
-
+    
     @return 1 if unique, 0 if not unique.
 } {
     set exists_p [db_string name_exists { 

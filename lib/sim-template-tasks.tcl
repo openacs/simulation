@@ -43,6 +43,14 @@ if { $display_mode == "edit"} {
     set list_actions [list]
 }
 
+set show_states_p 1
+if { ![empty_string_p $parent_action_id] } {
+    simulation::action::get -action_id $parent_action_id -array parent_task_array
+    if { [lsearch -exact { parallel dynamic } $parent_task_array(trigger_type)] != -1 } { 
+        set show_states_p 0
+    }
+}
+
 set elements [list]
 lappend elements edit {
     hide_p {[ad_decode $display_mode edit 0 1]}
@@ -97,54 +105,59 @@ lappend elements delete {
     }
 }
 
-lappend elements state_spacer { 
-    label "<br />Enabled in States:"
-    sub_class narrow
-    display_template " "
-    html { style "border-left: 2px dotted #A0BDEB;" }
-}
-
-set states [list]
-
-db_foreach select_states {
-    select s.state_id,
-           s.pretty_name,
-           s.short_name
-    from   workflow_fsm_states s
-    where  workflow_id = :workflow_id
-    order  by s.sort_order
-} {
-    set "label_state_$state_id" "<span style=\"background-color: lightblue\">$pretty_name</span>"
-    lappend elements state_$state_id \
-        [list label "<a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a><a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a><br/>\${label_state_$state_id}" \
-             html { align center } \
-             display_template "
-                 <if @tasks.state_$state_id@ not nil>
-                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkboxchecked.gif\" border=\"0\" height=\"13\" width=\"13\"></a>
-                 </if>
-                 <else>
-                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkbox.gif\" border=\"0\" height=\"13\" width=\"13\"></a>
-                 </else>
-             "]
-
-    lappend states $state_id
-} if_no_rows {
-    lappend elements state_spacer3 { 
-        label "<br /><span class=\"form-required-mark\">None.  Template will not work until you add states.</span>"
+if { !$show_states_p } {
+    set states [list]
+} else {
+    lappend elements state_spacer { 
+        label "<br />Enabled in States:"
         sub_class narrow
         display_template " "
+        html { style "border-left: 2px dotted #A0BDEB;" }
     }
-}
 
-lappend elements new_state_pretty { 
-    label "<br />Next state"
-    html { style "border-left: 2px dotted #A0BDEB;" }
+    set states [list]
+
+    db_foreach select_states {
+        select s.state_id,
+               s.pretty_name,
+               s.short_name
+        from   workflow_fsm_states s
+        where  workflow_id = :workflow_id
+        and    ((:parent_action_id is null and s.parent_action_id is null) or (s.parent_action_id = :parent_action_id))
+        order  by s.sort_order
+    } {
+        set "label_state_$state_id" "<span style=\"background-color: lightblue\">$pretty_name</span>"
+        lappend elements state_$state_id \
+            [list label "<a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a><a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a><br/>\${label_state_$state_id}" \
+                 html { align center } \
+                 display_template "
+                     <if @tasks.state_$state_id@ not nil>
+                       <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkboxchecked.gif\" border=\"0\" height=\"13\" width=\"13\"></a>
+                     </if>
+                     <else>
+                       <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkbox.gif\" border=\"0\" height=\"13\" width=\"13\"></a>
+                     </else>
+                 "]
+
+        lappend states $state_id
+    } if_no_rows {
+        lappend elements state_spacer3 { 
+            label "<br /><span class=\"form-required-mark\">None.  Template will not work until you add states.</span>"
+            sub_class narrow
+            display_template " "
+        }
+    }
+
+    lappend elements new_state_pretty { 
+        label "<br />Next state"
+        html { style "border-left: 2px dotted #A0BDEB;" }
+    }
 }
 
 template::list::create \
     -name tasks \
     -multirow tasks \
-    -no_data "No tasks in this Simulation Template" \
+    -no_data "No [ad_decode $parent_action_id "" "tasks in this Simulation Template" "subtasks for this task"]" \
     -sub_class narrow \
     -actions $list_actions \
     -elements $elements
@@ -207,8 +220,8 @@ db_multirow -extend $extend tasks select_tasks "
      order by wa.sort_order
 " {
     incr counter
-    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
-    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
+    set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]} }]
+    set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id {return_url [ad_return_url]}}]
     set delete_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url [ad_return_url]} }]
 

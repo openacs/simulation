@@ -7,7 +7,7 @@
   <tr>
     <td valign="top">
       <div class="portlet">
-        <h2>Template</h2>
+        <h2>Parent Task</h2>
         <div class="portlet-body">
           <formtemplate id="task"></formtemplate>
           
@@ -20,12 +20,22 @@
         </div>
       </div>
     </td>
+    <if @task_array.trigger_type@ eq "workflow">
+      <td valign="top">
+        <div class="portlet">
+          <h2>Sub-States</h2>
+          <div class="portlet-body">
+            <include src="/packages/simulation/lib/sim-template-states" workflow_id="@workflow_id@" parent_action_id="@action_id@">
+          </div>
+        </div>
+      </td>
+    </if>
   </tr>
 
   <tr>
     <td valign="top" colspan="2">
       <div class="portlet">
-        <a name="tasks"><h2>Tasks</h2></a>
+        <a name="tasks"><h2>Sub-Tasks</h2></a>
         <div class="portlet-body">
           <include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" display_mode="edit" parent_action_id="@action_id@">
         </div>

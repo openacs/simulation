@@ -6,6 +6,9 @@ simulation::include_contract {
     @cvs-id $Id$
 } {
     workflow_id {}
+    parent_action_id {
+        default_value {}
+    }
 }
 
 set package_id [ad_conn package_id]
@@ -14,12 +17,12 @@ set package_id [ad_conn package_id]
 # states list 
 #-------------------------------------------------------------
 
-set actions [list "Add a State" [export_vars -base state-edit { workflow_id}] {}]
+set actions [list "Add a State" [export_vars -base state-edit { workflow_id parent_action_id {return_url [ad_return_url] } }] {}]
 
 template::list::create \
     -name states \
     -multirow states \
-    -no_data "No states in this Simulation Template" \
+    -no_data "No states in this [ad_decode $parent_action_id "" "Simulation Template" "sub-workflow"]" \
     -actions $actions \
     -elements {
         edit {
@@ -69,10 +72,11 @@ db_multirow -extend { edit_url char_url delete_url up_url down_url } states sele
            ws.sort_order
       from workflow_fsm_states ws
      where ws.workflow_id = :workflow_id
+     and   ws.parent_action_id [ad_decode $parent_action_id "" "is null" "= :parent_action_id"]
      order by ws.sort_order
 " {
     incr counter
-    set edit_url [export_vars -base "[ad_conn package_url]simbuild/state-edit" { state_id }]
+    set edit_url [export_vars -base "[ad_conn package_url]simbuild/state-edit" { state_id { return_url [ad_return_url] } }]
     set delete_url [export_vars -base "[ad_conn package_url]simbuild/state-delete" { state_id { return_url [ad_return_url] } }]
     if { $counter > 1 } {
         set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type state } state_id { direction up } { return_url [ad_return_url] } }]

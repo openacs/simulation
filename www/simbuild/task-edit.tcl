@@ -58,14 +58,6 @@ set context [list [list "." "SimBuild"] [list [export_vars -base "template-edit"
 set role_options [workflow::role::get_options -workflow_id $workflow_id]
 set role_options_with_null [concat [list [list "--None--" ""]] $role_options]
 
-#set child_workflow_options [simulation::template::get_options]
-
-set actions_options [db_list_of_lists foo { 
-    select pretty_name, action_id
-    from   workflow_actions
-    where  workflow_id = :workflow_id
-}]
-
 #---------------------------------------------------------------------
 # Logic to determine the current values of a few elements
 #---------------------------------------------------------------------
@@ -107,11 +99,12 @@ ad_form \
     }
 
 if { [exists_and_not_null parent_action_id] } {
+    simulation::action::get -action_id $parent_action_id -array parent_task_array
     ad_form -extend -name task -form {
         {parent_action_id:integer(select)
-            {label "Parent action"}
+            {label "Parent task"}
             {mode display}
-            {options $actions_options}
+            {options {[workflow::action::get_options -workflow_id $workflow_id]}}
         }
     }
 } else {
@@ -200,16 +193,22 @@ switch $trigger_type {
     }
     default {
         ad_form -extend -name task -form { 
-            {timeout_seconds:integer(text),optional}
+            {timeout_seconds:integer(hidden),optional}
         }
     }
 }
 
-ad_form -extend -name task -form {
-    {description:richtext,optional
-        {label "Task Description"}
-        {html {cols 60 rows 8}}
-        {help_text "Suggested text; can be edited when template is instantiated."}
+switch $trigger_type {
+    init {
+    }
+    default {
+        ad_form -extend -name task -form {
+            {description:richtext,optional
+                {label "Task Description"}
+                {html {cols 60 rows 8}}
+                {help_text "Suggested text; can be edited when template is instantiated."}
+            }
+        }
     }
 }
 
@@ -230,18 +229,24 @@ if { [string equal $trigger_type "user"] } {
 set enabled_options [list]
 set state_options [list]
 lappend state_options [list "--Unchanged--" {}]
-foreach state_id [workflow::fsm::get_states -workflow_id $workflow_id] {
+foreach state_id [workflow::fsm::get_states -workflow_id $workflow_id -parent_action_id $parent_action_id] {
     array unset state_array
     workflow::state::fsm::get -state_id $state_id -array state_array
     lappend enabled_options [list $state_array(pretty_name) $state_id]
     lappend state_options [list $state_array(pretty_name) $state_id]
 }
 
-ad_form -extend -name task -form {
-    {new_state_id:integer(select),optional
-        {label "Next state"}
-        {options $state_options}
-        {help_text "After this task is completed, change the template's state."}
+if { [exists_and_equal parent_task_array(trigger_type) "parallel"] || [exists_and_equal parent_task_array(trigger_type) "dynamic"] } {
+    ad_form -extend -name task -form {
+        {new_state_id:integer(hidden),optional}
+    }
+} else {
+    ad_form -extend -name task -form {
+        {new_state_id:integer(select),optional
+            {label "Next state"}
+            {options $state_options}
+            {help_text "After this task is completed, change the template's state."}
+        }
     }
 }
 
@@ -252,7 +257,6 @@ ad_form -extend -name task -edit_request {
     permission::require_write_permission -object_id $workflow_id
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
 
-    # Removed: child_workflow_id
     foreach elm { 
         pretty_name pretty_past_tense new_state_id 
         assigned_role recipient_roles
@@ -272,31 +276,27 @@ ad_form -extend -name task -edit_request {
     set focus {}
 } -on_submit {
 
-    set description_mime_type [template::util::richtext::get_property format $description]
-    set description [template::util::richtext::get_property contents $description]
+    # Check that pretty_name is unique
+    set unique_p [workflow::action::pretty_name_unique_p \
+                      -workflow_id $workflow_id \
+                      -action_id $action_id \
+                      -pretty_name $pretty_name]
+    
+    if { !$unique_p } {
+        form set_error task pretty_name "This name is already used by another task"
+        break
+    }
 
-    set child_role_map [list]
+    if { [info exists description] } {
+        set description_mime_type [template::util::richtext::get_property format $description]
+        set description [template::util::richtext::get_property contents $description]
+    }
 
     switch $task_type {
         message {
-            set child_workflow_id {}
         }
         normal {
             set recipient_roles {}
-            set child_workflow_id {}
-        }
-        workflow {
-            set recipient_roles {}
-
-            # we have:
-            # element parent_role__asker = lawyer
-            # element parent_role__giver = client
-
-            foreach role_id [workflow::get_roles -workflow_id $child_workflow_id] {
-                set child_role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
-                set parent_role_short_name [set "parent_role__$child_role_short_name"]
-                lappend child_role_map $child_role_short_name [list $parent_role_short_name "per_role"]
-            }
         }
     }
 
@@ -305,13 +305,14 @@ ad_form -extend -name task -edit_request {
         set pretty_past_tense $pretty_name
     }
 
-    # Removed: child_workflow_id child_role_map
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
         new_state_id timeout_seconds
         recipient_roles attachment_num trigger_type parent_action_id
     } {
-        set row($elm) [set $elm]
+        if { [info exists $elm] } {
+            set row($elm) [set $elm]
+        }
     }
     set row(short_name) {}
 
