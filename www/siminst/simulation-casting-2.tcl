@@ -74,7 +74,7 @@ ad_form -export { workflow_id } -name simulation -form {
         set $elm $sim_template($elm)
     }
 
-    set enroll_groups [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto_enroll]
+    set auto_enroll [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto_enroll]
 
     # Default values
     if { [empty_string_p $enroll_start] } {

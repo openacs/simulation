@@ -143,12 +143,14 @@ template::list::create \
             orderby upper(w.pretty_name)
         }
         groups {
+            label {Groups}
             display_template {
                 <a href="@casting_sims.groups_url@">Edit groups</a>
             }
         }
         n_users {
             label "Users enrolled"
+            html { align center }
         }
         case_start {
             label "Start date"            
