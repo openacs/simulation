@@ -60,6 +60,7 @@ switch $size {
             description {
                 label "Description"
                 orderby r.description
+                display_template {@sim_templates.description;noquote@}
             }
             created_by {
                 label "Created by"
@@ -114,7 +115,8 @@ template::list::create \
 db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templates select_sim_templates "
     select w.workflow_id,
            w.pretty_name as name,
-           'placeholder' as description,
+           w.description,
+           w.description_mime_type,
            ss.sim_type,
            (select p.first_names || ' ' || p.last_name
               from persons p
@@ -134,7 +136,7 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
        and ss.sim_type in ('dev_template','ready_template')
    [template::list::orderby_clause -orderby -name sim_templates]
 " {
-    set description [string_truncate -len 200 $description]
+    set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
 
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" {workflow_id} ]
 
