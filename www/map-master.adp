@@ -7,10 +7,10 @@
 
   <table width="100%" border="0">
     <tr>
-      <td width="100%">
+      <td width="100%" valign="top">
       <slave>
       </td>
-      <td width="500">
+      <td width="500" valign="top">
       <include src="map">
           <div style="width:500px">Placeholder for flash map</div>
       </td>   
