@@ -4,10 +4,9 @@ ad_page_contract {
     case_id:integer
 }
 
-# TODO: Name of case
-# TODO: simulation::case::get - gets information about the case
+set case_name [simulation::case::get_element -case_id $case_id -element label]
 
-set title "Case"
+set title "Case $case_name"
 set context [list [list . "SimPlay"] $title]
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
