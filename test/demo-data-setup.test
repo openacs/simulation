@@ -53,8 +53,8 @@ ad_proc ::twt::simulation::add_object {
 
 ad_proc ::twt::simulation::visit_template_page { template_name } {
 
-    do_request /simulation/sim-template-list
-    link follow ~u sim-template-edit ~c $template_name    
+    do_request /simulation/simbuild/
+    link follow ~u template-edit ~c $template_name    
 }
 
 if { [catch {
@@ -128,7 +128,7 @@ if { [catch {
     }
 
      ::twt::log_section "Create simulation template"
-     do_request /simulation/sim-template-edit
+     do_request /simulation/template-edit
       set template_name "Elementary Private Law"
      field fill $template_name ~n name
      form submit

@@ -24,7 +24,7 @@ switch $size {
 	template::list::create \
 	    -name sim_templates \
 	    -multirow sim_templates \
-	    -actions { "Add a template" sim-template-edit } \
+	    -actions { "Add a template" template-edit } \
 	    -elements {
 		name {
 		    label "Template"
@@ -43,7 +43,7 @@ switch $size {
 	template::list::create \
 	    -name sim_templates \
 	    -multirow sim_templates \
-	    -actions { "Add a template" sim-template-edit } \
+	    -actions { "Add a template" template-edit } \
 	    -elements {
 		edit {
 		    sub_class narrow
@@ -118,7 +118,7 @@ db_multirow -extend { edit_url view_url delete_url } sim_templates select_sim_te
    [template::list::orderby_clause -orderby -name sim_templates]
 " {
     set description [string_truncate -len 200 $description]
-    set edit_url [export_vars -base "sim-template-edit?workflow_id=$workflow_id"]
-    set view_url [export_vars -base "sim-template-edit?workflow_id=$workflow_id"]
+    set edit_url [export_vars -base "template-edit?workflow_id=$workflow_id"]
+    set view_url [export_vars -base "template-edit?workflow_id=$workflow_id"]
     set delete_url [export_vars -base "sim-template-delete?workflow_id=$workflow_id"]
 }

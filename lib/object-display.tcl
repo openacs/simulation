@@ -12,7 +12,7 @@ ad_page_contract {
 set root_id [bcms::folder::get_id_by_package_id -parent_id 0]
 
 # This little exercise removes the object/ part from the extra_url
-set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 1 end]]
+set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 2 end]]
 
 if { [empty_string_p $extra_url] } {
     set extra_url "index"
@@ -24,6 +24,7 @@ if { ![info exists revision_id] } {
 } else {
     array set item [bcms::revision::get_revision -revision_id $revision_id]
 }
+
 item::get_content \
     -revision_id $item(revision_id) \
     -array content

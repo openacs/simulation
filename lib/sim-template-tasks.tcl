@@ -68,10 +68,11 @@ template::list::create \
         }
         delete {
             sub_class narrow
-            link_url_col delete_url
             hide_p {[ad_decode $display_mode edit 0 1]}
             display_template {
-                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
+                <a href="@tasks.delete_url@" onclick="return confirm('Are you sure you want to delete task @tasks.name@?');">
+                  <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
+                </a>
             }
         }
     }

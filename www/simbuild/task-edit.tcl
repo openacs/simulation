@@ -4,8 +4,8 @@ ad_page_contract {
     @creation-date 2003-10-27
     @cvs-id $Id$
 } {
-    workflow_id
-    action_id:optional
+    workflow_id:integer,optional
+    action_id:integer,optional
 } -validate {
     workflow_id_or_task_id {
         if { ![exists_and_not_null workflow_id] &&
@@ -21,7 +21,11 @@ ad_page_contract {
 #
 ######################################################################
 
-workflow::get -workflow_id $workflow_id -array sim_template_array    
+if { [info exists workflow_id] } {
+    workflow::get -workflow_id $workflow_id -array sim_template_array    
+} else {
+    set workflow_id ""
+}
 
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
@@ -69,7 +73,9 @@ ad_form -name task -edit_buttons [
 				  list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]
     ] -form {
     {action_id:key}
-    {workflow_id:integer(hidden),optional}
+    {workflow_id:integer(hidden)
+        {value $workflow_id}
+    }
     {name:text
         {label "Task"}
         {html {size 20}}
