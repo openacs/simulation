@@ -105,9 +105,9 @@ create table sim_party_sim_map (
                                         references parties
                                         on delete cascade,
     type                varchar(20)     constraint sim_party_sim_map_type_ck
-                                        check (type in ('enrolled', 'invited', 'auto-enroll')),    
+                                        check (type in ('enrolled', 'invited', 'auto_enroll')),    
     constraint sim_party_sim_map_pk
-    primary key (simulation_id, party_id)
+    primary key (simulation_id, party_id, type)
 );
 
 comment on table sim_party_sim_map is 'Each record is an invitation to a party to participate in a simulation.';
@@ -160,7 +160,7 @@ select acs_object_type__create_type (
     'acs_object',                           -- supertype
     'sim_cases',                            -- table_name
     'sim_case_id'  ,                        -- id_column
-    null,                                   -- package_name
+    'sim_case',                             -- package_name
     'f',                                    -- abstract_p
     null,                                   -- type_extension_table
     'sim_case__name'                        -- name_method

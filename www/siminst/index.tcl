@@ -185,7 +185,7 @@ db_multirow -extend { edit_url delete_url start_url groups_url } casting_sims se
                    party_approved_member_map pamm,
                    users u
              where spsm.simulation_id = w.workflow_id
-               and spsm.type = 'auto-enroll'
+               and spsm.type = 'auto_enroll'
                and spsm.party_id = pamm.party_id
                and pamm.member_id = u.user_id) as n_users,
            to_char(ss.case_start, 'YYYY-MM-DD') as case_start

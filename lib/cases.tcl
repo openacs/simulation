@@ -13,8 +13,13 @@ simulation::include_contract {
 set package_id [ad_conn package_id]
 
 set elements {
+    label {
+        label "Case"
+        orderby upper(w.pretty_name)
+        link_url_eval {[export_vars -base case { case_id }]}
+    }
     pretty_name {
-        label "Cases"
+        label "Simulation"
         orderby upper(w.pretty_name)
     }
 }
@@ -26,13 +31,16 @@ template::list::create \
     -elements $elements 
 
 db_multirow cases select_cases "
-    select wc.case_id,
+    select distinct wc.case_id,
+           sc.label,
            w.pretty_name
       from workflow_cases wc,
+           sim_cases sc,
            workflow_case_role_party_map wcrpm,
            workflows w
      where wcrpm.party_id = :party_id
        and wc.case_id = wcrpm.case_id
+       and sc.sim_case_id = wc.object_id
        and w.workflow_id = wc.workflow_id
     [template::list::orderby_clause -orderby -name "cases"]
 "

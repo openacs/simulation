@@ -189,7 +189,7 @@ ad_proc simulation::casting_groups_with_counts {
                        from sim_party_sim_map
                        where party_id = g.group_id
                          and simulation_id = :workflow_id
-                         and type = 'auto-enroll'
+                         and type = 'auto_enroll'
                        )"]
     set groups_list [list]
     db_foreach subsite_group_options "

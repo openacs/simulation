@@ -126,7 +126,7 @@ ad_proc -public simulation::template::edit {
             # Handle auxillary rows
             array set aux [list]
             foreach attr { 
-                enrolled invited auto-enroll
+                enrolled invited auto_enroll
             } {
                 if { [info exists row($attr)] } {
                     set aux($attr) $row($attr)
@@ -173,7 +173,7 @@ ad_proc -public simulation::template::edit {
         }
         
         # Update sim_party_sim_map table
-        foreach map_type { enrolled invited auto-enroll } {
+        foreach map_type { enrolled invited auto_enroll } {
             if { [info exists aux($map_type)] } {
                 # Clear out old mappings first
                 db_dml clear_old_mappings {
@@ -332,20 +332,20 @@ ad_proc -public simulation::template::role_party_mappings {
 ad_proc -public simulation::template::get_parties {
     {-members:boolean}
     {-workflow_id:required}
-    {-rel_type "auto-enroll"}
+    {-rel_type "auto_enroll"}
 } {
     Return a list of parties related to the given simulation.
 
     @param rel_type The type of relationship of the party to the
                     simulation template. Permissible values are
-                    enrolled, invited, and auto-enroll
+                    enrolled, invited, and auto_enroll
     @param members  Provide this switch if you want all members of
                     the simulation parties rather than the parties
                     themselves.
     
     @return A list of party_id:s
 } {
-    ad_assert_arg_value_in_list rel_type {enrolled invited auto-enroll}
+    ad_assert_arg_value_in_list rel_type { enrolled invited auto_enroll }
 
     if { $members_p } {
         return [db_list template_parties {
@@ -500,12 +500,19 @@ ad_proc -public simulation::template::start {
 } {
     simulation::template::get -workflow_id $workflow_id -array simulation
 
+    if { ![string equal $simulation(sim_type) "casting_sim"] } {
+        error "This simulation is in state $simulation(sim_type), it must be in 'casting_sim'"
+    }
+
     db_transaction {
-        # Auto enroll users in auto-enroll groups
+        # Auto enroll users in auto_enroll groups
         set simulation_edit(enrolled) [list]
-        foreach users_list [simulation::template::get_parties -members -rel_type auto-enroll -workflow_id $workflow_id] {
+        foreach users_list [simulation::template::get_parties -members -rel_type auto_enroll -workflow_id $workflow_id] {
             set simulation_edit(enrolled) [concat $simulation_edit(enrolled) $users_list]
         }
+
+        # Remove duplicates
+        set simulation_edit(enrolled) [lsort -unique $simulation_edit(enrolled)]
 
         # Change sim_type to live_sim
         set simulation_edit(sim_type) live_sim
@@ -555,11 +562,15 @@ ad_proc -public simulation::template::autocast {
 
     set workflow_short_name [workflow::get_element -workflow_id $workflow_id -element short_name]
     
+    set case_counter 0
+
     # Create the cases and for each case assign users to roles    
     while { $total_users > 0 } {
 
+        incr case_counter
         set sim_case_id [simulation::case::new \
-                             -workflow_id $workflow_id]
+                             -workflow_id $workflow_id \
+                             -label "Case \#$case_counter"]
         set case_id [workflow::case::get_id \
                          -object_id $sim_case_id \
                          -workflow_short_name $workflow_short_name]
@@ -598,6 +609,11 @@ ad_proc -public simulation::template::autocast {
 
             set row($role_short_name($role_id)) $assignees
         }
+
+        #foreach { short_name users } {
+        # Remove duplicates, otherwise the call below bombs
+        #    set role($short_name) [lsort -unique $role($short_name)]
+        #}
 
         ns_log Notice "pm debug case_id=$case_id role::assign [array get row]"
         workflow::case::role::assign \

@@ -4,10 +4,10 @@
 
 <table border="0" width="100%">
   <tr>
-    <td>
+    <td valign="top">
       <include src="control-bar">
     </td>
-    <td>
+    <td valign="top">
       <slave>
     </td>
   </tr>

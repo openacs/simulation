@@ -50,7 +50,7 @@ ad_form -export { workflow_id } -name simulation -form {
         {label "Casting type"}
         {options {{Automatic auto} {Group group} {Open open}}}
     }
-    {enroll_groups:integer(checkbox),multiple,optional
+    {auto_enroll:integer(checkbox),multiple,optional
         {label "Enroll all users in these groups"}
         {options $eligible_groups}
         {help_text {Use <a href="$group_admin_url">Group Administration</a> to add groups}}
@@ -74,7 +74,7 @@ ad_form -export { workflow_id } -name simulation -form {
         set $elm $sim_template($elm)
     }
 
-    set enroll_groups [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto-enroll]
+    set enroll_groups [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto_enroll]
 
     # Default values
     if { [empty_string_p $enroll_start] } {
@@ -115,15 +115,10 @@ ad_form -export { workflow_id } -name simulation -form {
     }
 
 } -on_submit {
-    # TODO: Use underscore in "auto-enroll" -> "auto_enroll" for consistency
-
-    foreach elm { enroll_start enroll_end send_start_note_date case_start case_end enroll_type casting_type } {
+    foreach elm { enroll_start enroll_end send_start_note_date case_start case_end enroll_type casting_type auto_enroll } {
         set row($elm) [set $elm]
     }
     
-    # TODO: Rename "auto-enroll" property to "auto_enroll", and rename the form element to the same
-    set row(auto-enroll) $enroll_groups
-
     # TODO: add invite_gropus to list of elements above
 
     simulation::template::edit \

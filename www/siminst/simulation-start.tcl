@@ -10,3 +10,4 @@ ad_page_contract {
 simulation::template::force_start -workflow_id $workflow_id
 
 ad_returnredirect "../simplay"
+return
