@@ -14,7 +14,10 @@ switch $sim_template(enroll_type) {
     }
     "open" {
         set neither_label "Can self-enroll"
-    }    
+    }
+    default {
+        set neither_label "Self enroll/not participating"
+    }
 }
 
 set group_admin_url [export_vars -base "[subsite::get_element -element url]admin/group-types/one" { { group_type group } }]
