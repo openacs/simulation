@@ -167,6 +167,8 @@ ad_form \
             break
         }
 
+        simulation::template::enroll_and_invite_users -workflow_id $workflow_id
+
         wizard forward
     }
 

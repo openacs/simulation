@@ -475,6 +475,92 @@ ad_proc -public simulation::template::force_start {
     }
 }
 
+ad_proc -public simulation::template::enroll_and_invite_users {
+     {-workflow_id:required}
+} {
+    Enroll users in a simulation and notify them by email if casting
+    type is open or group.
+
+    @author Peter Marklund
+} {
+    set simulation_edit(enrolled) [list]
+    set enroll_email_list [list]
+    set invite_email_list [list]
+    db_foreach select_enrolled_and_invited_users {
+            select distinct pamm.member_id as user_id,
+                   cu.email,
+                   cu.first_names || ' ' || cu.last_name as user_name,
+                   spsm.type
+            from sim_party_sim_map spsm,
+                 party_approved_member_map pamm,
+                 cc_users cu
+            where spsm.simulation_id = :workflow_id
+             and (spsm.type = 'auto_enroll' or spsm.type = 'invited')
+             and pamm.party_id = spsm.party_id
+             and pamm.member_id = cu.user_id
+             and pamm.party_id <> pamm.member_id
+    } {
+        if { [string equal $type "auto_enroll"] } {
+            # enroll the user automatically
+            lappend $simulation_edit(enrolled) $user_id
+            lappend enroll_email_list [list $email $user_name]
+        } else {
+            # Invite the user
+            lappend invite_email_list [list $email $user_name]            
+        }
+    }
+
+    # Remove duplicates
+    set simulation_edit(enrolled) [lsort -unique $simulation_edit(enrolled)]
+    simulation::template::edit -workflow_id $workflow_id -array simulation_edit
+
+    simulation::template::get -workflow_id $workflow_id -array sim_template
+
+    if { [string equal $sim_template(casting_type) "open"] || [string equal $sim_template(casting_type) "group"] } {
+        # Notify users that they are enrolled and can do their casting
+        foreach user $enroll_email_list {
+            set email [lindex $user 0]
+            set user_name [lindex $user 1]
+
+            set subject "You have been enrolled in simulation $sim_template(pretty_name)"
+            # TODO: check that link to casting page is correct
+            set package_id [ad_conn package_id]
+            set casting_page_url \
+                [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { email }]
+            set body "Dear $user_name,
+This is to notify you that you have been enrolled in simulation $sim_template(pretty_name). You may visit the
+casting page at ${casting_page_url}.
+"
+
+            acs_mail_lite::send \
+                -to_addr $email \
+                -from_addr [ad_system_owner] \
+                -subject $subject\
+                -body $body
+        }
+    } 
+
+    # Invite users
+    foreach user $invite_email_list {
+        set email [lindex $user 0]
+        set user_name [lindex $user 1]        
+
+        # TODO: check that link to enrollment page is correct
+        set package_id [ad_conn package_id]
+        set enrollment_page_url \
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { email }]
+        set subject "You have been invited to join simulation $sim_template(pretty_name)"
+        set body "Dear $user_name,
+You have been invited to join simulation $sim_template(pretty_name). Please visit the enrollment page at $enrollment_page_url to accept the invitation. Thank you!"
+
+        acs_mail_lite::send \
+            -to_addr $email \
+            -from_addr [ad_system_owner] \
+            -subject $subject\
+            -body $body
+    }
+}
+
 ad_proc -public simulation::template::start {
      {-workflow_id:required}
 } {
@@ -492,15 +578,6 @@ ad_proc -public simulation::template::start {
     }
 
     db_transaction {
-        # Auto enroll users in auto_enroll groups
-        set simulation_edit(enrolled) [list]
-        foreach users_list [simulation::template::get_parties -members -rel_type auto_enroll -workflow_id $workflow_id] {
-            set simulation_edit(enrolled) [concat $simulation_edit(enrolled) $users_list]
-        }
-
-        # Remove duplicates
-        set simulation_edit(enrolled) [lsort -unique $simulation_edit(enrolled)]
-
         # Change sim_type to live_sim
         set simulation_edit(sim_type) live_sim
             

@@ -56,9 +56,6 @@
   that we should:
 
   <ul>
-  <li>When a user is enrolled, if casting type is open or group, send a
-  notification with a link to the casting page (on finish button)
-  <li>When a user is invited, send a link to the enrollment page (on finish button)
   <li>When simulation notification date is reached, send an email saying
   that the simulation will start at date X.  Include the description.
   <li>When the simulation starts, send an email with a link to simplay
