@@ -69,6 +69,7 @@ ad_form -extend -name sim_template -form {
     permission::require_write_permission -object_id $workflow_id
     simulation::template::get -workflow_id $workflow_id -array sim_template_array
     set name $sim_template_array(pretty_name)
+    set description $sim_template_array(description)
 
     # translate sim_type to ready/not-ready
     # TODO: we should only see ready_template and dev_template here, so maybe assert that?
@@ -103,14 +104,17 @@ ad_form -extend -name sim_template -form {
     }
 
     permission::require_write_permission -object_id $workflow_id
+
+    set simulation(short_name) $name
+    set simulation(pretty_name $name
+    set simulation(sim_type) $sim_type
+    set simulation(suggested_duration) $suggested_duration
+    set simulation(package_key) $package_key
+    set simulation(object_id) $package_id
+    set simulation(description) $description
     simulation::template::edit \
         -workflow_id $workflow_id \
-        -short_name $name \
-        -pretty_name $name \
-        -sim_type $sim_type \
-        -suggested_duration $suggested_duration \
-        -package_key $package_key \
-        -object_id $package_id
+        -array simulation
 
 } -after_submit {
 

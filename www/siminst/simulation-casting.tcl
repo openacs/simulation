@@ -4,16 +4,17 @@ ad_page_contract {
     workflow_id:integer
 }
 
-set page_title "Edit a simulation"
+# Redirect to next casting page if the template is ready for casting
+if { [simulation::template::ready_for_casting_p -workflow_id $workflow_id] } {
+
+    set simulation(sim_type) casting_sim
+    simulation::template::edit -workflow_id $workflow_id -array simulation
+
+    ad_returnredirect [export_vars -base "simulation-casting-2" { workflow_id }]
+}
+
+simulation::template::get -workflow_id $workflow_id -array simulation
+
+set page_title "Template \"$simulation(pretty_name)\" not ready for casting"
 set context [list [list "." "SimInst"] $page_title]
 set package_id [ad_conn package_id]
-
-# Perform the same test as in siminst/index.tcl:
-#   if { [string equal $role_empty_count 0] && [string equal $prop_empty_count 0]} {
-#     change sim_type to casting_sim
-#     ad_returnredirect [export_vars -base "simulation-casting-2" { workflow_id }]
-# } else {
-#   show an error page with links to the incomplete roles and props
-# }
-
-

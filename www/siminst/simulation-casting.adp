@@ -2,7 +2,4 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-TODO:
-see tcl file.  No UI here unless there's a problem.
-
-
+The template \"@simulation.pretty_name@\" is not ready for casting as it has unmapped roles or properties.

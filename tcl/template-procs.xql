@@ -9,6 +9,7 @@
                  w.object_id, 
                  w.package_key, 
                  w.object_type, 
+                 w.description,
                  s.suggested_duration,
                  s.sim_type,
                  s.enroll_type,

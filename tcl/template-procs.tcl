@@ -97,43 +97,65 @@ ad_proc -private simulation::template::insert_sim {
 
 ad_proc -public simulation::template::edit {
     {-workflow_id:required}
-    {-short_name:required}
-    {-pretty_name:required}
-    {-sim_type:required}
-    {-suggested_duration ""}
-    {-package_key:required}
-    {-object_id:required}
+    {-array:required}
 } {
     Edit a new simulation template.  TODO: need better tests for duration before passing it into the database.
+    
+    @param workflow_id The id of the template to edit.
+    @param array The name of an array in the callers scope that contains properties to edit.
 
     @return nothing
 
     @author Joel Aufrecht
 } {
+    upvar $array edit_array
+
     db_transaction {
 
+        # Update workflows table
+
         # TODO: this should be in a new API call, workflow::edit
-
-        db_dml edit_workflow "
-            update workflows
-               set short_name=:short_name,
-                   pretty_name=:pretty_name
-             where workflow_id=:workflow_id"
-
-        if { [empty_string_p $suggested_duration] } {
-            db_dml edit_sim {
-                update sim_simulations
-                   set sim_type=:sim_type, 
-                       suggested_duration = null
-                 where simulation_id=:workflow_id
+        set set_clauses [list]
+        foreach col {short_name pretty_name package_key object_id description} {
+            if { [info exists edit_array($col)] } {
+                lappend set_clauses "$col = :$col"
+                set $col $edit_array($col)
             }
-        } else {
+        }
+
+        if { [llength $set_clauses] > 0 } {
+            db_dml edit_workflow "
+            update workflows
+               set [join $set_clauses ", "]
+             where workflow_id=:workflow_id"
+        }
+
+        # Update sim_simulations table
+
+        set set_clauses [list]
+        foreach col {sim_type suggested_duration} {
+            if { [info exists edit_array($col)] } {
+                if { [string equal $col suggested_duration] } {
+                    # Suggested duration needs special interval update syntax
+                    if { [empty_string_p $edit_array($col)] } {
+                        lappend set_clauses "$col = null"
+                    } else {
+                        lappend set_clauses "$col = (interval '$edit_array($col)')"
+                    }
+                } else {
+                    lappend set_clauses "$col = :$col"
+                }
+
+                set $col $edit_array($col)
+            }
+        }
+
+        if { [llength $set_clauses] > 0 } {
             db_dml edit_sim "
-                update sim_simulations
-                   set sim_type=:sim_type,
-                       suggested_duration=(interval '$suggested_duration')
-                 where simulation_id=:workflow_id
-            "
+                    update sim_simulations
+                    set [join $set_clauses ", "]
+                    where simulation_id=:workflow_id
+                "
         }
     }
 }
@@ -181,6 +203,7 @@ ad_proc -public simulation::template::instantiate_edit {
         }
     }
 }
+
 ad_proc -public simulation::template::clone {
     {-workflow_id:required}
     {-package_key {}}
@@ -253,6 +276,56 @@ ad_proc -public simulation::template::get {
     upvar $array row
 
     db_1row select_template {} -column_array row
+}
+
+ad_proc -public simulation::template::ready_for_casting_p {
+    {-workflow_id ""}
+    {-role_empty_count ""}
+    {-prop_empty_count ""}
+} {
+    Return 1 if the simulation is ready for casting and 0 otherwise.
+    Goes to the database if workflow_id is provided and uses the other
+    proc parameters otherwise to do the test.
+
+    @param workflow_id    The id of the simulation to check. The proc
+                            will go to the database to get info about the simulation
+                            if id is provided.
+    @param role_empty_count The number of empty roles for the simulation. Must be
+                            provided if workflow_id is not.
+    @param prop_empty_count The number of empty properties for the simulation. Must be
+                            provided if workflow_id is not.
+
+    @author Peter Marklund
+} {
+    if { ![empty_string_p $workflow_id] } {
+        # workflow_id provided
+
+        set role_empty_count [db_string role_empty_count {
+            select count(*) 
+              from sim_roles sr,
+                   workflow_roles wr
+             where sr.role_id = wr.role_id
+               and wr.workflow_id = :workflow_id
+               and character_id is null
+         }]
+
+         set prop_empty_count [db_string prop_empty_count { 
+             select count(*) 
+              from sim_task_object_map stom,
+                   workflow_actions wa
+             where stom.task_id = wa.action_id
+               and wa.workflow_id = :workflow_id
+               and stom.object_id is null
+         }]
+        
+    } else {
+        # No workflow_id required
+        if { [empty_string_p $role_empty_count] || [empty_string_p $prop_empty_count] } {
+            error "When no workflow_id is provided you must provide role_empty_count and prop_empty_count"
+        }        
+    }
+
+    return [expr [string equal $role_empty_count 0] && [string equal $prop_empty_count 0]]
 }
 
 ad_proc -public simulation::template::get_workflow_id_from_action {
