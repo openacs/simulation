@@ -49,4 +49,10 @@
     <textarea id="holdtext" style="display: none;"></textarea>
   </property>
 
+<if @item_id@ not nil>
+  <p>
+    <a href="object-xml?item_id=@item_id@">View map XML</a>
+  </p>
+</if>
+
 <formtemplate id="object"></formtemplate>

@@ -12,21 +12,6 @@ ad_page_contract {
 # TODO: Joel will do something about this?
 auth::require_login
 
-#---------------------------------------------------------------------
-# Determine if we are in edit mode or display mode
-#---------------------------------------------------------------------
-# this is prototype code to correct for get_action's apparent
-# unreliability
-
-#set mode [template::form::get_action sim_template]
-#if { ![exists_and_not_null workflow_id]} {
-#    set mode "add"
-#} else {
-#    # for now, use edit mode in place of display mode
-#    #    set mode "display"
-#    set mode "edit"
-#}
-
 if { ![ad_form_new_p -key item_id] } {
     # Get data for existing object
     array set item_info [bcms::item::get_item -item_id $item_id -revision live]
@@ -40,7 +25,6 @@ if { ![ad_form_new_p -key item_id] } {
     set page_title "Create Sim Object"
 }
 set context [list [list "object-list" "Sim Objects"] $page_title]
-
 
 ######################################################################
 #
@@ -694,8 +678,6 @@ ad_form -extend -name object -new_request {
             regexp {__(.+)__} $elm match relation_tag
             regexp {__.+__(.+)$} $elm match order_n
             set related_object_id [set $elm]
-
-            ns_log Notice "LARS: $elm - $related_object_id"
 
             if { ![empty_string_p $related_object_id] } {
                 bcms::item::relate_item \
