@@ -26,10 +26,6 @@ if { ![ad_form_new_p -key item_id] } {
 }
 set context [list [list "." "CityBuild"] $page_title]
 
-
-# TODO (1h): Related images/order_n ... not sure what the issue was, if there's not a problem, let's drop it.
-
-
 ######################################################################
 #
 # object

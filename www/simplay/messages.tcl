@@ -5,6 +5,8 @@ ad_page_contract {
     role_id:integer
 }
 
+#PERM: user should be a participant in sim
+
 set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]
 set simulation_name [simulation::template::get_element -workflow_id $workflow_id -element pretty_name]
 
