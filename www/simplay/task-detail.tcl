@@ -4,8 +4,6 @@ ad_page_contract {
     enabled_action_id:integer
 }
 
-# TODO: Get case_id from action
-
 workflow::case::enabled_action_get -enabled_action_id $enabled_action_id -array enabled_action
 
 set case_id $enabled_action(case_id)
@@ -86,33 +84,14 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
             -comment $body_text \
             -comment_mime_type $body_mime_type
         
-        # Send message
-        
-        set to_role_id $action(recipient)
-        set from_role_id $action(assigned_role_id)
-        
-        set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
-        
-        set item_id [db_nextval "acs_object_id_seq"]
-        
-        set item_id [bcms::item::create_item \
-                         -item_id $item_id \
-                         -item_name "message_$item_id" \
-                         -parent_id $parent_id \
-                         -content_type "sim_message"]
-        
-        set attributes [list \
-                            [list from_role_id $from_role_id] \
-                            [list to_role_id $to_role_id] \
-                            [list case_id $case_id]]
-        
-        set revision_id [bcms::revision::add_revision \
-                             -item_id $item_id \
-                             -title $subject \
-                             -content_type "sim_message" \
-                             -mime_type $body_mime_type \
-                             -content $body_text \
-                             -additional_properties $attributes]
+        simulation::message::new \
+            -item_id $item_id \
+            -from_role_id $action(assigned_role_id) \
+            -to_role_id $action(recipient) \
+            -case_id $case_id \
+            -subject $subject \
+            -body $body_text \
+            -body_mime_type $body_mime_type
     }
 
     ad_returnredirect [export_vars -base tasks { case_id }]

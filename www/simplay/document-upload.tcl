@@ -12,9 +12,6 @@ set context [list [list . "SimPlay"] [list [export_vars -base case { case_id }] 
 
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
 
-# TODO: Only pick from roles the current user is playing in this case
-# TODO: If only one role, hide the role select widget
-
 set role_options [list]
 foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
     lappend role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]

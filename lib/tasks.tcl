@@ -24,12 +24,12 @@ set elements {
         link_url_col task_url
         label "Task"
     }
-    sim_name {
-        label "Simulation"
-        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
-    }
     case_label {
         label "Case"
+        hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
+    }
+    sim_name {
+        label "Simulation"
         hide_p {[ad_decode [exists_and_not_null case_id] 1 1 0]}
     }
 }
