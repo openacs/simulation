@@ -116,6 +116,7 @@ ad_proc -public simulation::case::assert_user_may_play_role {
 } {
     Check that the currently logged in user is authorized to play a certain role
     in a simulation case. Display a permission denied page if the user is not authorized.
+    Also check start dates.
 
     @author Peter Marklund
 } {
@@ -126,6 +127,8 @@ ad_proc -public simulation::case::assert_user_may_play_role {
         return 1
     }
 
+	set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]
+	simulation::template::get -workflow_id $workflow_id -array simulation
     # The user is not an admin player, he needs to play the role
     set user_id [ad_conn user_id]
     set user_plays_role_p 0
@@ -145,9 +148,22 @@ ad_proc -public simulation::case::assert_user_may_play_role {
                 "<blockquote>
   You don't have permission to play role $role(pretty_name) in case $case_array(label).
 </blockquote>"
-
         ad_script_abort
     }
 
+	# check dates
+	# we are only checking start date because there's no reason not to let people go
+	# back and look around their own completed sim, e.g. to see documents
+	
+    if { [clock scan $simulation(case_start)] > [clock seconds] } {
+        simulation::case::get -case_id $case_id -array case_array
+        ad_return_forbidden \
+                "Simulation hasn't started yet." \
+                "<blockquote>
+                	$case_array(label) doesn't start until $simulation(case_start)
+</blockquote>"
+
+        ad_script_abort
+    }
     return 1
 }
