@@ -6,7 +6,7 @@ simulation::include_contract {
     @cvs-id $Id$
 } {
     display_mode {
-        allowed_values {edit display}
+        allowed_values {edit display display-grouped}
         default_value display
     }
     size {
@@ -72,6 +72,7 @@ template::list::create \
     -name objects \
     -multirow objects \
     -elements $elements 
+
 
 db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     select i.item_id,
