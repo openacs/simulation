@@ -5,4 +5,4 @@
   
 <formtemplate id="message"></formtemplate>
 
-<P>TODO: add "select all" javascript checkbox for To field
+<P>TODO (0.5h): add "select all" javascript checkbox for To field -- add as separate 'inform' form element.</p>

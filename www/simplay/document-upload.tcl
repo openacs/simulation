@@ -22,17 +22,7 @@ ad_form -name document -export { case_id role_id workflow_id } -html {enctype mu
     {item_id:key}
 }
 
-if { [llength $role_options] > 1 } {
-    ad_form -extend -name document -form {
-        {role_id:text(select)
-            {label "Role"}
-            {options $role_options}
-        }
-    }
-    set focus "document.role_id"
-} else {
-    set focus "document.document_file"
-}
+set focus "document.document_file"
 
 ad_form -extend -name document -form {
     {document_file:file(file)
@@ -75,10 +65,6 @@ ad_form -extend -name document -form {
         bcms::revision::set_revision_status \
             -revision_id $revision_id \
             -status "live"
-
-        if { ![exists_and_not_null role_id] } {
-            set role_id [lindex [lindex $role_options 0] 1]
-        }
 
         set relation_tag "portfolio"
         db_dml add_document_to_portfolio {

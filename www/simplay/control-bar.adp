@@ -1,7 +1,9 @@
 You are <a href="@role.character_url@">@role.character_title@</a>
 (@role.role_pretty@)
 
-<img src="@role.thumbnail_url@" width="@role.thumbnail_width@" height="@role.thumbnail_height@">
+<if @role.thumbnail_url@ not nil>
+  <img src="@role.thumbnail_url@" width="@role.thumbnail_width@" height="@role.thumbnail_height@">
+</if>
 
 <p>
 

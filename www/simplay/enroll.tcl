@@ -7,11 +7,11 @@ ad_page_contract {
 }
 
 auth::require_login
-#TODO integrate sim title into page title
+# TODO (.25h): integrate sim title into page title
 set page_title "Enrollment complete"
 set context [list [list "." "SimPlay"] $page_title]
 
-# TODO: implement the pseudocode in this page
+# TODO (5h): implement the pseudocode in this page
 
 # verify that the user has permission to enroll:
 #    simulation is open enrollment OR

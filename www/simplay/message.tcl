@@ -10,7 +10,7 @@ ad_page_contract {
     body_mime_type:optional
 }
 
-# TODO: store messages in a folder specific to the case
+# TODO (1h): Message should have parent_id be the object of the case, just like the workflow-case-log comments do
 
 set page_title "Message"
 set context [list [list "." "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] $page_title]
@@ -69,7 +69,6 @@ set sender_role_id $role_id
 ad_form \
     -name message \
     -edit_buttons { { Send ok } } \
-    -actions { { Reply reply } } \
     -export { case_id role_id } \
     -mode $form_mode \
     -form {
@@ -83,8 +82,6 @@ ad_form \
 
 if { [ad_form_new_p -key item_id] } {
     if { [llength $to_role_options] == 1 } {
-        set recipient_role_id [lindex [lindex $to_role_options 0] 1]
-
         ad_form -extend -name message -form {
             {recipient_role_id_inform:text(inform)
                 {label "To"}
@@ -169,6 +166,13 @@ ad_form -extend -name message -new_request {
     set recipient_role_id $content(to_role_id)
     set subject $content(title)
     set body [template::util::richtext::create $content(text) $content(mime_type)]
+
+    if { $recipient_role_id == $role_id } {
+        form set_properties message -actions { { Reply reply } }
+    } else {
+        form set_properties message -actions { }
+    }
+
 
     set attachments_set_list [bcms::item::list_related_items \
                                   -revision live \
