@@ -132,9 +132,12 @@ set content_metadata {
             is_located_in {
                 label "Located inside (optional)"
             }
-
         }
-
+        attributes {
+            on_map_p {
+                write_privileges "sim_set_map_p"
+            }
+        }
     }
     sim_prop {
         content_method richtext
@@ -156,6 +159,11 @@ set content_metadata {
             }
             letterhead {
                 label "Letterhead"
+            }
+        }
+        attributes {
+            on_map_p {
+                write_privileges "sim_set_map_p"
             }
         }
     }
@@ -400,6 +408,12 @@ db_foreach select_attributes {
                         -property widget \
                         -default $form_widget($datatype)]
 
+    set elm_write_privileges [get_metadata_property \
+                                  -content_type $content_type \
+                                  -entry_type attributes \
+                                  -entry $attribute_name \
+                                  -property write_privileges \
+                                  -default {}]
     set elm_required_p [get_metadata_property \
                             -content_type $content_type \
                             -entry_type attributes \
@@ -413,6 +427,20 @@ db_foreach select_attributes {
         set elm_widget select
         set options [simulation::object::get_object_type_options -object_type $elm_ref_type]
         lappend extra { options \$options }
+    }
+
+    if { [llength $elm_write_privileges] > 0 } {
+        set mode display
+        foreach privilege $elm_write_privileges {
+            # HACK: we only check permission on the package
+            if { [permission::permission_p -object_id [ad_conn package_id] -privilege $privilege] } {
+                set mode edit
+                break
+            }
+        }
+        if { [string equal $mode "display"] } {
+            lappend extra { mode display }
+        }
     }
 
     set elm_decl "${elm_name}:${elm_datatype}($elm_widget)"
