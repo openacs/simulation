@@ -145,14 +145,14 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
                 Ask client
             }
             attachment_num 1
-            recipient_role client
+            recipient_roles client
         }
         ask_client_for_more_information {
             assigned_role lawyer
             enabled_states open
             pretty_name {Ask Client for more information}
             attachment_num 1
-            recipient_role client
+            recipient_roles client
         }
         consult_lawyer {
             assigned_role lawyer
@@ -161,14 +161,14 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
                 Consult lawyer
             }
             attachment_num 1
-            recipient_role other_lawyer
+            recipient_roles other_lawyer
         }
         visit_the_library {
             assigned_role lawyer
             enabled_states open
             pretty_name {Visit the library}
             attachment_num 0
-            recipient_role lawyer
+            recipient_roles lawyer
         }
         consult_mentor {
             assigned_role lawyer
@@ -177,7 +177,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
                 Consult mentor
             }
             attachment_num 1
-            recipient_role mentor
+            recipient_roles mentor
         }
         mentor_intervenes {
             assigned_role mentor
@@ -186,7 +186,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
                 Mentor intervenes
             }
             attachment_num 1
-            recipient_role lawyer
+            recipient_roles lawyer
         }
         consult_secretary {
             assigned_role lawyer
@@ -195,7 +195,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
                 Consult secretary
             }
             attachment_num 1
-            recipient_role secretary
+            recipient_roles secretary
         }
         write_legal_advice {
             assigned_role lawyer
@@ -203,7 +203,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
             new_state written
             pretty_name {Write legal advice}
             attachment_num 1
-            recipient_role secretary
+            recipient_roles secretary
         }
         correct_spell_check_etc {
             assigned_role secretary
@@ -211,7 +211,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
             new_state done
             pretty_name {Correct, spell-check, etc.}
             attachment_num 1
-            recipient_role client
+            recipient_roles client
         }
     }
     states {
