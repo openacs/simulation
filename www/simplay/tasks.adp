@@ -4,4 +4,6 @@
 
 <include src="/packages/simulation/lib/tasks" user_id="@user_id@" case_id="@case_id@"></include>
 
+TODO: make sure to show all completed tasks (one reason is that this
+is the only way to see documents that are part of tasks)
 

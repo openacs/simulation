@@ -10,6 +10,8 @@ ad_page_contract {
     body_mime_type:optional
 }
 
+# TODO: store messages in a folder specific to the case
+
 set page_title "Message"
 set context [list [list "." "SimPlay"] [list [export_vars -base case { case_id }] "Case"] $page_title]
 set package_id [ad_conn package_id]

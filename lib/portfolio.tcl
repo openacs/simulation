@@ -22,10 +22,6 @@ template::list::create \
     -no_data "There are no documents." \
     -actions [list "Upload a document" $upload_url] \
     -elements {
-        role_name {
-            label "Role"
-            hide_p {[ad_decode [llength $user_roles] 1 1 0]}
-        }
         document_title {
             label "Document"
             link_url_col document_url

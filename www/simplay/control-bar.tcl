@@ -7,6 +7,9 @@ set adminplayer_p [permission::permission_p -object_id $package_id -privilege si
 
 if { ![info exists case_id] } {
     set case_id {}
+    set workflow_id {}
+} else {
+    set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]    
 }
 
 if { !$adminplayer_p } {
@@ -14,7 +17,6 @@ if { !$adminplayer_p } {
 }
 
 set case_home_url [export_vars -base "case" { case_id }]
-
 
 set message_count [db_string message_count_sql "
     select count(*) 
@@ -28,7 +30,6 @@ set message_count [db_string message_count_sql "
      [ad_decode $case_id "" "" "and wcrmp.case_id = :case_id"]
 "]
 set messages_url [export_vars -base ${section_uri}messages { case_id }]
-
 
 # TODO: decide whether to replace direct sql with this API loop:
 #   get a list of cases in which the user participates
@@ -50,16 +51,25 @@ set task_count [db_string task_count_sql "
 "]
 
 set tasks_url [export_vars -base ${section_uri}tasks { case_id }]
-
-
-
 set portfolio_url [export_vars -base ${section_uri}portfolio { case_id }]
+set about_sim_url [export_vars -base ${section_uri}about-sim { case_id }]
 
-
-multirow create roles role_id short_name pretty_name
-
-foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
-    array unset role
-    workflow::role::get -role_id $role_id -array role
-    multirow append roles $role(role_id) $role(short_name) $role(pretty_name)
+# TODO: exclude records where wcrpm.party_id includes current user
+db_multirow -extend { character_url } roles select_roles "
+    select wcrpm.role_id,
+           wr.pretty_name as role_name,
+           scx.name,
+           scx.title
+      from workflow_case_role_party_map wcrpm,
+           workflow_roles wr,
+           sim_roles sr,
+           sim_charactersx scx
+     where wcrpm.case_id = :case_id
+       and wr.role_id = wcrpm.role_id
+       and sr.role_id = wcrpm.role_id
+       and scx.object_id = sr.character_id
+" {
+    set character_url [simulation::object::url -name $name]
 }
+
+

@@ -227,6 +227,21 @@ ad_proc -public simulation::template::get {
     array set row [array get local_row]
 }
 
+ad_proc -public simulation::template::get_element {
+    {-workflow_id:required}
+    {-element:required}
+} {
+    Return element from a simulation template.
+
+    @param workflow_id ID of simulation template.
+    @param element The name of the element you want.
+
+} {
+
+    get -workflow_id $workflow_id -array row
+    return $row($element)
+}
+
 ad_proc -public simulation::template::delete {
     {-workflow_id:required}
 } {
