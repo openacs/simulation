@@ -63,7 +63,7 @@ if { ![empty_string_p [ad_conn extra_url]] } {
 #
 ######################################################################
 
-#  TODO: kill link bar for players
+#  TODO (.25h): kill link bar for players
 
 if { $citybuild_p } {
     lappend subnavbar_list [list "${base_url}citybuild" "CityBuild"]
@@ -90,7 +90,7 @@ if { $admin_p } {
 
 lappend subnavbar_list [list "/doc/simulation" "Doc"]
 
-# TODO: should use ad_navbar
+# TODO B: should use ad_navbar
 # couldn't figure out how to pass the input to ad_narbar so hacking it in here
 # and also added context checking
 set link_list ""

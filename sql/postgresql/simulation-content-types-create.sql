@@ -261,7 +261,7 @@ select content_type__register_relation_type (
 ----------------------------------------------------------------------
 -- sim_message
 ----------------------------------------------------------------------
--- # TODO: foreign constraints for to_role_id and from_role_id
+-- # TODO (.25h): foreign constraints for to_role_id and from_role_id in the 'column_spec'
 
 select content_type__create_type(
     'sim_message',                 -- content_type

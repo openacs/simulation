@@ -27,7 +27,7 @@ if { ![ad_form_new_p -key item_id] } {
 set context [list [list "." "CityBuild"] $page_title]
 
 
-# TODO: LARS: Related images/order_n ... not sure what the issue was, if there's not a problem, let's drop it.
+# TODO (1h): Related images/order_n ... not sure what the issue was, if there's not a problem, let's drop it.
 
 
 ######################################################################
@@ -515,7 +515,7 @@ ad_form -extend -name object -new_request {
 
 } -new_data {
     
-    # TODO: For now, assume we are always using this to create global objects
+    # TODO B: For now, assume we are always using this to create global objects -- LARS: Not sure what to do on this
     # When we use this form to create case objects, we should simply check for create permission on the case
     # we could alternately switch to using the cr folder system, in which case:
     #    sim_object_create on package_id is replaced by 'create' on a root folder, and

@@ -17,7 +17,7 @@ if { [catch {
     ::twt::crawl_links $simulation_uri
 
     ::twt::log "Did not visit the following URLs because of exclude list: [join [::twt::get_excluded_urls] "\n"]"
-    ::twt::log "TODO: Should we visit the delete links for better coverage? It tears down demo data though."
+    ::twt::log "TODO B: Should we visit the delete links for better coverage? It tears down demo data though."
             
  } result] } {
      global errorInfo
