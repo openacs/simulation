@@ -14,11 +14,11 @@
                  s.sim_type,
                  s.enroll_type,
                  s.casting_type,
-                 s.enroll_start,
-                 s.enroll_end,
-                 s.case_start,
-                 s.case_end,
-                 s.send_start_note_date 
+                 to_char(s.enroll_start, 'YYYY-MM-DD'),
+                 to_char(s.enroll_end, 'YYYY-MM-DD'),
+                 to_char(s.case_start, 'YYYY-MM-DD'),
+                 to_char(s.case_end, 'YYYY-MM-DD'),
+                 to_char(s.send_start_note_date, 'YYYY-MM-DD')
           from workflows w,
                sim_simulations s
           where w.workflow_id = :workflow_id
