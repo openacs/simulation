@@ -231,43 +231,26 @@ ad_proc -public simulation::character::get_element {
 
 ad_proc -public simulation::role::new {
     {-template_id:required}
-    {-character_id:required}
-    {-role_short_name ""}
-    {-role_pretty_name ""}
+    {-role_short_name:required}
+    {-role_pretty_name:required}
 } {
-    Create a new simulation role for a given simulation template
-    and character. Will map the character to the template if this
+    Create a new simulation role for a given simulation template. 
+    Will map the character to the template if this
     is not already done.
 
     @author Peter Marklund
 } {
-    # Set default values for names
-    if { [empty_string_p $role_short_name] || [empty_string_p $role_pretty_name] } {
-        set character_name [simulation::character::get_element \
-                                -character_id $character_id \
-                                -element title]
-    }
-    if { [empty_string_p $role_short_name] } {
-        set role_short_name $character_name
-    }
-    if { [empty_string_p $role_pretty_name] } {
-        set role_pretty_name $character_name
-    }
-
     db_transaction {
-        simulation::template::associate_object \
-            -template_id $template_id \
-            -object_id $character_id
-
         # create the role
         set role_id [workflow::role::new \
                          -workflow_id $template_id \
                          -short_name $role_short_name \
                          -pretty_name $role_pretty_name]
+
         # and then add extra data for simulation
         db_dml set_role_character {
-            insert into sim_roles
-            values (:role_id, :character_id)
+            insert into sim_roles (role_id)
+            values (:role_id)
         }    
     }
 }

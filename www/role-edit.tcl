@@ -24,20 +24,6 @@ ad_page_contract {
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
 
-#---------------------------------------------------------------------
-# Get a list of relevant characters
-#---------------------------------------------------------------------
-# deliberately not checking to see if character is already cast in sim
-# because no reason not to have same character in multiple roles (?)
-
-set char_options [db_list_of_lists character_option_list {
-    select ci.name,
-           ci.item_id
-      from cr_items ci
-     where ci.content_type = 'sim_character'
-     order by upper(ci.name)
-    }]
-
 ######################################################################
 #
 # role
@@ -55,10 +41,6 @@ set char_options [db_list_of_lists character_option_list {
 ad_form -name role -cancel_url sim-template-list -form {
     {role_id:key}
     {workflow_id:integer(hidden),optional}
-    {character_id:text(select)
-        {label "Character"}
-        {options $char_options}
-    }
     {name:text
         {label "Role Name"}
         {html {size 20}}
@@ -78,7 +60,6 @@ ad_form -name role -cancel_url sim-template-list -form {
 
     simulation::role::new \
         -template_id $workflow_id \
-        -character_id $character_id \
         -role_short_name $name \
         -role_pretty_name $name
 
@@ -89,4 +70,3 @@ ad_form -name role -cancel_url sim-template-list -form {
 
 # maybe replace this chunk of copied text with an includable template
 # which passes in a filter for the workflow_id?
-

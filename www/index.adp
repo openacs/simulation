@@ -1,6 +1,6 @@
 <master src="/packages/simulation/www/map-master">
 <div style="margin: 4px; background: lightgray; border: 1px solid black;">
-<h3>SIMPLAY</h3>
+<h3><a href="simplay">SIMPLAY</a></h3>
 Your live cases:
 <listtemplate name="active_cases"></listtemplate></p>
 Available simulations
@@ -37,6 +37,5 @@ black;">
 </div>
 <div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid
 black;">
-<h3><a href="simulation-list">SIMINST</a></h3>
+<h3><a href="siminst">SIMINST</a></h3>
 </div>
-

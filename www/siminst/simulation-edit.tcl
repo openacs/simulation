@@ -1,9 +1,7 @@
 ad_page_contract {
-    Create a new simulation
+    Create/edit a simulation
 }
 
-set page_title "New Simulation, Page 2 of ..."
+set page_title "Create/edit simulation"
 set context [list $page_title]
 set package_id [ad_conn package_id]
-
-
