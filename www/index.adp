@@ -24,10 +24,10 @@ Available simulations
   </table>
 </div>
 <div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid black;">
-<h3><a href="directory/">YELLOW PAGES</a></h3>
+<h3><a href="directory">YELLOW PAGES</a></h3>
 </div>
 <div style="margin: 4px; padding: 4px; border: 1px solid black;">
-<h3><a href="object-list">CITYBUILD</a></h3>
+<h3><a href="citybuild/">CITYBUILD</a></h3>
 <include src="/packages/simulation/lib/sim-objects" size="short" display_mode="display">
 </div>
 <div style="margin: 4px; padding: 4px; border: 1px solid
