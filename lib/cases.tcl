@@ -64,6 +64,7 @@ db_multirow cases select_cases "
             and    wa2.action_id = wcea2.action_id
             and    wcrpm2.role_id = wa2.assigned_role
             and    wcrpm2.party_id = :party_id
+            and    wcrpm2.role_id = r.role_id
             and    wcrpm2.case_id = wc.case_id) as num_user_tasks
       from workflow_cases wc,
            sim_cases sc,

@@ -4,5 +4,3 @@
   <property name="focus">@focus;noquote@</property>
   
 <formtemplate id="message"></formtemplate>
-
-<P>TODO (0.5h): add "select all" javascript checkbox for To field -- add as separate 'inform' form element.</p>

@@ -230,3 +230,4 @@ if { ![ad_form_new_p -key item_id] } {
     element set_properties message recipient_role_id -options $all_role_options
 }
 
+#TODO B (0.5h): add "select all" javascript checkbox for To field -- add as separate 'inform' form element.

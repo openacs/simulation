@@ -144,3 +144,5 @@ if { ![empty_string_p $action(recipient_role)] } {
 
     set focus "document.document_file"    
 }
+
+# TODO B (0.5h): show task attachment links beneath the action description

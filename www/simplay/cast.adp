@@ -137,9 +137,9 @@ Mockup below:
 -->
 
 <p>
-TODO: Grouping by case and role
+TODO: Lars Grouping by case and role
 </p>
 
 <p>
-TODO: Display listing of users assigned to each role/case, preferably on this page, alternatively on separate page
+TODO: Lars Display listing of users assigned to each role/case, preferably on this page, alternatively on separate page
 </p>

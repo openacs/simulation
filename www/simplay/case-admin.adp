@@ -17,9 +17,9 @@
   </if>
 
 <p>
-TODO: Remove the assigned filter and make the table always show all roles and any assigned actions for each role. Lars?
+TODO: Lars Remove the assigned filter and make the table always show all roles and any assigned actions for each role. Lars?
 </p>
 
 <p>
-TODO: Group by role_id. Need some help from Lars.
+TODO: Lars Group by role_id. Need some help from Lars.
 </p>

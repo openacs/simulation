@@ -9,7 +9,3 @@
 </p>
 
 <formtemplate id="@form_id@"></formtemplate>
-
-<p>
-  TODO (0.5h): show task attachment links beneath the action description
-</p>
