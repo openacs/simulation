@@ -250,7 +250,11 @@ ad_proc -public simulation::action::get {
 ad_proc -private simulation::action::generate_spec {
     {-action_id {}}
     {-one_id {}}
-    {-handlers {}}
+    {-handlers {
+        roles "simulation::role" 
+        actions "simulation::action"
+        states "workflow::state::fsm"
+    }}
 } {
     Generate the spec for an individual simulation task definition.
 
@@ -343,4 +347,37 @@ ad_proc -public simulation::action::get_element {
     }
     get -action_id $action_id -array row
     return $row($element)
+}
+
+ad_proc -public simulation::action::clone {
+    {-action_id {}}
+} {
+    Create a copy of the action with given id. Does a shallow copy, i.e.
+    won't copy child roles, states, or actions.
+
+    @author Peter Marklund
+} {
+    simulation::action::get -action_id $action_id -array action
+
+    array set action_spec [simulation::action::generate_spec -action_id $action_id]
+
+    set action_spec(pretty_name) "Copy of $action_spec(pretty_name)"
+
+    foreach type { child_actions child_states child_roles } {
+        if { [info exists action_spec($type)] } {
+            unset action_spec($type)
+        }
+    }
+
+    set copy_action_id [simulation::action::edit \
+                            -operation "insert" \
+                            -workflow_id $action(workflow_id) \
+                            -array action_spec]
+
+    array set edit_array [list sort_order [expr $action(sort_order) + 1]]
+    simulation::action::edit \
+        -action_id $copy_action_id \
+        -array edit_array
+
+    return $copy_action_id
 }
