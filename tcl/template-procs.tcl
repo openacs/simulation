@@ -914,7 +914,8 @@ ad_proc -public simulation::template::get_inst_state {
     -workflow_id:required
 } {
     Get information about which tab urls in the instantiation wizard
-    have been completed.
+    have been completed. This proc is cached and should be flushed by the
+    flush_inst_state proc whenever the instantation state changes.
 
     @return An array with the following keys (urls) and values either 0 or 1:
 
@@ -925,6 +926,28 @@ ad_proc -public simulation::template::get_inst_state {
         simulation-participants
         simulation-casting-3
     </ul>
+
+    @see simulation::template::flush_inst_state
+} {
+    return [util_memoize [list simulation::template::get_inst_state_not_cached -workflow_id $workflow_id]]
+}
+
+ad_proc -public simulation::template::flush_inst_state {
+    -workflow_id:required
+} {
+    Flush the instantiation state of a simulation.
+
+    @see simulation::template::get_inst_state
+} {
+    util_memoize_flush [list simulation::template::get_inst_state_not_cached -workflow_id $workflow_id]
+}
+
+ad_proc -private simulation::template::get_inst_state_not_cached {
+    -workflow_id:required
+} {
+    Internal un-cached proc invoked by get_inst_state.
+
+    @author Peter Marklund
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template    
     
@@ -1076,4 +1099,3 @@ ad_proc -public simulation::template::pretty_name_unique_p {
     }]
     return [expr !$exists_p]
 }
-
