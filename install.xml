@@ -2,7 +2,7 @@
 
 <!-- This must be moved to the OpenACS page root when making a release tarball -->
 
-<application name="simulation" pretty-name="simulation" home="http://openacs.org/projects/simulation">
+<application name="simulation" pretty-name="Simulation">
 
   <actions>
     <install package="simulation"/>
