@@ -54,13 +54,13 @@ if { ![ad_form_new_p -key workflow_id] } {
             {template_ready_p:boolean(checkbox),optional
                 {label "Ready for use?"}
                 {options {{"Yes" t}}}
+                {help_text "Only templates marked Ready can be used in SimInst by Case Authors."}
             }
         }
     }
 } else {
     ad_form -extend -name sim_template -form {
         {template_ready_p:boolean(hidden),optional
-            {help_text "Only templates marked Ready can be used in SimInst by Case Authors. TODO: this text doesn't appear??"}
             {value f}
         }
 
@@ -105,7 +105,8 @@ ad_form -extend -name sim_template -form {
 } -on_submit {
     set unique_p [simulation::template::pretty_name_unique_p \
                       -package_id [ad_conn package_id] \
-                      -pretty_name $pretty_name]
+                      -pretty_name $pretty_name \
+                      -workflow_id $workflow_id]
     
     if { !$unique_p } {
         form set_error sim_template pretty_name "This name is already used by another simulation"

@@ -1,10 +1,6 @@
-<formtemplate id="enabled_tasks">
-  <listtemplate name="tasks"></listtemplate>
-  <p></p>
-  <formwidget id="formbutton:ok">
-</formtemplate>
+<listtemplate name="tasks"></listtemplate>
+<p></p>
 
-<p>TODO: B: Allow reordering of roles, tasks, states.</p>
-<p>TODO: Allow multiple recipients (replace recipient dropdown with checkbox</p>
-<p>TODO: save changes each time a checkbox is selected (and eliminate
-the save changes button)
+<p>TODO A (1h): Allow reordering of states.</p>
+
+<p>TODO B (1h): Allow reordering of roles, tasks.</p>

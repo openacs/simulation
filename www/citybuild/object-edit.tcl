@@ -26,6 +26,10 @@ if { ![ad_form_new_p -key item_id] } {
 }
 set context [list [list "." "CityBuild"] $page_title]
 
+
+# TODO: LARS: Related images/order_n ... not sure what the issue was, if there's not a problem, let's drop it.
+
+
 ######################################################################
 #
 # object
@@ -512,8 +516,7 @@ ad_form -extend -name object -new_request {
 
 } -new_data {
     
-    # TODO
-    # For now, assume we are always using this to create global objects
+    # TODO: For now, assume we are always using this to create global objects
     # When we use this form to create case objects, we should simply check for create permission on the case
     # we could alternately switch to using the cr folder system, in which case:
     #    sim_object_create on package_id is replaced by 'create' on a root folder, and
@@ -646,14 +649,14 @@ ad_form -extend -name object -new_request {
             -revision_id $revision_id \
             -status "live"
 
-        # TODO: The way we do this update is not very pretty: Delete all relations and re-add the new ones
+        # TODO B: The way we do this update is not very pretty: Delete all relations and re-add the new ones
         db_dml delete_all_relations {
             delete from cr_item_rels
             where  item_id = :item_id
         }
 
         foreach elm $rel_elements {
-            # TODO: LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
+            # TODO B: LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
             regexp {__(.+)__} $elm match relation_tag
             regexp {__.+__(.+)$} $elm match order_n
             set related_object_id [set $elm]

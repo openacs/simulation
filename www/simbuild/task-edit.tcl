@@ -15,11 +15,6 @@ ad_page_contract {
     }
 }
 
-# TODO: form element to set trigger-instantly mode
-# TODO: form element to set timeouts
-# TODO: form element to "instantiate a child workflow and wait for it to complete"
-# TODO: form element for mapping roles for child workflow
-
 ######################################################################
 #
 # preparation
@@ -37,6 +32,7 @@ if { ![ad_form_new_p -key action_id] } {
     if { ![empty_string_p $task_array(child_workflow_id)] } {
         set task_type "workflow"
     } else {
+        # Message tasks have a recipient; upload document tasks ("normal") have no recipient
         if { ![empty_string_p $task_array(recipient_role)] } {
             set task_type "message"
         } else {
@@ -99,7 +95,7 @@ ad_form \
             {label "Task is complete when"}
             {options { 
                 { "Assignee sends message to recipient" message }
-                { "Assignee adds document to portfolio (TODO: implement portfolio tasks)" normal } 
+                { "Assignee adds document to portfolio" normal } 
                 { "Child workflow is complete" workflow }
             }}
             {html {onChange "javascript:acs_FormRefresh('task');"}}

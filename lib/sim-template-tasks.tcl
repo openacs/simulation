@@ -113,10 +113,10 @@ db_foreach select_states {
              html { align center } \
              display_template "
                  <if @tasks.state_$state_id@ not nil>
-                   <input type=\"checkbox\" name=\"__enabled__@tasks.action_id@__${state_id}\" value=\"t\" checked>
+                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkboxchecked.gif\" border=\"0\" height=\"13\" width=\"13\" style=\"background-color: white;\"></a>
                  </if>
                  <else>
-                   <input type=\"checkbox\" name=\"__enabled__@tasks.action_id@__${state_id}\" value=\"t\">
+                   <a href=\"@tasks.state_${state_id}_url@\" class=\"button\" style=\"padding-top: 4px; padding-bottom: 0px;\"><img src=\"/resources/acs-subsite/checkbox.gif\" border=\"0\" height=\"13\" width=\"13\" style=\"background-color: white;\"></a>
                  </else>
              "]
 
@@ -146,16 +146,13 @@ template::list::create \
 # tasks db_multirow
 #-------------------------------------------------------------
 
-set initial_action_id [workflow::get_element \
-                           -workflow_id $workflow_id \
-                           -element initial_action_id]
-
 set extend [list]
-lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url recipient_role_edit_url child_workflow_url
+lappend extend edit_url view_url delete_url assigned_role_edit_url recipient_role_edit_url child_workflow_url
 
 foreach state_id $states {
     lappend extend state_$state_id
     lappend extend move_to_$state_id
+    lappend extend state_${state_id}_url
 }
 
 array set enabled_in_state [list]
@@ -173,15 +170,6 @@ db_foreach select_enabled_in_states {
 } {
     set enabled_in_state($action_id,$state_id) $assigned_p
 }
-
-ad_form -name enabled_tasks -form {
-    {workflow_id:integer(hidden) {value $workflow_id}}
-} -edit_buttons {
-    { "Save changes" ok }
-}
-
-
-
 
 set actions [list]
 
@@ -229,13 +217,7 @@ db_multirow -extend $extend tasks select_tasks "
     set child_workflow_url \
         [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { { workflow_id $child_workflow_id } }]
 
-    set initial_p [string equal $initial_action_id $action_id]
-    set set_initial_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/initial-action-set" { action_id {return_url [ad_return_url]} }]
-    
     foreach state_id $states {
-
-        ad_form -extend -name enabled_tasks -form \
-            [list [list __enabled__${action_id}__${state_id}:text,optional]]
 
         if { [info exists enabled_in_state($action_id,$state_id)] } {
             set __enabled__${action_id}__${state_id} "t"
@@ -244,6 +226,10 @@ db_multirow -extend $extend tasks select_tasks "
             } else {
                 set state_$state_id enabled
             }
+            set state_${state_id}_url [export_vars -base task-enabled-in-state-update { action_id state_id { enabled_p f } { return_url {[ad_return_url]\#tasks} } }]
+        } else {
+            set state_${state_id}_url [export_vars -base task-enabled-in-state-update { action_id state_id { return_url {[ad_return_url]\#tasks} } }]
+
         }
         if { $new_state == $state_id } {
             set move_to_$state_id 1
@@ -253,53 +239,4 @@ db_multirow -extend $extend tasks select_tasks "
     lappend actions $action_id
 }
 
-ad_form \
-    -extend \
-    -name enabled_tasks \
-    -form { 
-        {actions:text(hidden),optional {value $actions}}
-        {states:text(hidden),optional {value $states}}
-    } \
-    -on_request {
-        # Grab values from local vars 
-        #error request
-    } \
-    -on_submit {
-        db_transaction {
-            foreach state_id $states {
-                foreach action_id $actions {
-                    set currently_enabled_p [db_string enabled_p { 
-                        select 1
-                        from   workflow_fsm_action_en_in_st
-                        where  action_id = :action_id
-                        and    state_id = :state_id
-                    } -default 0]
-                    
-                    set should_be_enabled_p [exists_and_equal __enabled__${action_id}__${state_id} "t"]
-
-                    ds_comment "Action=$action_id, State=$state_id. Today=$currently_enabled_p, Tomorrow=$should_be_enabled_p"
-
-                    if { $currently_enabled_p != $should_be_enabled_p} {
-                        if { $should_be_enabled_p } {
-                            db_dml enabled {
-                                insert into workflow_fsm_action_en_in_st (action_id, state_id, assigned_p)
-                                values (:action_id, :state_id, 't')
-                            }
-                        } else {
-                            db_dml disable {
-                                delete 
-                                from   workflow_fsm_action_en_in_st 
-                                where  action_id = :action_id
-                                and    state_id = :state_id
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-    } -after_submit {
-        ad_returnredirect [export_vars -base [ad_conn url] { workflow_id }]
-        ad_script_abort
-    }
 

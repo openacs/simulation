@@ -4,8 +4,9 @@
   <property name="focus">@focus;noquote@</property>
 
 <formtemplate id="task"></formtemplate>
-TODO: If there are no states, show a message "This task cannot be
-fully developed because its workflow has no states" and link to add states
-<p>TODO: B: "add a state" option next to "next state" which adds a new
-state and selects it in the dropdown without losing form info
-<p>TODO: new task type: review documents.  (incomplete)
+
+<p> TODO A (.5h): form element to set timeouts. Radio buttons to pick "No time limit/Use time limit". Input field for "Trigger after" x, where x>0, and x is translated by PG's interval conversion stuff, so you can say '1 day'.
+ </p>
+
+<p>TODO: Allow multiple recipients (replace recipient dropdown with checkbox</p>
+

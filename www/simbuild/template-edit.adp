@@ -24,9 +24,9 @@
                 <a href="@inst_url@" class="action">Start a simulation with this template</a>   
                 </if>
               </else>
-              <p></p><a href="@spec_url@">Export this template
+              <p></p><a href="@spec_url@" class="action">Export this template
   as a text file</a>
-              <p></p><a href="@delete_url@" onclick="return confirm('Are you sure you want to delete the template?');">Delete this template</a>
+              <p></p><a href="@delete_url@" onclick="return confirm('Are you sure you want to delete the template?');" class="action">Delete this template</a>
 
           </div>
         </div>
@@ -61,5 +61,3 @@
   </table>
 
 </else>
-TODO: put state names in blue background or something else to make
-them look similar to other lists of child objects of the template
