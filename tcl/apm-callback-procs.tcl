@@ -72,6 +72,8 @@ ad_proc -private simulation::apm::setup_permission_groups {
         set subsite_group_id [simulation::subsite_group_id -package_id $package_id]
         relation_add composition_rel $subsite_group_id $parent_group_id
 
+		# TODO: (0.3h) Sim Admins and Service Admins should be able to set groups.  Probably
+		# we can do this by granting admin on the package
         # Create the permission groups
         foreach {group_name privilege_list} {
             "Sim Admins" {sim_admin}
@@ -91,6 +93,8 @@ ad_proc -private simulation::apm::setup_permission_groups {
                 permission::grant -party_id $permission_group_id -object_id $package_id -privilege $privilege
             }
         }
+        
+        
     }
 } 
 
