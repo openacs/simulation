@@ -18,6 +18,105 @@ select content_type__create_type(
 
 
 ----------------------------------------------------------------------
+-- sim_location
+----------------------------------------------------------------------
+
+select content_type__create_type(
+    'sim_location',                -- content_type
+    'content_revision',            -- supertype
+    'Location',                    -- pretty_name,
+    'Locations',                   -- pretty_plural
+    'sim_locations',               -- table_name
+    'location_id',                 -- id_column
+    null                           -- name_method
+);
+
+select content_type__create_attribute(
+    'sim_location',                -- content_type
+    'on_map_p',                    -- attribute_name
+    'boolean',                     -- datatype
+    'Show on map',                 -- pretty_name
+    'Show on map',                 -- pretty_plural
+    1,                             -- sort_order
+    'f',                           -- default_value
+    'boolean'                      -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_location',                -- content_type
+    'address',                     -- attribute_name
+    'string',                      -- datatype
+    'Addresss',                    -- pretty_name
+    'Addresses',                   -- pretty_plural
+    2,                             -- sort_order
+    null,                          -- default_value
+    'varchar(4000)'                -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_location',                -- content_type
+    'city',                        -- attribute_name
+    'string',                      -- datatype
+    'City',                        -- pretty_name
+    'Cities',                      -- pretty_plural
+    3,                             -- sort_order
+    null,                          -- default_value
+    'varchar(4000)'                -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_location',                -- content_type
+    'history',                     -- attribute_name
+    'text',                        -- datatype
+    'History',                     -- pretty_name
+    'Histories',                   -- pretty_plural
+    4,                             -- sort_order
+    null,                          -- default_value
+    'text'                         -- column_spec
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'thumbnail',                   -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'sim_stylesheet',              -- target_type
+    'stylesheet',                  -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'image',                       -- relation_tag
+    0,                             -- min_n
+    10                             -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'letterhead',                  -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+select content_type__register_relation_type (
+    'sim_location',                -- content_type
+    'image',                       -- target_type
+    'logo',                        -- relation_tag
+    1,                             -- min_n
+    1                              -- max_n
+);
+
+
+----------------------------------------------------------------------
 -- sim_character
 ----------------------------------------------------------------------
 
@@ -121,100 +220,3 @@ select content_type__register_relation_type (
 );
 
 
-----------------------------------------------------------------------
--- sim_location
-----------------------------------------------------------------------
-
-select content_type__create_type(
-    'sim_location',                -- content_type
-    'content_revision',            -- supertype
-    'Location',                    -- pretty_name,
-    'Locations',                   -- pretty_plural
-    'sim_locations',               -- table_name
-    'location_id',                 -- id_column
-    null                           -- name_method
-);
-
-select content_type__create_attribute(
-    'sim_location',                -- content_type
-    'on_map_p',                    -- attribute_name
-    'boolean',                     -- datatype
-    'Show on map',                 -- pretty_name
-    'Show on map',                 -- pretty_plural
-    1,                             -- sort_order
-    'f',                           -- default_value
-    'boolean'                      -- column_spec
-);
-
-select content_type__create_attribute(
-    'sim_location',                -- content_type
-    'address',                     -- attribute_name
-    'string',                      -- datatype
-    'Addresss',                    -- pretty_name
-    'Addresses',                   -- pretty_plural
-    2,                             -- sort_order
-    null,                          -- default_value
-    'varchar(4000)'                -- column_spec
-);
-
-select content_type__create_attribute(
-    'sim_location',                -- content_type
-    'city',                        -- attribute_name
-    'string',                      -- datatype
-    'City',                        -- pretty_name
-    'Cities',                      -- pretty_plural
-    3,                             -- sort_order
-    null,                          -- default_value
-    'varchar(4000)'                -- column_spec
-);
-
-select content_type__create_attribute(
-    'sim_location',                -- content_type
-    'history',                     -- attribute_name
-    'text',                        -- datatype
-    'History',                     -- pretty_name
-    'Histories',                   -- pretty_plural
-    4,                             -- sort_order
-    null,                          -- default_value
-    'text'                         -- column_spec
-);
-
-select content_type__register_relation_type (
-    'sim_location',                -- content_type
-    'image',                       -- target_type
-    'thumbnail',                   -- relation_tag
-    1,                             -- min_n
-    1                              -- max_n
-);
-
-select content_type__register_relation_type (
-    'sim_location',                -- content_type
-    'sim_stylesheet',              -- target_type
-    'stylesheet',                  -- relation_tag
-    1,                             -- min_n
-    1                              -- max_n
-);
-
-select content_type__register_relation_type (
-    'sim_location',                -- content_type
-    'image',                       -- target_type
-    'image',                       -- relation_tag
-    0,                             -- min_n
-    10                             -- max_n
-);
-
-select content_type__register_relation_type (
-    'sim_location',                -- content_type
-    'image',                       -- target_type
-    'letterhead',                  -- relation_tag
-    1,                             -- min_n
-    1                              -- max_n
-);
-
-select content_type__register_relation_type (
-    'sim_location',                -- content_type
-    'image',                       -- target_type
-    'logo',                        -- relation_tag
-    1,                             -- min_n
-    1                              -- max_n
-);
