@@ -32,6 +32,7 @@ template::list::create \
 	task_count {
 	    label "Tasks"
 	    orderby task_count
+            html { align right }
 	}
     }
 
@@ -71,6 +72,7 @@ template::list::create \
 	count {
 	    label "Count"
             link_url_col view_url
+            html { align right }
         }
     }
 

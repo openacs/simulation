@@ -161,6 +161,14 @@ set content_metadata {
     }
     image {
         content_method upload
+        attributes {
+            width  {
+                widget hidden
+            }
+            height {
+                widget hidden
+            }
+        }
     }
 }
 
@@ -426,9 +434,20 @@ db_foreach select_attributes {
     lappend attr_names $attribute_name
     set elm_name attr__${content_type}__${attribute_name}
     set elm_datatype $form_datatype($datatype)
-    set elm_widget $form_widget($datatype)
-    # LARS TODO: This needs to be specifiable in the attribute declaration
-    set elm_optional_p 1
+    
+    set elm_widget [get_metadata_property \
+                        -content_type $content_type \
+                        -entry_type attributes \
+                        -entry $attribute_name \
+                        -property widget \
+                        -default $form_widget($datatype)]
+
+    set elm_required_p [get_metadata_property \
+                            -content_type $content_type \
+                            -entry_type attributes \
+                            -entry $attribute_name \
+                            -property required_p \
+                            -default 0]
 
     set extra $form_extra($datatype)
     set elm_ref_type [get_metadata_property -content_type $content_type -entry_type attributes -entry $attribute_name -property references]
@@ -439,7 +458,7 @@ db_foreach select_attributes {
     }
 
     set elm_decl "${elm_name}:${elm_datatype}($elm_widget)"
-    if { $elm_optional_p } {
+    if { !$elm_required_p } {
         append elm_decl ",optional"
     }
     
@@ -460,7 +479,7 @@ db_foreach select_relations {
            max_n
     from   cr_type_relations
     where  content_type = :content_type
-    order  by relation_tag
+    order  by max_n asc, relation_tag
 } {
     set label [get_metadata_property -content_type $content_type -entry_type relations -entry $relation_tag -property label]
     set section [get_metadata_property -content_type $content_type -entry_type relations -entry $relation_tag -property section]
@@ -472,7 +491,12 @@ db_foreach select_relations {
     for { set counter 1 } { $counter <= $max_n } { incr counter } {
         set elm_name "rel__${relation_tag}__$counter"
         lappend rel_elements $elm_name
-        set elm_label "$label $counter"
+
+        if { $min_n == 1 && $max_n == 1 } {
+            set elm_label $label
+        } else {
+            set elm_label "$label $counter"
+        }
     
         ad_form -extend -name object -form \
             [list \
@@ -488,7 +512,7 @@ db_foreach select_relations {
 
 
 #---------------------------------------------------------------------
-# Define the form
+# Add handlers to the form definition
 #---------------------------------------------------------------------
 
 ad_form -extend -name object -new_request {
@@ -590,7 +614,7 @@ ad_form -extend -name object -new_request {
 
             if { ![empty_string_p $related_object_id] } {
                 bcms::item::relate_item \
-                    -relation_type $relation_tag \
+                    -relation_tag $relation_tag \
                     -item_id $item_id \
                     -related_object_id $related_object_id \
                     -order_n $order_n
@@ -675,7 +699,7 @@ ad_form -extend -name object -new_request {
 
             if { ![empty_string_p $related_object_id] } {
                 bcms::item::relate_item \
-                    -relation_type $relation_tag \
+                    -relation_tag $relation_tag \
                     -item_id $item_id \
                     -related_object_id $related_object_id \
                     -order_n $order_n
@@ -694,6 +718,11 @@ ad_form -extend -name object -new_request {
 
 foreach elm $rel_elements {
     set elm_before_html {}
+    set elm_after_html {}
+
+    # LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
+    regexp {__(.+)__} $elm match relation_tag
+    regexp {__.+__(.+)$} $elm match order_n
 
     if { [exists_and_not_null $elm] } { 
         set related_object_id [set $elm]
@@ -703,14 +732,25 @@ foreach elm $rel_elements {
             set thumb_url [export_vars -base "object-content/$rel_obj_name"]
             append elm_before_html {<img src="} $thumb_url {" width="50" height="50">}
             append elm_before_html {&nbsp;}
-            append elm_before_html {<a href="javascript:document.forms['object'].elements['} $elm {'].value = '';FormRefresh('object');"><img src="/resources/acs-subsite/Delete24.gif" width="24" height="24" border="0"></a>}
+            append elm_before_html {<a href="javascript:document.forms['object'].elements['} $elm {'].value = '';}
+            append elm_before_html {FormRefresh('object');" title="} 
+            append elm_before_html [ad_quotehtml "Remove this $relation_tag"] 
+            append elm_before_html {"><img src="/resources/acs-subsite/Delete24.gif" width="24" height="24" border="0">}
+            append elm_before_html {</a>}
+            append elm_before_html {<a href="javascript:CopyText('}
+            append elm_before_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
+            append elm_before_html {');" title="} 
+            append elm_before_html [ad_quotehtml "Copy a tag for this $relation_tag to the clipboard"]
+            append elm_before_html {"><img src="/resources/acs-subsite/stock_copy.png" width="24" height="24" }
+            append elm_before_html {alt="Copy" border="0"></a>}
         }
+
     } else {
         append elm_before_html {<img src="/resources/acs-subsite/spacer.gif" height="1" width="50">}
         append elm_before_html {&nbsp;}
-        append elm_before_html {<img src="/resources/acs-subsite/spacer.gif" height="1" width="24">}
+        append elm_before_html {<img src="/resources/acs-subsite/spacer.gif" height="1" width="48">}
     }
     append elm_before_html {&nbsp;&nbsp;&nbsp;Choose:}
     
-    element set_properties object $elm -before_html $elm_before_html
+    element set_properties object $elm -before_html $elm_before_html -after_html $elm_after_html
 }

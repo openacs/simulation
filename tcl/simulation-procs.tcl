@@ -125,3 +125,7 @@ ad_proc -public simulation::template::dissociate_object {
     # no special error handling because the delete is pretty safe
 
 }
+
+template_tag relation { params } {
+    publish::process_tag relation $params
+}

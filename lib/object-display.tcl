@@ -28,10 +28,20 @@ item::get_content \
     -revision_id $item(revision_id) \
     -array content
 
+#file delete /web/lars/www/picture.jpg
+
+#error [publish::handle::image 580 -html {} -revision_id 581]
+
+#error [publish::render_subitem 586 relation image 1 f {refresh 1}]
+
 if { [info exists content(text)] } {
     switch $content(mime_type) {
         text/enhanced - text/plain - text/fixed-width - text/html {
-            set content_html [ad_html_text_convert -from $content(mime_type) -to "text/html" -- $content(text)] 
+            publish::push_id $item(item_id)
+            set content_html [ad_html_text_convert -from $content(mime_type) -to "text/html" -- $content(text)]
+            set code [template::adp_compile -string $content_html]
+            set content_html [template::adp_eval code]
+            publish::pop_id
         }
         default {
             set content_html [ad_quotehtml $content(text)]
@@ -72,7 +82,7 @@ foreach name [lsort [array names content]] {
 }
 
 
-if { [permission::write_permission_p -object_id $item(item_id)] } {
+if { [permission::write_permission_p -object_id $item(item_id) -party_id [ad_conn untrusted_user_id]] } {
     set edit_url [export_vars -base [ad_conn package_url]object-edit { { item_id $item(item_id) } }]
     set delete_url [export_vars -base [ad_conn package_url]object-delete { { item_id $item(item_id) } }]
 }
