@@ -73,11 +73,13 @@ db_multirow -extend { cast_url map_roles_url map_tasks_url delete_url } dev_sims
            (select count(*) 
               from sim_roles sr,
                    workflow_roles wr
-             where wr.workflow_id = w.workflow_id) as role_count,
+             where sr.role_id = wr.role_id
+               and wr.workflow_id = w.workflow_id) as role_count,
            (select count(*) 
               from sim_roles sr,
                    workflow_roles wr
-             where wr.workflow_id = w.workflow_id
+             where sr.role_id = wr.role_id
+               and wr.workflow_id = w.workflow_id
                and character_id is null) as role_empty_count,
            (select count(*) 
               from sim_task_object_map stom,

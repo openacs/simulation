@@ -2,9 +2,8 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-<p>
-  <listtemplate name="dev_sims"></listtemplate>
-</p>
+<listtemplate name="dev_sims"></listtemplate>
+<p></p>
 
 <h2>Simulations in Casting</h2>
 <p>
