@@ -28,7 +28,7 @@ template::list::create \
             link_url_eval {[acs_community_member_url -user_id $creation_user]}
         }
         action_pretty {
-            label "Action"
+            label "Task"
             link_url_col action_url
         }
     }

@@ -19,9 +19,9 @@ if { ![empty_string_p $enabled_action_ids] } {
 
 if { [llength $enabled_action_id] > 1 } {
     set bulk_p 1
-}
+} 
 
-if { !$bulk_p } {
+if { [llength $enabled_action_id] == 1 } {
     workflow::case::enabled_action_get -enabled_action_id $enabled_action_id -array enabled_action
 
     set action_id $enabled_action(action_id)
@@ -69,9 +69,12 @@ Subject: $subject
 
 [ad_html_text_convert -from $mime_type -to "text/plain" $triggering_body]"
 
-            ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body}]
+            ad_returnredirect [export_vars -base [ad_conn url] { enabled_action_id role_id subject body bulk_p}]
         }    
     }
+
+    set common_actions_count 1
+    set ignored_actions_count 0
 
 } else {
     # Only admin users can neglect to provide case_id and role_id

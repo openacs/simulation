@@ -1,4 +1,4 @@
-<h3>Actions</h3>
+<h3>Tasks</h3>
 <p>
   <listtemplate name="log"></listtemplate>
 <p>
