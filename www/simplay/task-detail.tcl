@@ -85,7 +85,6 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
             -comment_mime_type $body_mime_type
         
         simulation::message::new \
-            -item_id $item_id \
             -from_role_id $action(assigned_role_id) \
             -to_role_id $action(recipient) \
             -case_id $case_id \
