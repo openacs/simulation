@@ -51,8 +51,8 @@ db_multirow -extend { cast_url } sims select_sims "
        and ss.simulation_id = w.workflow_id
        and ao.object_id = w.workflow_id
        and (ss.sim_type = 'dev_sim' or ss.sim_type = 'casting_sim')
+     $sim_filter_sql
      group by ss.sim_type
-    $sim_filter_sql
 " {
     set cast_url [export_vars -base "cast-edit" { workflow_id }]
 }
