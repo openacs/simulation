@@ -40,70 +40,9 @@
     </sect1>
     <sect1 id="permissions">
       <title>Permissions</title>
-      <table>
-        <title>Permissions</title>
-        <tgroup cols="3">
-          <thead>
-            <row>
-              <entry>
-                User Type
-              </entry>
-              <entry>
-                Implementation
-              </entry>
-              <entry>
-                code
-              </entry>
-            </row>
-          </thead>
-          <tbody>
-            <row>
-              <entry>System Administrator (SysAdmin).  Responsible for maintaining the installation.  </entry>
-              <entry>is an OpenACS sitewide admin.  Should probably also have access to root on the host.</entry>
-              <entry><computeroutput>acs_user::site_wide_admin_p</computeroutput></entry>
-            </row>
-            <row>
-              <entry><emphasis role="strong">Service Administrator</emphasis> (ServAdmin).</entry>
-              <entry>...</entry>
-              <entry></entry>
-            </row>
-            <row>
-              <entry><emphasis role="strong">Course Administrator</emphasis> (CoursAdmin).  Can instantiate simulations.  </entry>
-              <entry></entry>
-              <entry></entry>
-            </row>
-            <row>
-              <entry><emphasis role="strong">Template Author</emphasis> (TemplAuth).  Create and edit templates in SIMBUILD.</entry>
-              <entry></entry>
-              <entry></entry>
-            </row>
-            <row>
-              <entry><emphasis role="strong">Case Author</emphasis> (CasAuth).  Needs to be updated for new terminology - not sure what this role does.  </entry>
-              <entry></entry>
-              <entry></entry>
-            </row>
-            <row>
-              <entry><emphasis role="strong">Sieberdam system administrator </emphasis> (SiebAdmin).  ie, package admin.  Installs and maintains the simulation package.  Creates CitAdmins. </entry>
-              <entry></entry>
-              <entry></entry>
-            </row>
-            <row>
-              <entry><emphasis role="strong">City Administrator</emphasis> (CitAdmin).  Creats and edits sim objects.</entry>
-              <entry></entry>
-              <entry></entry>
-            </row>
-            <row>
-              <entry><emphasis role="strong">User</emphasis> (User).  Has access to join invited and open simulations.</entry>
-              <entry></entry>
-              <entry></entry>
-            </row>
-
-          </tbody>
-        </tgroup>
-      </table>
-
+      <para><ulink url="permissions-table">Permissions Table</ulink> (<ulink url="permissions-table.sxc">OO spreadsheet</ulink>)</para>
     </sect1>
-
+    
     <sect1 id="object-orientation-notes">
       <title>Notes on an object-oriented simulated space</title>
       <para>An OpenACS simulation is a collection of interactive
