@@ -4,7 +4,7 @@
 
 select define_function_args('sim_case__new','sim_case_id,label,package_id,object_type;sim_case,creation_user,creation_ip,context_id');
 
-create function sim_case__new (integer,varchar,integer,varchar,integer,varchar,integer)
+create or replace function sim_case__new (integer,varchar,integer,varchar,integer,varchar,integer)
 returns integer as '
 declare
     p_sim_case_id                   alias for $1;
@@ -37,10 +37,10 @@ end;
 
 select define_function_args('sim_case__name','sim_case_id');
 
-create function sim_case__name(integer)
+create or replace function sim_case__name(integer)
 returns varchar as '
 declare
-    p_sim_case_id_id                      alias for $1;
+    p_sim_case_id                      alias for $1;
 begin
     return label from sim_cases where sim_case_id = p_sim_case_id;
 end;
@@ -48,7 +48,7 @@ end;
 
 select define_function_args('sim_case__delete','sim_case_id');
 
-create function sim_case__delete(integer)
+create or replace function sim_case__delete(integer)
 returns integer as '
 declare
     p_sim_case_id                      alias for $1;

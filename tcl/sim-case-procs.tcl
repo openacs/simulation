@@ -21,6 +21,8 @@ ad_proc -public simulation::case::new {
 
     @return sim_case_id
 } {
+    set package_id [ad_conn package_id]
+
     set extra_vars [ns_set create]
     oacs_util::vars_to_ns_set \
         -ns_set $extra_vars \

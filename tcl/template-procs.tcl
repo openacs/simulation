@@ -554,7 +554,7 @@ ad_proc -public simulation::template::autocast {
     }
 
     set workflow_short_name [workflow::get_element -workflow_id $workflow_id -element short_name]
-
+    
     # Create the cases and for each case assign users to roles    
     while { $total_users > 0 } {
 
@@ -563,6 +563,8 @@ ad_proc -public simulation::template::autocast {
         set case_id [workflow::case::get_id \
                          -object_id $sim_case_id \
                          -workflow_short_name $workflow_short_name]
+
+        ns_log Notice "pm debug sim_case_id=$sim_case_id case_id=$case_id"
         
         # Assign users from the specified group for each role
         array unset row
@@ -572,6 +574,7 @@ ad_proc -public simulation::template::autocast {
             array set one_role $roles($role_id)
 
             set assignees [list]
+            ns_log Notice "pm debug case_id=$case_id before users_per_case loop with role_id=$role_id [array get one_role]"
             for { set i 0 } { $i < $one_role(users_per_case) } { incr i } {
                 # Get user from random group mapped to role
                 set group_id [lindex [util::randomize_list $one_role(parties)] 0]
@@ -583,10 +586,12 @@ ad_proc -public simulation::template::autocast {
                     set group_members($group_id) [lreplace $group_members($group_id) 0 0]
                     # Reduce the total_users count
                     incr total_users -1
+                    ns_log Notice "pm debug case_id=$case_id group_id=$group_id - group has more users. appending [lindex $group_members($group_id) 0] to assignees. assignees=$assignees . Subtracting one from total users to $total_users"
                 } else {
                     # Current group exhausted, use current user
                     lappend assignees [ad_conn user_id]
                     # Don't add the admin more than once
+                    ns_log Notice "pm debug case_id=$case_id group_id=$group_id - group has no more users, appending professor [ad_conn user_id]"
                     break
                 }
             }
@@ -594,6 +599,7 @@ ad_proc -public simulation::template::autocast {
             set row($role_short_name($role_id)) $assignees
         }
 
+        ns_log Notice "pm debug case_id=$case_id role::assign [array get row]"
         workflow::case::role::assign \
             -case_id $case_id \
             -array row \
