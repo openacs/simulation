@@ -49,6 +49,51 @@ if { [catch {
     ::twt::log_section "Login the site wide admin"
     ::twt::user::login_site_wide_admin
 
+    ::twt::log_section "Add demo users to system"
+    for {set i 1} {$i <= 20} {incr i} {
+        do_request /acs-admin/users/user-add
+        field find ~n email
+        field fill "demo_user${i}@test.test"
+        field find ~n first_names
+        field fill "Demo"
+        field find ~n last_name
+        field fill "User $i"
+        field find ~n password
+        field fill "1"
+        field find ~n password_confirm
+        field fill "1"
+
+        form submit
+    }    
+
+    ::twt::log_section "Add demo groups"
+    for {set i 1} {$i <= 5} {incr i} {
+        do_request "/admin/group-types/one?group_type=group"
+        link follow ~u "parties/new"
+
+        field find ~n group.group_name
+        field fill "Demo group $i"
+        form submit
+    }
+    
+    ::twt::log_section "Add demo users to groups"
+    for {set i 1} {$i <= 5} {incr i} {
+        do_request "/admin/group-types/one?group_type=group"
+        link follow ~c "Demo group $i"
+        
+        link follow ~u "relations/add.*membership_rel"        
+        link follow ~u "membership_rel"
+
+        set add_user_url $::tclwebtest::url
+
+        for {set user_count [expr ($i - 1)*4 + 1]} {$user_count <= [expr $i*4]} {incr user_count} {
+            do_request $add_user_url
+            field find ~n party_id
+            field select "Demo User $user_count"
+            form submit
+        }
+    }
+
     ::twt::log_section "Create an image object"
     do_request /simulation/citybuild
     link follow ~u object-edit
