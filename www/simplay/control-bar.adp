@@ -7,6 +7,14 @@ You are <a href="@role.character_url@">@role.character_title@</a>
 
 <p>
 
+<h4>States</h4>
+
+<ul>
+  <multiple name="states">
+    <li><if @states.state_id@ eq @states.current_state@><b>@states.pretty_name@</b></if><else>@states.pretty_name@</else></li>
+  </multiple>
+</ul>
+
 <h4>Your Options</if></h4>
 <ul class="action-links">
   <li><a href="@case_home_url@">Case home</a>
@@ -24,5 +32,3 @@ You are <a href="@role.character_url@">@role.character_title@</a>
   </multiple>
 </ul>
 </if>
-
-

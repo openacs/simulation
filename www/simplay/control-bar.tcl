@@ -13,7 +13,9 @@ set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
-set workflow_id [simulation::case::get_element -case_id $case_id -element workflow_id]    
+simulation::case::get -case_id $case_id -array case
+
+set workflow_id $case(workflow_id)
 
 set show_contacts_p [db_string getflag {
     select show_contacts_p
@@ -98,3 +100,14 @@ db_multirow -unclobber -extend { character_url } contacts select_contacts "
 }
 
 set notifications_url [export_vars -base notifications { case_id role_id }]
+
+db_multirow -unclobber states select_states {
+    select wfs.pretty_name,
+           wfs.state_id,
+           wcf.current_state
+    from workflow_case_fsm wcf,
+         workflow_fsm_states wfs
+    where wfs.workflow_id = :workflow_id
+      and wcf.case_id = :case_id
+    order by wfs.sort_order
+}
