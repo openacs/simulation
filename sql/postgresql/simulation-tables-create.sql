@@ -163,18 +163,20 @@ select acs_object_type__create_type (
     null,                                   -- package_name
     'f',                                    -- abstract_p
     null,                                   -- type_extension_table
-    'acs_object__name'                      -- name_method
+    'sim_case__name'                        -- name_method
 );
       
 create table sim_cases (
-    sim_case_id         integer         constraint sim_case_fk
+    sim_case_id         integer         constraint sim_case_sci_fk
                                         references acs_objects
+                                        on delete cascade
                                         constraint sim_case_pk
                                         primary key,
-    workflow_id         integer         constraint sim_case_workflow_fk
-                                        references workflows,
-    sort_order          integer,
-    constraint sim_case_workflow_sort_order_un unique (workflow_id, sort_order)
+    label               varchar(200),
+    package_id          integer         constraint sim_case_pid_fk
+                                        references apm_packages(package_id)
+                                        constraint sim_case_pid_nn
+                                        not null
 );
 
 comment on table sim_cases is 'The object behind a simulation case.';
