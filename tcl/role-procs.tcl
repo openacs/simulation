@@ -26,8 +26,7 @@ ad_proc -public simulation::role::new {
                          -short_name $role_short_name \
                          -pretty_name $role_pretty_name]
 
-          
-    }
+    }    
 }
 
 ad_proc -public simulation::role::delete {

@@ -11,30 +11,100 @@ namespace eval simulation::template {}
 ad_proc -public simulation::template::new {
     {-short_name:required}
     {-pretty_name:required}
+    {-ready_p "f"}
+    {-suggested_duration ""}
     {-package_key:required}
     {-object_id:required}
 } {
-    Create a new simulation template.
+    Create a new simulation template.  TODO: need better tests for duration before passing it into the database.
 
     @return The workflow_id of the created simulation.
 
     @author Peter Marklund
 } {
-    set workflow_id [workflow::new \
-                         -short_name $short_name \
-                         -pretty_name $pretty_name \
-                         -package_key $package_key \
-                         -object_id $object_id]
-
-    # create a dummy action with initial action setting because
-    # workflow::get doesn't work on bare workflows
-    workflow::action::fsm::new \
-        -initial_action_p t \
-        -workflow_id $workflow_id \
-        -short_name "dummy action" \
-        -pretty_name "dummy action"
-
+    if { ![exists_and_not_null ready_p] } {
+        set ready_p "f"
+    }
+    db_transaction {
+        set workflow_id [workflow::new \
+                             -short_name $short_name \
+                             -pretty_name $pretty_name \
+                             -package_key $package_key \
+                             -object_id $object_id]
+        
+        # TODO: this step should be rendered obsolete by updates to workflow
+        #       and then this step should be removed
+        # create a dummy action with initial action setting because
+        # workflow::get doesn't work on bare workflows
+        workflow::action::fsm::new \
+            -initial_action_p t \
+            -workflow_id $workflow_id \
+            -short_name "dummy action" \
+            -pretty_name "dummy action"
+        
+        db_dml new_sim "
+            insert into sim_simulations
+            (simulation_id, ready_p, suggested_duration)
+            values ($workflow_id, '$ready_p', interval '$suggested_duration')
+        "
+            
+        }
     return $workflow_id
+}
+
+ad_proc -public simulation::template::edit {
+    {-short_name:required}
+    {-pretty_name:required}
+    {-ready_p "f"}
+    {-suggested_duration ""}
+    {-package_key:required}
+    {-object_id:required}
+} {
+    Edit a new simulation template.  TODO: need better tests for duration before passing it into the database.
+
+    @return nothing
+
+    @author Joel Aufrecht
+} {
+    if { ![exists_and_not_null ready_p] } {
+        set ready_p "f"
+    }
+    db_transaction {
+
+        # TODO: this should be in a new API call, workflow::edit
+
+        db_dml edit_workflow "
+            update workflows
+               set short_name=:short_name,
+                   pretty_name=:pretty_name
+             where workflow_id=:object_id
+"
+        
+        db_dml edit_sim "
+            update sim_simulations
+               set ready_p=:ready_p, 
+                   suggested_duration=(interval ':suggested_duration')
+             where simulation_id=:object_id
+        "
+            
+        }
+    return $workflow_id
+}
+
+ad_proc -public simulation::template::get {
+    {-package_key:required}
+    {-object_id:required}
+    {-array:required}
+} {
+    STUB ONLY.  Return information about a simulation template.  This should be a wrapper anound workflow::get, supplementing it with the columns from sim_simulation.
+
+    @param object_id ID of simulation template.
+    @param array name of array in which the info will be returned
+    @return An array list with keys workflow_id, short_name,
+            pretty_name, object_id, package_key, object_type, initial_action,
+            and callbacks, plus records in sim_simulation.
+} {
+    return 1
 }
 
 ad_proc -public simulation::template::delete {

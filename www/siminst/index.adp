@@ -2,24 +2,8 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-List of eligible templates for instantiation. :
-<pre>
-select workflow_id,
-       suggested_duration,
-       pretty_name
-       (...) as number_of_roles
-       () as min_number_of_human_roles
-       <a href="simulation-edit">Instantiate this template</a>
-  from workflows
- where ready_p = 't'
-</pre>
+<h4>Instantiate a template</h4>
+<listtemplate name="avail_templates"></listtemplate>
 
-<p>
-Sort and filter based on "expected duration" and number
-of roles.  May have arbitrary meta-data (depending on if categories
-package is usable or not).
-</p>
-
-<p>
-  TODO: Show a list of simulations with no cases so that you can continue working on one that was partially instantiated.
-</p>
+<h4>Current simulations</h4>
+<include src="/packages/simulation/lib/simulations"/>

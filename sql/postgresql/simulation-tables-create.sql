@@ -34,6 +34,8 @@ create table sim_simulations (
                                         on delete cascade
                                         constraint sim_simulation_pk
                                         primary key,
+    suggested_duration    interval,
+    ready_p               boolean,
     enroll_type           varchar(20)   constraint sim_simulations_enroll_type_ck
                                         check (1=1),
     casting_type          varchar(20)   constraint sim_simulations_casting_type_ck

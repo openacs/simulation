@@ -31,15 +31,38 @@ ad_form -name sim_template -cancel_url . -form {
         {label "Template Name"}
         {html {size 40}}
     }
+    {ready_p:boolean(checkbox),optional
+        {label "Ready for use?"}
+        {options {""}}
+    }
+    {suggested_duration:string,optional
+        {label "Suggested Duration"}
+    }
 } -edit_request {
     workflow::get -workflow_id $workflow_id -array sim_template_array
     set name $sim_template_array(pretty_name)
+    set ready_p 't' 
+#TODO: replace workflow api call with simulation::template::get,
+# combining data from workflows with data from sim_simulation,
+# hence providing $sim_template_array(ready_p)
 } -new_data {
     set workflow_id [simulation::template::new \
                          -short_name $name \
                          -pretty_name $name \
+                         -ready_p $ready_p \
+                         -suggested_duration $suggested_duration \
                          -package_key $package_key \
                          -object_id $package_id]
+} -edit_data {
+    set workflow_id [simulation::template::edit \
+                         -short_name $name \
+                         -pretty_name $name \
+                         -ready_p $ready_p \
+                         -suggested_duration $suggested_duration \
+                         -package_key $package_key \
+                         -object_id $package_id]
+
+
 } -after_submit {
     ad_returnredirect template-edit?workflow_id=$workflow_id
     ad_script_abort

@@ -23,14 +23,14 @@ if { ![exists_and_not_null parent_id] } {
 
 set elements {
     object_type_pretty {
-            label "Type"
-	    orderby upper(ot.pretty_name)
-        }
-	title { 
-	    label "Name"
-	    orderby r.title
-            link_url_col view_url
-	}
+        label "Type"
+        orderby upper(ot.pretty_name)
+    }
+    title { 
+        label "Name"
+        orderby r.title
+        link_url_col view_url
+    }
 }
 
 if { [string equal $display_mode "edit"] } {
