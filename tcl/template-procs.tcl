@@ -845,6 +845,16 @@ ad_proc -public simulation::template::cast {
             }
         }
     }    
+    # We need to refill (re-initialize) the groups that should be in multiple (all) cases, so
+    # keep the original group member array around
+    array set full_group_members [array get group_members]
+    set multiple_case_groups [db_list select_multiple_case_groups {
+        select party_id
+        from sim_party_sim_map
+        where simulation_id = :workflow_id
+          and (type = 'invited' or type = 'auto_enroll')
+          and multiple_cases_p = 't'
+    }]
 
     # First do user-role assignments in any existing simulation cases
     set current_cases [db_list select_current_cases {
@@ -860,7 +870,13 @@ ad_proc -public simulation::template::cast {
             -role_names_array role_short_name \
             -groups_array group_members \
             -users_var users_to_cast \
-            -users_not_in_groups_var users_to_cast_not_in_groups
+            -users_not_in_groups_var users_to_cast_not_in_groups \
+            -multiple_case_groups $multiple_case_groups
+
+        # Refill all multiple case groups
+        foreach multiple_group_id $multiple_case_groups {
+            set group_members($multiple_group_id) $full_group_members($multiple_group_id)            
+        }        
     }
     
     # If there are users left to cast, create new cases for them and repeat the same
@@ -885,7 +901,12 @@ ad_proc -public simulation::template::cast {
             -role_names_array role_short_name \
             -groups_array group_members \
             -users_var users_to_cast \
-            -users_not_in_groups_var users_to_cast_not_in_groups
+            -users_not_in_groups_var users_to_cast_not_in_groups \
+            -multiple_case_groups $multiple_case_groups
+
+        foreach multiple_group_id $multiple_case_groups {
+            set group_members($multiple_group_id) $full_group_members($multiple_group_id)            
+        }
     }
 }
 
@@ -897,6 +918,7 @@ ad_proc -private simulation::template::cast_users_in_case {
     {-groups_array:required}
     {-users_var:required}
     {-users_not_in_groups_var:required}
+    {-multiple_case_groups:required}
 } {
     Internal helper proc that will do user-role assignments in an existing
     simulation case.
@@ -937,14 +959,18 @@ ad_proc -private simulation::template::cast_users_in_case {
         for { set i 0 } { $i < $n_users_to_assign } { incr i } {
             # Get user from random non-empty group mapped to role
             foreach group_id [util::randomize_list $one_role(parties)] {
-                # Remove users from the list that have already been cast
-                set not_cast_list [list]
-                foreach user_id $group_members($group_id) {
-                    if { [lsearch -exact $users_to_cast $user_id] != -1 } {
-                        lappend not_cast_list $user_id
+                if { [lsearch $multiple_case_groups $group_id] == -1 } {
+                    # Remove users from the list that have already been cast
+                    # We don't do this for multiple case groups as users in these groups
+                    # can be cast multiple times
+                    set not_cast_list [list]                    
+                    foreach user_id $group_members($group_id) {
+                        if { [lsearch -exact $users_to_cast $user_id] != -1 } {
+                            lappend not_cast_list $user_id
+                        }
                     }
+                    set group_members($group_id) $not_cast_list
                 }
-                set group_members($group_id) $not_cast_list
 
                 if { [llength $group_members($group_id)] > 0 } {
                     break

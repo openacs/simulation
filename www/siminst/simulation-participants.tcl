@@ -55,7 +55,11 @@ db_multirow -extend { group_radio } participants select_participants {
             from   sim_party_sim_map 
             where  simulation_id = :workflow_id 
             and    party_id = g.group_id 
-            and    type = 'invited') as invited_p
+            and    type = 'invited') as invited_p,
+           (select multiple_cases_p
+            from sim_party_sim_map
+            where simulation_id = :workflow_id
+              and party_id = g.group_id) as multiple_cases_p
     from   acs_rels ar,
            groups   g
     where  ar.object_id_one = :subsite_group_id
@@ -64,7 +68,7 @@ db_multirow -extend { group_radio } participants select_participants {
     order  by lower(g.group_name)
 } {
     ad_form -extend -name simulation -form \
-        [list [list __group_$group_id:text,optional]]
+        [list [list __group_$group_id:text,optional] [list __multiple_$group_id:text,optional]]
 
     lappend groups $group_id
     
@@ -111,6 +115,13 @@ template::list::create \
             }
             html { align center }
         }
+        multiple {
+            label "Multiple Cases"
+            display_template {
+                <input name="__multiple_@participants.group_id@" value="t" type="checkbox"<if @participants.multiple_cases_p@ eq "t">checked="checked"</if>>
+            }
+            html { align center }
+        }
     }
 
 wizard submit simulation -buttons { back next }
@@ -134,9 +145,10 @@ ad_form \
 
                     set selected_type [element get_value simulation __group_${group_id}]
                     if { [string equal $selected_type $type] } {
+                        set multiple_cases_p [ad_decode [element get_value simulation __multiple_${group_id}] "t" "t" "f"]
                         db_dml insert_party {
-                            insert into sim_party_sim_map (simulation_id, party_id, type)
-                            values (:workflow_id, :group_id, :type)
+                            insert into sim_party_sim_map (simulation_id, party_id, type, multiple_cases_p)
+                            values (:workflow_id, :group_id, :type, :multiple_cases_p)
                         }
                     }
                 }

@@ -138,7 +138,10 @@ create table sim_party_sim_map (
                                         references parties
                                         on delete cascade,
     type                varchar(20)     constraint sim_party_sim_map_type_ck
-                                        check (type in ('enrolled', 'invited', 'auto_enroll')),    
+                                        check (type in ('enrolled', 'invited', 'auto_enroll')),
+    multiple_cases_p    boolean         constraint sim_party_sim_map_mcp_nn
+                                        not null
+                                        default 'f',
     constraint sim_party_sim_map_pk
     primary key (simulation_id, party_id, type)
 );
