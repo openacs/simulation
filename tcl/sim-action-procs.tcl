@@ -73,33 +73,13 @@ ad_proc -public simulation::action::edit {
     # Parse column values
     switch $operation {
         insert - update {
-            # Special-case: array entry recipient_roles (short_name) and recipients (role_id)
-            if { [info exists row(recipient_roles)] } {
-                if { [info exists row(recipients)] } {
-                    error "You cannot supply both recipient_roles (takes short_name) and recipient (takes role_id)"
-                }
-                if { [empty_string_p $row(recipient_roles)] } {
-                    set row(recipients) [db_null]
-                } else {
-                    # Get role_id by short_name
-                    foreach recipient_short_name $row(recipient_roles) {
-                        lappend row(recipients) [workflow::role::get_id \
-                                                     -workflow_id $workflow_id \
-                                                     -short_name $recipient_short_name]
-                    }
-                }
-                set local_relation(recipients) $row(recipients)
-                unset row(recipient_roles)
-                unset row(recipients)
-            }
-
             set update_clauses [list]
             set insert_names [list]
             set insert_values [list]
 
             # Handle columns in the sim_tasks table
             foreach attr { 
-                attachment_num
+                attachment_num 
             } {
                 if { [info exists row($attr)] } {
                     set varname attr_$attr
@@ -117,6 +97,31 @@ ad_proc -public simulation::action::edit {
                             lappend insert_values :$varname
                         }
                     }
+                    unset row($attr)
+                }
+            }
+
+            # Special-case: array entry recipient_roles (short_name) and recipients (role_id)
+            if { [info exists row(recipient_roles)] } {
+                if { [info exists row(recipients)] } {
+                    error "You cannot supply both recipient_roles (takes short_name) and recipient (takes role_id)"
+                }
+                set row(recipients) [list]
+                foreach recipient_short_name $row(recipient_roles) {
+                    lappend row(recipients) [workflow::role::get_id \
+                                                 -workflow_id $workflow_id \
+                                                 -short_name $recipient_short_name]
+                }
+                unset row(recipient_roles)
+            }
+            
+            # Handle auxillary rows
+            array set aux [list]
+            foreach attr { 
+                recipients
+            } {
+                if { [info exists row($attr)] } {
+                    set aux($attr) $row($attr)
                     unset row($attr)
                 }
             }
@@ -159,14 +164,15 @@ ad_proc -public simulation::action::edit {
             }
         }
 
-        if {[string equal $operation "update"] || [string equal $operation "insert"]} {
-                if { [info exists local_relation(recipients)] } {
+        # Auxilliary rows
+        switch $operation {
+            insert - update {
+                if { [info exists aux(recipients)] } {
                     db_dml delete_old_recipients {
                         delete from sim_task_recipients
                         where task_id = :action_id
                     }
-
-                    foreach recipient_id $local_relation(recipients) {
+                    foreach recipient_id $aux(recipients) {
                         db_dml insert_recipient {
                             insert into sim_task_recipients
                               (task_id, recipient)
@@ -174,9 +180,11 @@ ad_proc -public simulation::action::edit {
                               (:action_id, :recipient_id)
                         }
                     }
+                    unset aux(recipients)
                 }
+            }
         }
-        
+
         if { !$internal_p } {
             workflow::definition_changed_handler -workflow_id $workflow_id
         }
