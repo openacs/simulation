@@ -5,6 +5,7 @@
 --drop independent tables
 drop table sim_party_sim_map;
 drop table sim_tasks;
+drop table sim_role_group_map;
 drop table sim_roles;
 select acs_object_type__drop_type(
 	   'simulation',
