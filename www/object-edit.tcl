@@ -51,11 +51,27 @@ set context [list [list "object-list" "Sim Objects"] $page_title]
 ad_form -name object -cancel_url object-list -form {
     {item_id:key}
     {parent_id:integer(hidden),optional}
-    {content_type:text(radio)
-        {label "Type"}
-        {options {[simulation::object_type::get_options]}}
-        {mode "display"}
+}
+
+if { [ad_form_new_p -key item_id] } {
+    ad_form -extend -name object -form {
+        {content_type:text(radio)
+            {label "Type"}
+            {options {[simulation::object_type::get_options]}}
+            {html {onChange "javascript:FormRefresh('object');"}}
+        }
     }
+} else {
+    ad_form -extend -name object -form {
+        {content_type:text(select)
+            {label "Type"}
+            {options {[simulation::object_type::get_options]}}
+            {mode display}
+        }
+    }
+}
+
+ad_form -extend -name object -form {
     {title:text
         {label "Title"}
         {html {size 50}}
@@ -258,7 +274,8 @@ ad_form -extend -name object -new_request {
 
     set attributes [list]
     foreach attribute_name $attr_names {
-        lappend attributes [list $attribute_name [set attr__${content_type}__${attribute_name}]]
+        set value [set attr__${content_type}__${attribute_name}]
+        lappend attributes [list $attribute_name ]
     }
 
 
