@@ -108,32 +108,6 @@ ad_proc -public simulation::include_contract { args } {
     }
 }
 
-ad_proc simulation::get_object_options { 
-    {-content_type:required}
-} {
-    Returns a list of cr_revision.title, cr_item.item_id pairs
-    for all cr_items of the given content_type in the root
-    folder of the current package. Suitable for ad_form options for
-    select boxes.
-
-    @return [list [list cr_revision.title1 cr_item.item_id1] [list cr_revision.title2 cr_item.item_id2] ....]
-
-    @author Peter Marklund
-} {
-    set package_id [ad_conn package_id]
-    set parent_id [bcms::folder::get_id_by_package_id -package_id $package_id]
-
-    return [db_list_of_lists character_options {
-        select cr.title,
-               ci.item_id
-        from cr_items ci,
-             cr_revisions cr
-        where ci.live_revision = cr.revision_id
-        and ci.parent_id = :parent_id
-        and ci.content_type = :content_type
-    }]
-}
-
 ad_proc simulation::casting_groups {
     {-workflow_id:required}
     {-mapped_only:boolean}

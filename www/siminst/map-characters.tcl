@@ -14,7 +14,6 @@ ad_page_contract {
 set page_title "Assign Characters to Roles"
 set context [list [list "." "SimInst"] $page_title]
 
-
 simulation::template::get -workflow_id $workflow_id -array sim_array
 set description $sim_array(description)
 
@@ -27,7 +26,7 @@ ad_form \
         }
     }
 
-set character_options [simulation::get_object_options -content_type sim_character]
+set character_options [simulation::object::get_object_type_options -null_label "" -object_type sim_character]
 
 # Loop over all workflow roles and add a character select widget for each
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
