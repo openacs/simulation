@@ -1,0 +1,3 @@
+#/bin/sh
+
+/usr/local/tclwebtest/tclwebtest -config_file /web/install-dev/install.tcl demo-data-setup.test
