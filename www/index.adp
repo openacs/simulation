@@ -1,6 +1,6 @@
 <master src="/packages/simulation/www/map-master">
 <div style="margin: 4px; background: lightgray; border: 1px solid black;">
-<h3><a href="simplay">SIMPLAY</a></h3>
+<h3><a href="simplay/">SIMPLAY</a></h3>
 Your live cases:
 <listtemplate name="active_cases"></listtemplate></p>
 Available simulations
@@ -24,7 +24,7 @@ Available simulations
   </table>
 </div>
 <div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid black;">
-<h3><a href="directory">YELLOW PAGES</a></h3>
+<h3><a href="directory/">YELLOW PAGES</a></h3>
 </div>
 <div style="margin: 4px; padding: 4px; border: 1px solid black;">
 <h3><a href="object-list">CITYBUILD</a></h3>
@@ -37,5 +37,5 @@ black;">
 </div>
 <div style="margin: 4px; padding: 4px; background: lightgray; border: 1px solid
 black;">
-<h3><a href="siminst">SIMINST</a></h3>
+<h3><a href="siminst/">SIMINST</a></h3>
 </div>

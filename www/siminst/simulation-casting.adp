@@ -29,5 +29,5 @@ Casting.
 
 
 <p>
-  <a href="simulation-casting-2">Create and cast cases</a> (store characters in sim_roles table.)
+  <a href="simulation-casting-2">Create and cast cases</a>
 </p>

@@ -9,11 +9,9 @@ select workflow_id,
        pretty_name
        (...) as number_of_roles
        () as min_number_of_human_roles
-
-Each record has a <a href="simulation-edit">Instantiate this template</a>
-
-from workflows
-where ready_p = 't'
+       <a href="simulation-edit">Instantiate this template</a>
+  from workflows
+ where ready_p = 't'
 </pre>
 
 <p>
