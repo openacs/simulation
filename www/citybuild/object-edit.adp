@@ -50,3 +50,5 @@
   </property>
 
 <formtemplate id="object"></formtemplate>
+TODO: Show on map should be read-only unless user has "sim_set_map_p"
+priv on package_id

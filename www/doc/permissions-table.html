@@ -7,7 +7,7 @@
 	<TITLE></TITLE>
 	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.1.0  (Linux)">
 	<META NAME="CREATED" CONTENT="20031120;15335300">
-	<META NAME="CHANGED" CONTENT="20031201;11352700">
+	<META NAME="CHANGED" CONTENT="20031202;11112200">
 	
 	<STYLE>
 		<!-- 
@@ -50,21 +50,21 @@
 		<TR>
 			<TD HEIGHT=17 ALIGN=LEFT><BR></TD>
 			<TD ALIGN=CENTER>Read</TD>
+			<TD ALIGN=CENTER>Create</TD>
 			<TD ALIGN=CENTER>Write</TD>
-			<TD ALIGN=CENTER>Edit</TD>
 			<TD ALIGN=CENTER>Read</TD>
 			<TD ALIGN=CENTER>Inst</TD>
-			<TD ALIGN=CENTER>Edit</TD>
+			<TD ALIGN=CENTER>Write</TD>
 			<TD ALIGN=CENTER>Self</TD>
 			<TD ALIGN=CENTER>Case</TD>
 			<TD ALIGN=CENTER>Global</TD>
 			<TD ALIGN=CENTER>Read</TD>
+			<TD ALIGN=CENTER>Create</TD>
 			<TD ALIGN=CENTER>Write</TD>
-			<TD ALIGN=CENTER>Edit</TD>
 			<TD ALIGN=CENTER>EditMap</TD>
 			<TD ALIGN=CENTER>Read</TD>
+			<TD ALIGN=CENTER>Create</TD>
 			<TD ALIGN=CENTER>Write</TD>
-			<TD ALIGN=CENTER>Edit</TD>
 			<TD ALIGN=CENTER>Mine</TD>
 			<TD ALIGN=CENTER>All</TD>
 			<TD ALIGN=CENTER>AddUser</TD>
@@ -276,14 +276,14 @@
 			<TD ALIGN=LEFT><BR></TD>
 		</TR>
 		<TR>
-			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
-			<TD ALIGN=LEFT>Can create and edit templates</TD>
-			<TD ALIGN=LEFT><I>create_template</I></TD>
+			<TD ALIGN=LEFT VALIGN=MIDDLE>Create</TD>
+			<TD ALIGN=LEFT>Can create and edit sim templates</TD>
+			<TD ALIGN=LEFT><I>sim_template_create</I></TD>
 			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
-			<TD ALIGN=LEFT VALIGN=MIDDLE>Edit</TD>
-			<TD ALIGN=LEFT>Can change other people's templates</TD>
+			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
+			<TD ALIGN=LEFT>Can change other people's sim templates</TD>
 			<TD ALIGN=LEFT>admin</TD>
 			<TD ALIGN=LEFT>package</TD>
 		</TR>
@@ -296,12 +296,12 @@
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Inst</TD>
-			<TD ALIGN=LEFT>Can instantiate a template into a simulation and edit the simulation</TD>
+			<TD ALIGN=LEFT>Can instantiate a sim template into a simulation and edit the simulation</TD>
 			<TD ALIGN=LEFT><I>sim_inst</I></TD>
 			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
-			<TD ALIGN=LEFT VALIGN=MIDDLE>Edit</TD>
+			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
 			<TD ALIGN=LEFT>Can change other people's simulations</TD>
 			<TD ALIGN=LEFT>admin</TD>
 			<TD ALIGN=LEFT>package</TD>
@@ -354,44 +354,44 @@
 		<TR>
 			<TD ROWSPAN=4 HEIGHT=72 ALIGN=LEFT VALIGN=MIDDLE>Global Objects</TD>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Read</TD>
-			<TD ALIGN=LEFT>Can see all objects</TD>
+			<TD ALIGN=LEFT>Can see all sim objects</TD>
 			<TD ALIGN=LEFT>n/a</TD>
 			<TD ALIGN=LEFT><BR></TD>
 		</TR>
 		<TR>
-			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
-			<TD ALIGN=LEFT>Can create global objects</TD>
-			<TD ALIGN=LEFT><I>create_sim_object</I></TD>
+			<TD ALIGN=LEFT VALIGN=MIDDLE>Create</TD>
+			<TD ALIGN=LEFT>Can create global sim objects</TD>
+			<TD ALIGN=LEFT><I>sim_object_create</I></TD>
 			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
-			<TD ALIGN=LEFT VALIGN=MIDDLE>Edit</TD>
-			<TD ALIGN=LEFT>Can change other people's objects</TD>
-			<TD ALIGN=LEFT><I>write_sim_object</I></TD>
+			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
+			<TD ALIGN=LEFT>Can change other people's sim objects</TD>
+			<TD ALIGN=LEFT><I>sim_object_write</I></TD>
 			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>SetMapP</TD>
-			<TD ALIGN=LEFT>Can set and un-set on_map_p for any object</TD>
-			<TD ALIGN=LEFT><I>set_map_p</I></TD>
+			<TD ALIGN=LEFT>Can set and un-set on_map_p for any sim object</TD>
+			<TD ALIGN=LEFT><I>sim_set_map_p</I></TD>
 			<TD ALIGN=LEFT>package</TD>
 		</TR>
 		<TR>
 			<TD ROWSPAN=3 HEIGHT=54 ALIGN=LEFT VALIGN=MIDDLE>Case Objects</TD>
 			<TD ALIGN=LEFT VALIGN=MIDDLE>Read</TD>
-			<TD ALIGN=LEFT>Can see objects in a case</TD>
+			<TD ALIGN=LEFT>Can see sim objects in a case</TD>
 			<TD ALIGN=LEFT>read</TD>
 			<TD ALIGN=LEFT><I>workflow_case</I></TD>
 		</TR>
 		<TR>
-			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
-			<TD ALIGN=LEFT>Can create own objects in a case</TD>
+			<TD ALIGN=LEFT VALIGN=MIDDLE>Create</TD>
+			<TD ALIGN=LEFT>Can create own sim objects in a case</TD>
 			<TD ALIGN=LEFT>create</TD>
 			<TD ALIGN=LEFT><I>workflow_case</I></TD>
 		</TR>
 		<TR>
-			<TD ALIGN=LEFT VALIGN=MIDDLE>Edit</TD>
-			<TD ALIGN=LEFT>Can change other people's objects in a case</TD>
+			<TD ALIGN=LEFT VALIGN=MIDDLE>Write</TD>
+			<TD ALIGN=LEFT>Can change other people's sim objects in a case</TD>
 			<TD ALIGN=LEFT>admin</TD>
 			<TD ALIGN=LEFT><I>sim_simulation</I></TD>
 		</TR>
@@ -413,7 +413,7 @@
 			<TD HEIGHT=17 ALIGN=LEFT><BR></TD>
 			<TD ALIGN=LEFT><BR></TD>
 			<TD ALIGN=LEFT><BR></TD>
-			<TD ALIGN=LEFT><BR></TD>
+			<TD ALIGN=LEFT><I>italics indicates simulation-specific priv or object</I></TD>
 			<TD ALIGN=LEFT><BR></TD>
 		</TR>
 		<TR>

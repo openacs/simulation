@@ -26,12 +26,13 @@ template::list::create \
     -elements $elements 
 
 db_multirow cases select_cases "
-    select w.pretty_name
-      from workflows w,
-           workflow_cases wc,
-           workflow_case_role_party_map wcrpm
-     where w.workflow_id = wc.workflow_id
+    select wc.case_id,
+           w.pretty_name
+      from workflow_cases wc,
+           workflow_case_role_party_map wcrpm,
+           workflows w
+     where wcrpm.party_id = :party_id
        and wc.case_id = wcrpm.case_id
-       and wcrpm.party_id = :party_id
+       and w.workflow_id = wc.workflow_id
     [template::list::orderby_clause -orderby -name "cases"]
 "

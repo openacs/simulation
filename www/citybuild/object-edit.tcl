@@ -559,7 +559,14 @@ ad_form -extend -name object -new_request {
 
 } -new_data {
     
-    permission::require_permission -privilege create -object_id [ad_conn package_id]
+    # TODO
+    # For now, assume we are always using this to create global objects
+    # When we use this form to create case objects, we should simply check for create permission on the case
+    # we could alternately switch to using the cr folder system, in which case:
+    #    sim_object_create on package_id is replaced by 'create' on a root folder, and
+    #    create on a case is replaced by create on a case's folder
+
+    permission::require_permission -privilege sim_object_create -object_id [ad_conn package_id]
 
     set existing_items [db_list select_items { select name from cr_items where parent_id = :parent_id }]
 

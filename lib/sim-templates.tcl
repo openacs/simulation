@@ -81,6 +81,13 @@ switch $size {
                         </a>
 		    }
 		}
+		clone {
+		    display_template {
+                        <a href="@sim_templates.clone_url@">Clone this template</a>
+                    }
+
+                }
+
 	    }
     }
 }
@@ -94,7 +101,7 @@ switch $size {
 #
 ######################################################################
 
-db_multirow -extend { edit_url view_url delete_url } sim_templates select_sim_templates "
+db_multirow -extend { edit_url view_url delete_url clone_url } sim_templates select_sim_templates "
     select w.workflow_id,
            w.pretty_name as name,
            'placeholder' as description,
@@ -119,4 +126,6 @@ db_multirow -extend { edit_url view_url delete_url } sim_templates select_sim_te
     set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" {workflow_id} ]
 
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-delete" {workflow_id} ]
+
+    set clone_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-clone" {workflow_id} ]
 }

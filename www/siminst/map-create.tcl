@@ -7,11 +7,14 @@ ad_page_contract {
     workflow_id:integer
 }
 
-set page_title "Create mapped template"
-set context [list [list "." "SimInst"] $page_title]
+set user_id [auth::require_login]
 
+set page_title "Create Mapped Template"
+set context [list [list "." "SimInst"] $page_title]
 set old_name [workflow::get_element -workflow_id $workflow_id -element pretty_name]
-set name_default "$old_name Mapped"
+acs_user::get -user_id $user_id -array user_array
+
+set name_default "$old_name mapped by $user_array(name)"
 
 ad_form \
     -name template \

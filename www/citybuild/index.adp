@@ -4,7 +4,7 @@
 
 <include src="/packages/simulation/lib/sim-objects" size="long" display_mode="edit">
 
-<if @admin_p@>
+<if @map_p@>
   <h2>Map XML</h2>
 
   <p>
