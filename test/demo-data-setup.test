@@ -71,15 +71,14 @@ if { [catch {
         ::twt::simulation::add_object -type character -title $character_name
     }
 
-     ::twt::log_section "Create simulation template"
-     do_request /simulation/simbuild/template-edit
-       set template_name "Elementary Private Law"
-     field fill $template_name ~n name
-     form submit
+    ::twt::log_section "Create simulation template"
+    do_request /simulation/simbuild/template-edit
+    set template_name "Elementary Private Law"
+    field fill $template_name ~n name
+    form submit
 
     ::twt::log_section "Create roles for template"
     ::twt::simulation::visit_template_page $template_name 
-
     link follow ~u role-edit
     set add_role_url [response url]
     foreach character_name [array names characters] {
