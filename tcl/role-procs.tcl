@@ -51,7 +51,22 @@ ad_proc -public simulation::role::edit {
 } {
     db_dml edit_sim_role {
         update sim_roles
-        set character_id = :character_id
-        where role_id = :role_id
+        set    character_id = :character_id
+        where  role_id = :role_id
     }
+}
+
+ad_proc -public simulation::role::get {
+    {-role_id:required}
+    {-array:required}
+} {
+    Get information about a simulation role
+} {
+    upvar 1 $array row
+    db_1row select_sim_role {
+        select role_id,
+               character_id
+        from   sim_roles
+        where  role_id = :role_id
+    } -column_array row
 }
