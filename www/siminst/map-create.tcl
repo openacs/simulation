@@ -9,12 +9,12 @@ ad_page_contract {
 
 set user_id [auth::require_login]
 
-set page_title "Create Mapped Template"
+set page_title "Create Simulation from Template"
 set context [list [list "." "SimInst"] $page_title]
 set old_name [workflow::get_element -workflow_id $workflow_id -element pretty_name]
 acs_user::get -user_id $user_id -array user_array
 
-set name_default "$old_name mapped by $user_array(name)"
+set name_default "New Simulation from template $old_name"
 
 ad_form \
     -name template \

@@ -27,18 +27,22 @@ template::list::create \
             orderby upper(w.pretty_name)
         }
         role_count {
-            link_url_col map_roles_url
             label "Roles"
-        }
-        role_empty_count {
-            label "Roles without Characters"
+            link_url_col map_roles_url
+            display_template {
+                @dev_sims.role_count@ <if @dev_sims.role_empty_count@ gt 0>(@dev_sims.role_empty_count@ incomplete)</if>
+            }
         }
         prop_count {
-            link_url_col map_tasks_url
             label "Props"
+            link_url_col map_props_url
+            display_template {
+                @dev_sims.prop_count@ <if @dev_sims.prop_empty_count@ gt 0>(@dev_sims.prop_empty_count@ incomplete)</if>
+            }
         }
-        prop_empty_count {
-            label "Missing props"
+        tasks {
+            label "Tasks"
+            link_url_col sim_tasks_url
         }
         delete {
             sub_class narrow
@@ -67,7 +71,7 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { cast_url map_roles_url map_tasks_url delete_url } dev_sims select_dev_sims "
+db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_url } dev_sims select_dev_sims "
     select w.workflow_id,
            w.pretty_name,
            (select count(*) 
@@ -91,7 +95,10 @@ db_multirow -extend { cast_url map_roles_url map_tasks_url delete_url } dev_sims
                    workflow_actions wa
              where stom.task_id = wa.action_id
                and wa.workflow_id = w.workflow_id
-               and stom.object_id is null) as prop_empty_count
+               and stom.object_id is null) as prop_empty_count,
+           (select count(*)
+              from workflow_actions wa
+             where wa.workflow_id = w.workflow_id) as tasks
       from workflows w,
            sim_simulations ss,
            acs_objects ao
@@ -103,7 +110,8 @@ db_multirow -extend { cast_url map_roles_url map_tasks_url delete_url } dev_sims
 " {
     set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
     set map_roles_url [export_vars -base "${base_url}siminst/map-characters" { workflow_id }]
-    set map_tasks_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
+    set map_props_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
+    set sim_tasks_url [export_vars -base "${base_url}siminst/sim-tasks" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
 }
 
