@@ -64,7 +64,9 @@ set role_options [db_list_of_lists role_option_list "
 # task form
 #---------------------------------------------------------------------
 
-ad_form -name task -cancel_url sim-template-list -form {
+ad_form -name task -edit_buttons [
+				  list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]
+    ] -form {
     {action_id:key}
     {workflow_id:integer(hidden),optional}
     {name:text
@@ -79,12 +81,18 @@ ad_form -name task -cancel_url sim-template-list -form {
         {label "Recipient"}
         {options $role_options}
     }
+    {description:richtext,optional
+        {label "Task Description"}
+        {html {cols 60 rows 8}}
+    }
 } -edit_request {
 
     # Retrieve the task and populate the form
     workflow::action::fsm::get -action_id $action_id -array task_array
+    # TODO - get the recipient (and put all this in simulation api)
     set workflow_id $task_array(workflow_id)
     set name $task_array(pretty_name)
+    set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
     workflow::get -workflow_id $workflow_id -array sim_template_array    
     set page_title "Edit Task $name"
     set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
@@ -96,14 +104,24 @@ ad_form -name task -cancel_url sim-template-list -form {
     set page_title "Add Task to $sim_template_array(pretty_name)"
     set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
 
+} -on_submit {
+    
+    set description_content [template::util::richtext::get_property contents $description]
+    set description_mime_type [template::util::richtext::get_property format $description]
+
 } -new_data {
 
     # create the task
+
     set action_id [workflow::action::fsm::new \
-                     -workflow_id $workflow_id \
-                     -short_name $name \
-                     -pretty_name $name \
-                     -assigned_role $assigned_role]
+		       -workflow_id $workflow_id \
+		       -short_name $name \
+		       -pretty_name $name \
+		       -assigned_role $assigned_role \
+		       -description $description_content \
+		       -description_mime_type $description_mime_type]
+
+    # TODO - put this stuff into simulation api and change previous call
     # and then add extra data for simulation
     # because workflow::action::fsm::new wants role.short_name instead of
     # role_id, we stay consistent for recipient_role
@@ -119,7 +137,9 @@ ad_form -name task -cancel_url sim-template-list -form {
         -short_name $name \
         -pretty_name $name \
         -assigned_role $assigned_role \
-        -recipient_role $recipient_role 
+        -recipient_role $recipient_role \
+	-description $description_content \
+	-description_mime_type $description_mime_type
 
 } -after_submit {
     ad_returnredirect [export_vars -base "sim-template-edit" { workflow_id }]
