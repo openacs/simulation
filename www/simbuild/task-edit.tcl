@@ -61,7 +61,7 @@ set context [list [list "." "SimBuild"] [list [export_vars -base "template-edit"
 #---------------------------------------------------------------------
 # Get a list of relevant roles
 #---------------------------------------------------------------------
-set role_options [workflow::role::get_options -workflow_id $workflow_id]
+set role_options [concat [list [list "--None--" ""]] [workflow::role::get_options -workflow_id $workflow_id]]
 
 ######################################################################
 #
