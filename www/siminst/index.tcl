@@ -97,7 +97,7 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
                and wa.workflow_id = w.workflow_id) as prop_not_empty_count,
            (select count(*)
               from workflow_actions wa
-             where wa.workflow_id = w.workflow_id) as tasks
+             where wa.workflow_id = w.workflow_id) as tasks           
       from workflows w,
            sim_simulations ss,
            acs_objects ao
@@ -109,7 +109,7 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
 " {
     set prop_empty_count [expr $prop_count - $prop_not_empty_count]
     if { [simulation::template::ready_for_casting_p -role_empty_count $role_empty_count -prop_empty_count $prop_empty_count] } {
-        set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
+        set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id return_url {[ad_return_url]}}]
     } else {
         set cast_url ""
     }
@@ -142,6 +142,9 @@ template::list::create \
         users {
             label "Users enrolled"
         }
+        case_start {
+            label "Start date"            
+        }
         delete {
             sub_class narrow
             link_url_col delete_url
@@ -170,7 +173,8 @@ db_multirow -extend { edit_url delete_url edit_p } casting_sims select_casting_s
            ss.casting_type,
            (select count(*) 
               from sim_party_sim_map spsm
-             where spsm.simulation_id = w.workflow_id) as users
+             where spsm.simulation_id = w.workflow_id) as users,
+           to_char(ss.case_start, 'YYYY-MM-DD') as case_start
       from workflows w,
            sim_simulations ss,
            acs_objects ao
