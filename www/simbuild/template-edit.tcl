@@ -173,6 +173,8 @@ set delete_url [export_vars -base template-delete { workflow_id }]
 set spec_url [export_vars -base template-spec { workflow_id }]
 
 
-if { [string equal $sim_template_array(sim_type) "dev_template"] } {
-    set mark_ready_url [export_vars -base "template-sim-type-update" { workflow_id }]
+if { [info exists sim_template_array(sim_type)] } {
+    if { [string equal $sim_template_array(sim_type) "dev_template"] } {
+        set mark_ready_url [export_vars -base "template-sim-type-update" { workflow_id }]
+    }
 }
