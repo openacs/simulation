@@ -18,6 +18,12 @@ template::list::create \
     -name objects \
     -multirow objects \
     -elements {
+        edit {
+            sub_class narrow
+            display_template {
+                <a href="@objects.edit_url@"><img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit"></a>
+            }
+        }
         object_type_pretty {
             label "Type"
 	    orderby upper(ot.pretty_name)
@@ -36,7 +42,7 @@ template::list::create \
 
 set package_id [ad_conn package_id]
 
-db_multirow -extend { view_url } objects select_objects "
+db_multirow -extend { edit_url view_url } objects select_objects "
     select i.item_id,
            i.name,
            r.title,
@@ -54,6 +60,7 @@ db_multirow -extend { view_url } objects select_objects "
     [template::list::orderby_clause -orderby -name "objects"]
 " {
     set description [string_truncate -len 200 $description]
+    set edit_url [export_vars -base "object-edit" { { object_id $item_id } }]
     set view_url [export_vars -base "object/$name"]
 }
 

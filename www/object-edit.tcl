@@ -5,8 +5,19 @@ ad_page_contract {
     @cvs-id $Id$
 } {
     object_id:integer,optional
-    parent_id:integer
-    content_type
+    parent_id:integer,optional
+    content_type:optional
+} -validate {
+    not_object_id {
+        if { ![exists_and_not_null object_id] } {
+            if { ![exists_and_not_null parent_id] } {
+                ad_complain parent_id "parent_id is required"
+            }
+            if { ![exists_and_not_null content_type] } {
+                ad_complain content_type "parent_id is required"
+            }
+        }
+    }
 }
 
 set page_title "Create Object"
@@ -15,7 +26,7 @@ set context [list [list "object-list" "Objects"] $page_title]
 ad_form -name object -form {
     {object_id:key}
     {content_type:text(hidden)}
-    {parent_id:integer(hidden)}
+    {parent_id:integer(hidden),optional}
     {title:text
         {label "Title"}
         {html {size 50}}
@@ -23,13 +34,22 @@ ad_form -name object -form {
     {name:text,optional
         {label "URL name"}
         {html {size 50}}
-        {help_text "This will become part of the URL for the object."}
+        {help_text {[ad_decode [ad_form_new_p -key object_id] 1 "This will become part of the URL for the object." ""]}}
+        {mode {[ad_decode [ad_form_new_p -key object_id] 1 "edit" "display"]}}
     }
     {description:text(textarea),optional
         {label "Description"}
         {html {cols 60 rows 8}}
     }
 }
+
+if { ![ad_form_new_p -key object_id] } {
+    # Get data for existing object
+    array set item_info [bcms::item::get_item -item_id $object_id -revision live]
+    item::get_revision_content $item_info(revision_id)
+    set content_type $item_info(content_type)
+}
+
 
 # LARS: I'm doing this as a proof-of-concept type thing. If it works well enough for us, 
 # we'll want to generalize and move into acs-content-repository
@@ -90,6 +110,8 @@ array set form_extra {
     keyword {}
 }
 
+set attr_names [list]
+
 db_foreach select_attributes {
     select attribute_name, pretty_name, datatype, default_value, min_n_values
     from   acs_attributes
@@ -98,6 +120,8 @@ db_foreach select_attributes {
     and    static_p = 'f'
     order  by sort_order
 } {
+    lappend attr_names $attribute_name
+
     set elm_decl "attr__${content_type}__${attribute_name}:$form_datatype($datatype)($form_widget($datatype))"
 
     set optional_p [expr ![empty_string_p $default_value] || $min_n_values == 0]
@@ -112,9 +136,17 @@ db_foreach select_attributes {
 
 ad_form -extend -name object -new_request {
     # Set element values from local vars
+} -on_submit {
+
+    set attributes [list]
+    foreach attribute_name $attr_names {
+        lappend attributes $attribute_name [set attr__${content_type}__${attribute_name}]
+    }
+
 } -new_data {
     
     set existing_items [db_list select_items { select name from cr_items where parent_id = :parent_id }]
+
     if { [empty_string_p $name] } {
         set name [util_text_to_url -existing_urls $existing_items -text $title]
     } else {
@@ -122,19 +154,6 @@ ad_form -extend -name object -new_request {
             form set_error object name "This name is already in use"
             break
         }
-    }
-
-    set attributes [list]
-
-    db_foreach select_attributes {
-        select attribute_name, pretty_name, datatype, default_value, min_n_values
-        from   acs_attributes
-        where  object_type = :content_type
-        and    storage = 'type_specific'
-        and    static_p = 'f'
-        order  by sort_order
-    } {
-        lappend attributes $attribute_name [set attr__${content_type}__${attribute_name}]
     }
 
     set item_id [bcms::item::create_item \
@@ -155,12 +174,30 @@ ad_form -extend -name object -new_request {
         -status "live"
 
 } -edit_request {
-
-    error TODO
+    
+    foreach elm { title name description } {
+        set $elm $content($elm)
+    }
+    
+    foreach attribute_name $attr_names {
+        set attr__${content_type}__${attribute_name} $content($attribute_name)
+    }
     
 } -edit_data {
 
-    error TODO
+    set revision_id [bcms::revision::add_revision \
+                         -item_id $object_id \
+                         -title $title \
+                         -content_type $content_type \
+                         -mime_type "text/plain" \
+                         -description $description \
+                         -additional_properties $attributes]
+
+    bcms::revision::set_revision_status \
+        -revision_id $revision_id \
+        -status "live"
+
+    
     
 } -after_submit {
     ad_returnredirect object-list

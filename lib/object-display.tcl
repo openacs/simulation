@@ -25,6 +25,8 @@ if { ![info exists revision_id] } {
     array set current_item [bcms::revision::get_revision -revision_id $revision_id]
 }
 
+item::get_revision_content $current_item(revision_id)
+
 # TODO: Render using template
 #set rendered [publish::merge_with_template $current_item(item_id)]
 
@@ -45,7 +47,7 @@ multirow create attributes attribute value
 set page_title $current_item(title)
 set context [list [list ../object-list "Objects"] $page_title]
 
-foreach name [array names current_item] {
-    multirow append attributes $name $current_item($name)
+foreach name [lsort [array names content]] {
+    multirow append attributes $name $content($name)
 }
 
