@@ -64,9 +64,7 @@ Objects to this Workflow</msg>
   <msg key="lt_Are_you_sure_you_want_1">Are you sure you want to delete this case?</msg>
   <msg key="lt_Attachments_in_receiv">Attachments in received message:</msg>
   <msg key="lt_Back_to_template_sim">Back to template %sim_template_array.pretty_name%</msg>
-  <msg key="lt_Back_to_template_sim_">Back to template %sim_template_array.pretty_name%</msg>
   <msg key="lt_Be_the_first_user_in">Be the first user in a new case</msg>
-  <msg key="lt_Be_the_first_user_in_">Be the first user in a new case</msg>
   <msg key="lt_Below_is_a_listing_of">Below is a listing of all roles in the simulation.</msg>
   <msg key="lt_blockquote_We_are_sor">&lt;blockquote&gt; We are sorry, but simulation
 \&quot;%simulation.pretty_name%\&quot; is not open to enrollment and you
@@ -98,13 +96,12 @@ this time. &lt;/blockquote&gt;</msg>
   <msg key="lt_Expects_a_sim_id__Sho">Expects a sim id.  Shows all cases for that sim.  This is an admin page.</msg>
   <msg key="lt_Export_full_case_hist">Export full case history</msg>
   <msg key="lt_Export_this_template">Export this template as a text file</msg>
-  <msg key="lt_Export_this_template_">Export this template as a text file</msg>
   <msg key="lt_Full_History_for_case">Full History for %case.label%</msg>
   <msg key="lt_Generate_Map_XML_file">Generate Map XML file and send notifications</msg>
   <msg key="lt_Generated_map_XML_fil">Generated map XML file and sent any notifications.</msg>
   <msg key="lt_If_you_are_using_the">If you are using the respond button to respond to multiple tasks
     then all checked tasks must share the same task name.</msg>
-  <msg key="lt_If_you_are_using_the_">If you are using the respond button to respond to multiple tasks
+  <msg key="lt_If_you_are_using_the">If you are using the respond button to respond to multiple tasks
     then all checked tasks must share the same task name.</msg>
   <msg key="lt_in_CityBuild_before_y">in CityBuild before you can finish setting up these tasks.</msg>
   <msg key="lt_Join_a_Case_in_Simula">Join a Case in Simulation \&quot;%workflow.pretty_name%\&quot;</msg>
@@ -119,15 +116,13 @@ and all related tasks?</msg>
   <msg key="lt_Not_allowed_to_cast_i">Not allowed to cast in role \&quot;%role.pretty_name%\&quot;</msg>
   <msg key="lt_Not_enrolled_in_simul">Not enrolled in simulation \&quot;%simulation.pretty_name%\&quot;</msg>
   <msg key="lt_Notify_me_of_changes">Notify me of changes to map XML</msg>
-  <msg key="lt_Notify_me_of_changes_">Notify me of changes to map XML</msg>
   <msg key="lt_Placeholder_for_flash">Placeholder for flash map</msg>
   <msg key="lt_Portfolio_for_role_ar">Portfolio for %role_array.pretty_name% in %case_array.label%</msg>
   <msg key="lt_Portfolio_for_role_ar_1">Portfolio for %role_array.pretty_name%</msg>
-  <msg key="lt_Restrict_to_previous_">Restrict to previous task matching word or phrase</msg>
+  <msg key="lt_Restrict_to_previous">Restrict to previous task matching word or phrase</msg>
   <msg key="lt_Return_to_template_li">Return to template list page</msg>
   <msg key="lt_Roles_with_actions_on">Roles with actions only</msg>
   <msg key="lt_Select_from_existing">Select from existing characters in the Yellow Pages, or</msg>
-  <msg key="lt_Select_from_existing_">Select from existing characters in the Yellow Pages, or</msg>
   <msg key="lt_Select_which_case_and_role_to_join">Select which case and role to join, or create a new case for
     yourself.  If you do not select a case and role to join, you will
     be automatically assigned to a case and role when the simulation
@@ -143,10 +138,8 @@ administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_Simulations_in_Castin">Simulations in Casting</msg>
   <msg key="lt_Simulations_in_Develo">Simulations in Development</msg>
   <msg key="lt_Some_of_the_tasks_of">Some of the tasks of this simulation require attachments. However, there are no CityBuild props to select from.</msg>
-  <msg key="lt_Some_of_the_tasks_of_">Some of the tasks of this simulation require attachments. However, there are no CityBuild props to select from.</msg>
   <msg key="lt_Start_a_simulation_wi">Start a simulation with this template</msg>
   <msg key="lt_Stop_notifying_me_of">Stop notifying me of changes to map XML</msg>
-  <msg key="lt_Stop_notifying_me_of_">Stop notifying me of changes to map XML</msg>
   <msg key="lt_Take_action_on_select">Take action on selected tasks</msg>
   <msg key="lt_Templates_must_be_mar">Templates must be marked ready for use by template authors in order to appear on this list.</msg>
   <msg key="lt_The_enrollment_period">The enrollment period for simulation
@@ -154,7 +147,6 @@ administrator if you believe this is an error. Thank you!</msg>
 and %simulation.enroll_end% and you cannot enroll at this time.
 Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_The_following_errors">The following errors were encountered:</msg>
-  <msg key="lt_The_following_errors_">The following errors were encountered:</msg>
   <msg key="lt_The_template_simulati">The template &quot;%simulation.pretty_name%&quot; is not ready for casting.</msg>
   <msg key="lt_There_are_no_cases_in">There are no cases in this simulation yet</msg>
   <msg key="lt_There_are_no_document">There are no documents.</msg>
@@ -172,11 +164,8 @@ Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_We_couldnt_find_any_r">We couldn't find any roles that you could join in case \&quot;%case.label%\&quot; of simulation \&quot;%simulation.pretty_name%\&quot;. You would need to join a new case. Select your administrator about this. Thank you!</msg>
   <msg key="lt_Yes_delete_the_object">Yes, delete the object</msg>
   <msg key="lt_You_administer_these">You administer these cases</msg>
-  <msg key="lt_You_administer_these_">You administer these cases</msg>
   <msg key="lt_You_are_already_cast">You are already cast in the following roles:</msg>
-  <msg key="lt_You_are_already_cast_">You are already cast in the following roles:</msg>
   <msg key="lt_You_are_doing_a_bulk">You are doing a bulk response to %common_actions_count% tasks.</msg>
-  <msg key="lt_You_are_doing_a_bulk_">You are doing a bulk response to %common_actions_count% tasks.</msg>
   <msg key="lt_You_are_not_administe">You are not administering any active simulation cases.</msg>
   <msg key="lt_You_are_not_cast_in_a">You are not cast in any roles yet</msg>
   <msg key="lt_You_are_not_in_any_ac">You are not in any active simulation cases.</msg>
@@ -187,7 +176,7 @@ Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_You_have_been_enrolle_1">You have been enrolled in simulation
 \&quot;%simulation.pretty_name%\&quot;</msg>
   <msg key="lt_You_have_deleted_temp">You have deleted template &quot;%template_name%&quot;.</msg>
-  <msg key="lt_You_must_supply_both_">You must supply both case_id and role_id</msg>
+  <msg key="lt_You_must_supply_both">You must supply both case_id and role_id</msg>
   <msg key="lt_You_will_be_automatic">You will be automatically cast in \&quot;%simulation.pretty_name%\&quot;</msg>
   <msg key="lt_Your_Current_Simulati">Your Current Simulations</msg>
   <msg key="lt_Your_Tasks_in_Simulat">Your Tasks in Simulation %simulation.pretty_name%</msg>
