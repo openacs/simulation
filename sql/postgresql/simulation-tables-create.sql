@@ -66,7 +66,7 @@ create table sim_role_party_map (
     primary key(role_id, party_id)
 );
 
-comment on table sim_role_group_map is 'Each record defines a group of users to be cast into a role in groups of group_size';
+comment on table sim_role_party_map is 'Each record defines a group of users to be cast into a role in groups of group_size';
 
 create table sim_tasks (
     task_id             integer         constraint sim_tasks_fk
