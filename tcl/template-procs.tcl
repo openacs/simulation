@@ -568,9 +568,7 @@ ad_proc -public simulation::template::autocast {
 
     @author Peter Marklund
 } {
-    # TODO: taking actor type into account -- LARS: What is this? Setting to 2h to be safe (I think)
-
-    # TODO: other casting_type values than auto -- LARS: Why would we then do autocast, if casting_type is not auto?
+    # TODO (8h): also handle auto-casting when casting_type is not auto, but not all users self-cast
 
     simulation::template::role_party_mappings \
         -workflow_id $workflow_id \
