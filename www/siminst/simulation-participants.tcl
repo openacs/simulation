@@ -13,7 +13,11 @@ set group_admin_url [export_vars -base "[subsite::get_element -element url]admin
 set permission_group_name [simulation::permission_group_name]
 
 set subsite_group_id [application_group::group_id_from_package_id \
-                          -package_id [ad_conn subsite_id]]
+                          -package_id [site_node::closest_ancestor_package \
+                                                     -node_id [ad_conn node_id] \
+                                                     -package_key "acs-subsite" \
+                                                     -include_self \
+                                                     -element "package_id"]]
 
 ad_form -name simulation -form {
     {workflow_id:integer(hidden) {value $workflow_id}}

@@ -508,6 +508,12 @@ ad_proc ::twt::simulation::add_object {
     form find ~n object
     field find ~n title
     field fill $title
+
+    catch {
+        field find ~n in_directory_p
+        field select2 ~v t
+    }
+
     form submit
 }
 

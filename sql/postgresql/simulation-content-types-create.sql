@@ -46,8 +46,8 @@ select content_type__create_attribute(
     'sim_location',                -- content_type
     'in_directory_p',              -- attribute_name
     'boolean',                     -- datatype
-    'Show in directory',           -- pretty_name
-    'Show in directory',           -- pretty_plural
+    'Show in yellow pages',        -- pretty_name
+    'Show in yellow pages',        -- pretty_plural
     2,                             -- sort_order
     'f',                           -- default_value
     'boolean'                      -- column_spec
@@ -153,8 +153,8 @@ select content_type__create_attribute(
     'sim_character',               -- content_type
     'in_directory_p',              -- attribute_name
     'boolean',                     -- datatype
-    'Show in directory',           -- pretty_name
-    'Show in directory',           -- pretty_plural
+    'Show in yellow pages',        -- pretty_name
+    'Show in yellow pages',        -- pretty_plural
     1,                             -- sort_order
     'f',                           -- default_value
     'boolean'                      -- column_spec

@@ -25,7 +25,14 @@ ad_form \
         }
     }
 
-set character_options [simulation::object::get_object_type_options -null_label "" -object_type sim_character]
+# Only show characters in the yellow pages
+set character_options [db_list_of_lists character_options {
+    select sc.title,
+           sc.item_id
+    from   sim_charactersx sc
+    where  sc.in_directory_p = 't'
+    order by sc.title
+}]
 
 # Loop over all workflow roles and add a character select widget for each
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {

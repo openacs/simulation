@@ -10,5 +10,3 @@
   <b>Template Description</b>: @description;noquote@
 </p>
 
-TODO (0.5h): show only characters on the map or in the yellow pages
-
