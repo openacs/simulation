@@ -27,7 +27,7 @@ ad_form -name document -export { case_id role_id workflow_id } -html {enctype mu
     -on_submit {
 
         simulation::ui::forms::document_upload::insert_document \
-            $case_id $role_id $item_id $document_file $title $description
+            $case_id $role_id $item_id $document_file $title
 
         ad_returnredirect [export_vars -base case { case_id role_id }]
     }
