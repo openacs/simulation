@@ -74,6 +74,8 @@ if { $size == "yellow-pages"} {
     set filter_sql ""
 }
 
+set add_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-edit" { parent_id }]
+
 template::list::create \
     -name objects \
     -multirow objects \
@@ -114,4 +116,4 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
     }
 }
 
-set add_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-edit" { parent_id }]
+
