@@ -9,8 +9,8 @@ ad_library {
 namespace eval simulation::template {}
 
 ad_proc -public simulation::template::new {
-    {-short_name:required}
     {-pretty_name:required}
+    {-short_name {}}
     {-sim_type "dev_template"}
     {-suggested_duration ""}
     {-package_key:required}
@@ -23,8 +23,6 @@ ad_proc -public simulation::template::new {
     @author Peter Marklund
 } {
     db_transaction {
-        set short_name [util_text_to_url -replacement "_" $short_name]
-
         set workflow_id [workflow::new \
                              -short_name $short_name \
                              -pretty_name $pretty_name \
@@ -40,10 +38,42 @@ ad_proc -public simulation::template::new {
     return $workflow_id
 }
 
+ad_proc -public simulation::template::new_from_spec {
+    {-package_key {}}
+    {-object_id {}}
+    {-spec:required}
+    {-array {}}
+} {
+    Create a new simulation template for a spec.
+
+    @return The workflow_id of the created simulation.
+
+    @author Lars Pind
+} {
+    if { ![empty_string_p $array] } {
+        upvar 1 $array row
+        set array row
+    } 
+
+    db_transaction {
+
+        set workflow_id [workflow::fsm::new_from_spec \
+                             -package_key $package_key \
+                             -object_id $object_id \
+                             -spec $spec \
+                             -array $array]
+        
+        insert_sim \
+            -workflow_id $workflow_id
+    }
+
+    return $workflow_id
+}
+
 ad_proc -private simulation::template::insert_sim {
     {-workflow_id:required}
-    {-sim_type:required}
-    {-suggested_duration:required}
+    {-sim_type "dev_template"}
+    {-suggested_duration {}}
 } {
     Internal proc for inserting values into the sim_simulations
     table that are set prior to a template being mapped.
@@ -61,7 +91,7 @@ ad_proc -private simulation::template::insert_sim {
         db_dml new_sim "
         insert into sim_simulations
         (simulation_id, sim_type, suggested_duration)
-        values ('$workflow_id', '$sim_type', interval '$suggested_duration')"            
+        values (:workflow_id, :sim_type, interval '[db_quote $suggested_duration]')"            
     }
 }
 

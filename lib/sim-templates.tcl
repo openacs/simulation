@@ -16,87 +16,87 @@ simulation::include_contract {
 }
 
 set package_id [ad_conn package_id]
-set add_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" ]
+set add_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit"]
 set create_p [permission::permission_p -object_id $package_id -privilege sim_template_create]
+
+set actions [list "Add a template" $add_url {} \
+                 "Load a template" "[apm_package_url_from_id $package_id]simbuild/template-load" {}]
 
 # TODO: make this include honor the display_mode parameter
 
 switch $size {
     short {
-	template::list::create \
-	    -name sim_templates \
-	    -multirow sim_templates \
-	    -actions " {Add a template} $add_url " \
-	    -elements {
-		name {
-		    label "Template"
-		    link_url_col edit_url
-		    orderby upper(ot.pretty_name)
-		}
-		role_count {
-		    label "Roles"
-		}
-		task_count {
-		    label "Tasks"
-		}
-	    }
+        set elements {
+            name {
+                label "Template"
+                link_url_col edit_url
+                orderby upper(ot.pretty_name)
+            }
+            role_count {
+                label "Roles"
+            }
+            task_count {
+                label "Tasks"
+            }
+        }
     }
     default { 
-	template::list::create \
-	    -name sim_templates \
-	    -multirow sim_templates \
-	    -actions " {Add a template} $add_url " \
-	    -elements {
-		edit {
-		    sub_class narrow
-		      display_template {
-                          <if @sim_templates.edit_p@>
-			  <a href="@sim_templates.edit_url@" title="Edit this template">
-                          <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
-                          </a>
-                          </if>
-		      }
-		}
-		name {
-		    label "Name"
-		    orderby upper(ot.pretty_name)
-		    link_url_col view_url
-		}
-		description {
-		    label "Description"
-		    orderby r.description
-		}
-		created_by {
-		    label "Created by"
-		    orderby r.createdby
-		}
-		role_count {
-		    label "Roles"
-		}
-		task_count {
-		    label "Tasks"
-		}
-		delete {
-		    sub_class narrow
-		      display_template {
-                          <if @sim_templates.edit_p@>
-			  <a href="@sim_templates.delete_url@" title="Edit this template"
-                           onclick="return confirm('Are you sure you want to delete template @sim_templates.name@?');">
-                          <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
-                          </a>
-                          </if>
-		      }
-		}
-		clone {
-		    display_template {
-                        <a href="@sim_templates.clone_url@">Clone this template</a>
-                    }
-
+        set elements {
+            edit {
+                sub_class narrow
+                display_template {
+                    <if @sim_templates.edit_p@>
+                    <a href="@sim_templates.edit_url@" title="Edit this template">
+                    <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
+                    </a>
+                    </if>
                 }
-
-	    }
+            }
+            name {
+                label "Name"
+                orderby upper(ot.pretty_name)
+                link_url_col view_url
+            }
+            description {
+                label "Description"
+                orderby r.description
+            }
+            created_by {
+                label "Created by"
+                orderby r.createdby
+            }
+            role_count {
+                label "Roles"
+            }
+            task_count {
+                label "Tasks"
+            }
+            delete {
+                sub_class narrow
+                display_template {
+                    <if @sim_templates.edit_p@>
+                    <a href="@sim_templates.delete_url@" title="Edit this template"
+                    onclick="return confirm('Are you sure you want to delete template @sim_templates.name@?');">
+                    <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
+                    </a>
+                    </if>
+                }
+            }
+            clone {
+                display_template {
+                    <a href="@sim_templates.clone_url@">Clone this template</a>
+                }
+                
+            }
+        }
     }
 }
+
+template::list::create \
+    -name sim_templates \
+    -multirow sim_templates \
+    -actions $actions \
+    -elements $elements
 
 
 ######################################################################

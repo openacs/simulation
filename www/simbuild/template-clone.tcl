@@ -1,5 +1,5 @@
 ad_page_contract {
-    Create a new simulation
+    Clone new simulation
 } {
     workflow_id:integer
 }
