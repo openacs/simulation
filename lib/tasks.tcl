@@ -13,6 +13,10 @@ simulation::include_contract {
     }
 }
 
+if { [empty_string_p $case_id] } {
+    unset case_id
+}
+
 set package_id [ad_conn package_id]
 
 set elements {

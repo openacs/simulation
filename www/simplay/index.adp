@@ -8,9 +8,10 @@ Show list of cases and make user pick one before proceeding.  However, if there 
 <p></p>
 
 <if @adminplayer_p@>
-  <h3>Administrators</h3>
+  <h3>All Messages</h3>
   <include src="/packages/simulation/lib/messages" user_id="@user_id@"></include>
-  <p>
+  <p></p>
+  <h3>All Tasks</h3>
   <include src="/packages/simulation/lib/tasks" user_id="@user_id@"></include>
 </if>
 

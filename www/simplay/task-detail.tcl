@@ -8,9 +8,10 @@ ad_page_contract {
 
 workflow::case::enabled_action_get -enabled_action_id $enabled_action_id -array enabled_action
 
-simulation::action::get -action_id $enabled_action(action_id) -array action
-
 set case_id $enabled_action(case_id)
+set action_id $enabled_action(action_id)
+
+simulation::action::get -action_id $action_id -array action
 
 set title "Task"
 set context [list [list . "SimPlay"] [list [export_vars -base case { case_id }] "Case"] [list [export_vars -base tasks { case_id }] "Tasks"] $title]
@@ -47,7 +48,24 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
 } -on_request {
     set pretty_name $action(pretty_name)
     set description [template::util::richtext::create $action(description) $action(description_mime_type)]
-    set document "TODO"
+
+    set documents {}
+    db_foreach documents {
+        select cr.title as object_title,
+               ci.name as object_name
+        from   sim_task_object_map m,
+               cr_items ci,
+               cr_revisions cr
+        where  m.task_id = :action_id
+        and    m.relation_tag = 'attachment'
+        and    ci.item_id = m.object_id
+        and    cr.revision_id = ci.live_revision
+        order by m.order_n
+    } {
+        set object_url [simulation::object::url \
+                            -name $object_name]
+        append documents "<a href=\"$object_url\">$object_title</a><br>"
+    }
 
     set recipient_name [simulation::role::get_element -role_id $action(recipient) -element pretty_name]
     set sender_name [simulation::role::get_element -role_id $action(assigned_role_id) -element pretty_name]
