@@ -99,8 +99,6 @@ if { [llength $from_role_options] > 1 } {
     set focus "message.recipient_role_id"
 }
 
-ds_comment [llength $attachment_options]
-
 ad_form -extend -name message -form {
     {item_id:key}
     {recipient_role_id:integer(checkbox),multiple
