@@ -1,5 +1,6 @@
 <formtemplate id="characters"></formtemplate>
-
-<p>TODO: "perhaps it would help if there was a description describing
-the roles of giver and receiver ... either better rolenames ... or what the roles do in the simulation template"</p>
+<p>Select from existing characters or <a
+href="../citybuild/object-edit">add a new character</a> and refresh
+this page.  (TODO: make the link pre-set the form to character)
+<p><b>Template Description</b>: @description@
 

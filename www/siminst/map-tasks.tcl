@@ -62,7 +62,9 @@ db_foreach tasks {
             ad_form -extend -name tasks -form \
                 [list [list attachment_$row(action_id)_$i:integer(select),optional \
                            {label "Attachment $i"} \
-                           {options $prop_options}]]
+                           {options $prop_options} \
+                           {help_text "Select from existing attachments or <a
+href=\"../citybuild/object-edit\">add a new prop</a> and refresh this page.  TODO: make this tidier - instead of this text, should be a single button which saves this form, goes to object page, and returns here."}]]
         }    
 
         lappend actions $row(action_id)

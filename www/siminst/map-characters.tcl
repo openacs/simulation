@@ -8,10 +8,15 @@ ad_page_contract {
     workflow_id:integer
 }
 
-# TODO: Permission check?
-# TODO: add new character
-set page_title "Assign Roles to Characters"
+# TODO: Permission check
+# TODO: ability to add new character inline while mapping
+
+set page_title "Assign Characters to Roles"
 set context [list [list "." "SimInst"] $page_title]
+
+
+simulation::template::get -workflow_id $workflow_id -array sim_array
+set description $sim_array(description)
 
 ad_form \
     -name characters \
@@ -32,7 +37,8 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
         [list [list role_${role_id}:text(select) \
                    [list label \$role_pretty_name_$role_id] \
                    [list options $character_options]
-              ]]
+
+         ]]
 }
 
 

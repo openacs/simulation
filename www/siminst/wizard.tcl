@@ -21,8 +21,10 @@ wizard create siminst -steps {
 
 wizard set_finish_url [export_vars -base "simulation-casting" { workflow_id }]
 
+# TODO: B: Refactor wizard so that it uses titles from child pages if this next section are blank
+
 array set title {
-    1 "Assign Roles to Characters"
+    1 "Assign Characters to Roles"
     2 "Populate Tasks"
     3 "Simulation Settings"
     4 "Define Enrollment"

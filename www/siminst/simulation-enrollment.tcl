@@ -17,6 +17,7 @@ ad_form -export { workflow_id } -name simulation -form {
         {label "Enrollment type"}
         {options {{"By invitation only" closed} {Open open}}}
             {html {onChange "javascript:acs_FormRefresh('simulation');"}}
+        {help_text "With <b>Open</b> enrollment, any user can join during the enrollment period.  You can still directly enroll users and send invitations.  <br><b>By Invitation Only</b> prevents users from joining unless invited; you can still directly enroll users. "}
     }
     {enroll_start:date,to_sql(ansi),from_sql(ansi),optional
         {label "Enrollment start date"}

@@ -42,3 +42,11 @@
 
   <div style="clear: both;"></div>
 </div>
+<p>TODO: put a warning next to the finish button for any incomplete
+requirements, using the same tests we use to determine if tabs are
+complete.  Should include:
+<ul>
+<li>missing attachments (link to tab 2)
+<li>missing dates (link to tab 3)
+<li>groups that aren't cast to any roles (link to tab 6)
+</ul>

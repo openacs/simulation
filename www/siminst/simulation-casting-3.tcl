@@ -27,22 +27,22 @@ foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     set role_${role_id}_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
 
     if { $num_groups > 0 } {
-        lappend form [list parties_${role_id}:text(checkbox),multiple,optional \
-                          [list label \$role_${role_id}_pretty_name] \
-                          {options $eligible_groups} \
-                          {section "Roles"} \
-                         ]
+        lappend form [list \
+                          users_per_case_${role_id}:integer \
+                          [list label "Number of users for <b>\$role_${role_id}_pretty_name</b>"] \
+                          {value 1} \
+                          {html {size 2}} \
+                          [list section "\$role_${role_id}_pretty_name"]
+                     ]
     }
 
-    lappend form [list \
-                      users_per_case_${role_id}:integer \
-                      {label "Number of users per role"} \
-                      {value 1} \
-                      {html {size 2}} \
-                      {section "Roles"}
-                      ]
-
+    lappend form [list parties_${role_id}:text(checkbox),multiple,optional \
+                      [list label "Cast <b>\$role_${role_id}_pretty_name</b> from these groups"] \
+                      {options $eligible_groups} \
+                      [list section "\$role_${role_id}_pretty_name"]
+                     ]
 }
+
 
 ad_form \
     -name actors \
