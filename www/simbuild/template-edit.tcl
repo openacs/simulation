@@ -17,8 +17,6 @@ set package_id [ad_conn package_id]
 # a form showing fields for a sim template
 # includes add, edit, and display modes and handles form submission
 #
-# TODO: display mode doesn't exist yet - all display is through edit mode
-#
 ######################################################################
 
 #---------------------------------------------------------------------
@@ -27,7 +25,7 @@ set package_id [ad_conn package_id]
 
 if { [ad_form_new_p -key workflow_id] } {
     set mode edit
-    set cancel_url .
+    set cancel_url "."
 } else {
     set mode display
     set cancel_url [export_vars -base [ad_conn url] { workflow_id }]
