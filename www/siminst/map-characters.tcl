@@ -26,7 +26,6 @@ ad_form \
         }
     }
 
-# TODO: remove duplicates from this query
 set character_options [simulation::object::get_object_type_options -null_label "" -object_type sim_character]
 
 # Loop over all workflow roles and add a character select widget for each

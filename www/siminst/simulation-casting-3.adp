@@ -44,8 +44,9 @@
 
 </else>
 
-
-<P>TODO: Finish button should say "Done (Begin Casting)"
+<p>TODO: if enroll-type is open, show all groups from the subsite in
+each role
 <P>TODO: Number of users should by greater than 0.
+<p>TODO: auto-check all boxes by default
 
 

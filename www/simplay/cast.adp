@@ -2,6 +2,10 @@
   <property name="title">@title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
+<p>Select a case (if casting type=group, then say, "and role") to join, or create a new case for yourself.  If you do not select a case to join, you will be automatically
+      assigned a case (... and role)
+      when the simulation begins.
+
   <table class="list" cellpadding="3" cellspacing="1">
       <tr class="list-header">
           <th class="list">
@@ -85,7 +89,6 @@
 </table>
 <bR><input type="submit" value="Be the first user in
       a new case">
-
 <p>
 If no rows, display this text: "There are no cases yet."
 <p>

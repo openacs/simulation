@@ -39,13 +39,13 @@ ad_form -export { workflow_id } -name simulation -form {
 
     # Default values
     set one_month [expr 3600*24*31]
+    set one_week [expr 3600*24*7]
 
-    # TODO: provide more sensible default dates?
     if { [empty_string_p $enroll_start] } {
-        set enroll_start [clock format [expr [clock seconds] + 1*$one_month] -format "%Y-%m-%d"]
+        set enroll_start [clock format [expr [clock seconds]] -format "%Y-%m-%d"]
     }
     if { [empty_string_p $enroll_end] } {
-        set enroll_end [clock format [expr [clock seconds] + 2*$one_month] -format "%Y-%m-%d"]
+        set enroll_end [clock format [expr [clock seconds] + 2*$one_week] -format "%Y-%m-%d"]
     }
     if { [empty_string_p $enroll_type] } {
         set enroll_type "closed"

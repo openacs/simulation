@@ -4,8 +4,6 @@ ad_page_contract {
     workflow_id:integer
 }
 
-# TODO: implement the enrollment type and optional enrollment date fields from simulation-enrollment.tcl
-
 simulation::template::get -workflow_id $workflow_id -array sim_template
 
 set group_admin_url [export_vars -base "[subsite::get_element -element url]admin/group-types/one" { { group_type group } }]
