@@ -41,6 +41,22 @@ template::list::create \
                 <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
             }
         }
+        down {
+            sub_class narrow
+            display_template {
+                <if @roles.down_url@ not nil>
+                  <a href="@roles.down_url@" class="button" style="padding-top: 6px; padding-bottom: -2px; padding-left: 1px; padding-right: 1px;"><img src="/resources/acs-subsite/arrow-down.gif" border="0"></a>
+                </if>
+            }
+        }
+        up {
+            sub_class narrow
+            display_template {
+                <if @roles.up_url@ not nil>
+                <a href="@roles.up_url@" class="button" style="padding-top: 6px; padding-bottom: -2px; padding-left: 1px; padding-right: 1px;"><img src="/resources/acs-subsite/arrow-up.gif" border="0"></a>
+                </if>
+            }
+        }
         name { 
             label "Name"
             display_col pretty_name
@@ -58,8 +74,8 @@ template::list::create \
 #-------------------------------------------------------------
 # roles db_multirow
 #-------------------------------------------------------------
-set return_url "[ad_conn url]?[ad_conn query]"
-db_multirow -extend { edit_url char_url delete_url } roles select_roles "
+set counter 0
+db_multirow -extend { edit_url char_url delete_url up_url down_url } roles select_roles "
     select wr.role_id,
            wr.pretty_name,
            wr.sort_order
@@ -67,6 +83,14 @@ db_multirow -extend { edit_url char_url delete_url } roles select_roles "
      where wr.workflow_id = :workflow_id
      order by wr.sort_order
 " {
+    incr counter
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { role_id }]
-    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-delete" { role_id return_url }]
+    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-delete" { role_id { return_url [ad_return_url] } }]
+    if { $counter > 1 } {
+        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type role } role_id { direction up } { return_url [ad_return_url] } }]
+    }
+    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type role } role_id { direction down } { return_url [ad_return_url] } }]
 }
+
+# Get rid of the last down_url
+set roles:${counter}(down_url) {}

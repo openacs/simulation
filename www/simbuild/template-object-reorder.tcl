@@ -19,13 +19,18 @@ switch $type {
         set workflow_id [workflow::state::fsm::get_element -state_id $state_id -element workflow_id]
         set all_ids [workflow::state::fsm::get_ids -workflow_id $workflow_id]
     }
+    role {
+        set object_id $role_id
+        set workflow_id [workflow::role::get_element -role_id $role_id -element workflow_id]
+        set all_ids [workflow::role::get_ids -workflow_id $workflow_id]
+    }
     action {
         set object_id $action_id
         set workflow_id [workflow::action::get_element -action_id $action_id -element workflow_id]
         set all_ids [workflow::action::get_ids -workflow_id $workflow_id]
     }
     default {
-        error "Invalid type, $type, only implemented for 'state' and 'action'."
+        error "Invalid type, $type, only implemented for 'state', 'role', and 'action'."
     }
 }
         
@@ -38,12 +43,18 @@ switch $direction {
     down {
         set new_index [expr $cur_index + 1]
     }
+    default {
+        error "Invalid direction. Valid directions are 'up', 'down'"
+    }
 }
 
 if { $new_index >= 0 && $new_index < [llength $all_ids] } {
     switch $type {
         state {
             set new_sort_order [workflow::state::fsm::get_element -state_id [lindex $all_ids $new_index] -element sort_order]
+        }
+        role {
+            set new_sort_order [workflow::role::get_element -role_id [lindex $all_ids $new_index] -element sort_order]
         }
         action {
             set new_sort_order [workflow::action::get_element -action_id [lindex $all_ids $new_index] -element sort_order]
@@ -60,6 +71,12 @@ if { $new_index >= 0 && $new_index < [llength $all_ids] } {
         state {
             workflow::state::fsm::edit \
                 -state_id $state_id \
+                -workflow_id $workflow_id \
+                -array row
+        }
+        role {
+            workflow::role::edit \
+                -role_id $role_id \
                 -workflow_id $workflow_id \
                 -array row
         }
