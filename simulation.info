@@ -8,15 +8,20 @@
     <singleton-p>f</singleton-p>
     <auto-mount>simulation</auto-mount>
 
-    <version name="0.4d" url="http://openacs.org/repository/download/apm/simulation-0.4d.apm">
-        <owner url="mailto:joel@collaboraid.net">Joel Aufrecht</owner>
-        <summary>Workflow-based task simulator.</summary>
-        <release-date>2003-10-13</release-date>
+    <version name="1.0.0b1" url="http://openacs.org/repository/download/apm/simulation-1.0.0b1.apm">
+        <owner url="mailto:team@collaboraid.biz">Collaboraid ApS</owner>
+        <summary>Workflow-based task simulator.  Build scenario
+        templates in which various roles must complete tasks such as
+        sending messages and uploading documents.  Then enroll groups
+        of students into cases, cast the students into roles, and
+        monitor progress.  Developed as a legal education tool for
+        www.rechtenonline.nl.</summary>
+        <release-date>2004-01-30</release-date>
 
-        <provides url="simulation" version="0.4d"/>
+        <provides url="simulation" version="1.0.0b1"/>
         <requires url="bcms" version="0.2"/>
         <requires url="file-storage" version="4.7d3"/>
-        <requires url="workflow" version="1.1d1"/>
+        <requires url="workflow" version="2.0.0b1"/>
         <requires url="acs-mail-lite" version="0.2a"/>
 
         <callbacks>
