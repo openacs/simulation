@@ -14,7 +14,7 @@ ad_form -name load -edit_buttons [list [list "Load" ok]] -form {
         {label "Name"}
         {html {size 50}}
     }
-    {spec:text(textarea)
+    {spec:text(textarea),nospell
         {label "Spec"}
         {help_text {Copy and paste the specification here}}
         {html {cols 80 rows 10}}
