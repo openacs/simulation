@@ -2,15 +2,17 @@
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
   <property name="focus">@focus;noquote@</property>
+  <property name="header_stuff">
+    <script language="javascript">
+        function FormRefresh(form_name) {
+            if (document.forms == null) return;
+            if (document.forms[form_name] == null) return;
+            if (document.forms[form_name].elements["__refreshing_p"] == null) return;
+
+            document.forms[form_name].elements["__refreshing_p"].value = 1;
+            document.forms[form_name].submit();
+        }
+    </script>
+  </property>
   
 <formtemplate id="message"></formtemplate>
-
-
-<p>Form:
-<ul>
-<li><b>Attachments</b>: A checkbox list of all props associated with
-the role. (how do we know which?  We may need a "workflow_case_role to
-sim_object" mapping table)?
-</ul>
-
-TODO: On-refresh on "From" field; changes the "To" field to exclude the "From" role (you can't send to yourself), and changes the list of possible attachments (see above note)

@@ -128,7 +128,7 @@ if { [catch {
     ::twt::log_section "Create simulation template"
     do_request /simulation/simbuild/template-edit
     set template_name "Elementary Private Law"
-    field fill $template_name ~n name
+    field fill $template_name ~n pretty_name
     field find ~n template_ready_p
     field fill t
     form submit

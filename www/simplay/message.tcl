@@ -4,7 +4,7 @@ ad_page_contract {
     item_id:optional
     case_id:optional
     sender_role_id:optional
-    recipient_role_id:optional
+    recipient_role_id:optional,multiple
     subject:optional
     body_text:optional
     body_mime_type:optional
@@ -20,6 +20,10 @@ set from_role_options [list]
 foreach role_id [workflow::case::get_user_roles -case_id $case_id] {
     lappend from_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
 }
+# First sender role selected by default
+if { ![exists_and_not_null sender_role_id] } {
+    set sender_role_id [lindex [lindex $from_role_options 0] 1]
+}
 
 set all_role_options [list]
 foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
@@ -28,8 +32,24 @@ foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
 
 set to_role_options [list]
 foreach role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-    lappend to_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+    # A role cannot send message to himself
+    if { ![exists_and_equal sender_role_id $role_id] } {
+        lappend to_role_options [list [workflow::role::get_element -role_id $role_id -element pretty_name] $role_id]
+    }
 }
+
+set attachment_options [db_list_of_lists attachment_for_role {
+    select cr.title as document_title,
+           scrom.object_id as document_id
+    from sim_case_role_object_map scrom,
+         cr_items ci,
+         cr_revisions cr
+    where scrom.case_id = :case_id
+      and scrom.role_id = :sender_role_id
+      and scrom.object_id = ci.item_id
+      and ci.live_revision = cr.revision_id
+    order by scrom.order_n
+}]
 
 set action [form::get_action message]
 
@@ -65,9 +85,9 @@ ad_form \
     -export { case_id } \
     -mode [ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"] \
     -form {
-        {item_id:key}
         {sender_role_id:text(select)
             {label "From"}
+            {html {onChange "javascript:FormRefresh('message');"}}
             {options $all_role_options}
         }
     }
@@ -93,9 +113,9 @@ ad_form -extend -name message -form {
         {label "Body"}
         {html {cols 60 rows 20}}
     }
-    {attachments:text(inform)
+    {attachments:integer(checkbox),multiple,optional
         {label "Attachments"}
-        {value "TODO"}
+        {options $attachment_options}
     }
 } -new_request {
     if { [info exists body_text] } {
@@ -136,17 +156,16 @@ ad_form -extend -name message -form {
         
         foreach to_role_id $recipient_role_id {
             simulation::message::new \
-                -item_id $item_id \
                 -from_role_id $sender_role_id \
                 -to_role_id $to_role_id \
                 -case_id $case_id \
                 -subject $subject \
                 -body $body_text \
-                -body_mime_type $body_mime_type
+                -body_mime_type $body_mime_type \
+                -attachments $attachments
         }
     }
 
     ad_returnredirect [export_vars -base case { case_id }]
     ad_script_abort
 }
-

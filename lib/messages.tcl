@@ -15,7 +15,11 @@ simulation::include_contract {
 
 set package_id [ad_conn package_id]
 
-set user_roles [workflow::case::get_user_roles -case_id $case_id]
+if { [exists_and_not_null case_id] } {
+    set user_roles [workflow::case::get_user_roles -case_id $case_id]
+} else {
+    set user_roles [list]
+}
 
 set elements {
     from {

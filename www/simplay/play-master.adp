@@ -1,6 +1,7 @@
 <master src="../simulation-master">
   <property name="title">@title;noquote@</property>
   <property name="context">@context;noquote@</property>
+  <property name="header_stuff">@header_stuff;noquote@</property>
   <if @focus@ not nil><property name="focus">@focus;noquote@</property></if>
 
 <table border="0" width="100%">

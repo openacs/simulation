@@ -17,6 +17,7 @@ ad_proc -public simulation::message::new {
     {-parent_id {}}
     {-content_type "sim_message"}
     {-item_name ""}
+    {-attachments ""}
 } {
     Create new simulation message.
     
@@ -58,6 +59,15 @@ ad_proc -public simulation::message::new {
         bcms::revision::set_revision_status \
             -revision_id $revision_id \
             -status "live"
+
+        
+        foreach attachment_id $attachments {
+            bcms::item::relate_item \
+                -relation_tag "attachment" \
+                -item_id $item_id \
+                -related_object_id $attachment_id
+        }
+
     }
     
     return $item_id
