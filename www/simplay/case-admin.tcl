@@ -44,13 +44,6 @@ if { $assigned_only_p } {
     set assigned_filter "<a href=\"[export_vars -base case-admin { case_id {assigned_only_p 1} }]\">Show only roles with assigned actions</a>"
 }
 
-#     -filters {
-#         role_id {
-#             label "Role"
-#         }
-#     } -groupby {
-#         {"Role" {{groupby role_id}}}
-#     } 
 template::list::create \
     -name roles \
     -multirow roles \

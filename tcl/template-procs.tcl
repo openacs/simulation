@@ -1107,3 +1107,45 @@ ad_proc -public simulation::template::pretty_name_unique_p {
     }]
     return [expr !$exists_p]
 }
+
+ad_proc -public simulation::template::user_enrolled_p {
+    {-workflow_id:required}
+    {-user_id ""}
+} {
+    Return 1 if the user is enrolled in the given simulation and 0 otherwise.
+
+    @author Peter Marklund
+} {
+    if { [empty_string_p $user_id] } {
+        set user_id [ad_conn user_id]
+    }
+
+    return [db_string user_enrolled_p {
+        select count(*)
+        from sim_party_sim_map
+        where simulation_id = :workflow_id
+          and party_id = :user_id
+          and type = 'enrolled'
+    }]
+}
+
+ad_proc -public simulation::template::user_invited_p {
+    {-workflow_id:required}
+    {-user_id ""}
+} {
+    Return 1 if the user is invited in the given simulation and 0 otherwise.
+
+    @author Peter Marklund
+} {
+    if { [empty_string_p $user_id] } {
+        set user_id [ad_conn user_id]
+    }
+
+    return [db_string user_invited_p {
+        select count(*)
+        from sim_party_sim_map
+        where simulation_id = :workflow_id
+          and party_id = :user_id
+          and type = 'invited'
+    }]
+}

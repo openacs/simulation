@@ -1,10 +1,19 @@
 <master>
-  <property name="title">@title;noquote@</property>
+  <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
 
-<p>Select a case (if casting type=group, then say, "and role") to join, or create a new case for yourself.  If you do not select a case to join, you will be automatically
-      assigned a case (... and role)
-      when the simulation begins.
+<p>
+  Select which case <if @simulation.casting_type@ eq "open">and role</if> to join, or create a new case for yourself.  
+  If you do not select a case <if @simulation.casting_type@ eq "open">and role</if> to join, you will be automatically
+  assigned to a case <if @simulation.casting_type@ eq "open">and role</if> when the simulation begins.
+</p>
+
+
+<listtemplate name="roles"></listtemplate></p>
+
+<p>
+Mockup below:
+</p>
 
   <table class="list" cellpadding="3" cellspacing="1">
       <tr class="list-header">

@@ -17,13 +17,7 @@ if { [string equal $simulation(enroll_type) "open"] } {
     # Open simulation - anybody can enroll so the user is authorized
 } else {
     # Closed enrollment. The user needs to be invited to enroll
-    set user_invited_p [db_string user_invited_p {
-        select count(*)
-        from sim_party_sim_map
-        where simulation_id = :workflow_id
-          and party_id = :user_id
-          and type = 'invited'
-    }]
+    set user_invited_p [simulation::template::user_invited_p -workflow_id $workflow_id]
 
     if { !$user_invited_p } {
         acs_user::get -user_id $user_id -array user
