@@ -27,6 +27,10 @@ if { $siminst_p } {
     lappend subnavbar_list [list "${base_url}siminst" "SimInst"]
 }
 
+if { ![info exists header_stuff] } {
+    set header_stuff {}
+}
+
 lappend subnavbar_list [list "${base_url}simplay" "SimPlay"]
 
 if { $admin_p } {
