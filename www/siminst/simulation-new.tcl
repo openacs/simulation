@@ -10,15 +10,6 @@ set package_id [ad_conn package_id]
 # Templates ready for mapping
 #---------------------------------------------------------------------
 
-# TODO: new columns:
-# number_of_roles
-# number_of_roles_not_cast
-# number_of_tasks
-# number_of_tasks_undescribed
-# number_of_prop_slots
-# number_of_prop_unfilled
-# TODO:
-# only show casting link if all the mapping parts are complete
 template::list::create \
     -name ready_templates \
     -multirow ready_templates \
@@ -37,6 +28,10 @@ template::list::create \
             orderby number_of_roles
             html { align center }
         }
+        number_of_tasks {
+            label "Tasks"
+            html { align center }
+        }
         map {
             label ""
             link_url_col map_url
@@ -46,14 +41,19 @@ template::list::create \
         }    
     }
 
-# TODO: min_number_of_human_roles should take agents into account
 db_multirow -extend {map_url} ready_templates select_ready_templates {
 select workflow_id,
        suggested_duration,
        pretty_name,
        (select count(*)
         from workflow_roles
-        where workflow_id = w.workflow_id) as number_of_roles
+        where workflow_id = w.workflow_id) as number_of_roles,
+       (select count(*)
+        from workflow_actions wa
+        where wa.workflow_id = w.workflow_id
+        and not exists (select 1
+                        from workflow_initial_action
+                        where action_id = wa.action_id)) as number_of_tasks
   from sim_simulations ss,
        workflows w
  where ss.simulation_id = w.workflow_id

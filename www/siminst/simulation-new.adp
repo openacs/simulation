@@ -6,6 +6,6 @@
   <listtemplate name="ready_templates"></listtemplate>
 </p>
 
-<p>TODO: show a count of non-ready templates and maybe a link for
-template authors, so that there is a visible clue to the ready/not
-ready dichotomy.
+<p>
+  Templates must be marked ready for use by template authors in order to appear on this list.
+</p>

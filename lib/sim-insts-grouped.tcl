@@ -41,7 +41,7 @@ if { $admin_p } {
     set sim_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { cast_url } sims select_sims "
+db_multirow sims select_sims "
     select ss.sim_type as status,
            count(w.workflow_id) as count
       from workflows w,
@@ -53,6 +53,4 @@ db_multirow -extend { cast_url } sims select_sims "
        and (ss.sim_type = 'dev_sim' or ss.sim_type = 'casting_sim')
      $sim_filter_sql
      group by ss.sim_type
-" {
-    set cast_url [export_vars -base "cast-edit" { workflow_id }]
-}
+" 
