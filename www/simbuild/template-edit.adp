@@ -5,8 +5,6 @@
 
 <formtemplate id="sim_template"></formtemplate>
 
-<p>TODO: Missing from form: description, description-mime-type.  
-
 <if @workflow_id@ not nil>
 
   <p>

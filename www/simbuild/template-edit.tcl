@@ -39,44 +39,70 @@ ad_form -name sim_template -mode $mode -cancel_url $cancel_url -form {
         {label "Template Name"}
         {html {size 40}}
     }
-    {ready_p:boolean(checkbox),optional
-        {label "Ready for use?"}
-        {options {{"Ready for use" t}}}
+    {template_ready_p:boolean(checkbox),optional
+        {label "Ready for use?<br> TODO: hide this in new mode"}
+        {options {{"Yes" t}}}
     }
     {suggested_duration:text,optional
         {label "Suggested Duration"}
     }
+    {description:text(textarea),optional
+        {label "TODO: Description and<br> Description-mime-type"}
+        {html {cols 60 rows 8}}
+    }
 } -edit_request {
+
     permission::require_write_permission -object_id $workflow_id
     simulation::template::get -workflow_id $workflow_id -array sim_template_array
     set name $sim_template_array(pretty_name)
-    set ready_p $sim_template_array(ready_p)
+
+    # translate sim_type to ready/not-ready
+    # TODO: we should only see ready_template and dev_template here, so maybe assert that?
+    if {$sim_template_array(sim_type) == "ready_template"} {
+        set template_ready_p "t"
+    } else {
+        set template_ready_p "f"
+    }
+
     set suggested_duration $sim_template_array(suggested_duration)
+
 } -new_request {
+
     permission::require_permission -object_id $package_id -privilege sim_template_create
+
 } -new_data {
+
     permission::require_permission -object_id $package_id -privilege sim_template_create
     set workflow_id [simulation::template::new \
                          -short_name $name \
                          -pretty_name $name \
-                         -ready_p $ready_p \
                          -suggested_duration $suggested_duration \
                          -package_key $package_key \
                          -object_id $package_id]
+    
 } -edit_data {
+
+    if {$template_ready_p == "t"} {
+        set sim_type "ready_template"
+    } else {
+        set sim_type "dev_template"
+    }
+
     permission::require_write_permission -object_id $workflow_id
     simulation::template::edit \
         -workflow_id $workflow_id \
         -short_name $name \
         -pretty_name $name \
-        -ready_p $ready_p \
+        -sim_type $sim_type \
         -suggested_duration $suggested_duration \
         -package_key $package_key \
         -object_id $package_id
 
 } -after_submit {
+
     ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
+
 }
 
 #---------------------------------------------------------------------
