@@ -21,7 +21,7 @@ You can join the following simulations:
 </ul>
 <hr>
 <ul>
-<li><a href="template">View and edit simulation templates</a>
+<li><a href="sim-template-list">View and edit simulation templates</a>
 </ul>
 
 
