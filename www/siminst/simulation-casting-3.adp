@@ -52,17 +52,5 @@
 </p>
 
 <p>
-  TODO: (8h) make sure that we are generating all of the notifications
-  that we should:
-
-  <ul>
-  <li>When simulation notification date is reached, send an email saying
-  that the simulation will start at date X.  Include the description.
-  <li>When the simulation starts, send an email with a link to simplay
-  with case_id
-  </ul>
-</p>
-
-<p>
   TODO: A: Some data needs to be read only if you return to the wizard after you've clicked the finish button. Test this.
 </p>

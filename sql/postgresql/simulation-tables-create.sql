@@ -41,6 +41,19 @@ select acs_object_type__create_type (
         
 comment on table sim_simulations is 'Each record is an instantiation of a simulation template, and the parent of zero to many simulation cases.';
 
+create table sim_simulation_emails (
+    simulation_id         integer       constraint sim_simulation_emails_sid_fk
+                                        references workflows
+                                        on delete cascade,
+    user_id               integer       constraint sim_simulation_emails_uid_fk
+                                        references users(user_id),
+    email_type            varchar(20)   constraint sim_simulation_emails_et_ck
+                                        check (email_type in ('reminder')),
+    send_date             timestamptz
+);
+
+comment on table sim_simulation_emails is 'Keeps track of notifications sent to users for a certain simulation.';      
+
 create table sim_roles (
     role_id             integer         constraint sim_roles_ri_fk
                                         references workflow_roles(role_id)

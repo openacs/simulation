@@ -449,8 +449,6 @@ ad_proc -public simulation::template::force_start {
 
     @author Peter Marklund
 } {
-    # TODO (.25h): make sure the sweeper doesn't pick up simulations that have been forced to start.
-
     simulation::template::get -workflow_id $workflow_id -array simulation
 
     db_transaction {
@@ -502,7 +500,7 @@ ad_proc -public simulation::template::enroll_and_invite_users {
     } {
         if { [string equal $type "auto_enroll"] } {
             # enroll the user automatically
-            lappend $simulation_edit(enrolled) $user_id
+            lappend simulation_edit(enrolled) $user_id
             lappend enroll_email_list [list $email $user_name]
         } else {
             # Invite the user
@@ -510,8 +508,6 @@ ad_proc -public simulation::template::enroll_and_invite_users {
         }
     }
 
-    # Remove duplicates
-    set simulation_edit(enrolled) [lsort -unique $simulation_edit(enrolled)]
     simulation::template::edit -workflow_id $workflow_id -array simulation_edit
 
     simulation::template::get -workflow_id $workflow_id -array sim_template
@@ -552,12 +548,86 @@ casting page at ${casting_page_url}.
         set subject "You have been invited to join simulation $sim_template(pretty_name)"
         set body "Dear $user_name,
 You have been invited to join simulation $sim_template(pretty_name). Please visit the enrollment page at $enrollment_page_url to accept the invitation. Thank you!"
+        acs_mail_lite::send \
+            -to_addr $email \
+            -from_addr [ad_system_owner] \
+            -subject $subject\
+            -body $body
+    }
+}
+
+ad_proc -private simulation::template::sweeper {} {
+    Starts simulations and sends notifications.
+
+    @author Peter Marklund
+} {
+    # Make simulations go live
+    set simulations_to_start [db_list select_simulations_to_start {
+        select simulation_id
+        from sim_simulations
+        where sim_type <> 'live_sim'
+        and case_start < current_timestamp
+    }]    
+    foreach simulation_id $simulations_to_start {
+        ns_log Notice "pm debug starting simulation $simulation_id"
+        start -workflow_id $simulation_id
+    }    
+
+    # For simulations that are not live yet and have reached their send_start_note_date, 
+    # send notifications to users in simulations that have not already been emailed.
+    set users_to_notify [db_list_of_lists select_simulations_to_start {
+        select cu.user_id,
+               cu.email,
+               cu.first_names || ' ' || cu.last_name as user_name,
+               ss.simulation_id,
+               w.pretty_name as simulation_name,
+               to_char(ss.case_start, 'YYYY-MM-DD') as simulation_start_date,
+               w.description as simulation_description
+        from sim_simulations ss,
+             workflows w,
+             sim_party_sim_map spsm,
+             cc_users cu
+        where sim_type <> 'live_sim'
+        and ss.simulation_id = spsm.simulation_id
+        and ss.simulation_id = w.workflow_id
+        and spsm.type = 'enrolled'
+        and cu.user_id = spsm.party_id
+        and ss.send_start_note_date < current_timestamp
+        and not exists (select 1
+                        from sim_simulation_emails sse
+                        where sse.simulation_id = ss.simulation_id
+                          and sse.user_id = spsm.party_id
+                          and sse.email_type = 'reminder')        
+    }]    
+    foreach row $users_to_notify {
+        set user_id [lindex $row 0]        
+        set email [lindex $row 1]
+        set user_name [lindex $row 2]
+        set simulation_id [lindex $row 3]
+        set simulation_name [lindex $row 4]
+        set simulation_start_date [lindex $row 5]
+        set simulation_description [lindex $row 6]
+
+        set subject "Simulation $simulation_name starts on $simulation_start_date"
+        set body "Dear $user_name,
+this email is sent to you as a reminder that you are participating in simulation $simulation_name that will start on $simulation_start_date. Here is the
+simulation description:
+
+$simulation_description"
 
         acs_mail_lite::send \
             -to_addr $email \
             -from_addr [ad_system_owner] \
             -subject $subject\
             -body $body
+        
+        # Record that we sent email
+        db_dml record_simulation_email {
+            insert into sim_simulation_emails
+                (simulation_id, user_id, email_type, send_date)
+             values
+                (:simulation_id, :user_id, 'reminder', current_timestamp)
+        }
     }
 }
 
@@ -569,8 +639,6 @@ ad_proc -public simulation::template::start {
 
     @author Peter Marklund
 } {
-    # TODO (.25h): invoke this proc from a sweep
-
     simulation::template::get -workflow_id $workflow_id -array simulation
 
     if { ![string equal $simulation(sim_type) "casting_sim"] } {
@@ -585,6 +653,32 @@ ad_proc -public simulation::template::start {
 
         simulation::template::autocast -workflow_id $workflow_id
     }
+
+    # Notify users enrolled in the simulation
+    db_foreach select_enrolled_users {
+            select distinct cu.user_id,
+                   cu.email,
+                   cu.first_names || ' ' || cu.last_name as user_name
+            from sim_party_sim_map spsm,
+                 cc_users cu
+            where spsm.simulation_id = :workflow_id
+             and spsm.type = 'enrolled'
+             and spsm.party_id = cu.user_id
+    } {
+        # TODO: check that link to enrollment page is correct
+        set package_id [ad_conn package_id]
+        set simplay_url \
+            [export_vars -base "[ad_url][apm_package_url_from_id $package_id]/simplay/enroll" { email }]
+        set subject "Simulation $simulation(pretty_name) has started"
+        set body "Dear $user_name,
+Simulation $simulation(pretty_name) has now started. Please visit $simplay_url to participate. Thank you!"
+
+        acs_mail_lite::send \
+            -to_addr $email \
+            -from_addr [ad_system_owner] \
+            -subject $subject\
+            -body $body
+    }    
 }
 
 ad_proc -public simulation::template::autocast {
@@ -834,10 +928,6 @@ ad_proc -public simulation::template::get_inst_state {
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template    
     
-    # TODO (1.5h): Refactor this and the corresponding wizard.tcl/adp page
-    # What we really need to know is whether each step is complete
-    # They're all independent of each other, except for casting, which is dependent on participants.
-
     foreach tab [get_wizard_tabs] {
         set tab_complete_p($tab) 0
     }

@@ -7,6 +7,7 @@ drop table sim_party_sim_map;
 drop table sim_tasks;
 drop table sim_role_party_map;
 drop table sim_roles;
+drop table sim_simulation_emails;
 select acs_object_type__drop_type(
 	   'simulation',
 	   't'
