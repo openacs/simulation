@@ -354,7 +354,8 @@ ad_proc -public simulation::template::get_parties {
                  party_approved_member_map pamm
             where spsm.simulation_id = :workflow_id
              and spsm.type = :rel_type
-             and pamm.party_id = spsm.party_id
+             and pamm.party_id = spsm.party_id             
+             and pamm.party_id <> pamm.member_id
         }]
     } else {
         return [db_list template_parties {
@@ -502,7 +503,7 @@ ad_proc -public simulation::template::start {
     db_transaction {
         # Auto enroll users in auto-enroll groups
         set simulation_edit(enrolled) [list]
-        foreach users_list [simulation::template::get_parties -members -type auto-enroll -workflow_id $workflow_id] {
+        foreach users_list [simulation::template::get_parties -members -rel_type auto-enroll -workflow_id $workflow_id] {
             set simulation_edit(enrolled) [concat $simulation_edit(enrolled) $users_list]
         }
 
@@ -511,7 +512,7 @@ ad_proc -public simulation::template::start {
             
         simulation::template::edit -workflow_id $workflow_id -array simulation_edit
 
-        simulation::template::cast -workflow_id $workflow_id
+        simulation::template::autocast -workflow_id $workflow_id
     }
 }
 
@@ -532,17 +533,24 @@ ad_proc -public simulation::template::autocast {
     simulation::template::role_party_mappings \
         -workflow_id $workflow_id \
         -array roles
-    
+
+    # Build user lists for each of the groups mapped to a role and calculate the total number
+    # of users in the groups
     set total_users 0
     foreach role_id [array names roles] {
-        # Still just one group per role
-        set group_id [lindex $roles($role_id) 0]
+        array unset one_role
+        array set one_role $roles($role_id)
 
         set role_short_name($role_id) [workflow::role::get_element -role_id $role_id -element short_name]
-        set group_members($group_id) [party::approved_members -party_id $party_id -object_type user]
-        set group_members($group_id) [util::randomize_list $group_members($group_id)]
-        
-        incr total_users [llength $group_members($group_id)]
+
+        foreach group_id $one_role(parties) {
+            # Only create the group list once
+            if { ![info exists group_members($group_id)] } { 
+                set group_members($group_id) [party::approved_members -party_id $group_id -object_type user]
+                set group_members($group_id) [util::randomize_list $group_members($group_id)]        
+                incr total_users [llength $group_members($group_id)]
+            }
+        }
     }
 
     set workflow_short_name [workflow::get_element -workflow_id $workflow_id -element short_name]
@@ -550,23 +558,29 @@ ad_proc -public simulation::template::autocast {
     # Create the cases and for each case assign users to roles    
     while { $total_users > 0 } {
 
-        set object_id [simulation::case::new \
-                           -workflow_id $workflow_id]
-
-        set case_id [workflow::case::get_id \
-                         -object_id $object_id \
-                         -workflow_short_name $workflow_short_name]
+        # TODO: implement simulation::case::new
+#         set object_id [simulation::case::new \
+#                            -workflow_id $workflow_id]
+#         set case_id [workflow::case::get_id \
+#                          -object_id $object_id \
+#                          -workflow_short_name $workflow_short_name]
+        # Temporary while waiting for simulation::case::new proc:
+        set case_id [workflow::case::new \
+                         -workflow_id $workflow_id \
+                         -object_id [ad_conn package_id]]
         
         # Assign users from the specified group for each role
         array unset row
         array set row [list]
-
         foreach role_id [array names roles] {
-            set group_id [lindex $roles($role_id) 0]
-            set n_users_in_role [lindex $roles($role_id) 1]
-            
+            array unset one_role
+            array set one_role $roles($role_id)
+
             set assignees [list]
-            for { set i 0 } { $i < $n_users_in_role } { incr i } {
+            for { set i 0 } { $i < $one_role(users_per_case) } { incr i } {
+                # Get user from random group mapped to role
+                set group_id [lindex [util::randomize_list $one_role(parties)] 0]
+
                 if { [llength $group_members($group_id)] > 0 } {
                     # Add assignee
                     lappend assignees [lindex $group_members($group_id) 0]
@@ -581,6 +595,7 @@ ad_proc -public simulation::template::autocast {
                     break
                 }
             }
+
             set row($role_short_name($role_id)) $assignees
         }
 
@@ -590,7 +605,6 @@ ad_proc -public simulation::template::autocast {
             -replace
     }
 }
-
 
 
 
