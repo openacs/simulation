@@ -33,6 +33,16 @@ if { ![ad_form_new_p -key action_id] } {
     simulation::action::get -action_id $action_id -array task_array
 
     set workflow_id $task_array(workflow_id)
+
+    if { ![empty_string_p $task_array(child_workflow_id)] } {
+        set task_type "workflow"
+    } else {
+        if { ![empty_string_p $task_array(recipient_role)] } {
+            set task_type "message"
+        } else {
+            set task_type "normal"
+        }
+    }
 }
 
 workflow::get -workflow_id $workflow_id -array sim_template_array
@@ -48,8 +58,10 @@ set context [list [list "." "SimBuild"] [list [export_vars -base "template-edit"
 #---------------------------------------------------------------------
 # Get a list of relevant roles
 #---------------------------------------------------------------------
-set role_options [concat [list [list "--None--" ""]] [workflow::role::get_options -workflow_id $workflow_id]]
+set role_options [workflow::role::get_options -workflow_id $workflow_id]
+set role_options_with_null [concat [list [list "--None--" ""]] $role_options]
 
+set child_workflow_options [simulation::template::get_options]
 
 ######################################################################
 #
@@ -94,28 +106,37 @@ ad_form \
         }
         {assigned_role:text(select),optional
             {label "Assigned To"}
-            {options $role_options}
+            {options $role_options_with_null}
         }
         {recipient_role:text(select),optional
             {label "Recipient"}
-            {options $role_options}
+            {options $role_options_with_null}
         }
         {child_workflow_id:integer(select),optional
             {label "Child workflow"}
-            {options {[simulation::template::get_options]}}
+            {options $child_workflow_options}
             {html {onChange "javascript:acs_FormRefresh('task');"}}
         }
     }
 
-if { [string equal [element get_value task task_type] "workflow"] } {
-    foreach role_id [workflow::get_roles -workflow_id [element get_value task child_workflow_id]] {
-        set role__${role_id}__pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
+if { [string equal [element get_value task task_type] "workflow"] || [exists_and_equal task_type "workflow"] } {
+    set child_workflow_id [element get_value task child_workflow_id]
+    if { [empty_string_p $child_workflow_id] } {
+        if { [exists_and_not_null task_array(child_workflow_id)] } {
+            set child_workflow_id $task_array(child_workflow_id)
+        } else {
+            set child_workflow_id [lindex [lindex $child_workflow_options 0] 1]
+        }
+    }
+    foreach role_id [workflow::get_roles -workflow_id $child_workflow_id] {
+        array unset role_array
+        workflow::role::get -role_id $role_id -array role_array
+        set role__${role_array(short_name)}__pretty_name $role_array(pretty_name)
         ad_form -extend -name task -form \
-            [list [list child__$role_id:text(select),optional \
-                       [list label "\$role__${role_id}__pretty_name"] \
+            [list [list parent_role__${role_array(short_name)}:text(select),optional \
+                       [list label "\$role__${role_array(short_name)}__pretty_name Role"] \
                        {options $role_options} \
                       ]]
-
     }
 }
 
@@ -161,17 +182,11 @@ ad_form -extend -name task -edit_request {
         pretty_name pretty_past_tense new_state_id 
         assigned_role recipient_role
         attachment_num
+        child_workflow_id
     } {
         set $elm $task_array($elm)
     }
-
-    # TODO: Check for child workflows, and set task_type to 'workflow'
-    if { ![empty_string_p $task_array(recipient_role)] } {
-        set task_type "message"
-    } else {
-        set task_type "normal"
-    }
-
+    
     switch $task_type {
         message {
             element set_properties task assigned_role -widget select
@@ -187,6 +202,10 @@ ad_form -extend -name task -edit_request {
             element set_properties task assigned_role -widget hidden
             element set_properties task recipient_role -widget hidden
             element set_properties task child_workflow_id -widget select
+            
+            foreach { child_short_name elm } $task_array(child_role_map) {
+                set parent_role__${child_short_name} [lindex $elm 0]
+            }
         }
     }
 } -new_request {
@@ -221,6 +240,8 @@ ad_form -extend -name task -edit_request {
     set description_mime_type [template::util::richtext::get_property format $description]
     set description [template::util::richtext::get_property contents $description]
 
+    set child_role_map [list]
+
     switch $task_type {
         message {
             set child_workflow_id {}
@@ -231,7 +252,16 @@ ad_form -extend -name task -edit_request {
         }
         workflow {
             set recipient_role {}
-            error "Missing"
+
+            # we have:
+            # element parent_role__asker = lawyer
+            # element parent_role__giver = client
+
+            foreach role_id [workflow::get_roles -workflow_id $child_workflow_id] {
+                set child_role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
+                set parent_role_short_name [set "parent_role__$child_role_short_name"]
+                lappend child_role_map $child_role_short_name [list $parent_role_short_name "per_role"]
+            }
         }
     }
 
@@ -244,6 +274,7 @@ ad_form -extend -name task -edit_request {
         pretty_name pretty_past_tense assigned_role description description_mime_type
         new_state_id 
         recipient_role attachment_num
+        child_workflow_id child_role_map
     } {
         set row($elm) [set $elm]
     }

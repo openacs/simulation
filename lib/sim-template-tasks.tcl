@@ -68,6 +68,11 @@ lappend elements recipient_name {
     link_url_col recipient_role_edit_url
 }
 
+lappend elements child_workflow_pretty { 
+    label "<br />Child"
+    link_url_col child_workflow_url
+}
+
 lappend elements delete {
     sub_class narrow
     hide_p {[ad_decode $display_mode edit 0 1]}
@@ -139,7 +144,7 @@ set initial_action_id [workflow::get_element \
                            -element initial_action_id]
 
 set extend [list]
-lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url recipient_role_edit_url 
+lappend extend edit_url view_url delete_url initial_p set_initial_url assigned_role_edit_url recipient_role_edit_url child_workflow_url
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -189,7 +194,11 @@ db_multirow -extend $extend tasks select_tasks "
            wfa.new_state,
            (select pretty_name
             from   workflow_fsm_states
-            where  state_id = wfa.new_state) as new_state_pretty
+            where  state_id = wfa.new_state) as new_state_pretty,
+           wa.child_workflow_id,
+           (select pretty_name
+            from   workflows
+            where  workflow_id = wa.child_workflow_id) as child_workflow_pretty
       from workflow_actions wa left outer join
            sim_tasks st on (st.task_id = wa.action_id) left outer join
            workflow_fsm_actions wfa on (wfa.action_id = wa.action_id)
@@ -202,10 +211,16 @@ db_multirow -extend $extend tasks select_tasks "
 " {
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
     set view_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-edit" { action_id }]
-    set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url [ad_return_url]} }]
+    set delete_url \
+        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/task-delete" { action_id {return_url [ad_return_url]} }]
 
-    set assigned_role_edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
-    set recipient_role_edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $recipient_role } }]
+    set assigned_role_edit_url \
+        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $assigned_role } }]
+    set recipient_role_edit_url \
+        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { { role_id $recipient_role } }]
+    
+    set child_workflow_url \
+        [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" { { workflow_id $child_workflow_id } }]
 
     set initial_p [string equal $initial_action_id $action_id]
     set set_initial_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/initial-action-set" { action_id {return_url [ad_return_url]} }]
