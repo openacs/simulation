@@ -13,6 +13,8 @@ set package_id [ad_conn package_id]
 subsite::get -array closest_subsite    
 set group_admin_url "${closest_subsite(url)}admin/group-types/one?group_type=group"
 
+# TODO: verify that prepopulated values work correctly
+
 # TODO: provide more sensible default dates?
 # Notification send could be start date minus some parameter
 set in_a_month_date [clock format [expr [clock seconds] + 3600*24*31] -format "%Y %m %d"]
@@ -64,13 +66,11 @@ ad_form -export { workflow_id } -name simulation -form {
         {options $eligible_groups}
         {help_text {Use <a href="$group_admin_url">Group Administration</a> to add groups}}
     }    
-} -new_request {
+} -on_request {
 
-    #TODO: is this the right way to set defaults in ad_form?    
+    # TODO: use these default values if none are specified
     set enroll_type "closed"
     set casting_type "auto"
-
-} -on_request {
 
     set enroll_groups [simulation::template::get_parties -workflow_id $workflow_id -rel_type auto-enroll]
 
