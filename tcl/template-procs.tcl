@@ -200,8 +200,8 @@ ad_proc -public simulation::template::edit {
                         values (:workflow_id, :party_id, :map_type)
                     }
                 }
+                unset aux($map_type)
             }
-            unset aux($map_type)
         }
 
         if { !$internal_p } {
