@@ -6,12 +6,14 @@ ad_page_contract {
     {assigned_only_p 0}
 }
 
+set package_id [ad_conn package_id]
+permission::require_permission -object_id $package_id -privilege sim_adminplayer
+
 simulation::case::get -case_id $case_id -array case
 
 set title "Administer $case(label)"
 set context [list [list . "SimPlay"] $title]
 set user_id [ad_conn user_id]
-set package_id [ad_conn package_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
 
 set elements {
@@ -65,6 +67,7 @@ if { $assigned_only_p } {
       and wa.assigned_role = wr.role_id"
 }
 
+set cast_roles [list]
 db_multirow -extend {add_url move_url remove_url} roles select_case_info "
     select wr.role_id,
            wr.pretty_name as role,
@@ -89,4 +92,24 @@ db_multirow -extend {add_url move_url remove_url} roles select_case_info "
     set add_url [export_vars -base case-admin-user-add { case_id role_id }]
     set move_url [export_vars -base case-admin-user-move { case_id user_id }]
     set remove_url [export_vars -base case-admin-user-remove { case_id role_id user_id }]
+
+    lappend cast_roles $role_id
 }
+
+set role_options [workflow::role::get_options -id_values -workflow_id $case(workflow_id)]
+set uncast_role_options [list]
+foreach role_option $role_options {
+    if { [lsearch -exact $cast_roles [lindex $role_option 1]] == -1 } {
+        lappend uncast_role_options $role_option
+    }
+}
+
+ad_form -name add_user \
+    -action case-admin-user-add \
+    -export { case_id } \
+    -form {
+        {role_id:integer(select)
+            {label "Role"}
+            {options {$uncast_role_options}}
+        }        
+    }

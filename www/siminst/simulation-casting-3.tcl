@@ -148,27 +148,23 @@ ad_form \
                 }
         }
 
-        if { [string equal $sim_template(enroll_type) "closed"] || [empty_string_p $sim_template(enroll_type)] } {
-            # In closed enrollment we require the admin to map all groups to roles
-
-            set uncast_mapped_groups [db_list uncast_mapped_groups_count "
-            select g.group_name
-            from sim_party_sim_map spsm,
-                 groups g
-            where spsm.simulation_id = :workflow_id
-            and g.group_id = spsm.party_id
-            and not exists (select 1
-                            from sim_role_party_map srpm,
-                                 workflow_roles wr
-                            where srpm.role_id = wr.role_id
-                              and wr.workflow_id = :workflow_id
-                              and srpm.party_id = spsm.party_id
-                           )
+        set uncast_mapped_groups [db_list uncast_mapped_groups_count "
+        select g.group_name
+        from sim_party_sim_map spsm,
+             groups g
+        where spsm.simulation_id = :workflow_id
+        and g.group_id = spsm.party_id
+        and not exists (select 1
+                        from sim_role_party_map srpm,
+                             workflow_roles wr
+                        where srpm.role_id = wr.role_id
+                          and wr.workflow_id = :workflow_id
+                          and srpm.party_id = spsm.party_id
+                       )
         "]
-            if { [llength $uncast_mapped_groups] > 0 } {
-                template::form::set_error actors parties_$role_id "The following groups are not mapped to any roles: [join $uncast_mapped_groups ", "]."
-                break
-            }
+        if { [llength $uncast_mapped_groups] > 0 } {
+            template::form::set_error actors parties_$role_id "The following groups are not mapped to any roles: [join $uncast_mapped_groups ", "]."
+            break
         }
 
         simulation::template::enroll_and_invite_users -workflow_id $workflow_id

@@ -1,6 +1,6 @@
 ad_page_contract {
     This script will cast a user in a simulation case. If role id is provided the user
-    will be cast in that role. 
+    will be cast in that role. If case_id is not provided a new case will be created.
 
     @author Peter Marklund
 } {
@@ -17,7 +17,7 @@ if { [empty_string_p $workflow_id] && [empty_string_p $case_id] } {
 
 # Get simulation info
 if { [empty_string_p $workflow_id] } {
-    workflow::case::get -case_id $case_id -array case
+    simulation::case::get -case_id $case_id -array case
     set workflow_id $case(workflow_id)
 }
 simulation::template::get -workflow_id $workflow_id -array simulation
@@ -26,6 +26,7 @@ simulation::template::get -workflow_id $workflow_id -array simulation
 auth::require_login
 set user_id [ad_conn user_id]
 set enrolled_p [simulation::template::user_enrolled_p -workflow_id $workflow_id]
+# Begin a series of checks and abort with an error message on the first failure
 if { !$enrolled_p } {
         ad_return_forbidden \
                 "Not enrolled in simulation \"$simulation(pretty_name)\"" \
@@ -37,7 +38,8 @@ if { !$enrolled_p } {
 
 if { ![empty_string_p $role_id] } {
     # Role id specified so cast to that role
-    
+
+    # Check that user is allowed to cast himself in a role
     if { ![string equal $simulation(casting_type) "open"] } {
         ad_return_forbidden \
                 "Cannot choose role in \"$simulation(pretty_name)\"" \
@@ -49,8 +51,34 @@ Thank you!
         ad_script_abort
     }
 
-    # TODO: Check the max number of users for the role?
+    # Check that there are empty spaces in the role
+    set max_n_users [simulation::role::get_element -role_id $role_id -element users_per_case]
+    set n_users [llength [workflow::case::role::get_assignees -case_id $case_id -role_id $role_id]]
+    set n_empty_spots [expr $max_n_users - $n_users]
+    if { $n_empty_spots <= "0" } {
+        simulation::role::get -role_id $role_id -array role
+        ad_return_forbidden \
+                "No empty slots in role \"$role(pretty_name)\"" \
+                "<blockquote>
+  We are sorry, but there are no empty seats in role \"$role(pretty_name)\" in case \"$case(label)\" of simulation \"$simulation(pretty_name)\". This message means the system is not operating correctly. Please contact the system administrator.
 
+Thank you!
+</blockquote>"
+        ad_script_abort        
+    }
+
+    # Check that the user is in a group mapped to the role
+    if { ![simulation::template::user_mapped_to_role_p -workflow_id $workflow_id -role_id $role_id] } {
+        simulation::role::get -role_id $role_id -array role
+        ad_return_forbidden \
+                "Not allowed to cast in role \"$role(pretty_name)\"" \
+                "<blockquote>
+  We are sorry, but you are not in the group of users that can be cast in role \"$role(pretty_name)\" in case \"$case(label)\" of simulation \"$simulation(pretty_name)\". This message means the system is not operating correctly. Please contact the system administrator.
+
+Thank you!
+</blockquote>"
+        ad_script_abort
+    }
 } else {
     # No role id specified
 
@@ -81,8 +109,8 @@ Thank you!
                          -workflow_short_name $workflow_short_name]
     }
 
-    # Cast the user in the role with the most empty spaces.
-    # TODO: check for no empty spaces?
+    # Find the first role with empty slots and that is mapped
+    # to a group the user is a member of
     db_foreach role_with_most_empty_spaces {
         select wr.role_id,
                sr.users_per_case as max_n_users,
@@ -95,6 +123,13 @@ Thank you!
              sim_roles sr
         where wr.workflow_id = :workflow_id
           and wr.role_id = sr.role_id
+          and exists (select 1
+                      from sim_role_party_map srpm,
+                           party_approved_member_map pamm
+                      where srpm.party_id = pamm.party_id
+                        and pamm.member_id = :user_id
+                        and srpm.role_id = wr.role_id
+                      )
     } {
         set n_empty_spots [expr $max_n_users - $n_users]
         if { [expr $n_empty_spots <= 0] } {
@@ -106,8 +141,7 @@ Thank you!
 
     if { [empty_string_p $role_id] } {
         # We weren't able to find a role with empty slots
-        # TODO: what do we do now?
-        ad_return_error "No available roles" "We couldn't find any roles that you could join in the selected case (case_id=$case_id) in simulation $simulation(pretty_name). You would need to join a new case. Select your administrator if you have questions.
+        ad_return_error "No available roles" "We couldn't find any roles that you could join in case \"$case(label)\" of simulation \"$simulation(pretty_name)\". You would need to join a new case. Select your administrator about this.
 
 Thank you!"
         ad_script_abort
@@ -117,9 +151,9 @@ Thank you!"
 # We now know the user is authorized to cast himself and we have a role to cast him to
 # so carry out the casting.
 set role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
-set role_array($role_short_name) [list $user_id]
+set assign_array($role_short_name) [list $user_id]
 workflow::case::role::assign \
     -case_id $case_id \
-    -array role_array
+    -array assign_array
 
 ad_returnredirect [export_vars -base cast { workflow_id }]

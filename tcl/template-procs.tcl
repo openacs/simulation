@@ -1298,3 +1298,26 @@ ad_proc -public simulation::template::user_invited_p {
           and pamm.member_id = :user_id
     }]
 }
+
+ad_proc -public simulation::template::user_mapped_to_role_p {
+    {-workflow_id:required}
+    {-role_id:required}
+} {
+    Return 1 if user is in a group mapped to the the given role
+    and 0 otherwise.
+    
+    @author Peter Marklund
+} {
+    set user_id [ad_conn user_id]
+
+    return [db_string user_mapped_to_role_p {
+        select count(*)
+        from sim_role_party_map srpm,
+             workflow_roles wr,
+             party_approved_member_map pamm
+        where srpm.role_id = wr.role_id
+          and wr.workflow_id = :workflow_id
+          and srpm.party_id = pamm.party_id
+          and pamm.member_id = :user_id
+    }]
+}

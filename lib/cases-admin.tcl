@@ -32,7 +32,7 @@ template::list::create \
     -elements $elements 
 
 db_multirow cases select_cases "
-    select distinct wc.case_id,
+    select wc.case_id,
            sc.label,
            w.pretty_name
       from workflow_cases wc,
@@ -43,4 +43,5 @@ db_multirow cases select_cases "
        and sc.sim_case_id = wc.object_id
        and w.workflow_id = ao.object_id
        and ao.creation_user = :user_id
+       order by w.workflow_id, wc.case_id
 "

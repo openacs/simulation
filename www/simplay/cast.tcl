@@ -89,46 +89,85 @@ template::list::create \
         case_pretty {
             label "Case"
             display_template {
-                @roles.case_pretty@ <if @roles.join_case_url@ ne ""><font size="-1">\[\<a href="@roles.join_case_url@">join case</a>]</font></if>
+                @roles.case_pretty@ <if @roles.can_join_case_p@ and @roles.join_case_url@ ne ""><font size="-1">\[\<a href="@roles.join_case_url@">join case</a>]</font></if>
             }
         }
         role_name {
             label "Role"
+            display_template {
+                @roles.role_name@ <if @roles.can_join_role_p@ and @roles.join_role_url@ ne ""><font size="-1">\[\<a href="@roles.join_role_url@">join role</a>]</font></if>
+            }
         }
-        user_name {
-            label "User"
+        n_users {
+            label "# Users"
+        }
+        max_n_users {
+            label "Max # users"
         }
     }
 
-db_multirow -extend { join_case_url join_role_url } roles select_case_info {
+db_multirow -extend { can_join_role_p join_case_url join_role_url } roles select_case_info {
     select wc.case_id,
+           wr.role_id,
            sc.label as case_pretty,
-           cu.first_names || ' ' || cu.last_name as user_name,
-           wr.pretty_name as role_name
+           wr.pretty_name as role_name,
+           sr.users_per_case as max_n_users,
+           (select count(*)
+            from workflow_case_role_party_map wcrpm2
+            where wcrpm2.case_id = wc.case_id
+            and wcrpm2.role_id = wr.role_id
+           ) as n_users,
+           (select count(*)
+            from sim_role_party_map srpm,
+                 party_approved_member_map pamm
+            where srpm.party_id = pamm.party_id
+              and pamm.member_id = :user_id
+              and srpm.role_id = wr.role_id
+           ) as is_mapped_p    
     from workflow_cases wc,
          sim_cases sc,
-         workflow_case_role_party_map wcrpm,
          workflow_roles wr,
-         cc_users cu
+         sim_roles sr
     where wc.object_id = sc.sim_case_id
       and wc.workflow_id = :workflow_id
-      and wcrpm.case_id = wc.case_id
-      and wcrpm.party_id = cu.user_id
-      and wr.role_id = wcrpm.role_id
-      order by sc.label, wr.pretty_name, cu.last_name
+      and wr.role_id = sr.role_id
+      and wr.workflow_id = :workflow_id
+      order by sc.label, wr.pretty_name
 } {
+    # User can join a case if there is at least one role in the case that the user can join
+    # User can join a role if he is in a group mapped to the role and there are empty spots for the role    
+    if { $is_mapped_p && [expr $max_n_users - $n_users] > 0 } {
+        set can_join_role_p 1
+        set can_join_case_p_array($case_id) 1
+    } else {
+        set can_join_role_p 0
+        if { ![info exists can_join_case_p_array($case_id)] } {
+            set can_join_case_p_array($case_id) 0
+        }
+    }
+
     set join_case_url ""
     set join_role_url ""
 
     if { !$already_cast_p } {
         if { [string equal $simulation(casting_type) "group"] } {
+            # Group casting - cast to case
             set join_case_url [export_vars -base cast-join { case_id }]
         } else {
+            # Open casting - cast to role
             set join_role_url [export_vars -base cast-join { case_id role_id }]
         }
+    }
+}
+
+template::multirow extend roles can_join_case_p
+template::multirow foreach roles {
+    if { $can_join_case_p_array($case_id)} {
+        set can_join_case_p 1
     }
 }
 
 if { !$already_cast_p } {
     set join_new_case_url [export_vars -base cast-join { workflow_id }]
 }
+

@@ -10,7 +10,7 @@
   <listtemplate name="cast_info"></listtemplate></p>
   
   <p>
-    Below is a listing of all users in the simulation.
+    Below is a listing of all roles in the simulation.
   </p>
 
 </if>
@@ -137,5 +137,9 @@ Mockup below:
 -->
 
 <p>
-TODO: If casting type is group instead of open, do not display or group
-by the role column.
+TODO: Grouping by case and role
+</p>
+
+<p>
+TODO: Display listing of users assigned to each role/case, preferably on this page, alternatively on separate page
+</p>

@@ -4,7 +4,17 @@
 
   @assigned_filter;noquote@
 
-  <listtemplate name="roles"></listtemplate></p>
+  <p>
+    <listtemplate name="roles"></listtemplate>
+  </p>
+
+  <if @uncast_role_options@ not nil>
+    <h3>Add users in uncast role</h3>
+  
+    <p>
+      <formtemplate id="add_user"></formtemplate>
+    </p>
+  </if>
 
 <p>
 TODO: Remove the assigned filter and make the table always show all roles and any assigned actions for each role. Lars?
@@ -12,8 +22,4 @@ TODO: Remove the assigned filter and make the table always show all roles and an
 
 <p>
 TODO: Group by role_id. Need some help from Lars.
-</p>
-
-<p>
-TODO: Show roles with no users
 </p>
