@@ -184,3 +184,21 @@ select content_type__drop_type(
 );
 
 
+----------------------------------------------------------------------
+-- privileges
+----------------------------------------------------------------------
+
+create function inline_0 ()
+returns integer as '
+begin
+    perform acs_privilege__drop_privilege(''sim_template_create'');
+    perform acs_privilege__drop_privilege(''sim_inst'');
+    perform acs_privilege__drop_privilege(''sim_object_create'');
+    perform acs_privilege__drop_privilege(''sim_object_write'');
+    perform acs_privilege__drop_privilege(''sim_set_map_p'');
+
+    return null;
+end;' language 'plpgsql';
+
+select inline_0();
+drop function inline_0 ();
