@@ -193,7 +193,20 @@ ad_proc -public simulation::template::edit {
     }
 }
 
-ad_proc -public simulation::template::map_group_to_role {
+
+ad_proc -public simulation::template::delete_role_group_mappings {
+    {-workflow_id}
+} {
+        db_dml clear_old_group_mappings {
+            delete from sim_role_group_map
+            where role_id in (select role_id
+                              from workflow_roles
+                              where workflow_id = :workflow_id
+                              )
+        }
+}
+
+ad_proc -public simulation::template::new_role_group_mapping {
     {-role_id:required}
     {-group_id:required}
     {-group_size:required}
@@ -204,6 +217,28 @@ ad_proc -public simulation::template::map_group_to_role {
     }
 }
 
+ad_proc -public simulation::template::get_role_group_mappings {
+    {-workflow_id}
+    {-array:required}
+} {    
+    upvar $array roles
+
+    array set roles {}
+
+    db_foreach select_group_mappings {
+            select role_id,
+            party_id,
+            group_size
+            from sim_role_group_map
+            where role_id in (select role_id
+                              from workflow_roles
+                              where workflow_id = :workflow_id
+                              )
+    } {
+        set roles($role_id) [list $party_id $group_size]
+    }
+}
+ 
 ad_proc -public simulation::template::clone {
     {-workflow_id:required}
     {-package_key {}}
@@ -470,9 +505,6 @@ ad_proc -public simulation::template::cast {
 
     @author Peter Marklund
 } {
-    array set actors_array $actors
-    array set groupings_array $groupings
-
     # Assuming here that mapped parties with type enrolled are users
     set user_list [db_list select_users {
         select party_id
@@ -481,14 +513,15 @@ ad_proc -public simulation::template::cast {
     }]
     set total_n_users [llength $user_list]
 
+    simulation::template::get_role_mappings -workflow_id $workflow_id -array roles
+
     set n_users_per_case 0
-    foreach role_id [array names groupings_array] {
-        set n_users_per_case [expr $n_users_per_case + $groupings_array($role_id)]
+    foreach role_id [array names roles] {
+        set n_users_per_case [expr $n_users_per_case + [lindex $roles($role_id) 1]]
     }
 
     set mod_n_users [expr $total_n_users % $n_users_per_case]
     set n_cases [expr ($total_n_users - $mod_n_users) / $n_users_per_case]
-
 
     if { $mod_n_users == "0" } {
         # No rest in dividing, the cases add up nicely
@@ -510,21 +543,21 @@ ad_proc -public simulation::template::cast {
 
         # Assign a group of users to each role in the case
         set party_array_list [list]
-        foreach role_id [array names actors] {
+        foreach role_id [array names roles] {
             set role_short_name [workflow::role::get_element -role_id $role_id -element short_name]
 
             set users_end_index [expr $users_start_index + $groupings_array($role_id) - 1]
 
             set parties_list [lrange $user_list $users_start_index $users_end_index]
 
-            lappend parties_array_list $role_short_name $users_list
+            lappend parties_array_list $role_short_name $parties_list
 
             set users_start_index [expr $users_end_index + 1]
         }
 
         workflow::case::role::assign \
             -case_id $case_id \
-            -array $party_array_list \
+            -array $parties_array_list \
             -replace
     }
 }

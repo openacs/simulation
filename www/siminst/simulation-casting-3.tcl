@@ -30,16 +30,12 @@ ad_form \
     -export { workflow_id } \
     -form $form \
     -on_request {
-        db_foreach select_group_mappings {
-            select role_id,
-            party_id,
-            group_size
-            from sim_role_group_map
-            where role_id in (select role_id
-                              from workflow_roles
-                              where workflow_id = :workflow_id
-                              )
-        } {
+        simulation::template::get_role_group_mappings -workflow_id $workflow_id -array roles
+        
+        foreach role_id [array names roles] {
+            set party_id [lindex $roles($role_id) 0]
+            set group_size [lindex $roles($role_id) 1]
+
             element set_properties actors actor_${role_id} -value $party_id
             element set_properties actors group_${role_id} -value $group_size    
         }      
@@ -48,16 +44,10 @@ ad_form \
         # TODO: move this code into the simulation::template::edit proc? Low priority.
 
         # Clear out old mappings
-        db_dml clear_old_group_mappings {
-            delete from sim_role_group_map
-            where role_id in (select role_id
-                              from workflow_roles
-                              where workflow_id = :workflow_id
-                              )
-        }
+        simulation::template::delete_role_group_mappings -workflow_id $workflow_id
 
         foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
-            simulation::template::map_group_to_role \
+            simulation::template::new_role_group_mapping \
                 -role_id $role_id \
                 -group_id [set actor_$role_id] \
                 -group_size [set group_$role_id]
