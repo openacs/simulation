@@ -17,6 +17,7 @@ simulation::include_contract {
 
 set package_id [ad_conn package_id]
 set add_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit" ]
+set create_p [permission::permission_p -object_id $package_id -privilege sim_template_create]
 
 # TODO: make this include honor the display_mode parameter
 
@@ -48,10 +49,13 @@ switch $size {
 	    -elements {
 		edit {
 		    sub_class narrow
-		    link_url_col edit_url
-		    display_template {
-			<img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
-		    }
+		      display_template {
+                          <if @sim_templates.edit_p@>
+			  <a href="@sim_templates.edit_url@" title="Edit this template">
+                          <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
+                          </a>
+                          </if>
+		      }
 		}
 		name {
 		    label "Name"
@@ -74,12 +78,14 @@ switch $size {
 		}
 		delete {
 		    sub_class narrow
-		    display_template {
-			<a href="@sim_templates.delete_url@" 
+		      display_template {
+                          <if @sim_templates.edit_p@>
+			  <a href="@sim_templates.delete_url@" title="Edit this template"
                            onclick="return confirm('Are you sure you want to delete template @sim_templates.name@?');">
                           <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
-                        </a>
-		    }
+                          </a>
+                          </if>
+		      }
 		}
 		clone {
 		    display_template {
@@ -101,7 +107,7 @@ switch $size {
 #
 ######################################################################
 
-db_multirow -extend { edit_url view_url delete_url clone_url } sim_templates select_sim_templates "
+db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templates select_sim_templates "
     select w.workflow_id,
            w.pretty_name as name,
            'placeholder' as description,
@@ -128,4 +134,6 @@ db_multirow -extend { edit_url view_url delete_url clone_url } sim_templates sel
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-delete" {workflow_id} ]
 
     set clone_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-clone" {workflow_id} ]
+
+    set edit_p [permission::write_permission_p -object_id $workflow_id]
 }

@@ -21,8 +21,8 @@ select acs_privilege__add_child('sim_admin','sim_set_map_p');
 select acs_privilege__create_privilege('sim_template_read','Read Simulation Templates',null);
 select acs_privilege__create_privilege('sim_template_create','Create Simulation Templates',null);
 select acs_privilege__create_privilege('sim_template_creator','Create and Read Simulation Templates',null);
-select acs_privilege__add_child('sim_admin_creator','sim_template_create');
-select acs_privilege__add_child('sim_admin_creator','sim_template_read');
+select acs_privilege__add_child('sim_template_creator','sim_template_create');
+select acs_privilege__add_child('sim_template_creator','sim_template_read');
 select acs_privilege__add_child('sim_admin','sim_template_creator');
 
 

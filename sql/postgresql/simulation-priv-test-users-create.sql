@@ -1,4 +1,4 @@
--- create dummy users for permissions testing
+1-- create dummy users for permissions testing
 -- create each user and then assign appropriate privs directly
 
 -- this is a temp solution - should instead create all the groups 
@@ -34,7 +34,6 @@ begin
 
         -- create CaseAuthor user and assign privs
         select acs_user__new(null,''user'',null,null,null,null,''cassie'' || random_seed,''email2'' || random_seed,null,''Cassie'',''CaseAuthor'',null,null,null,''t'',null) into user_id;
-        perform acs_permission__grant_permission(package_id,user_id,''sim_template_creator'');
         perform acs_permission__grant_permission(package_id,user_id,''sim_inst'');
         perform acs_permission__grant_permission(package_id,user_id,''sim_object_create'');
 
