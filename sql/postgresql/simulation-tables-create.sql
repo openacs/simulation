@@ -133,24 +133,6 @@ create table sim_party_sim_map (
     primary key (simulation_id, party_id, type)
 );
 
-create table sim_case_task_object_map (
-    task_id             integer         constraint sctom_fk
-                                        references workflow_actions
-                                        on delete cascade,
-    object_id           integer         constraint sctom_object_fk
-                                        references acs_objects
-                                        on delete cascade,
-    case_id             integer         constraint sctom_case_fk
-                                        references workflow_cases
-                                        on delete cascade,
-    order_n             integer,
-    relation_tag        varchar(100),
-    constraint sctom_pk
-      primary key (task_id, object_id, case_id, relation_tag)
-);
-
-comment on table sim_case_task_object_map is 'A mapping table to show which tasks use which props in a case.  Each record is one prop for one task, in a case.';
-
 create table sim_case_role_object_map (
     role_id             integer         constraint scrom_fk
                                         references workflow_roles
