@@ -146,3 +146,6 @@ switch $mode {
 set context [list [list "." "SimBuild"] $page_title] 
 
 set delete_url [export_vars -base template-delete { workflow_id }]
+
+set spec_url [export_vars -base template-spec { workflow_id }]
+

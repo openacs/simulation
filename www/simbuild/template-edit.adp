@@ -19,7 +19,10 @@
   <h4>Tasks</h4>
 
   <include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" display_mode="edit" >
+  
+  <p>TODO: Allow reordering of roles, states, tasks.</p>
+
+  <p>
+    <b>&raquo;</b> <a href="@spec_url@">Download a specification for this template</a>
+  </p>
 </if>
-
-<P>TODO: Allow sorting of roles, states, tasks.</p>
-

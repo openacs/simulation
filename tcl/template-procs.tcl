@@ -153,7 +153,9 @@ ad_proc -public simulation::template::instantiate_edit {
 }
 ad_proc -public simulation::template::clone {
     {-workflow_id:required}
-    {-pretty_name:required}
+    {-package_key {}}
+    {-object_id {}}
+    {-array {}}
 } {
     Create a new simulation template which is a clone of the template with
     given id. The clone will be mapped to the package of the current request.
@@ -165,37 +167,36 @@ ad_proc -public simulation::template::clone {
 
     @author Peter Marklund
 } {
-    # If we set object_id here and leave short_name unchanged we
-    # get a unique constraint violation
-    set clone_workflow_id [workflow::fsm::clone \
-                               -workflow_id $workflow_id]
-
-    # Set names of clones workflow and update the object_id
-    # TODO: create workflow::edit proc
-    set clone_short_name [util_text_to_url -replacement "_" $pretty_name]
-    set object_id [ad_conn package_id]
-    db_dml update_short_name {
-        update workflows
-        set short_name = :clone_short_name,
-        pretty_name = :pretty_name,
-        object_id = :object_id
-        where workflow_id = :clone_workflow_id
+    if { ![empty_string_p $array] } {
+        upvar 1 $array row
+        set array row
     }
 
-    # Add the role_id:s to the sim_roles table
-    set role_id_list [workflow::get_roles -workflow_id $clone_workflow_id]
-    foreach role_id $role_id_list {
-        db_dml insert_sim_role {
-            insert into sim_roles (role_id) values (:role_id)
+    db_transaction {
+
+        # If we set object_id here and leave short_name unchanged we
+        # get a unique constraint violation
+        set clone_workflow_id [workflow::fsm::clone \
+                                   -workflow_id $workflow_id \
+                                   -package_key $package_key \
+                                   -object_id $object_id \
+                                   -array $array]
+        
+        # Add the role_id:s to the sim_roles table
+        set role_id_list [workflow::get_roles -workflow_id $clone_workflow_id]
+        foreach role_id $role_id_list {
+            db_dml insert_sim_role {
+                insert into sim_roles (role_id) values (:role_id)
+            }
         }
+        
+        # Clone the values in the simulation table
+        simulation::template::get -workflow_id $workflow_id -array workflow
+        insert_sim \
+            -workflow_id $clone_workflow_id \
+            -sim_type $workflow(sim_type) \
+            -suggested_duration $workflow(suggested_duration)
     }
-
-    # Clone the values in the simulation table
-    get -workflow_id $workflow_id -array workflow
-    insert_sim \
-        -workflow_id $clone_workflow_id \
-        -sim_type $workflow(sim_type) \
-        -suggested_duration $workflow(suggested_duration)
 
     return $clone_workflow_id
 }
