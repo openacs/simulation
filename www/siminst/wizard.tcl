@@ -34,20 +34,24 @@ wizard set_param workflow_id $workflow_id
 set lowest_available 1
 set highest_available 5
 
-wizard get_current_step -start $highest_available
+# Set information about which tabs are complete
+array set tab_complete_p [simulation::template::get_inst_state -workflow_id $workflow_id]
+multirow extend wizard complete_p
+set lowest_incomplete_index -1
+set index 1
+multirow -local foreach wizard {
+    set complete_p $tab_complete_p($url)
+    if { !$complete_p && $lowest_incomplete_index == "-1"} {
+        set lowest_incomplete_index $index
+    }
+    
+    incr index
+}
+
+wizard get_current_step -start $lowest_incomplete_index
 
 set sub_title $title(${wizard:current_id})
 
 workflow::get -workflow_id $workflow_id -array workflow
 set page_title "$workflow(pretty_name)"
 set context [list [list "." "SimInst"] $page_title]
-
-array set tab_complete_p [simulation::template::get_inst_state -workflow_id $workflow_id]
-
-multirow extend wizard complete_p
-
-multirow create test_multi col1 col2 col3
-
-multirow -local foreach wizard {
-    set complete_p $tab_complete_p($url)
-}

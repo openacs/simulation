@@ -24,7 +24,7 @@ lappend form {casting_type:text(radio)
     {help_text "If participants have not selected groups or roles by the simulation start time, they are automatically assigned."}
 }
 
-if { [string equal $sim_template(enroll_type) "closed"] } {
+if { [string equal $sim_template(enroll_type) "closed"] || [empty_string_p $sim_template(enroll_type)] } {
     # Closed enrollment so offer only invited or auto_enroll groups
     set eligible_groups [simulation::casting_groups -mapped_only -workflow_id $workflow_id]
 } else {
@@ -33,6 +33,10 @@ if { [string equal $sim_template(enroll_type) "closed"] } {
 }
 
 set num_groups [llength $eligible_groups]
+
+if { $num_groups == "0" } {
+    return
+}
 
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     set role_${role_id}_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
@@ -121,7 +125,7 @@ ad_form \
                 template::form::set_error actors parties_$role_id "At least one group must be selected for each role"
                 set error_p 1                
             }
-        }        
+        }                
         if { $error_p } {
             break
         }
@@ -143,7 +147,32 @@ ad_form \
                     -parties [set parties_$role_id] \
                 }
         }
+
+        set uncast_mapped_groups [db_list uncast_mapped_groups_count "
+            select g.group_name
+            from sim_party_sim_map spsm,
+                 groups g
+            where spsm.simulation_id = :workflow_id
+            and g.group_id = spsm.party_id
+            and not exists (select 1
+                            from sim_role_party_map srpm,
+                                 workflow_roles wr
+                            where srpm.role_id = wr.role_id
+                              and wr.workflow_id = :workflow_id
+                              and srpm.party_id = spsm.party_id
+                           )
+        "]
+        if { [llength $uncast_mapped_groups] > 0 } {
+            template::form::set_error actors parties_$role_id "The following groups are not mapped to any roles: [join $uncast_mapped_groups ", "]."
+            break
+        }
+
         wizard forward
     }
 
-wizard submit actors -buttons { back next finish }
+set all_tabs_complete_p [simulation::template::ready_for_casting_p -workflow_id $workflow_id]
+if { $all_tabs_complete_p } {
+    wizard submit actors -buttons { back next finish }
+} else {
+    wizard submit actors -buttons { back next }
+}

@@ -18,6 +18,9 @@ ad_form \
 
 set prop_options [simulation::object::get_object_type_options -object_type "sim_prop" -null_label "--Not Yet Selected--"]
 
+set prop_count [llength $prop_options]
+set missing_props_p 0
+
 set actions [list]
 
 db_foreach tasks {
@@ -61,8 +64,13 @@ db_foreach tasks {
                        {value $row(attachment_num)}]]
 
         for { set i 1 } { $i <= $row(attachment_num) } { incr i } {
+            if { $prop_count == "1" } {
+                set missing_props_p 1
+                break
+            }
+
             ad_form -extend -name tasks -form \
-                [list [list attachment_$row(action_id)_$i:integer(select),optional \
+                [list [list attachment_$row(action_id)_${i}:integer(select) \
                            {label "Attachment $i"} \
                            {options $prop_options} \
                            {help_text "Select from existing attachments or <a
@@ -71,6 +79,10 @@ href=\"../citybuild/object-edit\">add a new prop</a> and refresh this page."}]]
 
         lappend actions $row(action_id)
     }
+}
+
+if { $missing_props_p } {
+    return
 }
 
 wizard submit tasks -buttons { back next }

@@ -405,56 +405,6 @@ ad_proc -public simulation::template::get_parties {
     }
 }
 
-ad_proc -public simulation::template::ready_for_casting_p {
-    {-workflow_id ""}
-    {-role_empty_count ""}
-    {-prop_empty_count ""}
-} {
-    Return 1 if the simulation is ready for casting and 0 otherwise.
-    Goes to the database if workflow_id is provided and uses the other
-    proc parameters otherwise to do the test.
-
-    @param workflow_id    The id of the simulation to check. The proc
-                            will go to the database to get info about the simulation
-                            if id is provided.
-    @param role_empty_count The number of empty roles for the simulation. Must be
-                            provided if workflow_id is not.
-    @param prop_empty_count The number of empty properties for the simulation. Must be
-                            provided if workflow_id is not.
-
-    @author Peter Marklund
-} {
-    if { ![empty_string_p $workflow_id] } {
-        # workflow_id provided
-
-        set role_empty_count [db_string role_empty_count {
-            select count(*) 
-              from sim_roles sr,
-                   workflow_roles wr
-             where sr.role_id = wr.role_id
-               and wr.workflow_id = :workflow_id
-               and character_id is null
-         }]
-
-         set prop_empty_count [db_string prop_empty_count { 
-             select count(*) 
-              from sim_task_object_map stom,
-                   workflow_actions wa
-             where stom.task_id = wa.action_id
-               and wa.workflow_id = :workflow_id
-               and stom.object_id is null
-         }]
-        
-    } else {
-        # No workflow_id required
-        if { [empty_string_p $role_empty_count] || [empty_string_p $prop_empty_count] } {
-            error "When no workflow_id is provided you must provide role_empty_count and prop_empty_count"
-        }        
-    }
-
-    return [expr [string equal $role_empty_count 0] && [string equal $prop_empty_count 0]]
-}
-
 ad_proc -public simulation::template::associate_object {
     -template_id:required
     -object_id:required
@@ -608,8 +558,6 @@ ad_proc -public simulation::template::autocast {
                          -object_id $sim_case_id \
                          -workflow_short_name $workflow_short_name]
 
-        ns_log Notice "pm debug sim_case_id=$sim_case_id case_id=$case_id"
-        
         # Assign users from the specified group for each role
         array unset row
         array set row [list]
@@ -618,7 +566,6 @@ ad_proc -public simulation::template::autocast {
             array set one_role $roles($role_id)
 
             set assignees [list]
-            ns_log Notice "pm debug case_id=$case_id before users_per_case loop with role_id=$role_id [array get one_role]"
             for { set i 0 } { $i < $one_role(users_per_case) } { incr i } {
                 # Get user from random group mapped to role
                 set group_id [lindex [util::randomize_list $one_role(parties)] 0]
@@ -630,12 +577,10 @@ ad_proc -public simulation::template::autocast {
                     set group_members($group_id) [lreplace $group_members($group_id) 0 0]
                     # Reduce the total_users count
                     incr total_users -1
-                    ns_log Notice "pm debug case_id=$case_id group_id=$group_id - group has more users. appending [lindex $group_members($group_id) 0] to assignees. assignees=$assignees . Subtracting one from total users to $total_users"
                 } else {
                     # Current group exhausted, use current user
                     lappend assignees [ad_conn user_id]
                     # Don't add the admin more than once
-                    ns_log Notice "pm debug case_id=$case_id group_id=$group_id - group has no more users, appending professor [ad_conn user_id]"
                     break
                 }
             }
@@ -648,7 +593,6 @@ ad_proc -public simulation::template::autocast {
         #    set role($short_name) [lsort -unique $role($short_name)]
         #}
 
-        ns_log Notice "pm debug case_id=$case_id role::assign [array get row]"
         workflow::case::role::assign \
             -case_id $case_id \
             -array row \
@@ -877,6 +821,30 @@ ad_proc -public simulation::template::get_inst_state {
     return [array get tab_complete_p]
 }
 
+ad_proc -public simulation::template::ready_for_casting_p {
+    {-workflow_id ""}
+    {-state ""}
+} {
+    Return 1 if the template is ready for casting and 0 otherwise.
+
+    @author Peter Marklund
+} {
+    if { [empty_string_p $state] } {
+        set state [get_inst_state -workflow_id $workflow_id]
+    }
+
+    array set state_array $state
+
+    set incomplete_tabs_count 0
+    foreach url [array names state_array] {
+        if { !$state_array($url) } {
+            incr incomplete_tabs_count
+        }
+    }
+
+    return [expr $incomplete_tabs_count <= 1]
+}
+
 ad_proc -public simulation::template::get_wizard_tabs {} {
     Return a list with the url:s (page script names) of the pages
     in the instantiation wizard. 
@@ -888,7 +856,6 @@ ad_proc -public simulation::template::get_wizard_tabs {} {
         map-characters
         map-tasks
         simulation-participants
-        participants_complete
         simulation-casting-3
     }
 }
@@ -902,21 +869,18 @@ ad_proc -public simulation::template::get_state_pretty {
 } {
     array set state_array $state
 
-    ns_log Notice "pm debug state=$state"
-
     array set states_pretty {
         simulation-edit          "Not started"
         map-characters           "Settings completed"
         map-tasks                "Roles completed"
         simulation-participants  "Tasks completed"
         participants_complete    "Participants completed"
-        simulation-casting-3     "Casting begun"
+        simulation-casting-3     "Ready for casting"
     }
     
     set next_index 0
     foreach url [get_wizard_tabs] {
         if { $state_array($url) } {
-            ns_log Notice "pm debug setting next_url $url"
             incr next_index
         } else {
             break

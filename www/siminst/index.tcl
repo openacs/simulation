@@ -74,22 +74,11 @@ db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url si
                    workflow_roles wr
              where sr.role_id = wr.role_id
                and wr.workflow_id = w.workflow_id) as role_count,
-           (select count(*) 
-              from sim_roles sr,
-                   workflow_roles wr
-             where sr.role_id = wr.role_id
-               and wr.workflow_id = w.workflow_id
-               and character_id is null) as role_empty_count,
            (select sum(coalesce(attachment_num,0))
               from sim_tasks st,
                    workflow_actions wa
              where st.task_id = wa.action_id
                and wa.workflow_id = w.workflow_id) as prop_count,
-           (select count(*) 
-              from sim_task_object_map stom,
-                   workflow_actions wa
-             where stom.task_id = wa.action_id
-               and wa.workflow_id = w.workflow_id) as prop_not_empty_count,
            (select count(*)
               from workflow_actions wa
              where wa.workflow_id = w.workflow_id) as tasks           
@@ -103,8 +92,11 @@ db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url si
     $sim_in_dev_filter_sql
 " {
     set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
-    set prop_empty_count [expr $prop_count - $prop_not_empty_count]
-    if { [simulation::template::ready_for_casting_p -role_empty_count $role_empty_count -prop_empty_count $prop_empty_count] } {
+
+    # TODO: getting the states here will not scale well (executes a handful queries for every template listed)
+    set state [simulation::template::get_inst_state -workflow_id $workflow_id]
+
+    if { [simulation::template::ready_for_casting_p -state $state] } {
         set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id return_url {[ad_return_url]}}]
     } else {
         set cast_url ""
@@ -112,8 +104,6 @@ db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url si
     set map_roles_url [export_vars -base "${base_url}siminst/map-characters" { workflow_id }]
     set sim_tasks_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
-    # TODO: getting the states here will not scale well (executes a handful queries for every template listed)
-    set state [simulation::template::get_inst_state -workflow_id $workflow_id]
     set state_pretty [simulation::template::get_state_pretty -state $state]
 }
 

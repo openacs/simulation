@@ -1,6 +1,6 @@
 <if @num_groups@ eq 0>
 
-  <div class="general-message">There are no participants selected, so casting is not yet possible. On the previous tab, please select participants or allow open enrollment.</div>
+  <div class="general-message">There are no participants selected, so casting is not yet possible. On the previous tab, please select participants, or allow open enrollment on the first tab.</div>
 
 </if>
 
@@ -8,12 +8,16 @@
 
 <p>
     Each role may be played by one or by
-    many users.  Each role can only be played by users in the group
-    specified below.  If a group is not selected for any role, user
+    many users.  Each role can only be played by users in the groups
+    specified below.  If a group is not selected for any role, users
     in that group will not be cast in the simulation
 </p>
 
 <formtemplate id="actors"></formtemplate>
+
+<if @all_tabs_complete_p@ false>
+  <div class="general-message">You cannot submit this form until you have submitted all forms on the previous tabs.</div>
+</if>
 
     <p>In <b>Automatic</b> casting, only
 
@@ -47,31 +51,6 @@
   TODO: B: (1h) Show total number of users per case. Javascript. Lars?
 </p>
 
-<p>
-  TODO: (2h) Make sure rule for checking each tab is correct
-</p>
-
-<p> 
-  TODO: (3h) put a warning next to the finish button for any incomplete
-  requirements, using the same tests we use to determine if tabs are
-  complete.  Should include:
-
-  Warnings:
-  <ul>
-  <li>missing attachments
-  </ul>
-
-  Don't show wizard button if any of these are true:
-  <ul>
-  <li>missing dates
-  <li>any invited or enrolled groups that aren't cast to any roles
-  </ul>
-</p>
-
-<p>
-  TODO: B: finish button should appear on every tab
-</p>
- 
 <p>
   TODO: (8h) make sure that we are generating all of the notifications
   that we should:
