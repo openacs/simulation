@@ -19,8 +19,10 @@
         <requires url="workflow" version="1.1d1"/>
 
         <callbacks>
-            <callback type="after-instantiate"  proc="simulation::apm::after_instantiate"/>
             <callback type="after-install"  proc="simulation::apm::after_install"/>
+            <callback type="after-instantiate"  proc="simulation::apm::after_instantiate"/>
+            <callback type="after-mount"  proc="simulation::apm::after_mount"/>
+            <callback type="before-unmount"  proc="simulation::apm::before_unmount"/>
         </callbacks>
         <parameters>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="MapXMLFilePath"  description="The full file path for the XML file with info about objects to be displayed on the simulation map. If left empty no XML file will be generated."/>

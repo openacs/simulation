@@ -177,12 +177,8 @@ ad_proc simulation::casting_groups_with_counts {
 
     @author Peter Marklund
 } {
-    # lookup package_id of the nearest subsite
-    subsite::get -array closest_subsite    
-
     # Lookup the application group of the subsite
-    set subsite_group_id [application_group::group_id_from_package_id \
-                              -package_id $closest_subsite(package_id)]
+    set subsite_group_id [subsite_group_id]
 
     # Get all groups related to (children of) the subsite group (only one level down)
     set enrollment_clause [ad_decode $enrolled_only_p "0" "" "and  exists (select 1
@@ -192,6 +188,7 @@ ad_proc simulation::casting_groups_with_counts {
                          and type = 'auto_enroll'
                        )"]
     set groups_list [list]
+    set permission_group_name [permission_group_name]
     db_foreach subsite_group_options "
         select g.group_name,
                g.group_id,
@@ -211,12 +208,68 @@ ad_proc simulation::casting_groups_with_counts {
                        where pamm.party_id = g.group_id
                          and pamm.member_id = u.user_id
                       )
+          and g.group_name <> :permission_group_name
           $enrollment_clause
     " {
         lappend groups_list $group_id [list $group_name $n_users]
     }
 
     return $groups_list
+}
+
+ad_proc -private simulation::permission_group_name {} {
+    Returns the name of the group holding all the user groups governing
+    permission in the simulation package.
+} {
+    return "Simulation Permission Groups"
+}
+
+ad_proc -private simulation::permission_group_id {
+    {-package_id ""}
+} {
+    Returns the id of the group holding all the user groups governing
+    permission in the simulation package.
+
+    @return The id of the permission group or
+
+    @see simulation::permission_group_name
+} {
+    if { [empty_string_p $package_id] } {
+        set package_id [ad_conn package_id]
+    }
+
+    set subsite_group_id [subsite_group_id -package_id $package_id]
+
+    set permission_group_name [permission_group_name]
+
+    # The permission group is a child of the subsite application group with a certain name
+    return [db_string permission_group_id {
+        select g.group_id
+        from acs_rels ar,
+             groups g
+        where ar.object_id_one = :subsite_group_id
+          and ar.object_id_two = g.group_id
+          and g.group_name = :permission_group_name
+    } -default ""]
+}
+
+ad_proc -private simulation::subsite_group_id {
+    {-package_id ""}
+} {
+    if { [empty_string_p $package_id] } {
+        set package_id [ad_conn package_id]
+    }
+
+    # lookup package_id of the nearest subsite
+    array set package_info [site_node::get_from_object_id -object_id $package_id]
+    set subsite_package_id [site_node::closest_ancestor_package -node_id $package_info(node_id) -package_key acs-subsite]
+    array set closest_subsite [site_node::get_from_object_id -object_id $subsite_package_id]
+
+    # Lookup the application group of the subsite
+    set subsite_group_id [application_group::group_id_from_package_id \
+                              -package_id $closest_subsite(package_id)]
+
+    return $subsite_group_id
 }
 
 template_tag relation { params } {
