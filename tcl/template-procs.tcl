@@ -122,6 +122,20 @@ ad_proc -public simulation::template::get {
     db_1row select_template {} -column_array row
 }
 
+ad_proc -public simulation::template::get_workflow_id_from_action {
+    {-action_id:required}
+} {
+    Given an action_id, return the workflow_id
+
+    @param action_id ID of action in workflow
+} {
+    return [db_string select_workflow_id {
+        select wa.workflow_id
+          from workflow_actions wa
+         where wa.action_id = :action_id
+    }]
+}
+
 ad_proc -public simulation::template::delete {
     {-workflow_id:required}
 } {

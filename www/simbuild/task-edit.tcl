@@ -21,20 +21,20 @@ ad_page_contract {
 #
 ######################################################################
 
-if { [info exists workflow_id] } {
-    workflow::get -workflow_id $workflow_id -array sim_template_array    
-} else {
-    set workflow_id ""
+# if we got task_id instead of workflow_id, figure out workflow_id
+if { ![info exists workflow_id] } {
+    set workflow_id [simulation::template::get_workflow_id_from_action -action_id $action_id]
 }
+simulation::template::get -workflow_id $workflow_id -array sim_template_array    
 
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
 
 if { ![ad_form_new_p -key action_id] } {
     workflow::action::fsm::get -action_id $action_id -array task_array
-
     set page_title "Edit Task $task_array(pretty_name)"
 } else {
+
     set page_title "Add Task to $sim_template_array(pretty_name)"
 }
 set context [list [list "." "SimBuild"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
