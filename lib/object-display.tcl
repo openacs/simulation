@@ -28,7 +28,12 @@ item::get_content \
     -revision_id $item(revision_id) \
     -array content
 
+if { [info exists content(text)] } {
 set content_html [ad_html_text_convert -from $content(mime_type) -to "text/html" -- $content(text)] 
+} else {
+    set content(text) ""
+    set content(html) ""
+}
 
 
 ######

@@ -1,8 +1,18 @@
 ad_page_contract {
     List workflows designated as templates (but not simulations or cases) on this system.
 }
-set page_title "Templates"
+
+set page_title "Simulation Templates"
 set context [list $page_title]
+set package_id [ad_conn package_id]
+
+######################################################################
+#
+# sim_templates
+#
+# a list of templates
+#
+######################################################################
 
 template::list::create \
     -name sim_templates \
@@ -45,8 +55,6 @@ template::list::create \
             }
         }
     }
-
-set package_id [ad_conn package_id]
 
 db_multirow -extend { edit_url view_url delete_url } sim_templates select_sim_templates "
     select w.workflow_id,

@@ -25,7 +25,7 @@ set context [list [list "sim-template-list" "Sim Templates"] [list "sim-template
 #
 # A list of objects to add to a chosen workflow
 # At the moment, this is all objects
-# TODO: add checkbox to allow adding multiple objects in one go
+# TODO: add checkbox to allow adding multiple objects in one pass
 #
 ######################################################################
 
@@ -45,7 +45,6 @@ template::list::create \
 	title { 
 	    label "Title"
 	    orderby r.title
-            link_url_col view_url
 	}
 	description {
 	    label "Description"
@@ -55,7 +54,7 @@ template::list::create \
             sub_class narrow
             link_url_col add_to_sim_template_url
             display_template {
-                <img src="/resources/acs-subsite/Add16.gif" height="16" width="16" border="0" alt="Add to Template">
+                <img src="/resources/acs-subsite/Add16.gif" height="16" width="16" border="0" alt="Add to Template" /> Add to $workflow(pretty_name)
             }
         }
     }

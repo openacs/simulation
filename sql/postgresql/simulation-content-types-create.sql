@@ -35,7 +35,7 @@ select content_type__create_attribute(
     'Stylesheets',                 -- pretty_plural
     1,                             -- sort_order
     null,                          -- default_value
-    'integer constraint sim_char_stylesheet_fk references sim_stylesheets(stylesheet_id)'                          -- column_spec
+    'integer constraint sim_char_stylesheet_fk references cr_items'                          -- column_spec
 );
 
 -- sim_prop
@@ -58,7 +58,7 @@ select content_type__create_attribute(
     'Stylesheets',                 -- pretty_plural
     1,                             -- sort_order
     null,                          -- default_value
-    'integer constraint sim_char_stylesheet_fk references sim_stylesheets(stylesheet_id)'                          -- column_spec
+    'integer constraint sim_prop_stylesheet_fk references cr_items'                          -- column_spec
 );
 
 
@@ -116,5 +116,5 @@ select content_type__create_attribute(
     'Stylesheets',                 -- pretty_plural
     4,                             -- sort_order
     null,                          -- default_value
-    'integer constraint sim_char_stylesheet_fk references sim_stylesheets(stylesheet_id)'                          -- column_spec
+    'integer constraint sim_home_stylesheet_fk references cr_items'                          -- column_spec
 );

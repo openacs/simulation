@@ -6,6 +6,8 @@ ad_page_contract {
 } -properties {
 }
 
+set package_id [ad_conn package_id]
+
 ######################################################################
 #
 # active_cases
@@ -36,7 +38,7 @@ template::list::create \
 #---------------------------------------------------------------------
 # active_cases database query
 #---------------------------------------------------------------------
-# this is currently a dummy query.  For Phase 2, it should get all cases
+# this is currently a dummy query.  It should get all cases
 # for which the logged-in user has a role, and a count of active tasks
 # for that role.
 
@@ -75,13 +77,16 @@ template::list::create \
 #---------------------------------------------------------------------
 # object_count database query
 #---------------------------------------------------------------------
+# this query should be package-sensitive.  Not sure how to do that - 
+# should it return only items in folders associated with the package id?
+# if so, how do we also count items in child folders?
 
 db_multirow  -extend { view_url } object_count object_count_select "
-    select object_type as type,
-           count(object_type) as count
-      from acs_objects
-     where object_type like 'sim_%'
-     group by object_type
+    select content_type as type,
+           count(content_type) as count
+      from cr_items
+     where content_type like 'sim_%'
+     group by content_type
 " {
     set view_url [export_vars -base "object-list" { type }]
 }

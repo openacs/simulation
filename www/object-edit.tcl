@@ -9,7 +9,7 @@ ad_page_contract {
     {content_type {sim_prop}}
 }
 
-#TODO: object type should be non-editable for non-new things
+#TODO: object type should be changable in new mode
 
 #---------------------------------------------------------------------
 # Determine if we are in edit mode or display mode
@@ -30,6 +30,9 @@ if { ![ad_form_new_p -key item_id] } {
     # Get data for existing object
     array set item_info [bcms::item::get_item -item_id $item_id -revision live]
     item::get_revision_content $item_info(revision_id)
+    if {! [info exists content(text)] } {
+        set content(text) ""
+    }
     set content_type $item_info(content_type)
     set page_title "Edit Sim Object"
 } else {
@@ -59,9 +62,9 @@ ad_form -name object -cancel_url object-list -form {
         {html {size 50}}
     }
     {name:text,optional
-        {label "URL name"}
+        {label "URI"}
         {html {size 50}}
-        {help_text {[ad_decode [ad_form_new_p -key item_id] 1 "This will become part of the URL for the object." ""]}}
+        {help_text {[ad_decode [ad_form_new_p -key item_id] 1 "Leave blank to default to Title.  This will become part of the URL for the object." ""]}}
         {mode {[ad_decode [ad_form_new_p -key item_id] 1 "edit" "display"]}}
     }
     {description:text(textarea),optional
@@ -71,13 +74,13 @@ ad_form -name object -cancel_url object-list -form {
 }
 
 
-#####
+######################################################################
 #
 # Content edit/upload method
 #
 # Add a form widget appropriate for the content attribute of the object type
 #
-#####
+######################################################################
 
 array set content_method {
     sim_character richtext

@@ -37,12 +37,10 @@ set package_id [ad_conn package_id]
 
 set char_options [db_list_of_lists character_option_list "
     select ci.name,
-           a.object_id
+           cr.item_id
       from cr_revisions cr,
-           cr_items ci,
-           acs_objects a
-     where a.object_type = 'sim_character'
-       and cr.revision_id = a.object_id
+           cr_items ci
+     where ci.content_type = 'sim_character'
        and ci.item_id = cr.item_id
 "]
 

@@ -5,13 +5,10 @@
 
 <formtemplate id="sim_template"></formtemplate>
 
-<if @mode@ eq edit>
+<if @workflow_id@ not nil>
 <h4>Associated Sim Objects</h4>
-<p><listtemplate name="sim_objects"></listtemplate></p>
-<p><a href="sim-template-add-objects?workflow_id=@workflow_id@">Add Sim
-Objects to this Workflow</a>
+<include src="sim-template-objects" workflow_id=@workflow_id@ package_id=@package_id@>
 <h4>Roles</h4>
-<p><listtemplate name="roles"></listtemplate></p>
-<p><a href="role-edit?workflow_id=@workflow_id@">Add a role</a>
+<include src="sim-template-roles" workflow_id=@workflow_id@ package_id=@package_id@>
 <h4>Tasks</h4>
 </if>

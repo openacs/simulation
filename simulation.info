@@ -8,7 +8,7 @@
     <singleton-p>f</singleton-p>
     <auto-mount>simulation</auto-mount>
 
-    <version name="0.1d" url="http://openacs.org/repository/download/apm/simulation-0.1d.apm">
+    <version name="0.3d" url="http://openacs.org/repository/download/apm/simulation-0.3d.apm">
         <owner url="mailto:joel@collaboraid.net">Joel Aufrecht</owner>
         <summary>Workflow-based task simulator.</summary>
         <release-date>2003-10-13</release-date>

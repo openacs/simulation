@@ -8,7 +8,7 @@ ad_page_contract {
     {type:optional}
 }
 
-set page_title "Objects"
+set page_title "Sim Objects"
 set context [list $page_title]
 
 if { ![exists_and_not_null parent_id] } {
@@ -31,7 +31,7 @@ template::list::create \
 	    orderby upper(ot.pretty_name)
         }
 	title { 
-	    label "Title"
+	    label "Name"
 	    orderby r.title
             link_url_col view_url
 	}
