@@ -155,16 +155,45 @@ if { [string equal $trigger_type "user"] && [string equal $task_type "message"] 
     }
 }
 
+
+switch $trigger_type {
+    user - message - workflow - parallel - dynamic {
+        ad_form -extend -name task -form { 
+            {timeout_seconds:integer(text),optional
+                {label "Timeout"}
+                {after_html "seconds"}
+            }
+        }
+    }
+    time {
+        ad_form -extend -name task -form { 
+            {timeout_seconds:integer(text)
+                {label "Timeout"}
+                {after_html "seconds"}
+            }
+        }
+    }
+}
+
 ad_form -extend -name task -form {
     {description:richtext,optional
         {label "Task Description"}
         {html {cols 60 rows 8}}
         {help_text "Suggested text; can be edited when template is instantiated."}
     }
-    {attachment_num:integer(text)
-        {label "Number of attachments"}
-        {help_text "These are placeholders that are matched to props by the case author during SimInst"}
-        {html {size 2}}
+}
+
+if { [string equal $trigger_type "user"] } {
+    ad_form -extend -name task -form {
+        {attachment_num:integer(text)
+            {label "Number of attachments"}
+            {help_text "These are placeholders that are matched to props by the case author during SimInst"}
+            {html {size 2}}
+        }
+    }
+} else {
+    ad_form -extend -name task -form {
+        {attachment_num:integer(hidden) {value 0}}
     }
 }
 
@@ -197,7 +226,7 @@ ad_form -extend -name task -edit_request {
     foreach elm { 
         pretty_name pretty_past_tense new_state_id 
         assigned_role recipient_roles
-        attachment_num trigger_type
+        attachment_num trigger_type timeout_seconds
     } {
         set $elm $task_array($elm)
     }
@@ -249,7 +278,7 @@ ad_form -extend -name task -edit_request {
     # Removed: child_workflow_id child_role_map
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
-        new_state_id 
+        new_state_id timeout_seconds
         recipient_roles attachment_num trigger_type
     } {
         set row($elm) [set $elm]
