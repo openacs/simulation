@@ -417,6 +417,7 @@ db_foreach select_attributes {
 } {
     lappend attr_names $attribute_name
     set elm_name attr__${content_type}__${attribute_name}
+    set $elm_name $default_value
     set elm_datatype $form_datatype($datatype)
     
     set elm_widget [get_metadata_property \
