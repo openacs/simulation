@@ -306,6 +306,17 @@ select content_type__create_attribute(
     'integer'                      -- column_spec
 );
 
+select content_type__create_attribute(
+    'sim_message',                 -- content_type
+    'entry_id',                    -- attribute_name
+    'integer',                     -- datatype
+    'Entry ID',                    -- pretty_name
+    'Entry IDs',                   -- pretty_plural
+    4,                             -- sort_order
+    null,                          -- default_value
+    'integer'                      -- column_spec
+);
+
 select content_type__register_relation_type (
     'sim_message',                -- content_type
     'sim_prop',                   -- target_type

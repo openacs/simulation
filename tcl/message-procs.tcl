@@ -18,6 +18,7 @@ ad_proc -public simulation::message::new {
     {-content_type "sim_message"}
     {-item_name ""}
     {-attachments ""}
+    {-entry_id {}}
 } {
     Create new simulation message.
     
@@ -46,7 +47,8 @@ ad_proc -public simulation::message::new {
         set attributes [list \
                             [list from_role_id $from_role_id] \
                             [list to_role_id $to_role_id] \
-                            [list case_id $case_id]]
+                            [list case_id $case_id] \
+                            [list entry_id $entry_id]]
         
         set revision_id [bcms::revision::add_revision \
                              -item_id $item_id \

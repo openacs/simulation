@@ -79,10 +79,10 @@ if { ![empty_string_p $action(recipients)] } {
             set body_mime_type [template::util::richtext::get_property "format" $body]
             
             db_transaction {
-                workflow::case::action::execute \
-                    -enabled_action_id $enabled_action_id \
-                    -comment $body_text \
-                    -comment_mime_type $body_mime_type
+                set entry_id [workflow::case::action::execute \
+                                  -enabled_action_id $enabled_action_id \
+                                  -comment $body_text \
+                                  -comment_mime_type $body_mime_type]
                 
                 foreach recipient_id $action(recipients) {
                     simulation::message::new \
@@ -92,7 +92,8 @@ if { ![empty_string_p $action(recipients)] } {
                         -subject $subject \
                         -body $body_text \
                         -body_mime_type $body_mime_type \
-                        -attachments $attachments
+                        -attachments $attachments \
+                        -entry_id $entry_id
                 }   
             }
             
@@ -117,14 +118,14 @@ if { ![empty_string_p $action(recipients)] } {
         } -on_submit {
 
             db_transaction {
-                simulation::ui::forms::document_upload::insert_document \
-                    $case_id $role_id $item_id $document_file $title $description
+                set entry_id [workflow::case::action::execute \
+                                  -case_id $case_id \
+                                  -action_id $action_id \
+                                  -comment "Document [lindex $document_file 0] uploaded" \
+                                  -comment_mime_type "text/plain"]
 
-                workflow::case::action::execute \
-                    -case_id $case_id \
-                    -action_id $action_id \
-                    -comment "Document [lindex $document_file 0] uploaded" \
-                    -comment_mime_type "text/plain"
+                simulation::ui::forms::document_upload::insert_document \
+                    $case_id $role_id $item_id $document_file $title $description $entry_id
             }
 
             ad_returnredirect [export_vars -base tasks { case_id role_id }]

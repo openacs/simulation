@@ -164,7 +164,7 @@ template::list::create \
     -elements {
         timestamp {
             label "Time"
-            display_eval {[lc_time_fmt $creation_date_ansi "%X %x"]}
+            display_eval {[lc_time_fmt $creation_date_ansi "%x %X"]}
         }
         role_pretty {
             label "Role"
@@ -175,10 +175,11 @@ template::list::create \
         }
         action_pretty {
             label "Action"
+            link_url_col action_url
         }
     }
 
-db_multirow -extend { message } log select_log {
+db_multirow -extend { action_url } log select_log {
     select l.entry_id,
            l.case_id,
            l.action_id,
@@ -188,7 +189,15 @@ db_multirow -extend { message } log select_log {
            role.pretty_name as role_pretty,
            io.creation_user,
            iou.first_names || ' ' || iou.last_name as user_name,
-           to_char(io.creation_date, 'YYYY-HH-MM HH24:MI:SS') as creation_date_ansi
+           to_char(io.creation_date, 'YYYY-HH-MM HH24:MI:SS') as creation_date_ansi,
+           (select min(item_id)
+            from   sim_messagesx
+            where  entry_id = l.entry_id) as message_item_id,
+           (select min(name) 
+            from   sim_case_role_object_map,
+                   cr_items
+            where  entry_id = l.entry_id
+            and    item_id = object_id) as document_name
     from   workflow_case_log l join 
            workflow_actions a using (action_id) join 
            cr_items i on (i.item_id = l.entry_id) join 
@@ -201,6 +210,12 @@ db_multirow -extend { message } log select_log {
     and    a.trigger_type = 'user'
     order  by io.creation_date
 } {
-
+    if { ![empty_string_p $message_item_id] } {
+        set action_url [export_vars -base message { case_id role_id { item_id $message_item_id } }]
+    } elseif { ![empty_string_p $document_name] } {
+        set action_url [simulation::object::content_url -name $document_name]
+    } else {
+        set action_url {}
+    }
 }
 

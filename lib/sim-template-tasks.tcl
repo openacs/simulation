@@ -248,9 +248,9 @@ db_multirow -extend $extend tasks select_tasks "
     }
 
     if { $counter > 1 } {
-        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction up } { return_url [ad_return_url] } }]
+        set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction up } { return_url "[ad_return_url]\#tasks" } }]
     }
-    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction down } { return_url [ad_return_url] } }]
+    set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction down } { return_url "[ad_return_url]\#tasks" } }]
 
     switch $trigger_type {
         workflow - parallel - dynamic {

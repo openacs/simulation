@@ -163,6 +163,8 @@ create table sim_case_role_object_map (
                                         on delete cascade,
     order_n             integer,
     relation_tag        varchar(100),
+    entry_id            integer         constraint scrom_case_log_fk
+                                        references workflow_case_log,
     constraint scrom_pk
       primary key (role_id, object_id, case_id, relation_tag)
 );

@@ -66,6 +66,7 @@ ad_proc -public simulation::ui::forms::document_upload::insert_document {
     document_file 
     title 
     description
+    {entry_id {}}
 } {
     Does the document insertion in the DB.
 
@@ -102,9 +103,9 @@ ad_proc -public simulation::ui::forms::document_upload::insert_document {
         set relation_tag "portfolio"
         db_dml add_document_to_portfolio {
             insert into sim_case_role_object_map
-            (case_id, object_id, role_id, relation_tag)
+            (case_id, object_id, role_id, relation_tag, entry_id)
             values
-            (:case_id, :item_id, :role_id, :relation_tag)
+            (:case_id, :item_id, :role_id, :relation_tag, :entry_id)
         }
     }
 }

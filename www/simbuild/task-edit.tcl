@@ -128,11 +128,6 @@ ad_form -extend -name task -form {
         {label "Task Name"}
         {html {size 50}}
     }
-    {pretty_past_tense:text,optional
-        {label "Task name in log"}
-        {html {size 50}}
-        {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
-    }
     {trigger_type:text(radio)
         {label {[ad_decode $num_sub_actions 0 "Trigger Type" "Trigger Type<br>(Cannot edit because<br>task has child tasks)"]}}
         {mode {[ad_decode $num_sub_actions 0 "" "display"]}}
@@ -269,7 +264,7 @@ ad_form -extend -name task -edit_request {
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]
 
     foreach elm { 
-        pretty_name pretty_past_tense new_state_id 
+        pretty_name new_state_id 
         assigned_role recipient_roles
         attachment_num trigger_type timeout_seconds parent_action_id
     } {
@@ -312,10 +307,7 @@ ad_form -extend -name task -edit_request {
         }
     }
 
-    # Default pretty_past_tense
-    if { [empty_string_p $pretty_past_tense] } {
-        set pretty_past_tense $pretty_name
-    }
+    set pretty_past_tense $pretty_name
 
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
