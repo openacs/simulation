@@ -11,20 +11,29 @@ set case_url [export_vars -base case { case_id role_id }]
 set page_title "Notifications"
 set context [list [list "." "SimPlay"] [list $case_url $case(label)] $page_title]
 
+set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
 set return_url [ad_return_url]
 
 multirow create notifications url label title subscribed_p
 
-foreach type { 
-    workflow_assignee simplay_message
-} {
+set types {workflow_assignee simplay_message}
+
+set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
+if { $adminplayer_p } {
+    lappend types workflow
+}
+
+foreach type $types {
     switch $type {
         workflow_assignee {
             set pretty_name "all tasks you're assigned to"
         }
         simplay_message {
             set pretty_name "all messages you receive"
+        }
+        workflow {
+            set pretty_name "All tasks in the simulation"
         }
         default {
             error "Unknown type"

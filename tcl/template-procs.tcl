@@ -526,6 +526,14 @@ casting page at ${casting_page_url} to choose case or role.
             -subject $subject\
             -body $body
     }
+
+    # Sign up the user for email notification of received messages
+    notification::request::new \
+        -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
+        -user_id $user_id \
+        -object_id [ad_conn package_id] \
+        -interval_id [notification::get_interval_id -name "instant"] \
+        -delivery_method_id [notification::get_delivery_method_id -name "email"]
     
     if { $admin_p } {
         # Notify admin of all activity in the workflow. In particular this includes timed out tasks.
@@ -537,13 +545,6 @@ casting page at ${casting_page_url} to choose case or role.
             -delivery_method_id [notification::get_delivery_method_id -name "email"]
         
     } else {
-        # Sign up the user for email notification of received messages
-        notification::request::new \
-            -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \
-            -user_id $user_id \
-            -object_id [ad_conn package_id] \
-            -interval_id [notification::get_interval_id -name "instant"] \
-            -delivery_method_id [notification::get_delivery_method_id -name "email"]
 
         # Sign up the user for email notification of assigned tasks
         notification::request::new \
