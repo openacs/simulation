@@ -6,6 +6,7 @@ ad_page_contract {
     case_id:integer
     role_id:integer
     item_id:optional
+    {return_url {[export_vars -base case { case_id role_id }]}}
 }
 
 simulation::case::assert_user_may_play_role -case_id $case_id -role_id $role_id
@@ -22,12 +23,12 @@ foreach one_role_id [workflow::case::get_user_roles -case_id $case_id] {
 
 set focus "document.document_file"
 
-ad_form -name document -export { case_id role_id workflow_id } -html {enctype multipart/form-data} \
+ad_form -name document -export { case_id role_id workflow_id return_url } -html {enctype multipart/form-data} \
     -form [simulation::ui::forms::document_upload::form_block] \
     -on_submit {
 
         simulation::ui::forms::document_upload::insert_document \
             $case_id $role_id $item_id $document_file $title
 
-        ad_returnredirect [export_vars -base case { case_id role_id }]
+        ad_returnredirect $return_url
     }
