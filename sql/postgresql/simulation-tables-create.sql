@@ -15,25 +15,28 @@ create table sim_simulations (
                                         check (enroll_type in ('closed','open')),
     casting_type          varchar(20)   constraint sim_simulations_casting_type_ck
                                         check (casting_type in ('auto','group','open')),
-    enroll_start          timestamptz,
-    enroll_end            timestamptz,
+    enroll_start                        timestamptz,
+    enroll_end                          timestamptz,
     constraint sim_simulations_enroll_end_after_start_end_ck
       check (enroll_end >= enroll_start),
-    case_start            timestamptz,
-    case_end              timestamptz,
-    send_start_note_date  timestamptz,
+    case_start                          timestamptz,
+    case_end                            timestamptz,
+    send_start_note_date                timestamptz,
     constraint sim_simulations_case_end_after_start_ck
       check (case_end >= case_start),
-    show_contacts_p       boolean default 't'
-      constraint sim_show_contacts_p_ck
-        check(show_contacts_p in ('t','f'))
-      constraint sim_show_contacts_p_nn
-        not null,
-    show_states_p       boolean default 't'
-      constraint sim_show_states_p_ck
-        check(show_states_p in ('t','f'))
-      constraint sim_show_states_p_nn
-        not null
+    show_contacts_p                     boolean default 't'
+    constraint sim_show_contacts_p_ck
+      check(show_contacts_p in ('t','f'))
+    constraint sim_show_contacts_p_nn
+      not null,
+    show_states_p                       boolean default 't'
+    constraint sim_show_states_p_ck
+      check(show_states_p in ('t','f'))
+    constraint sim_show_states_p_nn
+      not null,
+    stylesheet                          integer
+                                        constraint sim_simulations_ss_fk
+                                        references cr_items(item_id)                                        
 );
 
 select acs_object_type__create_type (

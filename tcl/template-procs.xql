@@ -18,7 +18,9 @@
                  to_char(s.enroll_end, 'YYYY-MM-DD') as enroll_end,
                  to_char(s.case_start, 'YYYY-MM-DD') as case_start,
                  to_char(s.case_end, 'YYYY-MM-DD') as case_end,
-                 to_char(s.send_start_note_date, 'YYYY-MM-DD') as send_start_note_date
+                 to_char(s.send_start_note_date, 'YYYY-MM-DD') as send_start_note_date,
+                 show_states_p,
+                 stylesheet
           from workflows w,
                sim_simulations s
           where w.workflow_id = :workflow_id

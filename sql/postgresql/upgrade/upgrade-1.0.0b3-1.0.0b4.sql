@@ -10,3 +10,9 @@ alter table sim_party_sim_map
 update sim_party_sim_map
   set multiple_cases_p = 'f'
 where multiple_cases_p is null;
+
+-- Add column sim_simulations.stylesheet
+alter table sim_simulations add 
+        stylesheet                          integer
+                                            constraint sim_simulations_ss_fk
+                                            references cr_items(item_id);

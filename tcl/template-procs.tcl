@@ -74,6 +74,7 @@ ad_proc -public simulation::template::edit {
                 sim_type suggested_duration
                 enroll_type casting_type
                 enroll_start enroll_end send_start_note_date case_start case_end
+                show_states_p stylesheet
             } {
                 if { [info exists row($attr)] } {
                     set varname attr_$attr
