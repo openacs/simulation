@@ -97,7 +97,7 @@ ad_proc ::twt::simulation::setup::citybuild_objects {} {
     }
 
     ::twt::log_section "Create properties"
-    array set characters_ld [::twt::simulation::data::properties]
+    array set properties [::twt::simulation::data::properties]
     foreach property_name [array names properties] {
         ::twt::simulation::add_object -type sim_prop -title $property_name
     }
@@ -183,49 +183,58 @@ ad_proc ::twt::simulation::setup::tilburg_template_from_spec {} {
     field fill $unique_name ~n pretty_name
     form submit
 
-    # Wizard page 1
-    form find ~n characters
+    # Wizard page 1 - Settings
+    form find ~n simulation
     form submit
 
     regexp {workflow_id=([0-9]+)} [response url] match workflow_id
 
-    # Wizard page 2
+    # Wizard page 2 - Roles
+    form find ~n characters
+    form submit ~n next
+
+    # Wizard page 3 - Tasks
     form find ~n tasks
+    # Get number of task attachments we need to set
+    set number_of_attachments 0
+    array set tilburg_spec [lindex [::twt::simulation::data::tilburg_template_spec] 1]
+    array set actions $tilburg_spec(actions)
+    foreach action_name [array names actions] {
+        array set action $actions($action_name)
+        incr number_of_attachments $action(attachment_num)
+    }
+    # Select the attachments (using the first property)
+    for { set i 1 } { $i <= $number_of_attachments } { incr i } {
+        field find -next ~n {attachment_[0-9]}
+        field select [lindex [::twt::simulation::data::properties] 0]
+    }
     form submit ~n next
 
-    # Wizard page 3
+    # Wizard page 4 - Participants
     form find ~n simulation
+    field find ~n __group_ ~t radio
+    field select2 ~v "auto_enroll"
+    field find -next ~n __group_ ~t radio
+    field select2 ~v "auto_enroll"
+    field find -next ~n __group_ ~t radio
+    field select2 ~v "invited"
+    field find -next ~n __group_ ~t radio
+    field select2 ~v "invited"
     form submit ~n next
 
-    # Enrollment (page 4)
-    form find ~n simulation
-    form submit ~n next
-
-    # Participants (page 5)
-    form find ~n simulation
-    field find ~n __auto_enroll ~t checkbox
-    field check
-    field find ~n __auto_enroll ~t checkbox
-    field check
-    field find ~n __auto_enroll ~t checkbox
-    field check
-    field find ~n __auto_enroll ~t checkbox
-    field check
-    form submit ~n next
-
-    # Wizard page 6
+    # Wizard page 5 - Casting
     form find ~n actors
     field find ~n parties_ ~t checkbox
     field check
-    field find ~n parties_ ~t checkbox
+    field find -next ~n parties_ ~t checkbox
     field check
-    field find ~n parties_ ~t checkbox
+    field find -next ~n parties_ ~t checkbox
     field check
-    field find ~n parties_ ~t checkbox
+    field find -next ~n parties_ ~t checkbox
     field check
-    field find ~n parties_ ~t checkbox
+    field find -next ~n parties_ ~t checkbox
     field check
-    field find ~n parties_ ~t checkbox
+    field find -next ~n parties_ ~t checkbox
     field check
     form submit ~n finish
 
