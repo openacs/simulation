@@ -32,7 +32,7 @@ set adminplayer_p [permission::permission_p -object_id $package_id -privilege si
 
 if { !$adminplayer_p } {
     if { ![exists_and_not_null case_id] || ![exists_and_not_null role_id] } {
-        error [_ simulation.lt_You_must_supply_both_]
+        error [_ simulation.lt_You_must_supply_both]
     }
 }
 
@@ -81,7 +81,7 @@ if { ![empty_string_p $workflow_id] } {
     }
 
     ad_form -name search -export { workflow_id } -form {
-        {search_terms:text,optional {label {[_ simulation.lt_Restrict_to_previous_]}}}
+        {search_terms:text,optional {label {[_ simulation.lt_Restrict_to_previous]}}}
     }
 
     set role_values [db_list_of_lists select_roles {

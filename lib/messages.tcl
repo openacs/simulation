@@ -27,7 +27,7 @@ set adminplayer_p [permission::permission_p -object_id $package_id -privilege si
 
 if { ![exists_and_not_null case_id] || ![exists_and_not_null role_id] } {
     if { !$adminplayer_p } {
-        error [_ simulation.lt_You_must_supply_both_]
+        error [_ simulation.lt_You_must_supply_both]
     } else {
         set mode "admin"
     }
