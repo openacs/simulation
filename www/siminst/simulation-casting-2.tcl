@@ -26,6 +26,11 @@ set in_four_months_date [clock format [expr [clock seconds] + 4*3600*24*31] -for
 set eligible_groups [simulation::casting_groups -workflow_id $workflow_id]
 
 ad_form -export { workflow_id } -name simulation -form {
+    {enroll_type:text(radio)
+        {label "Enrollment type"}
+        {options {{"By invitation only" closed} {Open open}}}
+            {html {onChange "javascript:FormRefresh('simulation');"}}
+    }
     {enroll_start:date,to_sql(ansi),from_sql(ansi),optional
         {label "Enrollment start date"}
     }
@@ -40,10 +45,6 @@ ad_form -export { workflow_id } -name simulation -form {
     }
     {case_end:date,to_sql(ansi),from_sql(ansi),optional
         {label "Simulation end date"}
-    }
-    {enroll_type:text(radio)
-        {label "Enrollment type"}
-        {options {{"By invitation only" closed} {Open open}}}
     }
     {casting_type:text(radio)
         {label "Casting type"}
@@ -98,6 +99,20 @@ ad_form -export { workflow_id } -name simulation -form {
         set casting_type "auto"
     }
 
+    if { [string equal $enroll_type "closed"] } {
+        element set_properties simulation enroll_start -widget hidden
+        element set_properties simulation enroll_end -widget hidden
+    }
+
+} -on_refresh {
+
+    if { [string equal $enroll_type "closed"] } {
+        element set_properties simulation enroll_start -widget hidden
+        element set_properties simulation enroll_end -widget hidden
+    } else {
+        element set_properties simulation enroll_start -widget date
+        element set_properties simulation enroll_end -widget date
+    }
 
 } -on_submit {
     # TODO: Use underscore in "auto-enroll" -> "auto_enroll" for consistency
