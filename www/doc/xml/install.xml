@@ -1,0 +1,31 @@
+<?xml version='1.0' ?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [ 
+<!-- Global variables are defined in variables.ent -->
+]>
+
+  <article id="install">
+    <title>Installation</title>
+    <sect1 id="install-sect1">
+      <title>Package installation</title>
+      <para>Requires workflow and bcms and their prerequisites.</para>
+      <itemizedlist>
+        <listitem>
+      <para>      Option 1: use a custom tarball which includes those modules.  In
+      that case, the custom tarball will have a file install.xml in
+      its root directory, so that installing OpenACS normally will
+      produce a simulation server.  </para>
+
+        </listitem>
+        <listitem>
+      <para>      Option 2: Install acs-core, and then rely on the
+      automated install to do the rest.  Go to <ulink
+      url="/acs-admin/install/install">/acs-admin/install/install</ulink>
+      and install simulation.  The rest should happen automatically.</para>
+
+        </listitem>
+      </itemizedlist>
+
+    </sect1>
+  </article>
+

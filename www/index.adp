@@ -1,15 +1,14 @@
-<master>
-
-<p>Your live cases:</p>
-<p><listtemplate name="cases"></listtemplate></p>
-
-<p>Active simulations:</p>
-<p>TODO</p>
-
+<master src="/packages/simulation/www/simulation-master">
+<div class="phase2">
+Your live cases:
+<listtemplate name="cases">
+</listtemplate>
+</div>
+Active simulations ...
 <hr>
 
 <p>Sieberdam:</p>
-<p><img src="/ROCS map 4a.gif"></p>
+<p><img src="resources/flash-map-placeholder.gif">
 
 <hr>
 

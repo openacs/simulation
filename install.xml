@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!-- This must be moved to the OpenACS page root when making a release tarball -->
+
+<application name="simulation" pretty-name="simulation" home="http://openacs.org/projects/simulation">
+
+  <actions>
+    <install package="simulation"/>
+  </actions>
+
+</application>
