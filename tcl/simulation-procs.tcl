@@ -136,14 +136,13 @@ ad_proc simulation::get_object_options {
 
 ad_proc simulation::casting_groups {
     {-workflow_id:required}
-    {-enrolled_only:boolean}
+    {-mapped_only:boolean}
 } {
     Return a list of groups eligible for enrollment and casting for a given
     workflow.
 
     @param workflow_id   The id of the workflow to get casting groups for.
-    @param enrolled_only Provide this switch to only get groups selected for 
-                         auto enrollment.
+    @param mapped_only   Provide this switch to only get groups mapped to this simulation.
 
     @return A list of lists, with label-id pairs, suitable to be passed
             as the options attribute of a form builder select widget.
@@ -153,7 +152,7 @@ ad_proc simulation::casting_groups {
     set options_list [list]
 
     # We only want the label and the id, i.e. strip off the count
-    set groups [casting_groups_with_counts -enrolled_only=$enrolled_only_p -workflow_id $workflow_id]
+    set groups [casting_groups_with_counts -mapped_only=$mapped_only_p -workflow_id $workflow_id]
     foreach { group_id val } $groups {
         lappend options_list [list "[lindex $val 0] ([lindex $val 1] users)" $group_id]
     }
@@ -163,14 +162,14 @@ ad_proc simulation::casting_groups {
 
 ad_proc simulation::casting_groups_with_counts {
     {-workflow_id:required}
-    {-enrolled_only:boolean}
+    {-mapped_only:boolean}
 } {
     Return a list of groups eligible for enrollment and casting for a given
     workflow.
 
     @param workflow_id   The id of the workflow to get casting groups for.
-    @param enrolled_only Provide this switch to only get groups selected for 
-                         auto enrollment.
+    @param mapped_only   Provide this switch to only get groups mapped to the simulation.
+
 
     @return A nested array lists on the format
             [list group_id1 [list group_name1 n_users1] group_id2 [list group_name2 n_users2] ...]
@@ -182,11 +181,10 @@ ad_proc simulation::casting_groups_with_counts {
                           -package_id [ad_conn subsite_id]]
 
     # Get all groups related to (children of) the subsite group (only one level down)
-    set enrollment_clause [ad_decode $enrolled_only_p "0" "" "and  exists (select 1
+    set enrollment_clause [ad_decode $mapped_only_p "0" "" "and  exists (select 1
                        from sim_party_sim_map
                        where party_id = g.group_id
                          and simulation_id = :workflow_id
-                         and type = 'auto_enroll'
                        )"]
     set groups_list [list]
     set permission_group_name [permission_group_name]

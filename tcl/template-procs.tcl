@@ -758,6 +758,8 @@ ad_proc -public simulation::template::get_inst_state {
       <li>settings_complete
       <li>enrollment_complete
       <li>participants_complete
+      <li>casting
+      <li>has_cases
     </ul>
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template
@@ -806,6 +808,19 @@ ad_proc -public simulation::template::get_inst_state {
                         }
                     }
                 }
+            }
+        }
+        casting_sim {
+            set state "casting"
+            
+            set n_cases [db_string select_n_cases {
+                select count(*)
+                from   workflow_cases
+                where  workflow_id = :workflow_id
+            }]
+
+            if { $n_cases > 0 } {
+                set state "has_cases"
             }
         }
     }

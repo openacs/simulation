@@ -54,12 +54,19 @@ switch $state {
     participants_complete {
         set progress 5
     }
+    casting {
+        set progress 6
+        set lowest_available 5
+    }
     default {
         error "Unknown state: $state"
     }
 }
 
 set highest_available [expr $progress + 1]
+if { $highest_available > 6 } {
+    set highest_available 6
+}
 
 wizard get_current_step -start $highest_available
 

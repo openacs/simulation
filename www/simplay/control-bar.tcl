@@ -13,6 +13,8 @@ if { !$adminplayer_p } {
     # TODO: constrain queries based on case_id, which (another TODO) should be passed in
 }
 
+set case_home_url [export_vars -base "case" { case_id }]
+
 
 set message_count [db_string message_count_sql "
     select count(*) 
@@ -23,6 +25,7 @@ set message_count [db_string message_count_sql "
        and wcrmp.party_id = pamm.party_id
        and wcrmp.role_id = sm.to_role_id
        and wcrmp.case_id = sm.case_id
+     [ad_decode $case_id "" "" "and wcrmp.case_id = :case_id"]
 "]
 set messages_url [export_vars -base ${section_uri}messages { case_id }]
 
@@ -47,6 +50,11 @@ set task_count [db_string task_count_sql "
 "]
 
 set tasks_url [export_vars -base ${section_uri}tasks { case_id }]
+
+
+
+set portfolio_url [export_vars -base ${section_uri}portfolio { case_id }]
+
 
 multirow create roles role_id short_name pretty_name
 

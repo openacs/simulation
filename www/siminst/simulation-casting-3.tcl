@@ -20,7 +20,7 @@ lappend form {casting_type:text(radio)
 }
 
 
-set eligible_groups [simulation::casting_groups -workflow_id $workflow_id]
+set eligible_groups [simulation::casting_groups -mapped_only -workflow_id $workflow_id]
 
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
     set role_${role_id}_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]

@@ -25,7 +25,7 @@ template::list::create \
             sub_class narrow
             link_url_eval {[export_vars -base wizard { workflow_id }]}
             display_template {
-                <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit"></a>
+                <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
             }
         }
         pretty_name {
@@ -44,14 +44,14 @@ template::list::create \
         copy {
             sub_class narrow
             display_template {
-                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy"></a>
+                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
             }
         }
         delete {
             sub_class narrow
             link_url_col delete_url
             display_template {
-                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete"></a>
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
             }
         }
     }
@@ -125,18 +125,32 @@ template::list::create \
     -multirow casting_sims \
     -no_data "No Simulations are in Casting" \
     -elements {
+        edit {
+            sub_class narrow
+            link_url_eval {[export_vars -base wizard { workflow_id }]}
+            display_template {
+                <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit">
+            }
+        }
         pretty_name {
             label "Simulation"
             orderby upper(w.pretty_name)
+            link_url_eval {[export_vars -base wizard { workflow_id }]}
         }
         n_users {
             label "Users enrolled"
+            html { align center }
+        }
+        n_cases {
+            label "Cases"
             html { align center }
         }
         case_start {
             label "Start date"            
         }
         start_now {
+            label "Start"
+            sub_class narrow
             display_template {
                 <a href="@casting_sims.start_url@">Start immediately</a>
             }
@@ -144,14 +158,14 @@ template::list::create \
         copy {
             sub_class narrow
             display_template {
-                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy"></a>
+                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy">
             }
         }
         delete {
             sub_class narrow
             link_url_col delete_url
             display_template {
-                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit"></a>
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
             }
         }
     }
@@ -163,18 +177,21 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { delete_url start_url } casting_sims select_casting_sims "
+db_multirow -extend { edit_url delete_url start_url } casting_sims select_casting_sims "
     select w.workflow_id,
            w.pretty_name,
-           (select count(*) 
+           (select count(distinct u.user_id) 
               from sim_party_sim_map spsm,
                    party_approved_member_map pamm,
                    users u
              where spsm.simulation_id = w.workflow_id
-               and spsm.type = 'auto_enroll'
+               and spsm.type in ('auto_enroll', 'enrolled')
                and spsm.party_id = pamm.party_id
                and pamm.member_id = u.user_id) as n_users,
-           to_char(ss.case_start, 'YYYY-MM-DD') as case_start
+           to_char(ss.case_start, 'YYYY-MM-DD') as case_start,
+           (select count(*)
+            from   workflow_cases c
+            where  c.workflow_id = w.workflow_id) as n_cases
       from workflows w,
            sim_simulations ss,
            acs_objects ao
@@ -186,4 +203,7 @@ db_multirow -extend { delete_url start_url } casting_sims select_casting_sims "
 " {
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
     set start_url [export_vars -base "simulation-start" { workflow_id }]
+
+    set n_users [lc_numeric $n_users]
+    set n_cases [lc_numeric $n_cases]
 }
