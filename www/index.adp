@@ -35,7 +35,7 @@
             <u>Log in</u> to see your active cases.
           </else>
           <p>
-          <h4>Join a Simulations</h4>
+          <h4>Join a Simulation</h4>
           <include src="/packages/simulation/lib/simulations-available" party_id="@user_id@"/>
         </div>
 
