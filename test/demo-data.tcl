@@ -28,15 +28,6 @@ ad_proc ::twt::simulation::data::characters {} {
         "C of Lawfirm X"   "Secretary firm X"
         "C of Lawfirm Y"   "Secretary firm Y"
         "Portal"           "Library"          
-        "Lok of Legisl. Dept."		"Member 1 of Legisl. Dept."
-        "Peter of Legisl. Dept."	"Member 2 of Legisl. Dept."
-        "Aernout of Legisl. Dept."	"Head of Legisl. Dept."
-        "Jeroen of Legisl. Dept."	"Deputy Head of Legisl. Dept."
-        "Laurens of Legisl. Dept."	"Chief of Legisl. Dept."
-        "Fred Undraiser"		"Fundraiser"
-        "A of ADC"			"Representative of ADC"	
-        "Minister"			"Minister of Justice"          
-        "General Student"		"Student"
     }
 }
 
