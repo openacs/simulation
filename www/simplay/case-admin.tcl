@@ -78,8 +78,8 @@ template::list::create \
         assigned_only_p {
             label {[_ simulation.Display]}
             values {
-                {[_ simulation.All] 0}
-                {[_ simulation.lt_Roles_with_actions_on] 1}
+                {{[_ simulation.All]} 0}
+                {{[_ simulation.lt_Roles_with_actions_on]} 1}
             }
             default_value 0
         }

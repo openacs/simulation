@@ -14,8 +14,7 @@ workflow::role::get -role_id $role_id -array role
 
 set page_title [_ simulation.lt_Choose_new_users_for]
 set context [list [list . [_ simulation.SimPlay]] \
-                  [list [export_vars -base case-admin { case_id }] \
-                    [_ simulation.lt_Administer_caselabel]]
+                  [list [export_vars -base case-admin { case_id }] [_ simulation.lt_Administer_caselabel]] \
                   $page_title]
 
 # I18N TODO - what are these? Do they need to be i18ned?
