@@ -743,3 +743,58 @@ ad_proc -public simulation::template::clone {
 
     return $workflow_id
 }
+
+ad_proc -public simulation::template::get_inst_state {
+    -workflow_id:required
+} {
+    Get the instantiation state of a simulation template.
+
+    States:
+
+    <ul>
+      <li>none
+      <li>roles_complete
+      <li>tasks_complete
+      <li>casting_begun
+    </ul>
+} {
+    simulation::template::get -workflow_id $workflow_id -array sim_template
+
+    
+    switch $sim_template(sim_type) {
+        dev_sim {
+            set state "none"
+            
+            # 1. Roles
+            set role_empty_count [db_string role_empty_count {
+                select count(*) 
+                from   sim_roles sr,
+                       workflow_roles wr
+                where  sr.role_id = wr.role_id
+                and    wr.workflow_id = :workflow_id
+                and    character_id is null
+            }]
+            if { $role_empty_count == 0 } {
+                set state "roles"
+
+                # 2. Tasks
+                set prop_empty_count [db_string prop_empty_count {
+                    select sum((select count(*) from sim_task_object_map where task_id = wa.action_id) - st.attachment_num)
+                    from   sim_tasks st,
+                           workflow_actions wa
+                    where  st.task_id = wa.action_id
+                    and    wa.workflow_id = :workflow_id
+                }]
+                
+                if { $prop_empty_count == 0 } {
+                    set state "tasks"
+                }
+            }
+        }
+        casting_sim {
+            set state "casting_begun"
+        }
+    }
+    
+    return $state
+}

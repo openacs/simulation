@@ -21,12 +21,22 @@
         <if "@wizard.id@" eq "@wizard:current_id@">
           <div class="tab" id="tabs-here">
             @wizard.id@. @wizard.label@
+            <if @wizard.id@ le @progress@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
           </div>
         </if>
         <else>
-          <div class="tab">
-            @wizard.id@. <a href="<%=[template::wizard get_forward_url @wizard.id@]%>">@wizard.label@</a>
-          </div>
+          <if @wizard.id@ ge @lowest_available@ and @wizard.id@ le @highest_available@>
+            <div class="tab">
+              @wizard.id@. <a href="<%=[template::wizard get_forward_url @wizard.id@]%>">@wizard.label@</a>
+              <if @wizard.id@ le @progress@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
+            </div>
+          </if>
+          <else>
+            <div class="tab disabled">
+              @wizard.id@. @wizard.label@
+              <if @wizard.id@ le @progress@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
+            </div>
+          </else>
         </else>
       </multiple>
     </div>

@@ -19,7 +19,30 @@ wizard create siminst -steps {
 
 wizard set_param workflow_id $workflow_id
 
-wizard get_current_step
+set state [simulation::template::get_inst_state -workflow_id $workflow_id]
+
+switch $state {
+    none {
+        set lowest_available 1
+        set progress 0
+    }
+    roles_complete {
+        set lowest_available 1
+        set progress 1
+    }
+    tasks_complete {
+        set lowest_available 1
+        set progress 2
+    }
+    casting_begun {
+        set lowest_available 3
+        set progress 2
+    }
+}
+
+set highest_available [expr $progress + 1]
+
+wizard get_current_step -start $highest_available
 
 array set title {
     1 "Assign Roles to Characters"
@@ -29,8 +52,8 @@ array set title {
 }
 set sub_title $title(${wizard:current_id})
 
-
-simulation::template::get -workflow_id $workflow_id -array sim_template
-set page_title "$sim_template(pretty_name)"
+workflow::get -workflow_id $workflow_id -array workflow
+set page_title "$workflow(pretty_name)"
 set context [list [list "." "SimInst"] $page_title]
+
 
