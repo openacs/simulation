@@ -16,17 +16,18 @@
           <h2>Template</h2>
           <div class="portlet-body">
             <formtemplate id="sim_template"></formtemplate>
+            <ul class="action-links">
               <if @mark_ready_url@ not nil>
-                <a href="@mark_ready_url@" class="action">Mark this template ready for use</a>
+                <li><a href="@mark_ready_url@">Mark this template ready for use</a></li>
               </if>
               <else>
                 <if @inst_url@ not nil>
-                <a href="@inst_url@" class="action">Start a simulation with this template</a>   
+                  <li><a href="@inst_url@" class="action">Start a simulation with this template</a></li>
                 </if>
               </else>
-              <p></p><a href="@spec_url@" class="action">Export this template
-  as a text file</a>
-              <p></p><a href="@delete_url@" onclick="return confirm('Are you sure you want to delete the template?');" class="action">Delete this template</a>
+              <li><a href="@spec_url@">Export this template as a text file</a></li>
+              <li><a href="@delete_url@" onclick="return confirm('Are you sure you want to delete the template?');">Delete this template</a></li>
+            </ul>
 
           </div>
         </div>

@@ -77,6 +77,13 @@ lappend elements assigned_name {
     link_url_col assigned_role_edit_url
 }
 
+lappend elements add_child_action { 
+    label {}
+    display_template {<if @tasks.add_child_action_url@ not nil><img src="/resources/acs-subsite/Add16.gif" height="16" width="16" border="0"></if>}
+    link_url_col add_child_action_url
+    link_html { title "Add child task" }
+}
+
 lappend elements trigger_type { 
     label "<br />Type"
     display_eval {[string totitle $trigger_type]}
@@ -149,7 +156,7 @@ template::list::create \
 #-------------------------------------------------------------
 
 set extend [list]
-lappend extend edit_url view_url delete_url assigned_role_edit_url up_url down_url
+lappend extend edit_url view_url delete_url assigned_role_edit_url up_url down_url add_child_action_url
 
 foreach state_id $states {
     lappend extend state_$state_id
@@ -231,6 +238,12 @@ db_multirow -extend $extend tasks select_tasks "
         set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction up } { return_url [ad_return_url] } }]
     }
     set down_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type action } action_id { direction down } { return_url [ad_return_url] } }]
+
+    switch $trigger_type {
+        workflow - parallel - dynamic {
+            set add_child_action_url [export_vars -base task-edit { workflow_id { parent_action_id $action_id } }]
+    }
+    }
 
     lappend actions $action_id
 }

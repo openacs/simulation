@@ -6,6 +6,7 @@ ad_page_contract {
 } {
     {workflow_id:integer ""}
     action_id:integer,optional
+    parent_action_id:integer,optional
 } -validate {
     workflow_id_or_task_id {
         if { ![exists_and_not_null workflow_id] &&
@@ -37,6 +38,7 @@ if { ![ad_form_new_p -key action_id] } {
     }
     
     set trigger_type $task_array(trigger_type)
+    set parent_action_id $task_array(parent_action_id)
 }
 
 workflow::get -workflow_id $workflow_id -array sim_template_array
@@ -55,7 +57,13 @@ set context [list [list "." "SimBuild"] [list [export_vars -base "template-edit"
 set role_options [workflow::role::get_options -workflow_id $workflow_id]
 set role_options_with_null [concat [list [list "--None--" ""]] $role_options]
 
-set child_workflow_options [simulation::template::get_options]
+#set child_workflow_options [simulation::template::get_options]
+
+set actions_options [db_list_of_lists foo { 
+    select pretty_name, action_id
+    from   workflow_actions
+    where  workflow_id = :workflow_id
+}]
 
 #---------------------------------------------------------------------
 # Logic to determine the current values of a few elements
@@ -71,7 +79,6 @@ if { ![empty_string_p [ns_queryget task_type]] } {
 } elseif { ![exists_and_not_null task_type] && [ad_form_new_p -key action_id] } {
     set task_type "message"
 }
-
 
 ######################################################################
 #
@@ -96,27 +103,47 @@ ad_form \
                             ok]] \
     -form {
         {action_id:key}
-        {pretty_name:text
-            {label "Task Name"}
-            {html {size 50}}
-        }
-        {pretty_past_tense:text,optional
-            {label "Task name in log"}
-            {html {size 50}}
-            {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
-        }
-        {trigger_type:text(radio)
-            {label "Trigger Type"}
-            {options { 
-                { "User task" user } 
-                { "Automatic timer" time } 
-                { "Initial action" init } 
-                { "Workflow" workflow } 
-                { "Parallel" parallel } 
-            }}
-            {html {onChange "javascript:acs_FormRefresh('task');"}}
+    }
+
+if { [exists_and_not_null parent_action_id] } {
+    ad_form -extend -name task -form {
+        {parent_action_id:integer(select)
+            {label "Parent action"}
+            {mode display}
+            {options $actions_options}
         }
     }
+} else {
+    ad_form -extend -name task -form {
+        {parent_action_id:integer(hidden),optional {value {}}}
+    }
+}
+
+ad_form -extend -name task -form {
+    {pretty_name:text
+        {label "Task Name"}
+        {html {size 50}}
+    }
+    {pretty_past_tense:text,optional
+        {label "Task name in log"}
+        {html {size 50}}
+        {help_text "What the task will appear like in the case log. Usually the past tense of the task name, e.g. 'Close' becomes 'Closed'."}
+    }
+    {trigger_type:text(radio)
+        {label "Trigger Type"}
+        {options { 
+            { "User task" user } 
+            { "Automatic timer" time } 
+            { "Initial action" init } 
+            { "Workflow" workflow } 
+            { "Parallel" parallel } 
+        }}
+        {html {onChange "javascript:acs_FormRefresh('task');"}}
+    }
+}
+
+
+
 if { [string equal $trigger_type "user"] } {
     ad_form -extend -name task -form {
         {task_type:text(radio)
@@ -168,6 +195,11 @@ switch $trigger_type {
                 {label "Timeout"}
                 {after_html "seconds"}
             }
+        }
+    }
+    default {
+        ad_form -extend -name task -form { 
+            {timeout_seconds:integer(text),optional}
         }
     }
 }
@@ -223,7 +255,7 @@ ad_form -extend -name task -edit_request {
     foreach elm { 
         pretty_name pretty_past_tense new_state_id 
         assigned_role recipient_roles
-        attachment_num trigger_type timeout_seconds
+        attachment_num trigger_type timeout_seconds parent_action_id
     } {
         set $elm $task_array($elm)
     }
@@ -276,7 +308,7 @@ ad_form -extend -name task -edit_request {
     foreach elm { 
         pretty_name pretty_past_tense assigned_role description description_mime_type
         new_state_id timeout_seconds
-        recipient_roles attachment_num trigger_type
+        recipient_roles attachment_num trigger_type parent_action_id
     } {
         set row($elm) [set $elm]
     }
