@@ -1,10 +1,10 @@
 ad_page_contract {
-    Simplay home page for a user in one case.
+    List of sim_props for the role/case.
 } {
     case_id:integer
 }
 
-set title "SimPlay"
+set title "Portfolio"
 set context [list [list . "SimPlay"] $title]
 set user_id [ad_conn user_id]
 set package_id [ad_conn package_id]
