@@ -3,6 +3,12 @@
 set package_id [ad_conn package_id]
 set user_id [ad_conn user_id]
 set section_uri [apm_package_url_from_id $package_id]simplay/
+set adminplayer_p [permission::permission_p -object_id $package_id -privilege sim_adminplayer]
+
+if { !$adminplayer_p } {
+    # TODO: constrain queries based on case_id, which (another TODO) should be passed in
+}
+
 
 set message_count [db_string message_count_sql "
     select count(*) 

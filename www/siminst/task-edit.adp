@@ -3,12 +3,16 @@
   <property name="context">@context;noquote@</property>
   <property name="focus">task.pretty_name</property>
 
+<formtemplate id="task"></formtemplate>
+<p>TODO: an "attach new prop" button next to each attachment dropdown
+that lets the user create a new prop and then return to this page,
+where the new prop is already set as the attachment.</p>
+
 <p>
-  TODO
-  show task description body, list of related props (similar to
-  object-edit and images).  end-to-end requires that props can be
-  associated but not that they can be embedded in the
-  description body.
+  TODO: (low priority) allow props to be embedded within description
+  body so that they will be displayed as links in simplay when user
+  looks at task description
 </p>
 
-<formtemplate id="task"></formtemplate>
+
+

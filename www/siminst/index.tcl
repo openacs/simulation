@@ -2,7 +2,7 @@ ad_page_contract {
     The index page for SimInst
 } 
 
-set page_title "Simulations in Development"
+set page_title "SimInst"
 set context [list $page_title]
 set package_id [ad_conn package_id]
 

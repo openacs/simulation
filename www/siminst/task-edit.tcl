@@ -28,9 +28,7 @@ set page_title "Edit $task_array(pretty_name)"
 set return_url [export_vars -base map-tasks { workflow_id }]
 set context [list [list "." "SimInst"] [list $return_url "Tasks for $workflow_array(pretty_name)"] $page_title]
 
-
-
-ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]] -form {
+ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_update]] ok]] -form {
     {action_id:key}
     {pretty_name:text
         {label "Task Name"}

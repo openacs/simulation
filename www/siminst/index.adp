@@ -12,3 +12,6 @@
 <p>
 <a href="../simplay/">Live Simulations</a>
 
+
+<p>TODO: page for the admin to see the groups that are created, and change them
+<p>TODO: open enrollment UI for players

@@ -3,3 +3,6 @@
   <property name="context">@context;noquote@</property>
 
 <formtemplate id="simulation"></formtemplate>
+<p>TODO: if enrollment type is invite only, the boxes for enrollment
+dates should disappear
+<p>TODO: implement invitations.
