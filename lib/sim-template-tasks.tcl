@@ -75,6 +75,11 @@ lappend elements assigned_name {
     link_url_col assigned_role_edit_url
 }
 
+lappend elements recipient_name { 
+    label "Recipient"
+    link_url_col recipient_role_edit_url
+}
+
 set states [list]
 
 db_foreach select_states {
