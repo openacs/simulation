@@ -53,7 +53,7 @@ db_multirow cases select_cases "
            r.role_id,
            r.pretty_name as role_pretty,
            (select count(distinct wcaua.enabled_action_id)
-            from   workflow_case_assigned_user_actions wcaua
+            from   wf_case_assigned_user_actions wcaua
             where  wcaua.case_id = wc.case_id
             and    wcaua.user_id = :party_id) as num_user_tasks
       from workflow_cases wc,
