@@ -109,13 +109,10 @@ ad_form \
             {label "Trigger Type"}
             {options { 
                 { "User task" user } 
-                { "Automatic" auto } 
-                { "Time" time } 
-                { "Message" message } 
+                { "Automatic timer" time } 
                 { "Initial action" init } 
                 { "Workflow" workflow } 
                 { "Parallel" parallel } 
-                { "Dynamic parallel" dynamic } 
             }}
             {html {onChange "javascript:acs_FormRefresh('task');"}}
         }
