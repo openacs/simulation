@@ -22,7 +22,7 @@ create table sim_tasks (
                                         constraint sim_tasks_pk
                                         primary key,
     recipient           integer         constraint sim_tasks_recipient_fk
-                                        references sim_roles
+                                        references workflow_roles
                                         on delete cascade
 );
 

@@ -6,9 +6,7 @@
 --drop independent tables
 drop table sim_party_sim_map;
 drop table sim_tasks;
-drop table sim_roles;
 drop table sim_workflow_object_map;
-drop table sim_workflow_cases;
 drop table sim_simulations;
 
 select acs_object_type__drop_type(
@@ -81,6 +79,24 @@ select content_type__drop_type(
     't',
     't'
 );
+
+
+----------------------------------------------------------------------
+-- sim_message
+----------------------------------------------------------------------
+
+select content_type__unregister_relation_type (
+    'sim_message',                 -- content_type
+    'sim_prop',                    -- target_type
+    'attachment'                   -- relation_tag
+);
+
+select content_type__drop_type(
+    'sim_message',
+    't',
+    't'
+);
+
 
 
 ----------------------------------------------------------------------

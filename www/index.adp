@@ -1,4 +1,8 @@
-<master src="/packages/simulation/www/map-master">
+<master src="map-master">
+  <property name="title">@page_title;noquote@</property>
+  <property name="context">@context;noquote@</property>
+
+
 <div style="margin: 4px; padding: 4px; border: 1px solid black;">
   <h3><a href="simplay/">SimPlay</a></h3>
 

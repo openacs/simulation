@@ -1,5 +1,5 @@
-<master src="/packages/simulation/www/map-master">
-  <property name="title">@page_title;noquote@</property>
+<master src="play-master">
+  <property name="title">@title;noquote@</property>
   <property name="context">@context;noquote@</property>
   
   <p>

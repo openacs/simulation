@@ -7,7 +7,7 @@ Form:
 <ul>
 <li>enrollment start
 <li>enrollment end
-<li>notification of sim start ??? what's this
+<li>Date to send start notification (TODO: new field - need to add to sim_simulation)
 <li>Simstart date
 <li>simend date
 <li>Open Enrollment?

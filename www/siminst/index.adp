@@ -16,8 +16,8 @@ select workflow_id,
 
 <p>
 Sort and filter based on "expected duration" and number
-of roles.  Possibly also show "number of roles that can't be played by
-an agent" (as "min # of humans")
+of roles.  May have arbitrary meta-data (depending on if categories
+package is usable or not).
 </p>
 
 <p>

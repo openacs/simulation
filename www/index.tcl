@@ -7,7 +7,8 @@ ad_page_contract {
 }
 
 set package_id [ad_conn package_id]
-
+set page_title "Simulation"
+set context ""
 set user_id [auth::get_user_id]
 
 ######################################################################

@@ -61,10 +61,8 @@ db_multirow -extend { edit_url char_url delete_url } roles select_roles "
     select wr.role_id,
            wr.pretty_name as name,
            wr.sort_order
-      from workflow_roles wr,
-           sim_roles sr
+      from workflow_roles wr
      where wr.workflow_id = :workflow_id
-       and sr.role_id = wr.role_id
     [template::list::orderby_clause -orderby -name "roles"]
 " {
     set edit_url [export_vars -base "role-edit" { role_id }]

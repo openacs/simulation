@@ -220,3 +220,68 @@ select content_type__register_relation_type (
 );
 
 
+----------------------------------------------------------------------
+-- sim_message
+----------------------------------------------------------------------
+
+select content_type__create_type(
+    'sim_message',                 -- content_type
+    'content_revision',            -- supertype
+    'Sim Message',                 -- pretty_name,
+    'Sim Messages',                -- pretty_plural
+    'sim_messages',                -- table_name
+    'message_id',                  -- id_column
+    null                           -- name_method
+);
+
+select content_type__create_attribute(
+    'sim_message',                 -- content_type
+    'to_role_id',                  -- attribute_name
+    'integer',                     -- datatype
+    'To role_id',                  -- pretty_name
+    'To role_ids',                 -- pretty_plural
+    1,                             -- sort_order
+    null,                          -- default_value
+    'integer'                      -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_message',                 -- content_type
+    'to_case_id',                  -- attribute_name
+    'integer',                     -- datatype
+    'To case_id',                  -- pretty_name
+    'To case_ids',                 -- pretty_plural
+    2,                             -- sort_order
+    null,                          -- default_value
+    'integer'                      -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_message',                 -- content_type
+    'from_role_id',                -- attribute_name
+    'integer',                     -- datatype
+    'From role_id',                -- pretty_name
+    'From role_ids',               -- pretty_plural
+    3,                             -- sort_order
+    null,                          -- default_value
+    'integer'                      -- column_spec
+);
+
+select content_type__create_attribute(
+    'sim_message',                 -- content_type
+    'from_case_id',                -- attribute_name
+    'integer',                     -- datatype
+    'From case_id',                -- pretty_name
+    'From case_ids',               -- pretty_plural
+    1,                             -- sort_order
+    null,                          -- default_value
+    'integer'                      -- column_spec
+);
+
+select content_type__register_relation_type (
+    'sim_message',                -- content_type
+    'sim_prop',                   -- target_type
+    'attachment',                  -- relation_tag
+    0,                            -- min_n
+    10                            -- max_n
+);

@@ -46,16 +46,20 @@ ad_form -name role -cancel_url index -form {
         {html {size 20}}
     }
 } -edit_request {
+
     workflow::role::get -role_id $role_id -array role_array
     set workflow_id $role_array(workflow_id)
     set name $role_array(pretty_name)
     workflow::get -workflow_id $workflow_id -array sim_template_array    
     set page_title "Edit Role template $name"
     set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]    
+
 } -new_request {
+
     workflow::get -workflow_id $workflow_id -array sim_template_array
     set page_title "Add Role to $sim_template_array(pretty_name)"
     set context [list [list "." "Sim Templates"] [list "template-edit?workflow_id=$workflow_id" "$sim_template_array(pretty_name)"] $page_title]
+
 } -new_data {
 
     simulation::role::new \

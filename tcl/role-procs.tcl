@@ -26,10 +26,6 @@ ad_proc -public simulation::role::new {
                          -short_name $role_short_name \
                          -pretty_name $role_pretty_name]
 
-        # and then add extra data for simulation
-        db_dml set_role_character {
-            insert into sim_roles (role_id)
-            values (:role_id)
         }    
     }
 }
