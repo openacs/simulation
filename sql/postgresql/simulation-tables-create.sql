@@ -129,3 +129,21 @@ create table sim_case_task_object_map (
 );
 
 comment on table sim_case_task_object_map is 'A mapping table to show which tasks use which props in a case.  Each record is one prop for one task, in a case.';
+
+create table sim_case_role_object_map (
+    role_id             integer         constraint scrom_fk
+                                        references workflow_roles
+                                        on delete cascade,
+    object_id           integer         constraint scrom_object_fk
+                                        references acs_objects
+                                        on delete cascade,
+    case_id             integer         constraint scrom_case_fk
+                                        references workflow_cases
+                                        on delete cascade,
+    order_n             integer,
+    relation_tag        varchar(100),
+    constraint scrom_pk
+      primary key (role_id, object_id, case_id, relation_tag)
+);
+
+comment on table sim_case_role_object_map is 'The portfolio of sim_props for a role in a case.';
