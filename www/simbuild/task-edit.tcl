@@ -29,6 +29,10 @@ ad_page_contract {
 #   In case 2, figure out what to do if some roles are groups and others
 #   aren't.
 
+# TODO: fancy attachment placeholders (not priority 1)
+#   replace simple count with Add placeholder for [attachment type]
+#   and embed links within the description
+
 ######################################################################
 #
 # preparation
