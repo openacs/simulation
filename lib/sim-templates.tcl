@@ -12,8 +12,10 @@ simulation::include_contract {
 }
 
 set package_id [ad_conn package_id]
+set user_id [ad_conn user_id]
 set add_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/template-edit"]
 set create_p [permission::permission_p -object_id $package_id -privilege sim_template_create]
+set package_admin_p [permission::permission_p -object_id $package_id -privilege admin]
 
 set actions [list "Add a template" $add_url {} \
                  "Import a template" "[apm_package_url_from_id $package_id]simbuild/template-load" {}]
@@ -109,8 +111,10 @@ template::list::create \
 # a list of templates
 #
 ######################################################################
-# TODO (.25h): limit this to see only your own templates
-# If you are the admin, show all templates in long mode
+set filter_clause ""
+if { !$package_admin_p } {
+    set filter_clause "and a.creation_user = :user_id"
+}
 
 db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templates select_sim_templates "
     select w.workflow_id,
@@ -138,6 +142,7 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
        and ss.simulation_id = w.workflow_id
        and w.object_id = :package_id 
        and ss.sim_type in ('dev_template','ready_template')
+       $filter_clause
    [template::list::orderby_clause -orderby -name sim_templates]
 " {
     set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
