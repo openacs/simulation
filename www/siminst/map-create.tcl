@@ -27,9 +27,17 @@ ad_form \
         }
     } -on_submit {
         # Create a new template that is clone of the existing one
+
+        set new_workflow_array(pretty_name) $pretty_name
+        set new_workflow_array(short_name) {}
+        set new_workflow_array(sim_type) "dev_sim"
+        
         set workflow_id [simulation::template::clone \
                             -workflow_id $workflow_id \
-                            -pretty_name $pretty_name]
+                             -package_key "simulation" \
+                             -object_id [ad_conn package_id] \
+                             -array new_workflow_array]
+
 
         # Proceed to the task page
         ad_returnredirect [export_vars -base map-tasks {workflow_id}]
