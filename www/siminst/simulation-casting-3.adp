@@ -1,6 +1,6 @@
 <if @num_groups@ eq 0>
 
-  <div class="general-message">Please pick participants first.</div>
+  <div class="general-message">There are no participants selected, so casting is not yet possible. On the previous tab, please select participants or allow open enrollment.</div>
 
 </if>
 
@@ -14,7 +14,7 @@
 </p>
 
 <formtemplate id="actors"></formtemplate>
-<P>TODO: Show total number of users per case
+<P>TODO: (0.1h) Show total number of users per case
 
     <p>In <b>Automatic</b> casting, only
 
@@ -44,9 +44,5 @@
 
 </else>
 
-<p>TODO: if enroll-type is open, show all groups from the subsite in
+<p>TODO: (0.5h) if enroll-type is open, show all groups from the subsite in
 each role
-<P>TODO: Number of users should by greater than 0.
-<p>TODO: auto-check all boxes by default
-
-

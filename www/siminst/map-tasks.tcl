@@ -6,6 +6,8 @@ ad_page_contract {
     workflow_id:integer
 }
 
+permission::require_write_permission -object_id $workflow_id
+
 set user_id [auth::require_login]
 
 ad_form \
@@ -64,7 +66,7 @@ db_foreach tasks {
                            {label "Attachment $i"} \
                            {options $prop_options} \
                            {help_text "Select from existing attachments or <a
-href=\"../citybuild/object-edit\">add a new prop</a> and refresh this page.  TODO: make this tidier - instead of this text, should be a single button which saves this form, goes to object page, and returns here."}]]
+href=\"../citybuild/object-edit\">add a new prop</a> and refresh this page."}]]
         }    
 
         lappend actions $row(action_id)
@@ -107,7 +109,7 @@ ad_form \
                     -workflow_id $workflow_id \
                     -array row
             
-                # TODO B: The way we do this update is not very pretty: Delete all relations and re-add the new ones
+                # FIXME: The way we do this update is not very pretty: Delete all relations and re-add the new ones
                 db_dml delete_all_relations {
                     delete from sim_task_object_map
                     where  task_id = :action_id

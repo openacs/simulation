@@ -8,8 +8,7 @@ ad_page_contract {
     workflow_id:integer
 }
 
-# TODO: Permission check
-# TODO: ability to add new character inline while mapping
+permission::require_write_permission -object_id $workflow_id
 
 set page_title "Assign Characters to Roles"
 set context [list [list "." "SimInst"] $page_title]

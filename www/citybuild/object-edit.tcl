@@ -37,7 +37,6 @@ set context [list [list "." "CityBuild"] $page_title]
 # A form for editing and viewing sim objects
 #
 ######################################################################
-#TODO: content_type should be changable in new mode
 
 ad_form -name object -cancel_url "." -html {enctype multipart/form-data} -form {
     {item_id:key}
@@ -649,14 +648,14 @@ ad_form -extend -name object -new_request {
             -revision_id $revision_id \
             -status "live"
 
-        # TODO B: The way we do this update is not very pretty: Delete all relations and re-add the new ones
+        # FIXME: The way we do this update is not very pretty: Delete all relations and re-add the new ones
         db_dml delete_all_relations {
             delete from cr_item_rels
             where  item_id = :item_id
         }
 
         foreach elm $rel_elements {
-            # TODO B: LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
+            # FIXME: LARS HACK ALERT: This isn't a particularly pretty way to find all the related objects in the form
             regexp {__(.+)__} $elm match relation_tag
             regexp {__.+__(.+)$} $elm match order_n
             set related_object_id [set $elm]
@@ -720,5 +719,3 @@ foreach elm $rel_elements {
     
     element set_properties object $elm -before_html $elm_before_html -after_html $elm_after_html
 }
-
-#TODO: if a URI is submitted, filter it the same way as implicit URI from title.  ie, replace spaces with dashes.

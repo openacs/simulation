@@ -4,8 +4,7 @@ ad_page_contract {
     workflow_id:integer
 }
 
-# TODO: finish implementing description field (I cut-paste from template-edit.tcl and may have left out stuff)
-# TODO: pre-populate the description with the template description
+permission::require_write_permission -object_id $workflow_id
 
 simulation::template::get -workflow_id $workflow_id -array sim_template
 
@@ -29,8 +28,6 @@ ad_form -export { workflow_id } -name simulation -form {
         {help_text "This description is visible to users during enrollment."}
     }
 
-} -edit_request {
-    set description [template::util::richtext::create $simulation(description) $simulation(description_mime_type)]
 } -on_request {
 
     foreach elm { 
@@ -42,18 +39,27 @@ ad_form -export { workflow_id } -name simulation -form {
         set $elm $sim_template($elm)
     }
 
-    # Default values
-    set one_month [expr 3600*24*31]
+    set description [template::util::richtext::create $sim_template(description) $sim_template(description_mime_type)]
 
-    # TODO: B: provide more sensible default dates?  1 week, 2 weeks, start date + suggested duration
+    # Default values
+    set one_week [expr 3600*24*7]
+
+    if { ![empty_string_p $sim_template(suggested_duration)] } {
+        # TODO: (0.5h) use suggested_duaration_seconds instead here. Need to edit template-procs.xql
+        #set default_duration $sim_template(suggested_duration_seconds)
+        set default_duration $one_week
+    } else {
+        set default_duration $one_week
+    }
+
     if { [empty_string_p $send_start_note_date] } {
-        set send_start_note_date [clock format [expr [clock seconds] + 2*$one_month] -format "%Y-%m-%d"]
+        set send_start_note_date [clock format [expr [clock seconds] + 1*$one_week] -format "%Y-%m-%d"]
     }
     if { [empty_string_p $case_start] } {
-        set case_start [clock format [expr [clock seconds] + 3*$one_month] -format "%Y-%m-%d"]
+        set case_start [clock format [expr [clock seconds] + 2*$one_week] -format "%Y-%m-%d"]
     }
     if { [empty_string_p $case_end] } {
-        set case_end [clock format [expr [clock seconds] + 4*$one_month] -format "%Y-%m-%d"]
+        set case_end [clock format [expr [clock seconds] + 2*$one_week + $default_duration] -format "%Y-%m-%d"]
     }
 } -on_submit {
     set description_mime_type [template::util::richtext::get_property format $description]
@@ -69,7 +75,7 @@ ad_form -export { workflow_id } -name simulation -form {
         break
     }
 
-    foreach elm { send_start_note_date case_start case_end pretty_name } {
+    foreach elm { send_start_note_date case_start case_end pretty_name description description_mime_type } {
         set row($elm) [set $elm]
     }
  

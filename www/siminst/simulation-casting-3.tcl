@@ -1,5 +1,5 @@
 ad_page_contract {
-    The page where actors are chosen for the different
+    The page where user groups are chosen for the different
     roles of a simulation. Part of the casting step
     in the instantiation process.
 
@@ -8,8 +8,7 @@ ad_page_contract {
     workflow_id:integer
 }
 
-# TODO: auto-check all boxes
-# TODO: if enroll-type is open, show all groups from the subsite in each role
+permission::require_write_permission -object_id $workflow_id
 
 set page_title "Set user casting rules"
 set context [list [list "." "SimInst"] $page_title]
@@ -20,7 +19,7 @@ lappend form {casting_type:text(radio)
     {label "Casting type"}
     {options {{"Participants are <b>automatically</b> assigned cases and roles" auto} {"Participants choose their own cases" group} {"Participants choose cases and roles" open}}}
     {section "Casting type"}
-    {help_text "If participants have not selected groups or roles by the simulation start time, they are automatically assigned.  TODO: implement this"}
+    {help_text "If participants have not selected groups or roles by the simulation start time, they are automatically assigned."}
 }
 
 
@@ -67,11 +66,21 @@ ad_form \
 
         simulation::template::role_party_mappings -workflow_id $workflow_id -array roles
 
-        foreach role_id [array names roles] {
-            array set one_role $roles($role_id)
+        set all_group_ids [list]
+        foreach group_item $eligible_groups {
+            lappend all_group_ids [lindex $group_item 1]
+        }
 
-            element::set_values actors parties_${role_id} $one_role(parties)
-            element set_properties actors users_per_case_${role_id} -value $one_role(users_per_case)
+        foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
+            if { [info exists roles($role_id)] } {
+                # There are groups selected in the database
+                array set one_role $roles($role_id)
+                element::set_values actors parties_${role_id} $one_role(parties)
+                element set_properties actors users_per_case_${role_id} -value $one_role(users_per_case)
+            } else {
+                # There are no groups selected. Select all by default in the form.
+                element::set_values actors parties_${role_id} $all_group_ids
+            }
         }      
 
 
@@ -85,6 +94,11 @@ ad_form \
         foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
             set users_per_case [set users_per_case_$role_id]
 
+            if { $users_per_case == "0" } {
+                template::form::set_error actors users_per_case_$role_id "Number of users per case must be greater than zero"
+                set error_p 1
+            }
+
             if { [llength [set parties_$role_id]] > 0 } {
                 set n_members 0
                 foreach party_id [set parties_$role_id] {
@@ -92,9 +106,12 @@ ad_form \
                 }
 
                 if { $users_per_case > $n_members } {
-                    template::form::set_error actors users_per_case_$role_id "Number of users per case is larger than the number of users in the selected groups: $n_members"
+                    template::form::set_error actors users_per_case_$role_id "Number of users per case must not be larger than the number of users in the selected groups: $n_members"
                     set error_p 1
-                }
+                } 
+            } else {
+                template::form::set_error actors parties_$role_id "At least one group must be selected for each role"
+                set error_p 1                
             }
         }        
         if { $error_p } {
@@ -122,4 +139,3 @@ ad_form \
     }
 
 wizard submit actors -buttons { back next finish }
-

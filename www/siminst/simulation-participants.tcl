@@ -1,8 +1,10 @@
 ad_page_contract {
-    Create a new simulation
+    Do enrollment and invitations for a simulation.
 } {
     workflow_id:integer
 }
+
+permission::require_write_permission -object_id $workflow_id
 
 simulation::template::get -workflow_id $workflow_id -array sim_template
 

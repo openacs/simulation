@@ -47,7 +47,6 @@ set elements {
     count { 
         label "Number"
         orderby count
-        link_url_col view_url
     }
 }
 
@@ -61,7 +60,7 @@ template::list::create \
 #---------------------------------------------------------------------
 # database query
 
-db_multirow -extend { view_url } objects select_objects "
+db_multirow objects select_objects "
     select ot.pretty_name,
            count(*) 
       from cr_folders f,
@@ -72,6 +71,4 @@ db_multirow -extend { view_url } objects select_objects "
        and ot.object_type = i.content_type
      group by ot.pretty_name
     [template::list::orderby_clause -orderby -name "objects"]
-" {
-    set view_url $base_url/citybuild/TODOfilter
-}
+"
