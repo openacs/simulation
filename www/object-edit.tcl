@@ -48,7 +48,7 @@ set context [list [list "object-list" "Sim Objects"] $page_title]
 ######################################################################
 #TODO: content_type should be changable in new mode
 
-ad_form -name object -cancel_url object-list -form {
+ad_form -name object -cancel_url object-list -html {enctype multipart/form-data} -form {
     {item_id:key}
     {parent_id:integer(hidden),optional}
 }
@@ -99,6 +99,11 @@ array set content_method {
     sim_home richtext
     sim_prop richtext
     sim_stylesheet textarea
+    image upload
+}
+
+array set content_mime_type {
+    sim_stylesheet text/css
 }
 
 if { ![info exists content_method($content_type)] } {
@@ -118,6 +123,13 @@ switch $content_method($content_type) {
             {content_elm:text(textarea),optional
                 {label "Content"}
                 {html {cols 60 rows 8}}
+            }
+        }
+    }
+    upload {
+        ad_form -extend -name object -form {
+            {content_file:file(file)
+                {label "Content file"}
             }
         }
     }
@@ -272,12 +284,45 @@ ad_form -extend -name object -new_request {
     # Set element values from local vars
 } -on_submit {
 
+    switch $content_method($content_type) {
+        richtext {
+            set content_text [template::util::richtext::get_property contents $content_elm]
+            set mime_type [template::util::richtext::get_property format $content_elm]
+            set storage_type text
+        }
+        textarea {
+            set content_text $content_elm
+            if { [exists_and_not_null content_mime_type($content_type)] } {
+                set mime_type $content_mime_type($content_type)
+            } else {
+                set mime_type "text/plain"
+            }
+            set storage_type text
+        }
+        upload {
+            # Insertion is handled below
+            set storage_type file
+
+            if { [string equal $content_type "image"] } {
+                # Figure out height and width
+                image::get_info \
+                    -filename [template::util::file::get_property tmp_filename $content_file] \
+                    -array image_info
+                
+                set attr__image__height $image_info(height)
+                set attr__image__width $image_info(width)
+            }
+        }
+        default {
+            error "The '$content_method($content_type)' content input method has not yet been implemented"
+        }
+    }
+
     set attributes [list]
     foreach attribute_name $attr_names {
         set value [set attr__${content_type}__${attribute_name}]
-        lappend attributes [list $attribute_name ]
+        lappend attributes [list $attribute_name $value]
     }
-
 
 } -new_data {
     
@@ -299,31 +344,31 @@ ad_form -extend -name object -new_request {
         set item_id [bcms::item::create_item \
                          -item_name $name \
                          -parent_id $parent_id \
-                         -content_type $content_type]
+                         -content_type $content_type \
+                         -storage_type $storage_type]
+        
         
         switch $content_method($content_type) {
-            richtext {
-                set content_text [template::util::richtext::get_property contents $content_elm]
-                set mime_type [template::util::richtext::get_property format $content_elm]
+            upload {
+                set revision_id [bcms::revision::upload_file_revision \
+                                     -item_id $item_id \
+                                     -title $title \
+                                     -content_type $content_type \
+                                     -upload_file $content_file \
+                                     -description $description \
+                                     -additional_properties $attributes]
             }
-            textarea {
-                set content_text $content_elm
-                set mime_type "text/plain"
+            default {
+                set revision_id [bcms::revision::add_revision \
+                                     -item_id $item_id \
+                                     -title $title \
+                                     -content_type $content_type \
+                                     -mime_type $mime_type \
+                                     -content $content_text \
+                                     -description $description \
+                                     -additional_properties $attributes]
             }
         }
-
-        if { $content_type == "sim_stylesheet" } {
-            set mime_type "text/css"
-        }
-        
-        set revision_id [bcms::revision::add_revision \
-                             -item_id $item_id \
-                             -title $title \
-                             -content_type $content_type \
-                             -mime_type $mime_type \
-                             -content $content_text \
-                             -description $description \
-                             -additional_properties $attributes]
 
         bcms::revision::set_revision_status \
             -revision_id $revision_id \
@@ -352,27 +397,29 @@ ad_form -extend -name object -new_request {
     }
 } -edit_data {
 
-    switch $content_method($content_type) {
-        richtext {
-            set content_text [template::util::richtext::get_property contents $content_elm]
-            set mime_type [template::util::richtext::get_property format $content_elm]
-        }
-        textarea {
-            set content_text $content_elm
-            set mime_type "text/plain"
-        }
-    }
-
     db_transaction {
 
-        set revision_id [bcms::revision::add_revision \
-                             -item_id $item_id \
-                             -title $title \
-                             -content_type $content_type \
-                             -mime_type $mime_type \
-                             -content $content_text \
-                             -description $description \
-                             -additional_properties $attributes]
+        switch $content_method($content_type) {
+            upload {
+                set revision_id [bcms::revision::upload_file_revision \
+                                     -item_id $item_id \
+                                     -title $title \
+                                     -content_type $content_type \
+                                     -upload_file $content_file \
+                                     -description $description \
+                                     -additional_properties $attributes]
+            }
+            default {
+                set revision_id [bcms::revision::add_revision \
+                                     -item_id $item_id \
+                                     -title $title \
+                                     -content_type $content_type \
+                                     -mime_type $mime_type \
+                                     -content $content_text \
+                                     -description $description \
+                                     -additional_properties $attributes]
+            }
+        }
 
         bcms::revision::set_revision_status \
             -revision_id $revision_id \

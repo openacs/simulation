@@ -4,8 +4,6 @@
 
 <p><listtemplate name="objects"></listtemplate></p>
 
-<multiple name="object_types">
-  <p>
-    <b>&raquo;</b> <a href="@object_types.create_url@">@object_types.label@</a>
-  </p>
-</multiple>
+<p>
+  <b>&raquo;</b> <a href="@create_object_url@">Create new object</a>
+</p>

@@ -56,6 +56,7 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
            i.name,
            r.title,
            r.description,
+           r.mime_type,
            i.content_type,
            ot.pretty_name as object_type_pretty
     from   cr_folders f,
@@ -70,15 +71,16 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
 " {
     set description [string_truncate -len 200 $description]
     set edit_url [export_vars -base "object-edit" { item_id }]
-    set view_url [export_vars -base "object/$name"]
     set delete_url [export_vars -base "object-delete" { item_id }]
+
+    switch -glob $mime_type {
+        text/* {
+            set view_url [export_vars -base "object/$name"]
+        }
+        default {
+            set view_url [export_vars -base "object-content/$name"]
+        }
+    }
 }
 
-multirow create object_types create_url label
-
-foreach elm [simulation::object_type::get_options] {
-    foreach { pretty_name content_type } $elm {}
-    multirow append object_types \
-        [export_vars -base object-edit { content_type parent_id }] \
-        "Create new $pretty_name"
-}
+set create_object_url [export_vars -base object-edit { parent_id }]

@@ -29,7 +29,14 @@ item::get_content \
     -array content
 
 if { [info exists content(text)] } {
-set content_html [ad_html_text_convert -from $content(mime_type) -to "text/html" -- $content(text)] 
+    switch $content(mime_type) {
+        text/enhanced - text/plain - text/fixed-width - text/html {
+            set content_html [ad_html_text_convert -from $content(mime_type) -to "text/html" -- $content(text)] 
+        }
+        default {
+            set content_html [ad_quotehtml $content(text)]
+        }
+    }
 } else {
     set content(text) ""
     set content(html) ""
@@ -76,9 +83,9 @@ if { [permission::write_permission_p -object_id $item(item_id)] } {
 #
 #####
 
-if { [info exists content(stylesheet)] } {
+if { [exists_and_not_null content(stylesheet)] } {
     array set item [bcms::item::get_item -item_id $content(stylesheet)]
-    
+
     set stylesheet_url [file join [ad_conn package_url] object-content $item(name)]
 } else {
     set stylesheet_url {}

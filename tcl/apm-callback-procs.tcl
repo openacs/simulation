@@ -22,6 +22,6 @@ ad_proc -private simulation::apm::after_instantiate {
                        -parent_id 0 \
                        -package_id $package_id \
                        -context_id $package_id \
-                       -content_types { sim_character sim_prop sim_home sim_stylesheet }]
+                       -content_types { sim_character sim_prop sim_home sim_stylesheet image }]
 }
 
