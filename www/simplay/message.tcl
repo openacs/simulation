@@ -26,10 +26,7 @@ foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
 
 set to_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
-    # A role cannot send message to himself
-    if { ![exists_and_equal role_id $one_role_id] } {
         lappend to_role_options [list [workflow::role::get_element -role_id $one_role_id -element pretty_name] $one_role_id]
-    }
 }
 
 set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $role_id]

@@ -577,6 +577,10 @@ ad_proc -public simulation::template::enroll_and_invite_users {
             lappend invite_email_list [list $email $user_name]            
         }
     }
+    # Always enroll the admin creating the simulation
+    set admin_user_id [ad_conn user_id]
+    acs_user::get -user_id $admin_user_id -array admin_user
+    lappend enroll_user_list [list $admin_user_id $admin_user(email) $admin_user(name)]
 
     # Enroll users
     foreach user $enroll_user_list {
@@ -834,6 +838,7 @@ ad_proc -public simulation::template::cast {
     }]
     foreach case_id $current_cases {
         cast_users_in_case \
+            -workflow_id $workflow_id \
             -case_id $case_id \
             -roles_array roles \
             -role_names_array role_short_name \
@@ -858,6 +863,7 @@ ad_proc -public simulation::template::cast {
                          -workflow_short_name $workflow_short_name]
 
         cast_users_in_case \
+            -workflow_id $workflow_id \
             -case_id $case_id \
             -roles_array roles \
             -role_names_array role_short_name \
@@ -868,6 +874,7 @@ ad_proc -public simulation::template::cast {
 }
 
 ad_proc -private simulation::template::cast_users_in_case {
+    {-workflow_id:required}
     {-case_id:required}
     {-roles_array:required}
     {-role_names_array}
@@ -885,6 +892,8 @@ ad_proc -private simulation::template::cast_users_in_case {
     upvar $groups_array group_members
     upvar $users_var users_to_cast
     upvar $users_not_in_groups_var users_to_cast_not_in_groups
+
+    set admin_user_id [admin_user_id -workflow_id $workflow_id]
 
     # Loop over each role in the case and decide which users to assign it
     array unset row
@@ -930,7 +939,9 @@ ad_proc -private simulation::template::cast_users_in_case {
                 # There is a role group with at least one user that hasn't been cast.
                 # Cast a random user from that group
                 set user_id [lindex $group_members($group_id) 0]
-                lappend assignees $user_id
+                if { ![string equal $user_id $admin_user_id] } {
+                    lappend assignees $user_id
+                }
 
                 # Remove the user from the group member list
                 set group_members($group_id) [lreplace $group_members($group_id) 0 0]
@@ -946,8 +957,10 @@ ad_proc -private simulation::template::cast_users_in_case {
                 if { [llength $users_to_cast_not_in_groups] > 0 } {
                     # Fill the role with a user not in any of the role groups
                     set user_id [lindex $users_to_cast_not_in_groups 0]
-                    lappend assignees $user_id
-                    
+                    if { ![string equal $user_id $admin_user_id] } {
+                        lappend assignees $user_id
+                    }
+
                     # Remove user from the not-in-group list
                     set users_to_cast_not_in_groups [lreplace $users_to_cast_not_in_groups 0 0]                        
 
@@ -958,7 +971,7 @@ ad_proc -private simulation::template::cast_users_in_case {
                 } else {
                     # No more users to cast, resort to the logged in user (admin)
                     
-                    lappend assignees [ad_conn user_id]
+                    lappend assignees $admin_user_id
                     # Don't add the admin more than once
                     break
                 }
@@ -969,12 +982,28 @@ ad_proc -private simulation::template::cast_users_in_case {
         set row($role_short_name($role_id)) $assignees
     }
 
+    ns_log Notice "pm debug row = [array get row]"
+
     # Do all the user-role assignments in the case
     workflow::case::role::assign \
         -case_id $case_id \
         -array row \
 }
 
+ad_proc -private simulation::template::admin_user_id {
+    {-workflow_id:required}
+} {
+    When starting a simulation, get the user if of the simulation admin. The simulation
+    admin is the creator of the simulation.
+
+    @author Peter Marklund
+} {
+    return [db_string select_creation_user {
+        select creation_user
+        from acs_objects
+        where object_id = :workflow_id
+    }]
+}
 
 #----------------------------------------------------------------------
 # Simple workflow wrappers

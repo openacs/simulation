@@ -17,9 +17,10 @@
   <include src="/packages/simulation/lib/messages" user_id="@user_id@">
   <p></p>
 
-  <h3>All Tasks</h3>
+  <h3>Your Tasks</h3>
 
-  <include src="/packages/simulation/lib/tasks" user_id="@user_id@">
-  <p></p>
+  <include src="/packages/simulation/lib/simulations-task-count">
+  <p>
+  </p>
 
 </if>
