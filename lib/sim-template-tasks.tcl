@@ -81,6 +81,18 @@ lappend elements recipient_name {
     link_url_col recipient_role_edit_url
 }
 
+lappend elements state_spacer { 
+    label "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+    sub_class narrow
+    display_template " "
+}
+
+lappend elements state_spacer2 { 
+    label "States:"
+    sub_class narrow
+    display_template " "
+}
+
 set states [list]
 
 db_foreach select_states {
@@ -93,12 +105,12 @@ db_foreach select_states {
 } {
     set "label_state_$state_id" $pretty_name
     lappend elements state_$state_id \
-        [list label "<a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a> \${label_state_$state_id} <a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a>" \
+        [list label "\${label_state_$state_id}<br/> <a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a><a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a>" \
              html { align center } \
              display_template "
                  <switch @tasks.state_$state_id@>
                    <case value=\"assigned\">
-                     Enabled and Assigned
+                     Assigned
                    </case>
                    <case value=\"enabled\">
                      Enabled
@@ -113,6 +125,12 @@ db_foreach select_states {
              "]
 
     lappend states $state_id
+} if_no_rows {
+    lappend elements state_spacer3 { 
+        label "<span class=\"form-required-mark\">None.  Template will not work until you add states.</span>"
+        sub_class narrow
+        display_template " "
+    }
 }
 
 # LARS: Add state button in header removed
