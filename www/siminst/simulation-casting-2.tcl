@@ -8,6 +8,7 @@ set page_title "Cast simulation"
 set context [list [list "." "SimInst"] $page_title]
 set package_id [ad_conn package_id]
 
+
 # TODO: only one aplication group per package - need different solution
 set group_id [application_group::group_id_from_package_id -package_id $package_id]
 set group_name [group::get_element -group_id $group_id -element group_name]
@@ -55,6 +56,8 @@ ad_form -export { workflow_id } -name simulation -form {
     {user_group:integer(checkbox),multiple,optional
         {label "Invite all users in these groups"}
         {options $group_options}
+        #TODO: this link should use a function to find the subsite path
+        {help_text {Use <a href="/admin/groups/?view_by=rel_type">Group Administration</a> to add groups}}
     }    
 } -on_submit {
     # Convert dates to ANSI format
