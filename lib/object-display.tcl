@@ -65,29 +65,17 @@ if { [permission::write_permission_p -object_id $item(item_id)] } {
     set delete_url [export_vars -base [ad_conn package_url]object-delete { { item_id $item(item_id) } }]
 }
 
-
 #####
 #
-# Render using template
+# Serve stylesheet
 #
 #####
 
-# Dropped
-return
-
-item::get_content \
-    -revision_id [item::get_live_revision [item::get_template_id $item(item_id)]] \
-    -array template
-
-# Make content available to rendered page
-foreach __elm [array names content] { 
-    set $__elm $content($__elm)
+if { [info exists content(stylesheet)] } {
+    array set item [bcms::item::get_item -item_id $content(stylesheet)]
+    
+    set stylesheet_url [file join [ad_conn package_url] object-content $item(name)]
+} else {
+    set stylesheet_url {}
 }
-
-
-publish::push_id $item_id $revision_id
-set code [template::adp_compile -string $template(text)]
-set rendered_page [template::adp_eval code]
-publish::pop_id
-
 

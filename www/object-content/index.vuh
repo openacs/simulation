@@ -1,0 +1,26 @@
+ad_page_contract {
+    Returns the contents of an object
+    
+    @author Lars Pind (lars@collaboraid.biz)
+    @creation-date 2003-10-14
+    @cvs-id $Id$
+} {
+    revision_id:optional,naturalnum
+}
+
+set root_id [bcms::folder::get_id_by_package_id -parent_id 0]
+
+set extra_url [eval file join [lrange [file split [ad_conn extra_url]] 1 end]]
+
+if { [empty_string_p $extra_url] } {
+    set extra_url "index"
+}
+
+# get the item by url if now revision id is given
+if { ![info exists revision_id] } {
+    array set item [bcms::item::get_item_by_url -root_id $root_id -url $extra_url -revision live]
+} else {
+    array set item [bcms::revision::get_revision -revision_id $revision_id]
+}
+
+cr_write_content -item_id $item(item_id)
