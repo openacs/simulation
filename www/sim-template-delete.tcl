@@ -14,4 +14,4 @@ set page_title "Deleting template \"$template_name\""
 set template_list_url sim-template-list
 set context [list [list $template_list_url "Templates"] $page_title]
 
-#simulation::template::delete -workflow_id $workflow_id
+simulation::template::delete -workflow_id $workflow_id

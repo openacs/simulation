@@ -76,9 +76,11 @@ switch $size {
 		}
 		delete {
 		    sub_class narrow
-		    link_url_col delete_url
 		    display_template {
-			<img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
+			<a href="@sim_templates.delete_url@" 
+                           onclick="return confirm('Are you sure you want to delete template @sim_templates.name@?');">
+                          <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
+                        </a>
 		    }
 		}
 	    }

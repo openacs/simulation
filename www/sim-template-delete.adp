@@ -3,13 +3,9 @@
   <property name="context">@context;noquote@</property>
 
 <p>
-  You are about to delete template "@template_name@". Please review the contents of the template below before you proceed.
+  You have deleted template "@template_name@".
 </p>
 
-<h4>Roles</h4>
-
-<include src="/packages/simulation/lib/sim-template-roles" workflow_id=@workflow_id@ package_id=@package_id@>
-
-<h4>Tasks</h4>
-
-<include src="/packages/simulation/lib/sim-template-tasks" workflow_id="@workflow_id@" package_id="@package_id@" display_mode="edit" >
+<p>
+  <b>&raquo;</b> <a href="@template_list_url@">Return to template list page</a>
+</p>
