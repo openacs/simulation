@@ -40,7 +40,7 @@ template::list::create \
 
 # TODO: make case_name be a combo of simulation name and case #
 db_multirow -extend { message_url } messages select_messages "
-    select sm.message_id,
+    select distinct sm.message_id,
            sm.title as subject,
            sm.case_id as case_name,
            creation_date as date,

@@ -24,7 +24,7 @@ set message_count [db_string message_count_sql "
        and wcrmp.role_id = sm.to_role_id
        and wcrmp.case_id = sm.case_id
 "]
-set messages_url ${section_uri}messages
+set messages_url [export_vars -base ${section_uri}messages { case_id }]
 
 
 # TODO: decide whether to replace direct sql with this API loop:

@@ -75,13 +75,46 @@ ad_form -name action -edit_buttons { { Send ok } } -export { enabled_action_id }
     }
 } -on_submit {
 
+    set body_text [template::util::richtext::get_property "contents" $body]
+    set body_mime_type [template::util::richtext::get_property "format" $body]
 
-    workflow::case::action::execute \
-        -case_id $case_id \
-        -action_id $action_id \
-        -comment [template::util::richtext::get_property $body "content"] \
-        -comment_mime_type [template::util::richtext::get_property $body "mime_type"]
+    db_transaction {
     
+        workflow::case::action::execute \
+            -case_id $case_id \
+            -action_id $action_id \
+            -comment $body_text \
+            -comment_mime_type $body_mime_type
+        
+        # Send message
+        
+        set to_role_id $action(recipient)
+        set from_role_id $action(assigned_role_id)
+        
+        set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
+        
+        set item_id [db_nextval "acs_object_id_seq"]
+        
+        set item_id [bcms::item::create_item \
+                         -item_id $item_id \
+                         -item_name "message_$item_id" \
+                         -parent_id $parent_id \
+                         -content_type "sim_message"]
+        
+        set attributes [list \
+                            [list from_role_id $from_role_id] \
+                            [list to_role_id $to_role_id] \
+                            [list case_id $case_id]]
+        
+        set revision_id [bcms::revision::add_revision \
+                             -item_id $item_id \
+                             -title $subject \
+                             -content_type "sim_message" \
+                             -mime_type $body_mime_type \
+                             -content $body_text \
+                             -additional_properties $attributes]
+    }
+
     ad_returnredirect [export_vars -base tasks { case_id }]
     ad_script_abort
 }

@@ -29,7 +29,7 @@ ad_proc -private simulation::apm::after_instantiate {
                        -parent_id 0 \
                        -package_id $package_id \
                        -context_id $package_id \
-                       -content_types { sim_character sim_prop sim_location sim_stylesheet image }]
+                       -content_types { sim_character sim_prop sim_location sim_stylesheet image sim_message }]
 
     application_group::new \
         -group_name "Simulation Test Class" \
