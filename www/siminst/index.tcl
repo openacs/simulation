@@ -21,50 +21,37 @@ template::list::create \
     -no_data "No Simulations are in Development" \
     -sub_class "narrow" \
     -elements {
+        edit {
+            sub_class narrow
+            link_url_eval {[export_vars -base wizard { workflow_id }]}
+            display_template {
+                <img src="/resources/acs-subsite/Edit16.gif" height="16" width="16" border="0" alt="Edit"></a>
+            }
+        }
         pretty_name {
             label "Simulation"
             orderby upper(w.pretty_name)
             link_url_eval {[export_vars -base wizard { workflow_id }]}
+        }
+        state_pretty {
+            label "State"
         }
         description {
             label "Description"
             display_template {@dev_sims.description;noquote@}
 
         }
-        role_count {
-            label "Roles"
-            link_url_col map_roles_url
+        copy {
+            sub_class narrow
             display_template {
-                @dev_sims.role_count@ <if @dev_sims.role_empty_count@ gt 0>(@dev_sims.role_empty_count@ incomplete)</if>
-            }
-        }
-        tasks {
-            label "Tasks"
-            link_url_col sim_tasks_url
-            display_template {
-                @dev_sims.tasks@<if @dev_sims.prop_empty_count@ gt 0>, with @dev_sims.prop_empty_count@ incomplete prop</if><if @dev_sims.prop_empty_count@ gt 1>s</if>
+                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy"></a>
             }
         }
         delete {
             sub_class narrow
             link_url_col delete_url
             display_template {
-                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit"></a>
-            }
-        }
-        copy {
-            display_template {
-                <u>Copy</u>
-            }
-        }
-        cast {
-            display_template {
-                <if @dev_sims.cast_url@ not nil>
-                  <a href="@dev_sims.cast_url@">Begin casting</a>
-                </if>
-                <else>
-                  Not Ready for Casting
-                </else>
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete"></a>
             }
         }
     }
@@ -76,7 +63,7 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_url prop_empty_count } dev_sims select_dev_sims "
+db_multirow -extend { state state_pretty cast_url map_roles_url map_props_url sim_tasks_url delete_url prop_empty_count } dev_sims select_dev_sims "
     select w.workflow_id,
            w.pretty_name,
            w.description,
@@ -124,6 +111,8 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
     set map_roles_url [export_vars -base "${base_url}siminst/map-characters" { workflow_id }]
     set sim_tasks_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
+    set state [simulation::template::get_inst_state -workflow_id $workflow_id]
+    set state_pretty [simulation::template::get_state_pretty -state $state]
 }
 
 
@@ -139,13 +128,6 @@ template::list::create \
         pretty_name {
             label "Simulation"
             orderby upper(w.pretty_name)
-            link_url_col edit_url
-        }
-        groups {
-            label {Groups}
-            display_template {
-                <a href="@casting_sims.groups_url@">Edit groups</a>
-            }
         }
         n_users {
             label "Users enrolled"
@@ -154,21 +136,22 @@ template::list::create \
         case_start {
             label "Start date"            
         }
+        start_now {
+            display_template {
+                <a href="@casting_sims.start_url@">Start immediately</a>
+            }
+        }
+        copy {
+            sub_class narrow
+            display_template {
+                <img src="/resources/acs-subsite/Copy16.gif" height="16" width="16" border="0" alt="Copy"></a>
+            }
+        }
         delete {
             sub_class narrow
             link_url_col delete_url
             display_template {
                 <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit"></a>
-            }
-        }
-        copy {
-            display_template {
-                <u>Copy</u>
-            }
-        }
-        start_now {
-            display_template {
-                <a href="@casting_sims.start_url@">Start immediately</a>
             }
         }
     }
@@ -180,7 +163,7 @@ if { $admin_p } {
     set sim_in_dev_filter_sql "and ao.creation_user = :user_id"
 }
 
-db_multirow -extend { edit_url delete_url start_url groups_url } casting_sims select_casting_sims "
+db_multirow -extend { delete_url start_url } casting_sims select_casting_sims "
     select w.workflow_id,
            w.pretty_name,
            (select count(*) 
@@ -201,8 +184,6 @@ db_multirow -extend { edit_url delete_url start_url groups_url } casting_sims se
        and ss.sim_type = 'casting_sim'
     $sim_in_dev_filter_sql
 " {
-    set edit_url [export_vars -base "${base_url}siminst/simulation-casting-2" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
     set start_url [export_vars -base "simulation-start" { workflow_id }]
-    set groups_url [export_vars -base "simulation-casting-3" { workflow_id }]
 }

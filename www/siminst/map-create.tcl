@@ -23,11 +23,22 @@ ad_form \
         {pretty_name:text
             {label "Template name"}
             {value $name_default}
-            {html {size 50}}
+            {html {size 60}}
+            {help_text "Please choose a new name for your new simulation"}
         }
     } -on_submit {
-        # Create a new template that is clone of the existing one
+        # Check that pretty_name is unique
 
+        set unique_p [simulation::template::pretty_name_unique_p \
+                          -package_id [ad_conn package_id] \
+                          -pretty_name $pretty_name]
+
+        if { !$unique_p } {
+            form set_error template pretty_name "This name is already used by another simulation"
+            break
+        }
+
+        # Create a new template that is clone of the existing one
         set new_workflow_array(pretty_name) $pretty_name
         set new_workflow_array(short_name) {}
         set new_workflow_array(sim_type) "dev_sim"
@@ -40,7 +51,7 @@ ad_form \
 
 
         # Proceed to the task page
-        ad_returnredirect [export_vars -base map-characters {workflow_id}]
+        ad_returnredirect [export_vars -base wizard { workflow_id }]
         ad_script_abort
 
     }

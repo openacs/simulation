@@ -9,7 +9,7 @@ simulation::template::get -workflow_id $workflow_id -array sim_template
 ad_form -export { workflow_id } -name simulation -form {
     {pretty_name:text
         {label "Simulation Name"}
-        {html {size 40}}
+        {html {size 60}}
     }
     {send_start_note_date:date,to_sql(ansi),from_sql(ansi),optional
         {label "Date to send start notification (mockup only)"}
@@ -45,6 +45,16 @@ ad_form -export { workflow_id } -name simulation -form {
         set case_end [clock format [expr [clock seconds] + 4*$one_month] -format "%Y-%m-%d"]
     }
 } -on_submit {
+    set unique_p [simulation::template::pretty_name_unique_p \
+                      -workflow_id $workflow_id \
+                      -package_id [ad_conn package_id] \
+                      -pretty_name $pretty_name]
+    
+    if { !$unique_p } {
+        form set_error simulation pretty_name "This name is already used by another simulation"
+        break
+    }
+
     foreach elm { send_start_note_date case_start case_end pretty_name } {
         set row($elm) [set $elm]
     }

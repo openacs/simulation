@@ -1,12 +1,8 @@
-<if @eligible_groups@ nil>
-  <p>
-    You haven't picked any groups yet.
-  </p>
-  <a href="@pick_groups_url@" class="action">Pick groups now</a>
-</if>
-<else>
-  <formtemplate id="actors"></formtemplate>
-</else>
+<p>
+  Pick which groups can be cast in which roles below.
+</p>
+
+<formtemplate id="actors"></formtemplate>
 
 <p>
 TODO: Display the actor list and group size in parallel columns

@@ -19,6 +19,8 @@ wizard create siminst -steps {
     workflow_id
 }
 
+wizard set_finish_url [export_vars -base "simulation-casting" { workflow_id }]
+
 array set title {
     1 "Assign Roles to Characters"
     2 "Populate Tasks"

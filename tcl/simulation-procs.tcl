@@ -153,9 +153,9 @@ ad_proc simulation::casting_groups {
     set options_list [list]
 
     # We only want the label and the id, i.e. strip off the count
-    array set groups [casting_groups_with_counts -enrolled_only=$enrolled_only_p -workflow_id $workflow_id]
-    foreach group_id [array names groups] {
-        lappend options_list [list "[lindex $groups($group_id) 0] ([lindex $groups($group_id) 1] users)" $group_id]
+    set groups [casting_groups_with_counts -enrolled_only=$enrolled_only_p -workflow_id $workflow_id]
+    foreach { group_id val } $groups {
+        lappend options_list [list "[lindex $val 0] ([lindex $val 1] users)" $group_id]
     }
 
     return $options_list
@@ -190,6 +190,7 @@ ad_proc simulation::casting_groups_with_counts {
                        )"]
     set groups_list [list]
     set permission_group_name [permission_group_name]
+
     db_foreach subsite_group_options "
         select g.group_name,
                g.group_id,
@@ -200,7 +201,7 @@ ad_proc simulation::casting_groups_with_counts {
                          and pamm.member_id = u.user_id
                ) as n_users
         from   acs_rels ar,
-               groups   g
+               groups g
         where  ar.object_id_one = :subsite_group_id
           and  ar.object_id_two = g.group_id
           and  exists (select 1
@@ -211,6 +212,7 @@ ad_proc simulation::casting_groups_with_counts {
                       )
           and g.group_name <> :permission_group_name
           $enrollment_clause
+        order by lower(g.group_name)
     " {
         lappend groups_list $group_id [list $group_name $n_users]
     }

@@ -761,7 +761,6 @@ ad_proc -public simulation::template::get_inst_state {
     </ul>
 } {
     simulation::template::get -workflow_id $workflow_id -array sim_template
-
     
     switch $sim_template(sim_type) {
         dev_sim {
@@ -813,3 +812,41 @@ ad_proc -public simulation::template::get_inst_state {
     
     return $state
 }
+
+ad_proc -public simulation::template::get_state_pretty {
+    -state:required
+} {
+    Get pretty version of state.
+} {
+    array set pretty {
+        none                   "Not started"
+        roles_complete         "Roles completed"
+        tasks_complete         "Tasks completed"
+        settings_complete      "Settings completed"
+        enrollment_complete    "Enrollment completed"
+        participants_complete  "Participants completed"
+    }
+
+    return $pretty($state)
+}
+
+ad_proc -public simulation::template::pretty_name_unique_p {
+    -package_id:required
+    -pretty_name:required
+    {-workflow_id {}}
+} {
+    Check if suggested pretty_name is unique. 
+
+    @return 1 if unique, 0 if not unique.
+} {
+    set exists_p [db_string name_exists { 
+        select count(*) 
+        from   workflows 
+        where  package_key = 'simulation' 
+        and    object_id = :package_id
+        and    pretty_name = :pretty_name
+        and    (:workflow_id is null or workflow_id != :workflow_id)
+    }]
+    return [expr !$exists_p]
+}
+

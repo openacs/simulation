@@ -46,7 +46,7 @@ db_multirow participants select_participants {
     where  ar.object_id_one = :subsite_group_id
     and    ar.object_id_two = g.group_id
     and    g.group_name <> :permission_group_name
-    order  by g.group_name
+    order  by lower(g.group_name)
 } {
     ad_form -extend -name simulation -form \
         [list [list __auto_enroll_$group_id:text,optional]]
@@ -80,6 +80,7 @@ template::list::create \
                 </else>
             }
             html { align center }
+            hide_p {[ad_decode $sim_template(enroll_type) "closed" 1 0]}
         }
         auto_enroll_p {
             label "Auto-Enroll"
@@ -110,6 +111,13 @@ ad_form \
     } \
     -on_submit {
     
+        # First, drop all "invited" check marks if the user is also auto-enrolled
+        foreach group_id $groups {
+            if { [exists_and_equal __invited_${group_id} "t"] && [exists_and_equal __auto_enroll_${group_id} "t"] } {
+                unset __invited_${group_id}
+            }
+        }
+
         db_transaction {
             foreach group_id $groups {
                 foreach type { invited auto_enroll } {
