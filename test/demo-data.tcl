@@ -149,14 +149,14 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
         }
         ask_client_for_more_information {
             assigned_role lawyer
-            enabled_states open
+            assigned_states open
             pretty_name {Ask Client for more information}
             attachment_num 1
             recipient_roles client
         }
         consult_lawyer {
             assigned_role lawyer
-            enabled_states open
+            assigned_states open
             pretty_name {
                 Consult lawyer
             }
@@ -165,14 +165,14 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
         }
         visit_the_library {
             assigned_role lawyer
-            enabled_states open
+            assigned_states open
             pretty_name {Visit the library}
             attachment_num 0
             recipient_roles lawyer
         }
         consult_mentor {
             assigned_role lawyer
-            enabled_states open
+            assigned_states open
             pretty_name {
                 Consult mentor
             }
@@ -181,7 +181,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
         }
         mentor_intervenes {
             assigned_role mentor
-            enabled_states open
+            assigned_states open
             pretty_name {
                 Mentor intervenes
             }
@@ -190,7 +190,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
         }
         consult_secretary {
             assigned_role lawyer
-            enabled_states open
+            assigned_states open
             pretty_name {
                 Consult secretary
             }
@@ -207,7 +207,7 @@ ad_proc ::twt::simulation::data::tilburg_template_spec {} {
         }
         correct_spell_check_etc {
             assigned_role secretary
-            enabled_states written
+            assigned_states written
             new_state done
             pretty_name {Correct, spell-check, etc.}
             attachment_num 1
