@@ -6,8 +6,6 @@
 <formtemplate id="sim_template"></formtemplate>
 
 <if @workflow_id@ not nil>
-<h4>Associated Sim Objects</h4>
-<include src="/packages/simulation/lib/sim-template-objects" workflow_id=@workflow_id@ package_id=@package_id@>
 <h4>Roles</h4>
 <include src="/packages/simulation/lib/sim-template-roles" workflow_id=@workflow_id@ package_id=@package_id@>
 <h4>Tasks</h4>

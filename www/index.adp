@@ -2,7 +2,7 @@
 <div style="margin: 4px; background: lightgray; border: 1px solid black;">
 <h3>SIMPLAY</h3>
 Your live cases:
-<p><listtemplate name="active_cases"></listtemplate></p>
+<listtemplate name="active_cases"></listtemplate></p>
 Available simulations
 <table class="list" cellpadding="3" cellspacing="1">
       <tr class="list-header">
@@ -23,6 +23,9 @@ Available simulations
             </tr>
   </table>
 </div>
+<div style="margin: 4px; background: lightgray; border: 1px solid black;">
+<h3>YELLOW PAGES</h3>
+</div>
 <div style="margin: 4px; padding: 4px; border: 1px solid black;">
 <h3><a href="object-list">CITYBUILD</a></h3>
 <listtemplate name="object_count"></listtemplate></p>
@@ -31,7 +34,6 @@ Available simulations
 black;">
 <h3><a href="sim-template-list">SIMBUILD</a></h3>
 <include src="/packages/simulation/lib/sim-template-list">
-
 </div>
 <div style="margin: 4px; background: lightgray; border: 1px solid
 black;">

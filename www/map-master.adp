@@ -12,7 +12,7 @@
 <if @admin_p@>
     <div style="text-align:right;">
        <a href="@parameters_url@">Configuration</a> | <a
-       href="doc">Documentation</a>
+       href="doc">Documentation</a> | <a href="/test/admin/index?by_package_key=simulation&view_by=testcase&quiet=0">Tests</a>
 </div>
 </if>
 <div style="margin: 8px; text-align: center; valign: top">
@@ -26,7 +26,8 @@
  TYPE="application/x-shockwave-flash"
  PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer"></embed>
 </object>
-<img src="resources/flash-map-placeholder.gif"></div>
+<img src="resources/flash-map-placeholder.gif">
+</div>
 </td>
 </tr>
 </table>
