@@ -19,7 +19,7 @@ create table sim_roles (
 					constraint sim_roles_pk
 					  primary key,
     character_id	integer		constraint sim_roles_character_fk
-                                          check (1=1)
+					  references cr_items
 );
 
 comment on table sim_roles is 'Each record is a role within a simulation template to be played by one or more users or a computer agent when the template is instantiated into cases.';

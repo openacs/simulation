@@ -295,7 +295,6 @@ ad_form -extend -name object -new_request {
     if { $content_type == "sim_stylesheet" } {
         set mime_type "text/css"
     }
-
     
     set revision_id [bcms::revision::add_revision \
                          -item_id $item_id \

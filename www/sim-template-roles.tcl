@@ -31,7 +31,7 @@ template::list::create \
         name { 
             label "Name"
         }
-        character {
+        char_name {
             label "Character"
             link_url_col char_url
         }
@@ -43,22 +43,21 @@ template::list::create \
             }
         }
     }
-
+#-------------------------------------------------------------
+# roles db_multirow
+#-------------------------------------------------------------
 # TODO: fix this so it returns rows when it should        
 db_multirow -extend { edit_url char_url delete_url } roles select_roles "
     select wr.role_id,
            wr.pretty_name as name,
            wr.sort_order,
-           cr.title as character,
-           i.name as char_name
+           ci.name as char_name
       from workflow_roles wr,
            sim_roles sr,
-           cr_revisions cr,
-           cr_items i
+           cr_items ci
      where wr.workflow_id = :workflow_id
        and sr.role_id = wr.role_id
-       and cr.item_id = sr.character_id
-       and i.item_id = sr.character_id
+       and ci.item_id = sr.character_id
     [template::list::orderby_clause -orderby -name "roles"]
 " {
     set edit_url [export_vars -base "role-edit" { role_id }]
