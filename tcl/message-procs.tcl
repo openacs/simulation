@@ -78,24 +78,15 @@ ad_proc -public simulation::message::new {
         }
         workflow::case::get -case_id $case_id -array case
         workflow::get -workflow_id $case(workflow_id) -array workflow
-        set notif_subject "\[SimPlay\] New message in simulation $workflow(pretty_name): $subject"
+
+        # I18N message variables:
+        set simulation_name $workflow(pretty_name)
         set package_id [ad_conn package_id]
         set simplay_url \
             [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay" { workflow_id }]
-        set notif_body "You have just received the following message in simulation $workflow(pretty_name):
 
------------------------------------------------------
-subject: $subject
-
-body:
-
-$body
------------------------------------------------------
-
-Please visit $simplay_url to continue playing the simulation.
-
-Thank you.
-"
+        set notif_subject [_ simulation.message_notificaiton_email_subject]
+        set notif_body [_ simulation.message_notification_email_body]
 
         notification::new \
             -type_id [notification::type::get_type_id -short_name [simulation::notification::message::type_short_name]] \

@@ -38,7 +38,7 @@ if { [llength $enabled_action_id] == 1 } {
         set return_url [export_vars -base tasks { case_id role_id }]
     }
 
-    if { [info exists body] } {
+    if { [info exists body] && [info exists received_message_item_id] } {
         # We have a prepopulated body. This means we are responding to a message (see else clause below)
         # Display a listing of any attachments in the message being responded to
         set attachments_set_list [bcms::item::list_related_items \

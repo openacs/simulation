@@ -20,9 +20,16 @@
   <msg key="Document_Portfolio">Document Portfolio</msg>
   <msg key="Documents">Documents</msg>
   <msg key="Edit">Edit</msg>
+  <msg key="enrollment_notification_email_body">Dear %user_name%,
+This is to notify you that you have been enrolled in simulation %sim_template.pretty_name%. You may visit the
+casting page at %casting_page_url% to choose case or role.</msg>
+  <msg key="enrollment_notification_email_subject">You have been enrolled in simulation %sim_template.pretty_name%</msg>
   <msg key="ignoring_actions">&lt;strong&gt;Note:&lt;/strong&gt; Ignoring %ignored_actions_count% tasks that don't have the task
       name &quot;%action.pretty_name%&quot;. Please back up your browser if you
       want to change the selection of tasks.</msg>
+  <msg key="invitation_email_body">Dear %user_name%,
+You have been invited to join simulation %sim_template.pretty_name%. Please visit the enrollment page at %enrollment_page_url% to accept the invitation. Thank you!</msg>
+  <msg key="invitation_email_subject">You have been invited to join simulation %sim_template.pretty_name%</msg>
   <msg key="Invitations_are_sent">&lt;b&gt;Invitations&lt;/b&gt; are sent, 
     when this wizard is completed and
     casting begins.</msg>
@@ -100,6 +107,20 @@ and all related tasks?</msg>
   <msg key="Manage_groups">Manage groups</msg>
   <msg key="Map_XML">Map XML</msg>
   <msg key="message">message</msg>
+  <msg key="message_notificaiton_email_subject">[SimPlay] New message in simulation %simulation_name: %subject%</msg>
+  <msg key="message_notification_email_body">You have just received the following message in simulation %simulation_name%:
+
+-----------------------------------------------------
+subject: %subject%
+
+body:
+
+%body%
+-----------------------------------------------------
+
+Please visit %simplay_url% to continue playing the simulation.
+
+Thank you.</msg>
   <msg key="Messages">Messages</msg>
   <msg key="messages">messages</msg>
   <msg key="My_Notifications">My Notifications</msg>
@@ -109,10 +130,19 @@ and all related tasks?</msg>
   <msg key="Portfolio">Portfolio</msg>
   <msg key="Recent_Messages">Recent Messages</msg>
   <msg key="Related_Tasks">Related Tasks</msg>
+  <msg key="reminder_email_body">Dear %user_name%,
+this email is sent to you as a reminder that you are participating in simulation %simulation_name% that will start on %simulation_start_date%. Here is the
+simulation description:
+
+%simulation_description%</msg>
+  <msg key="reminder_email_subject">Simulation %simulation_name% starts on %simulation_start_date%</msg>
   <msg key="Roles">Roles</msg>
   <msg key="SimBuild">SimBuild</msg>
   <msg key="SimInst">SimInst</msg>
   <msg key="SimPlay">SimPlay</msg>
+  <msg key="simulation_started_email_body">Dear %user_name%,
+Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% to participate. Thank you!</msg>
+  <msg key="simulation_started_email_subject">Simulation %simulation.pretty_name% has started</msg>
   <msg key="States">States</msg>
   <msg key="Sub-States">Sub-States</msg>
   <msg key="Sub-Tasks">Sub-Tasks</msg>

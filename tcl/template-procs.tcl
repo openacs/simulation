@@ -511,14 +511,11 @@ ad_proc -public simulation::template::enroll_user {
     if { [string equal $sim_template(casting_type) "open"] || [string equal $sim_template(casting_type) "group"] } {
         # Notify users that they are enrolled and can do their casting
 
-        set subject "You have been enrolled in simulation $sim_template(pretty_name)"
+        set subject [_ simulation.enrollment_notification_email_subject]
         set package_id [ad_conn package_id]
         set casting_page_url \
             [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay/cast" { workflow_id }]
-        set body "Dear $user_name,
-This is to notify you that you have been enrolled in simulation $sim_template(pretty_name). You may visit the
-casting page at ${casting_page_url} to choose case or role.
-"
+        set body [_ simulation.enrollment_notification_email_body]
 
         acs_mail_lite::send \
             -to_addr $email \
@@ -619,9 +616,8 @@ ad_proc -public simulation::template::enroll_and_invite_users {
         set package_id [ad_conn package_id]
         set enrollment_page_url \
             [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay/enroll" { workflow_id }]
-        set subject "You have been invited to join simulation $sim_template(pretty_name)"
-        set body "Dear $user_name,
-You have been invited to join simulation $sim_template(pretty_name). Please visit the enrollment page at $enrollment_page_url to accept the invitation. Thank you!"
+        set subject [_ simulation.invitation_email_subject]
+        set body [_ simulation.invitation_email_body]
         acs_mail_lite::send \
             -to_addr $email \
             -from_addr [ad_system_owner] \
@@ -681,12 +677,8 @@ ad_proc -private simulation::template::sweeper {} {
         set simulation_start_date [lindex $row 5]
         set simulation_description [lindex $row 6]
 
-        set subject "Simulation $simulation_name starts on $simulation_start_date"
-        set body "Dear $user_name,
-this email is sent to you as a reminder that you are participating in simulation $simulation_name that will start on $simulation_start_date. Here is the
-simulation description:
-
-$simulation_description"
+        set subject [_ simulation.reminder_email_subject]
+        set body [_ simulation.reminder_email_body]
 
         acs_mail_lite::send \
             -to_addr $email \
@@ -747,9 +739,8 @@ ad_proc -public simulation::template::start {
         set package_id [ad_conn package_id]
         set simplay_url \
             [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay/enroll" { workflow_id }]
-        set subject "Simulation $simulation(pretty_name) has started"
-        set body "Dear $user_name,
-Simulation $simulation(pretty_name) has now started. Please visit $simplay_url to participate. Thank you!"
+        set subject [_ simulation.simulation_started_email_subject]
+        set body [_ simulation.simulation_started_email_body]
 
         acs_mail_lite::send \
             -to_addr $email \
