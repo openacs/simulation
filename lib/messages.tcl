@@ -15,12 +15,15 @@ simulation::include_contract {
 
 set package_id [ad_conn package_id]
 
+set user_roles [workflow::case::get_user_roles -case_id $case_id]
+
 set elements {
     from {
         label "From"
     }
     to {
         label "To"
+        hide_p {[ad_decode [llength $user_roles] 1 1 0]}
     }
     subject {
         link_url_col

@@ -11,7 +11,7 @@ ad_page_contract {
 }
 
 set page_title "Message"
-set context [list [list "." "SimPlay"] [list $page_title] ]
+set context [list [list "." "SimPlay"] [list [export_vars -base case { case_id }] "Case"] $page_title]
 set package_id [ad_conn package_id]
 
 set workflow_id [workflow::case::get_element -case_id $case_id -element workflow_id]

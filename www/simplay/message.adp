@@ -13,3 +13,4 @@ the role. (how do we know which?  We may need a "workflow_case_role to
 sim_object" mapping table)?
 </ul>
 
+TODO: On-refresh on "From" field; changes the "To" field to exclude the "From" role (you can't send to yourself), and changes the list of possible attachments (see above note)
