@@ -70,7 +70,7 @@ db_multirow -extend { edit_url view_url delete_url } sim_objects select_sim_obje
     set delete_url [export_vars -base "object-delete" { item_id }]
 }
 
-set sim_types { sim_character sim_prop sim_home }
+set sim_types { sim_character sim_prop sim_location }
 
 db_multirow -extend { create_url label } object_types select_object_types "
     select ot.object_type as content_type,

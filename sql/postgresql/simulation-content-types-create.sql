@@ -74,8 +74,8 @@ select content_type__create_attribute(
     'sim_prop',                    -- content_type
     'on_map_p',                    -- attribute_name
     'boolean',                     -- datatype
-    'Is on map',                   -- pretty_name
-    'Is on map',                   -- pretty_plural
+    'Show on map',                 -- pretty_name
+    'Show on map',                 -- pretty_plural
     1,                             -- sort_order
     'f',                           -- default_value
     'boolean'                      -- column_spec
@@ -107,7 +107,7 @@ select content_type__register_relation_type (
 
 
 ----------------------------------------------------------------------
--- sim_home
+-- sim_location
 ----------------------------------------------------------------------
 
 select content_type__create_type(
@@ -124,8 +124,8 @@ select content_type__create_attribute(
     'sim_location',                -- content_type
     'on_map_p',                    -- attribute_name
     'boolean',                     -- datatype
-    'Is on map',                   -- pretty_name
-    'Is on map',                   -- pretty_plural
+    'Show on map',                 -- pretty_name
+    'Show on map',                 -- pretty_plural
     1,                             -- sort_order
     'f',                           -- default_value
     'boolean'                      -- column_spec
