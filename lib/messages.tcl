@@ -116,33 +116,7 @@ db_multirow -extend $extend messages select_messages "
            sim_cases sc
     where  cr.revision_id = sm.message_id
     and    wc.case_id = sm.case_id
-    [ad_decode $role_id "" "" "and (sm.entry_id is null or not (
-                                      -- The whole expression in the not parenthesis is true if there is an assigned action
-                                      -- responding to the message in which case the message shouldnt show up in the message list
-
-                                      -- message is associated with an action that put us in the current state
-                                      sm.entry_id in (select max(wcl.entry_id)
-                                                 from workflow_case_log wcl,
-                                                      workflow_fsm_actions wfa,
-                                                      workflow_case_fsm wcf,
-                                                      sim_messagesx sm2
-                                                 where wcl.case_id = sm.case_id
-                                                   and wcl.action_id = wfa.action_id
-                                                   and wcf.case_id = wcl.case_id
-                                                   and wfa.new_state = wcf.current_state
-                                                   and sm2.entry_id = wcl.entry_id
-                                                   and sm2.to_role_id = :role_id
-                                                       )
-                                       and
-                                       -- There is an assigned action with a recipient being sender of the message
-                                       exists (select 1 
-                                             from workflow_case_assigned_actions wcaa,
-                                                  sim_task_recipients str
-                                             where wcaa.case_id = sm.case_id
-                                             and wcaa.role_id = :role_id
-                                             and str.task_id = wcaa.action_id
-                                             and str.recipient = sm.from_role_id)
-                                      ))"]
+    [ad_decode $role_id "" "" "and [simulation::message::exclude_task_messages_sql]"]
     [ad_decode $role_id "" "" "and    (sm.to_role_id = :role_id or sm.from_role_id = :role_id)"]
     and    wc.case_id = sm.case_id
     and    sc.sim_case_id = wc.object_id

@@ -108,3 +108,43 @@ Thank you.
     
     return $item_id
 }
+
+ad_proc -public simulation::message::exclude_task_messages_sql {} {
+    Return a SQL where clause that will exclude received messages that will
+    be responded to with an assigned task instead of by sending a message. The
+    need for this query arises because we don't want ask info type message to show up both in
+    the message list and the task list. Instead they should show up only in the task list.
+
+    The clause uses the bind variable role_id and assumes sm_messagesx to be in the from clause
+    aliased as sm.
+
+    @author Peter Marklund
+} {
+    return "(sm.entry_id is null or not (
+                                      -- The whole expression in the not parenthesis is true if there is an assigned action
+                                      -- responding to the message in which case the message shouldnt show up in the message list
+
+                                      -- message is associated with an action that put us in the current state
+                                      sm.entry_id in (select max(wcl.entry_id)
+                                                 from workflow_case_log wcl,
+                                                      workflow_fsm_actions wfa,
+                                                      workflow_case_fsm wcf,
+                                                      sim_messagesx sm2
+                                                 where wcl.case_id = sm.case_id
+                                                   and wcl.action_id = wfa.action_id
+                                                   and wcf.case_id = wcl.case_id
+                                                   and wfa.new_state = wcf.current_state
+                                                   and sm2.entry_id = wcl.entry_id
+                                                   and sm2.to_role_id = :role_id
+                                                       )
+                                       and
+                                       -- There is an assigned action with a recipient being sender of the message
+                                       exists (select 1 
+                                             from workflow_case_assigned_actions wcaa,
+                                                  sim_task_recipients str
+                                             where wcaa.case_id = sm.case_id
+                                             and wcaa.role_id = :role_id
+                                             and str.task_id = wcaa.action_id
+                                             and str.recipient = sm.from_role_id)
+                                      ))"
+}
