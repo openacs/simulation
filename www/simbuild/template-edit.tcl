@@ -31,20 +31,18 @@ ad_form -name sim_template -cancel_url . -form {
         {label "Template Name"}
         {html {size 40}}
     }
-    {ready_p:boolean(checkbox),optional
+    {ready_p:boolean(radio),optional
         {label "Ready for use?"}
-        {options {""}}
+        {options {{Yes t} {No f}}}
     }
-    {suggested_duration:string,optional
+    {suggested_duration:text,optional
         {label "Suggested Duration"}
     }
 } -edit_request {
-    workflow::get -workflow_id $workflow_id -array sim_template_array
+    simulation::template::get -workflow_id $workflow_id -array sim_template_array
     set name $sim_template_array(pretty_name)
-    set ready_p 't' 
-#TODO: replace workflow api call with simulation::template::get,
-# combining data from workflows with data from sim_simulation,
-# hence providing $sim_template_array(ready_p)
+    set ready_p $sim_template_array(ready_p)
+    set suggested_duration $sim_template_array(suggested_duration)
 } -new_data {
     set workflow_id [simulation::template::new \
                          -short_name $name \
@@ -54,17 +52,17 @@ ad_form -name sim_template -cancel_url . -form {
                          -package_key $package_key \
                          -object_id $package_id]
 } -edit_data {
-    set workflow_id [simulation::template::edit \
-                         -short_name $name \
-                         -pretty_name $name \
-                         -ready_p $ready_p \
-                         -suggested_duration $suggested_duration \
-                         -package_key $package_key \
-                         -object_id $package_id]
-
+    simulation::template::edit \
+        -workflow_id $workflow_id \
+        -short_name $name \
+        -pretty_name $name \
+        -ready_p $ready_p \
+        -suggested_duration $suggested_duration \
+        -package_key $package_key \
+        -object_id $package_id
 
 } -after_submit {
-    ad_returnredirect template-edit?workflow_id=$workflow_id
+    ad_returnredirect [export_vars -base "template-edit" { workflow_id }]
     ad_script_abort
 }
 

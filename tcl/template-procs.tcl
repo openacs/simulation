@@ -41,18 +41,27 @@ ad_proc -public simulation::template::new {
             -workflow_id $workflow_id \
             -short_name "dummy action" \
             -pretty_name "dummy action"
-        
-        db_dml new_sim "
+
+        set suggested_duration [string trim $suggested_duration]
+        if { [empty_string_p $suggested_duration] } {
+            db_dml new_sim {
+                insert into sim_simulations
+                (simulation_id, ready_p)
+                values (:workflow_id, :ready_p)
+            }
+        } else {
+            db_dml new_sim "
             insert into sim_simulations
             (simulation_id, ready_p, suggested_duration)
-            values ($workflow_id, '$ready_p', interval '$suggested_duration')
-        "
-            
+            values ('$workflow_id', '$ready_p', interval '$suggested_duration')"            
         }
+    }
+
     return $workflow_id
 }
 
 ad_proc -public simulation::template::edit {
+    {-workflow_id:required}
     {-short_name:required}
     {-pretty_name:required}
     {-ready_p "f"}
@@ -77,34 +86,40 @@ ad_proc -public simulation::template::edit {
             update workflows
                set short_name=:short_name,
                    pretty_name=:pretty_name
-             where workflow_id=:object_id
-"
-        
-        db_dml edit_sim "
-            update sim_simulations
-               set ready_p=:ready_p, 
-                   suggested_duration=(interval ':suggested_duration')
-             where simulation_id=:object_id
-        "
-            
+             where workflow_id=:workflow_id"
+
+        if { [empty_string_p $suggested_duration] } {
+            db_dml edit_sim {
+                update sim_simulations
+                   set ready_p=:ready_p, 
+                       suggested_duration = null
+                 where simulation_id=:workflow_id
+            }
+        } else {
+            db_dml edit_sim "
+                update sim_simulations
+                   set ready_p=:ready_p, 
+                       suggested_duration=(interval '$suggested_duration')
+                 where simulation_id=:workflow_id
+            "
         }
-    return $workflow_id
+    }
 }
 
 ad_proc -public simulation::template::get {
-    {-package_key:required}
-    {-object_id:required}
+    {-workflow_id:required}
     {-array:required}
 } {
-    STUB ONLY.  Return information about a simulation template.  This should be a wrapper anound workflow::get, supplementing it with the columns from sim_simulation.
+    Return information about a simulation template.  This is a wrapper around 
+    workflow::get, supplementing it with the columns from sim_simulation.
 
-    @param object_id ID of simulation template.
+    @param workflow_id ID of simulation template.
     @param array name of array in which the info will be returned
-    @return An array list with keys workflow_id, short_name,
-            pretty_name, object_id, package_key, object_type, initial_action,
-            and callbacks, plus records in sim_simulation.
+                 Array will contain keys from the tables workflows and sim_simulations.
 } {
-    return 1
+    upvar $array row
+
+    db_1row select_template {} -column_array row
 }
 
 ad_proc -public simulation::template::delete {

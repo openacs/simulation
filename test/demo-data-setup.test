@@ -51,7 +51,7 @@ if { [catch {
 
     ::twt::log_section "Create an image object"
     do_request /simulation/citybuild
-    link follow ~u object-edit?.*parent
+    link follow ~u object-edit
     form find ~n object
     field find ~n content_type
     field select2 ~v image

@@ -69,10 +69,6 @@ if { ![exists_and_not_null parent_id] } {
 
 set action_list [list "Add an Object" [export_vars -base object-edit { parent_id }] ]
 
-#error "
-#object_add_url: $object_add_url
-#add_action: $add_action"
-
 template::list::create \
     -name object_count \
     -multirow object_count \

@@ -20,7 +20,7 @@ ad_proc ::twt::simulation::add_image {
     Create a new simulation image
 } {
     do_request /simulation/citybuild
-    link follow ~u object-edit?.*parent
+    link follow ~u object-edit
 
     # Choose object type image
     set_object_form_type image
@@ -47,7 +47,7 @@ ad_proc ::twt::simulation::add_object {
     Create a new simulation object
 } {
     do_request /simulation/citybuild
-    link follow ~u object-edit?.*parent
+    link follow ~u object-edit
 
     set_object_form_type $type
 

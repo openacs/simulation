@@ -17,6 +17,8 @@ simulation::include_contract {
 
 set package_id [ad_conn package_id]
 
+set add_url [export_vars -base "[ad_conn package_url]citybuild/object-edit" { parent_id }]
+
 if { ![exists_and_not_null parent_id] } {
     set parent_id [bcms::folder::get_id_by_package_id -parent_id 0]
 }
@@ -74,8 +76,6 @@ if { $size == "yellow-pages"} {
     set filter_sql ""
 }
 
-set add_url [export_vars -base "[apm_package_url_from_id $package_id]citybuild/object-edit" { parent_id }]
-
 template::list::create \
     -name objects \
     -multirow objects \
@@ -115,5 +115,3 @@ db_multirow -extend { edit_url view_url delete_url } objects select_objects "
         }
     }
 }
-
-
