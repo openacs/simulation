@@ -52,10 +52,10 @@ db_multirow cases select_cases "
            end as status,
            r.role_id,
            r.pretty_name as role_pretty,
-           (select count(distinct wcaua.enabled_action_id)
-            from   wf_case_assigned_user_actions wcaua
-            where  wcaua.case_id = wc.case_id
-            and    wcaua.user_id = :party_id) as num_user_tasks
+           (select count(distinct wcaa.enabled_action_id)
+            from   workflow_case_assigned_actions wcaa
+            where  wcaa.case_id = wc.case_id
+            and    wcaa.role_id = wcrpm.role_id) as num_user_tasks
       from workflow_cases wc,
            sim_cases sc,
            workflow_case_role_party_map wcrpm,
