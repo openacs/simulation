@@ -193,7 +193,7 @@ ad_proc -public simulation::template::edit {
                 }
 
                 # Map each party
-                foreach party_id $aux(enroll_groups) {
+                foreach party_id $aux($map_type) {
                     db_dml map_party_to_template {
                         insert into sim_party_sim_map
                         (simulation_id, party_id, type)
@@ -631,3 +631,27 @@ ad_proc -public simulation::template::cast {
             -replace
     }
 }
+
+
+ad_proc -public simulation::template::generate_spec {
+    {-workflow_id:required}
+} {
+    Generate a spec for a workflow in array list style.
+    
+    @param  workflow_id   The id of the workflow to generate a spec for.
+    @return The spec for the workflow.
+
+    @author Lars Pind (lars@collaboraid.biz)
+    @see workflow::new
+} {
+    set spec [workflow::generate_spec \
+                  -workflow_id $workflow_id \
+                  -handlers {
+                      roles simulation::role 
+                      actions simulation::action
+                      states workflow::state::fsm
+                  }]
+
+    return $spec
+}
+

@@ -169,14 +169,20 @@ ad_proc -public simulation::action::edit {
 
 
 ad_proc -public simulation::action::get {
+    {-local_only:boolean}
     {-action_id:required}
     {-array:required}
 } {
-    Get information about a simulation action
+    Get information about a simulation action.
+
+    @param local_only   Set this to only get the attributes from the simulation extension table, 
+                        not the ones derived from workflow::action::fsm.
 } {
     upvar 1 $array row
 
-    workflow::action::fsm::get -action_id $action_id -array row
+    if { !$local_only_p } {
+        workflow::action::fsm::get -action_id $action_id -array row
+    }
     
     db_1row select_action {
         select recipient, 
@@ -189,4 +195,92 @@ ad_proc -public simulation::action::get {
     } -column_array local_row
 
     array set row [array get local_row]
+}
+
+
+ad_proc -private simulation::action::generate_spec {
+    {-action_id {}}
+    {-one_id {}}
+} {
+    Generate the spec for an individual simulation task definition.
+
+    @param action_id The id of the action to generate spec for.
+
+    @param one_id    Same as action_id, just used for consistency across roles/actions/states.
+
+    @return spec     The actions spec
+
+    @author Lars Pind (lars@collaboraid.biz)
+} {
+    if { [empty_string_p $action_id] } {
+        if { [empty_string_p $one_id] } {
+            error "You must supply either action_id or one_id"
+        }
+        set action_id $one_id
+    } else {
+        if { ![empty_string_p $one_id] } {
+            error "You can only supply either action_id or one_id"
+        }
+    }
+
+    set spec [workflow::action::fsm::generate_spec -action_id $action_id]
+
+    get -action_id $action_id -array row -local_only
+
+    array unset row recipient
+
+    foreach name [lsort [array names row]] {
+        if { ![empty_string_p $row($name)] } {
+            lappend spec $name $row($name)
+        }
+    }
+
+    return $spec
+}
+
+ad_proc -public simulation::action::get_ids {
+    {-workflow_id:required}
+} {
+    Get the action_id's of all the actions in the workflow.
+    
+    @param workflow_id   The ID of the workflow
+
+    @return              list of action_id's.
+
+    @author Lars Pind (lars@collaboraid.biz)
+} {
+    return [workflow::action::fsm::get_ids -workflow_id $workflow_id]
+}
+
+ad_proc -public simulation::action::get_element {
+    {-action_id {}}
+    {-one_id {}}
+    {-element:required}
+} {
+    Return element from information about an action with a given id, including
+    simulation info.
+
+    @param action_id The ID of the action
+
+    @param one_id    Same as action_id, just used for consistency across roles/actions/states.
+
+    @param element   The element you want
+
+    @return          The element you asked for
+
+    @author Peter Marklund
+    @author Lars Pind (lars@collaboraid.biz)
+} {
+    if { [empty_string_p $action_id] } {
+        if { [empty_string_p $one_id] } {
+            error "You must supply either action_id or one_id"
+        }
+        set action_id $one_id
+    } else {
+        if { ![empty_string_p $one_id] } {
+            error "You can only supply either action_id or one_id"
+        }
+    }
+    get -action_id $action_id -array row
+    return $row($element)
 }

@@ -152,14 +152,20 @@ ad_proc -public simulation::role::edit {
 }
 
 ad_proc -public simulation::role::get {
+    {-local_only:boolean}
     {-role_id:required}
     {-array:required}
 } {
     Get information about a simulation role
+
+    @param local_only   Set this to only get the attributes from the simulation extension table, 
+                        not the ones derived from workflow::role
 } {
     upvar 1 $array row
 
-    workflow::role::get -role_id $role_id -array row
+    if { !$local_only_p } {
+        workflow::role::get -role_id $role_id -array row
+    }
 
     db_1row select_sim_role {
         select role_id,
@@ -171,3 +177,84 @@ ad_proc -public simulation::role::get {
     array set row [array get local_row]
 }
 
+ad_proc -public simulation::role::get_element {
+    {-role_id {}}
+    {-one_id {}}
+    {-element:required}
+} {
+    Return a single element from the information about a role.
+
+    @param role_id  The id of the role to get an element for.
+
+    @param one_id   Same as role_id, just used for consistency across roles/actions/states.
+
+    @return element The element you asked for
+
+    @author Lars Pind (lars@collaboraid.biz)
+} {
+    if { [empty_string_p $role_id] } {
+        if { [empty_string_p $one_id] } {
+            error "You must supply either role_id or one_id"
+        }
+        set role_id $one_id
+    } else {
+        if { ![empty_string_p $one_id] } {
+            error "You can only supply either role_id or one_id"
+        }
+    }
+
+    get -role_id $role_id -array row
+    return $row($element)
+}
+
+ad_proc -private simulation::role::get_ids {
+    {-workflow_id:required}
+} {
+    Get the IDs of all the roles in the right order.
+
+    @param workflow_id The id of the workflow to delete.
+
+    @return A list of role IDs.
+
+    @author Lars Pind (lars@collaboraid.biz)
+} {
+    return [workflow::role::get_ids -workflow_id $workflow_id]
+}
+
+ad_proc -private simulation::role::generate_spec {
+    {-role_id {}}
+    {-one_id {}}
+} {
+    Generate the spec for an individual simulation task definition.
+
+    @param role_id The id of the role to generate spec for.
+
+    @param one_id    Same as role_id, just used for consistency across roles/roles/states.
+
+    @return spec     The roles spec
+
+    @author Lars Pind (lars@collaboraid.biz)
+} {
+    if { [empty_string_p $role_id] } {
+        if { [empty_string_p $one_id] } {
+            error "You must supply either role_id or one_id"
+        }
+        set role_id $one_id
+    } else {
+        if { ![empty_string_p $one_id] } {
+            error "You can only supply either role_id or one_id"
+        }
+    }
+
+    set spec [workflow::role::generate_spec -role_id $role_id]
+
+    get -role_id $role_id -array row -local_only
+
+    foreach name [lsort [array names row]] {
+        if { ![empty_string_p $row($name)] } {
+            lappend spec $name $row($name)
+        }
+    }
+
+    return $spec
+}
