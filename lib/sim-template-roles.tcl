@@ -51,7 +51,7 @@ template::list::create \
             link_url_col delete_url
             link_html { onclick "return confirm('Are you sure you want to delete role @roles.pretty_name@?');" }
             display_template {
-                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Edit">
+                <img src="/resources/acs-subsite/Delete16.gif" height="16" width="16" border="0" alt="Delete">
             }
         }
     }
