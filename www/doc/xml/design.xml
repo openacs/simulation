@@ -19,15 +19,13 @@
       </sect2>
       <sect2 id="tcl-api">
         <title>TCL API</title>
-        <para><ulink url="/api-doc...">link to auto-generated TCL
-        API</ulink></para>
+        <para><ulink url="/api-doc/proc-search?query_string=simulation%3A%3A&amp;search_type=All+matches">TCL API</ulink></para>
         <para>Each TCL API item should include inputs, outputs, and a
         comment block describing any non-obvious internal issues.</para>
       </sect2>
-      <sect2 id="sql api">
+      <sect2 id="sql-api">
         <title>SQL API</title>
-        <para><ulink url="/api-doc...">link to public sql
-        procs</ulink></para>
+        <para>None yet.</para>
       </sect2>
     </sect1>
     <sect1 id="internals">
