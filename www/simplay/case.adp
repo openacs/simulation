@@ -4,7 +4,7 @@
 
 <h3>Recent Messages</h3>
 
-<include src="/packages/simulation/lib/messages"  user_id="@user_id@" case_id="@case_id@" role_id="@role_id@" limit="5">
+<include src="/packages/simulation/lib/messages"  case_id="@case_id@" role_id="@role_id@" limit="5">
 
 <ul class="action-links">
   <li><a href="@messages_url@">All messages...</a></li>
@@ -12,7 +12,7 @@
 
 <h3>Tasks</h3>
 
-<include src="/packages/simulation/lib/tasks" user_id="@user_id@" case_id="@case_id@" role_id="@role_id@">
+<include src="/packages/simulation/lib/tasks" case_id="@case_id@" role_id="@role_id@">
 
 <p></p>
 

@@ -38,6 +38,9 @@ if { [llength $enabled_action_id] == 1 } {
     }
 
     if { ![info exists body] } {
+        # If this is a message task (with recipients) and its recipients have previously executed a message task
+        # that put us in the current state then we consider this a response and we prepopulate the message
+        # subject and body with text from the message being responded to. 
         if {[db_0or1row select_triggering_message_id {
             select sm.from_role_id,
                    sm.to_role_id,
@@ -51,11 +54,19 @@ if { [llength $enabled_action_id] == 1 } {
               and sm.entry_id = (select max(wcl.entry_id)
                                  from workflow_case_log wcl,
                                       workflow_fsm_actions wfa,
-                                      workflow_case_fsm wcf
+                                      workflow_case_fsm wcf,
+                                      sim_messagesx sm2
                                  where wcl.case_id = sm.case_id
                                  and wcl.action_id = wfa.action_id
                                  and wcf.case_id = wcl.case_id
-                                 and wfa.new_state = wcf.current_state)
+                                 and wfa.new_state = wcf.current_state
+                                 and sm2.entry_id = wcl.entry_id
+                                 and sm2.to_role_id = :role_id
+                                 and sm2.from_role_id in (select recipient
+                                                          from sim_task_recipients
+                                                          where task_id = :action_id
+                                                          )
+                                 )
               and sm.case_id = :case_id
         }] } {
             set subject "Re: $subject"
@@ -124,6 +135,8 @@ Subject: $subject
 set page_title $action(pretty_name)
 set context [list [list . "SimPlay"] [list [export_vars -base case { case_id role_id }] "Case"] [list [export_vars -base tasks { case_id role_id }] "Tasks"] $page_title]
 set documents_pre_form ""
+
+set document_upload_url [export_vars -base document-upload {case_id role_id {return_url {[ad_return_url]}}}]
 
 if { ![empty_string_p $action(recipients)] } {
     # We have recipient roles - use message form
