@@ -8,7 +8,49 @@ ad_library {
 
 namespace eval simulation::case {}
 
+ad_proc -public simulation::case::get {
+    {-case_id:required}
+    {-array:required}
+} {
+    Return information about a simulation case.  This is a wrapper around 
+    workflow::case::get, supplementing it with the columns from sim_cases.
 
+    @param case_id ID of simulation case.
+    @param array name of array in which the info will be returned
+                 Array will contain keys from the tables workflow_cases and sim_cases.
+} {
+    upvar $array row
+
+    workflow::case::get -array row -case_id $case_id
+
+    db_1row select_case {
+        select sc.label,
+               sc.package_id
+        from sim_cases sc,
+             workflow_cases wc
+        where wc.case_id = :case_id
+          and wc.object_id = sc.sim_case_id 
+    } -column_array local_row
+
+    array set row [array get local_row]
+}
+
+ad_proc -public simulation::case::get_element {
+    {-case_id:required}
+    {-element:required}
+} {
+    Return a single element from the information about a case.
+
+    @param case_id     The ID of the case
+    @param element     The element you want
+
+    @return            The element you asked for
+
+    @author Peter Marklund
+} {
+    get -case_id $case_id -array row
+    return $row($element)
+}
 
 ad_proc -public simulation::case::new {
     {-workflow_id:required}
