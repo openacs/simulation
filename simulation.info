@@ -6,12 +6,14 @@
     <pretty-plural>Simulations</pretty-plural>
     <initial-install-p>f</initial-install-p>
     <singleton-p>f</singleton-p>
-    
-    <version name="1.0" url="http://openacs.org/repository/download/apm/simulation-1.apm">
+    <auto-mount>simulation</auto-mount>
+
+    <version name="0.1d" url="http://openacs.org/repository/download/apm/simulation-0.1d.apm">
         <owner url="mailto:joel@collaboraid.net">Joel Aufrecht</owner>
         <summary>Workflow-based task simulator.</summary>
+        <release-date>2003-10-13</release-date>
 
-        <!-- No dependency information -->
+        <requires url="workflow" version="1.1d1"/>
 
         <callbacks>
         </callbacks>

@@ -12,7 +12,7 @@ create table sim_objects (
     description		text
 );
 
-comment on table sim_object IS 'Each record is an object in a simulation package.';
+comment on table sim_objects IS 'Each record is an object in a simulation package.';
 
 select acs_object_type__create_type (
 	'sim_object',			        -- object_type
