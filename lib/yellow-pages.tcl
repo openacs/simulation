@@ -22,9 +22,18 @@ ad_page_contract {
   search_terms:optional
 }
 
+
 ad_form -name search -form {
     {search_terms:text,optional {label "Restrict to items matching word or phrase"}}
+} -validate {
+        {search_terms
+         {[string length $search_terms] >= 3}
+         "\"search_terms\" must be a string containing three or more characters"
+        }
+} -method GET -on_submit {
+    # foobar
 }
+
 
 ######################################################################
 #
