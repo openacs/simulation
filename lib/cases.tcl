@@ -25,10 +25,6 @@ set elements {
     }
     status {
         label "Status"
-        display_template {
-            <if @cases.num_enabled_tasks@ eq 0>Completed</if>
-            <else>Active</else>
-        }
     }
     num_user_tasks {
         label "Your Tasks"
@@ -49,10 +45,12 @@ db_multirow cases select_cases "
     select distinct wc.case_id,
            sc.label,
            w.pretty_name,
-           (select count(*)
-            from   workflow_case_enabled_actions wcea
-            where  wcea.case_id = wc.case_id
-            and    wcea.enabled_state = 'enabled') as num_enabled_tasks,
+           case when (select count(*)
+                        from workflow_case_enabled_actions wcea
+                       where wcea.case_id = wc.case_id
+                         and wcea.enabled_state = 'enabled')=0 then 'Completed'
+                else 'Active'
+           end as status,
            (select count(distinct wa2.action_id)
             from   workflow_case_enabled_actions wcea2,
                    workflow_actions wa2,
@@ -71,5 +69,5 @@ db_multirow cases select_cases "
        and wc.case_id = wcrpm.case_id
        and sc.sim_case_id = wc.object_id
        and w.workflow_id = wc.workflow_id
-    [template::list::orderby_clause -orderby -name "cases"]
+[template::list::orderby_clause -orderby -name "cases"]
 "

@@ -15,23 +15,10 @@ ad_page_contract {
     }
 }
 
-# TODO: add functionality from mockups, including:
-# form element to set trigger-instantly mode
-# form element to "instantiate a child workflow and wait for it to complete"
-# form element for mapping roles for child workflow
-# form element to set timeouts
-# form element to add side effects
-# form element for bulk vs individual group assignment:
-#   when a group is mapped to a role in a sub-workflow, this can mean
-#     1) make one case, and assign the group as one party to the role,
-#     2) make one case per member of the group, and assign each member
-#        individually
-#   In case 2, figure out what to do if some roles are groups and others
-#   aren't.
-
-# TODO: fancy attachment placeholders (not priority 1)
-#   replace simple count with Add placeholder for [attachment type]
-#   and embed links within the description
+# TODO: form element to set trigger-instantly mode
+# TODO: form element to set timeouts
+# TODO: form element to "instantiate a child workflow and wait for it to complete"
+# TODO: form element for mapping roles for child workflow
 
 ######################################################################
 #
@@ -77,12 +64,18 @@ set role_options [concat [list [list "--None--" ""]] [workflow::role::get_option
 # task form
 #---------------------------------------------------------------------
 
-
 ad_form -name task -export { workflow_id } -edit_buttons [list [list [ad_decode [ad_form_new_p -key action_id] 1 [_ acs-kernel.common_add] [_ acs-kernel.common_edit]] ok]] -form {
     {action_id:key}
     {pretty_name:text
         {label "Task Name"}
         {html {size 20}}
+    }
+    {task_type:text(inform)
+        {label "Task is complete when"}
+        {value "
+<input type=radio>assignee sends message to recipient</input>
+<br><input type=radio>assignee uploads document</input>
+<br><input type=radio>child workflow is complete</input>"}
     }
     {assigned_role:text(select),optional
         {label "Assigned To"}
@@ -122,16 +115,7 @@ ad_form -extend -name task -form {
     }
 }
 
-ad_form -extend -name task -form {
-    {assigned_state_ids:text(checkbox),optional,multiple
-        {label "Assigned<br>TODO: Find a better<br>way to show the<br>assigned/enabled states"}
-        {options $enabled_options}
-    }
-    {enabled_state_ids:text(checkbox),optional,multiple
-        {label "Enabled"}
-        {options $enabled_options}
-    }
-} -edit_request {
+ad_form -extend -name task -edit_request {
     set workflow_id $task_array(workflow_id)
     permission::require_write_permission -object_id $workflow_id
     set description [template::util::richtext::create $task_array(description) $task_array(description_mime_type)]

@@ -108,20 +108,7 @@ db_foreach select_states {
         [list label "\${label_state_$state_id}<br/> <a href=\"[export_vars -base state-edit { state_id }]\"><img src=\"/resources/acs-subsite/Edit16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Edit\"></a><a href=\"[export_vars -base state-delete { state_id }]\"><img src=\"/resources/acs-subsite/Delete16.gif\" height=\"16\" width=\"16\" border=\"0\" alt=\"Delete\"></a>" \
              html { align center } \
              display_template "
-                 <switch @tasks.state_$state_id@>
-                   <case value=\"assigned\">
-                     Assigned
-                   </case>
-                   <case value=\"enabled\">
-                     Enabled
-                   </case>
-                   <default>
-                     &nbsp;
-                   </default>
-                </switch>
-                <if @tasks.move_to_$state_id@ true>
-                  <b title=\"Go to this state after completing the task\">&uarr;</b>
-                </if>
+<input type=checkbox TODO=\"make this real\"></input>
              "]
 
     lappend states $state_id
@@ -133,6 +120,7 @@ db_foreach select_states {
     }
 }
 
+# TODO: make the mocked up task enable list real
 # LARS: Add state button in header removed
 if 0 { 
     lappend elements add_state {
