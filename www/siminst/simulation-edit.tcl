@@ -63,13 +63,14 @@ ad_form -export { workflow_id } -name simulation -form {
     # Default values
     set one_week [expr 3600*24*7]
 
+    set default_duration $one_week
     if { ![empty_string_p $sim_template(suggested_duration)] } {
-        # TODO: (0.5h) use suggested_duaration_seconds instead here. Need to edit template-procs.xql
-        #set default_duration $sim_template(suggested_duration_seconds)
-        set default_duration $one_week
-    } else {
-        set default_duration $one_week
-    }
+        # FIXME: resorted to this hack as I couldn't figure out how to convert the interval to seconds
+        # in PG
+        if { [regexp {([0-9]+).*days} $sim_template(suggested_duration) match day_duration] } {
+            set default_duration [expr $day_duration*24*3600]
+        }
+    } 
 
     if { [empty_string_p $send_start_note_date] } {
         set send_start_note_date [clock format [expr [clock seconds] + 1*$one_week] -format "%Y-%m-%d"]
@@ -80,7 +81,7 @@ ad_form -export { workflow_id } -name simulation -form {
     if { [empty_string_p $case_end] } {
         set case_end [clock format [expr [clock seconds] + 2*$one_week + $default_duration] -format "%Y-%m-%d"]
     }
-    # TODO: B: (0.5h) Offer sensible defaults for enroll_start and enroll_end. 
+    # TODO: B: (0.5h) Lars Offer sensible defaults for enroll_start and enroll_end. 
     # Couldn't get it to work in the on_refresh block. Lars?
     if { [empty_string_p $enroll_start] } {
         set enroll_start [clock format [expr [clock seconds] + 1*$one_week] -format "%Y-%m-%d"]

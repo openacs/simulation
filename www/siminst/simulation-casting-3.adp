@@ -19,6 +19,10 @@
   <div class="general-message">You cannot submit this form until you have submitted all forms on the previous tabs.</div>
 </if>
 
+<if @sim_template.sim_type@ eq "casting_sim">
+  <div class="general-message">Warning: this simulation is already in casting. Clicking the finish button may have unwanted consequences such as sending notifications twice to users.</div>
+</if>
+
 </else>
 
 <P>
@@ -26,5 +30,5 @@
 </p>
 
 <p>
-  TODO: A: Some data needs to be read only if you return to the wizard after you've clicked the finish button. Test this.
+  TODO: B: Some data needs to be read only if you return to the wizard after you've clicked the finish button. Test this.
 </p>
