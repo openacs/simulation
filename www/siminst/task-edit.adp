@@ -3,4 +3,8 @@
   <property name="context">@context;noquote@</property>
   <property name="focus">template.pretty_name</property>
 
-<listtemplate name="tasks"></listtemplate>
+TODO
+show task description body, list of related props (similar to
+object-edit and images).  end-to-end requires that props can be
+associated but not that they can be embedded in the
+description body.

@@ -1,6 +1,6 @@
 ad_page_contract {
     The index page for SimInst
-}
+} 
 
 set page_title "Simulations in Development"
 set context [list $page_title]
@@ -33,16 +33,12 @@ template::list::create \
                 @dev_sims.role_count@ <if @dev_sims.role_empty_count@ gt 0>(@dev_sims.role_empty_count@ incomplete)</if>
             }
         }
-        prop_count {
-            label "Props"
-            link_url_col map_props_url
-            display_template {
-                @dev_sims.prop_count@ <if @dev_sims.prop_empty_count@ gt 0>(@dev_sims.prop_empty_count@ incomplete)</if>
-            }
-        }
         tasks {
             label "Tasks"
             link_url_col sim_tasks_url
+            display_template {
+                @dev_sims.tasks@ <if @dev_sims.prop_empty_count@ gt 0>, with @dev_sims.prop_empty_count@ incomplete prop</if><if @dev_sims.prop_empty_count@ gt 1>s</if>
+            }
         }
         delete {
             sub_class narrow
@@ -57,9 +53,13 @@ template::list::create \
             }
         }
         cast {
-            link_url_col cast_url
             display_template {
-                Begin casting
+                <if @dev_sims.cast_url@ not nil>
+                  <a href="@dev_sims.cast_url@">Begin casting</a>
+                </if>
+                <else>
+                  Not Ready for Casting
+                </else>
             }
         }
     }
@@ -108,7 +108,11 @@ db_multirow -extend { cast_url map_roles_url map_props_url sim_tasks_url delete_
        and ss.sim_type = 'dev_sim'
     $sim_in_dev_filter_sql
 " {
-    set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
+    if { [string equal $role_empty_count 0] && [string equal $prop_empty_count 0]} {
+        set cast_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
+    } else {
+        set cast_url ""
+    }
     set map_roles_url [export_vars -base "${base_url}siminst/map-characters" { workflow_id }]
     set map_props_url [export_vars -base "${base_url}siminst/map-tasks" { workflow_id }]
     set sim_tasks_url [export_vars -base "${base_url}siminst/sim-tasks" { workflow_id }]
@@ -177,6 +181,6 @@ db_multirow -extend { edit_url delete_url edit_p } casting_sims select_casting_s
        and ss.sim_type = 'casting_sim'
     $sim_in_dev_filter_sql
 " {
-    set edit_url [export_vars -base "${base_url}siminst/cast-edit" { workflow_id }]
+    set edit_url [export_vars -base "${base_url}siminst/simulation-casting" { workflow_id }]
     set delete_url [export_vars -base "${base_url}siminst/simulation-delete" { workflow_id }]
 }

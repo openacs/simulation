@@ -1,5 +1,5 @@
 ad_page_contract {
-    Edit a simulation in casting mode
+    Verify that a simulation is ready for casting and, if so, change its type.  If not, show an error page.
 } {
     workflow_id:integer
 }
@@ -15,5 +15,4 @@ set package_id [ad_conn package_id]
 # } else {
 #   show an error page with links to the incomplete roles and props
 # }
-
 
