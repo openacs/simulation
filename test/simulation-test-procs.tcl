@@ -528,6 +528,7 @@ ad_proc ::twt::simulation::add_user {
     {-last_name:required}
 } {
     do_request /acs-admin/users/user-add
+    form find ~n register
     field find ~n email
     set email [email_from_user_name "$first_names $last_name"]
     field fill $email
