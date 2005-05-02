@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="simulation" package_version="1.0" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="simulation" package_version="1.0.1" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Abort_the_session">Abort the session</msg>
   <msg key="Add_a_template">Add a template</msg>
@@ -187,6 +187,7 @@ administrator if you believe this is an error. Thank you!</msg>
 and %simulation.enroll_end% and you cannot enroll at this time.
 Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_The_following_errors">The following errors were encountered:</msg>
+  <msg key="lt_The_item_you_requeste">The item you requested could not be found.</msg>
   <msg key="lt_The_mime_type_of_your">The mime type of your file was not recognised.</msg>
   <msg key="lt_The_task_you_were_try">The task you were trying to perform is not valid in this state.</msg>
   <msg key="lt_The_template_simulati">The template &quot;%simulation.pretty_name%&quot; is not ready for casting.</msg>
@@ -261,6 +262,7 @@ Thank you.</msg>
   <msg key="No_cancel">No, cancel</msg>
   <msg key="No_documents">No documents</msg>
   <msg key="No_messages">No messages.</msg>
+  <msg key="Not_found">Not found</msg>
   <msg key="Notifications">Notifications</msg>
   <msg key="Notifications_page_notification_type_header">Notifications for</msg>
   <msg key="Number">Number</msg>
