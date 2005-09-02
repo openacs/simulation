@@ -21,10 +21,6 @@
   </if>
 </if>
 
-<p>
-@action.description@
-</p>
-
 <if @message_p@ not true>
 <if @documents_pre_form_empty_p@>
   <p>

@@ -17,6 +17,10 @@ ad_proc -public simulation::ui::forms::document_upload::form_block {} {
 } {
     return {
         {item_id:key}
+	{description:richtext,optional
+	    {label {[_ simulation.Description]}}
+	    {mode display}
+	}
         {document_file:file(file)
             {label "Document file"}
         }
