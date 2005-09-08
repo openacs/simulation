@@ -6,6 +6,8 @@
 
 <link rel="stylesheet" type="text/css" href="/resources/simulation/simplay.css" media="all" />
 
+@extra_css;noquote@
+
 </property>
 
   <if @focus@ not nil><property name="focus">@focus;noquote@</property></if>

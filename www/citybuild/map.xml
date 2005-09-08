@@ -604,9 +604,58 @@
      </object>
      <object num="87">
           <id>sd087</id>
-          <name>Standbeeld </name>
+          <name>Standbeeld</name>
           <url>object/sd-087</url>
           <thumbnail_url>object-content/th_sd087.jpg</thumbnail_url>
           <description>Het standbeeld van de Griekse koopman Solomon verwijst naar het Hanze-verleden van de stad. </description>
+     </object>
+     <object num="88">
+          <id>sd088</id>
+          <name>Bewonersvereniging Sterrebuurt</name>
+          <url>object/sd-088</url>
+          <thumbnail_url>object-content/th_sd088.jpg</thumbnail_url>
+          <description>De bewonersvereniging Sterrebuurt is recentelijk opgericht als gevolg van de toegenomen klachten over de veiligheid in de buurt.</description>
+     </object>
+     <object num="89">
+          <id>sd089</id>
+          <name>Bewonersvereniging Spoorbuurt</name>
+          <url>object/sd-089</url>
+          <thumbnail_url>object-content/th_sd089.jpg</thumbnail_url>
+          <description>De bewonersvereniging Spoorbuurt komt op voor de belangen van de huurders in de wijk.</description>
+     </object>
+     <object num="90">
+          <id>sd090</id>
+          <name>Werkgroep OS</name>
+          <url>object/sd-090</url>
+          <thumbnail_url>object-content/th_sd090.jpg</thumbnail_url>
+          <description>De bedrijven rond het spoor hebben de handen ineengeslagen in de werkgroep 'Ondernemers Spoorzone' (OS)</description>
+     </object>
+     <object num="91">
+          <id>sd091</id>
+          <name>Prorail</name>
+          <url>object/sd-091</url>
+          <thumbnail_url>object-content/th_sd091.jpg</thumbnail_url>
+          <description>Zorgen voor voldoende capaciteit, betrouwbaarheid en veiligheid op het spoor. Dat is waar ProRail in het kort voor staat</description>
+     </object>
+     <object num="92">
+          <id>sd092</id>
+          <name>Volksuniversiteit Sieberdam</name>
+          <url>object/sd-092</url>
+          <thumbnail_url>object-content/th_sd092.jpg</thumbnail_url>
+          <description>De volksuniversiteit Sieberdam is bekend om het brede aanbod van studies, zowel technisch als niet technische studies.</description>
+     </object>
+     <object num="93">
+          <id>sd093</id>
+          <name>Adviesbureau TBM</name>
+          <url>object/sd-093</url>
+          <thumbnail_url>object-content/th_sd093.jpg</thumbnail_url>
+          <description>Adviesbureau TBM adviseert op het snijvlak van Techniek, Bestuur en Manangement</description>
+     </object>
+     <object num="94">
+          <id>sd094</id>
+          <name>Openbaar Vervoerbedrijf (OVS)</name>
+          <url>object/sd-094</url>
+          <thumbnail_url>object-content/th_sd094.jpg</thumbnail_url>
+          <description>Het Openbaar Vervoerbedrijf Sieberdam vervoert dagelijks ruim 400.000 mensen met bussen en trams. In de stad en in de regio.</description>
      </object>
 </objects_for_flashmap>

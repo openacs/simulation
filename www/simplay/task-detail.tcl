@@ -247,6 +247,7 @@ if { $message_p } {
            [simulation::ui::forms::document_upload::form_block]] \
         -on_request {
             set pretty_name $action(pretty_name)
+            set description [template::util::richtext::create $action(description) $action(description_mime_type)]
         } -validate {
 	    {document_file 
 		{[simulation::ui::forms::document_upload::check_mime -document_file $document_file]}

@@ -62,12 +62,6 @@ item::get_content \
     ns_returnnotfound
 }
 
-#file delete /web/lars/www/picture.jpg
-
-#error [publish::handle::image 580 -html {} -revision_id 581]
-
-#error [publish::render_subitem 586 relation image 1 f {refresh 1}]
-
 if { [info exists content(text)] } {
     switch $content(mime_type) {
         text/enhanced - text/plain - text/fixed-width - text/html {
