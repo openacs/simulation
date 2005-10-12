@@ -1,7 +1,0 @@
-<master>
-<property name="title">Not found</property>
-
-<div class="boxed-user-message">
-<h3>Sorry!</h3>
-The item you requested could not be found.
-</div>
