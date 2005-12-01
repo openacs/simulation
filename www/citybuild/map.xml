@@ -658,4 +658,74 @@
           <thumbnail_url>object-content/th_sd094.jpg</thumbnail_url>
           <description>Het Openbaar Vervoerbedrijf Sieberdam vervoert dagelijks ruim 400.000 mensen met bussen en trams. In de stad en in de regio.</description>
      </object>
+     <object num="102">
+          <id>sd102</id>
+          <name>BWC</name>
+          <url>object/sd-102</url>
+          <thumbnail_url>object-content/th_sd102.jpg</thumbnail_url>
+          <description>BWC is een brede welzijnsorganisatie die werkzaam is binnen stadsdeel centrum.</description>
+     </object>
+     <object num="103">
+          <id>sd103</id>
+          <name>Brede School de Regenboog</name>
+          <url>object/sd-103</url>
+          <thumbnail_url>object-content/th_sd103.jpg</thumbnail_url>
+          <description>De Regenboog is een samenwerkingsverband tussen partijen die zich bezighouden met opgroeiende kinderen.</description>
+     </object>
+     <object num="104">
+          <id>sd104</id>
+          <name>Bewonersorganisatie Zeeheldenbuurt</name>
+          <url>object/sd-104</url>
+          <thumbnail_url>object-content/th_sd104.jpg</thumbnail_url>
+          <description>Bewonersorganisatie BOZ is in 1991 opgericht om de problemen in de Zeeheldenbuurt aan te pakken.</description>
+     </object>
+     <object num="105">
+          <id>sd105</id>
+          <name>ISA winkel</name>
+          <url>object/sd-105</url>
+          <thumbnail_url>object-content/th_sd105.jpg</thumbnail_url>
+          <description>In de winkel kunnen mensen terecht voor wijkgebonden informa</description>
+     </object>
+     <object num="106">
+          <id>sd106</id>
+          <name>Woningcorporatie de Meridiaan</name>
+          <url>object/sd-106</url>
+          <thumbnail_url>object-content/th_sd106.jpg</thumbnail_url>
+          <description>Voor elke leefsituatie probeert de Meridiaan een passende woning te vinden.</description>
+     </object>
+     <object num="107">
+          <id>sd107</id>
+          <name>Speeltuinvereniging Piet Hein</name>
+          <url>object/sd-107</url>
+          <thumbnail_url>object-content/th_sd107.jpg</thumbnail_url>
+          <description>Speeltuinvereniging Piet Hein wil een veilige speelomgeving dicht bij huis bieden aan alle buurtkinderen</description>
+     </object>
+     <object num="108">
+          <id>sd108</id>
+          <name>GGZ Instelling</name>
+          <url>object/sd-108</url>
+          <thumbnail_url>object-content/th_sd108.jpg</thumbnail_url>
+          <description>Onze GGZ-instelling is een gespecialiseerde instelling voor geestelijke gezondheidszorg in de regio Sieberdam.</description>
+     </object>
+     <object num="109">
+          <id>sd109</id>
+          <name>Woon- en Zorgcentrum Pensionada</name>
+          <url>object/sd-109</url>
+          <thumbnail_url>object-content/th_sd109.jpg</thumbnail_url>
+          <description>Woon- en zorgcentrum Pensionada is alles wat een bejaardenhuis van vroeger niet was.</description>
+     </object>
+     <object num="110">
+          <id>sd110</id>
+          <name>Stadsdeelkantoor Centrum</name>
+          <url>object/sd-110</url>
+          <thumbnail_url>object-content/th_sd110.jpg</thumbnail_url>
+          <description>Het stadsdeelkantoor Centrum vormt de verbindende schakel tussen de gemeente en u als bewoner</description>
+     </object>
+     <object num="111">
+          <id>sd111</id>
+          <name>Stichting Onderdak (OD)</name>
+          <url>object/sd-111</url>
+          <thumbnail_url>object-content/th_sd111.jpg</thumbnail_url>
+          <description>De stichting OnderDak (OD) is een stichting voor thuis- en daklozen</description>
+     </object>
 </objects_for_flashmap>

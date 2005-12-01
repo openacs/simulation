@@ -189,5 +189,7 @@ ad_proc -public simulation::ui::forms::document_upload::add_mime {
     set extension [string tolower [string trimleft [file extension $upload_filename] "."]]
     set orig_mime_type [template::util::file::get_property mime_type $document_file]
 
-    cr_create_mime_type -extension $extension -mime_type $orig_mime_type
+    # Use empty description because otherwise cr_create_mime_type bombs
+    cr_create_mime_type -extension $extension -mime_type $orig_mime_type \
+	-description ""
 }
