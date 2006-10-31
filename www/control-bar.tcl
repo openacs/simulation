@@ -21,5 +21,3 @@ set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_t
 set siminst_p [permission::permission_p -object_id $package_id -privilege sim_inst]
 
 set curr_url [ad_conn url]
-ns_log notice curr_url is $curr_url
-ns_log notice package_url is $package_url

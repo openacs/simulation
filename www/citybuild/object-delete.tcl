@@ -10,6 +10,14 @@ array set item [bcms::item::get_item -item_id $item_id -revision live]
 
 if { [template::util::is_true $confirm_p] } {
     permission::require_write_permission -object_id $item_id    
+    content::item::unset_live_revision -item_id $item_id
+
+    # we need to unset the latest revision too, otherwise
+    # content_item__del will bomb
+    db_dml unset_latest_rev {
+	update cr_items set latest_revision = NULL
+	where item_id = :item_id
+    }
     bcms::item::delete_item -item_id $item_id
 
     ad_returnredirect -message "\"$item(title)\" has been deleted." $return_url

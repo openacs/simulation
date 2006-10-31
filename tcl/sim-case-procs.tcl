@@ -80,7 +80,8 @@ ad_proc -public simulation::case::new {
     set case_id [workflow::case::new \
                      -workflow_id $workflow_id \
                      -object_id $sim_case_id \
-                     -user_id $creation_user]
+                     -user_id $creation_user \
+		     -no_notification]
 
     return $sim_case_id
 }
