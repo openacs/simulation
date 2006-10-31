@@ -293,17 +293,6 @@ ad_proc -private simulation::action::generate_spec {
     }
     array set row [workflow::action::fsm::generate_spec -action_id $action_id -handlers $handlers]
 
-    ############
-    # DEBUGGING
-    if { [exists_and_not_null row(parent_action_id)] } {
-	ns_log notice "simulation::action::generate_spec: row(parent_action_id) is $row(parent_action_id)"
-    } else {
-	ns_log notice "simulation::action::generate_spec: no paren_action_id in sight :("
-    }
-    # STOP DEBUGGING
-    ###############
-
-
     # Get local spec, remove unwanted entries
     get -action_id $action_id -array local_row -local_only
     array unset local_row recipients

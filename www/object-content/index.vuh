@@ -23,4 +23,8 @@ if { ![info exists revision_id] } {
     array set item [bcms::revision::get_revision -revision_id $revision_id]
 }
 
-cr_write_content -item_id $item(item_id)
+with_catch errmsg {
+    cr_write_content -item_id $item(item_id)
+} {
+    ad_return_exception_template -status 404 "/packages/simulation/www/404"
+}

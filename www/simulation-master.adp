@@ -9,5 +9,5 @@
   @header_stuff;noquote@
 </property>
 
-</if>
+
 <slave>

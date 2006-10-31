@@ -17,6 +17,5 @@
 <listtemplate name="casting_sims"></listtemplate>
 
   <ul class="action-links">
-    <li><a href="../simplay/">#simulation.Live_Simulations#</a></li>
-    <li><a href="@package_uri@">#simulation.lt_Return_to_Simulation_#</a></li>
+    <li><a href="@package_uri@">#simulation.lt_Return_to_Simulation__1#</a></li>
   </ul>

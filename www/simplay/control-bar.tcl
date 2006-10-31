@@ -114,6 +114,8 @@ set map_url [export_vars -base ${section_uri}map { case_id role_id }]
 
 set help_url [export_vars -base "${section_uri}object/[parameter::get -parameter SimPlayHelpFile]" { case_id role_id }]
 
+set history_url [export_vars -base "${section_uri}object/[parameter::get -parameter SieberdamHistoryFile]" { case_id role_id }]
+
 set curr_state [_ simulation.curr_state]
 
 db_1row get_state {

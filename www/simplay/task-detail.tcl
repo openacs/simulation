@@ -10,7 +10,10 @@ ad_page_contract {
     subject:optional
     body:optional    
     received_message_item_id:optional
+    case_id
+    role_id
 }
+
 
 # FIXME: I am exporting the enabled_action_id list as the string variable enabled_action_ids in 
 # the forms as I can't export multiples. Here I'm recreating the list again. This is convoluted.
@@ -22,9 +25,21 @@ if { [llength $enabled_action_id] > 1 } {
     set bulk_p 1
 } 
 
-if { [llength $enabled_action_id] == 1 } {
-    workflow::case::enabled_action_get -enabled_action_id $enabled_action_id -array enabled_action
+if { [empty_string_p $return_url] } {
+    set return_url [export_vars -base case { case_id role_id }]
+}
 
+if { [llength $enabled_action_id] == 1 } {
+    
+    # Check that no other player has changed the state while
+    # we have been filling in the form.
+    if { [catch {
+	workflow::case::enabled_action_get -enabled_action_id $enabled_action_id -array enabled_action
+    }] } {
+	ad_returnredirect -message "<p><strong>[_ simulation.Sorry]</strong> [_ simulation.lt_The_task_you_were_try]</p> <p>[_ simulation.lt_Someone_was_probably_]</p>" \
+	    -html $return_url
+	ad_script_abort
+    }
     set action_id $enabled_action(action_id)
     set case_id $enabled_action(case_id)
     simulation::action::get -action_id $action_id -array action
@@ -33,10 +48,6 @@ if { [llength $enabled_action_id] == 1 } {
     simulation::case::assert_user_may_play_role -case_id $case_id -role_id $action(assigned_role_id)
 
     set common_enabled_action_ids [list [list $enabled_action_id $case_id]]
-
-    if { [empty_string_p $return_url] } {
-        set return_url [export_vars -base case { case_id role_id }]
-    }
 
     set common_actions_count 1
     set ignored_actions_count 0
@@ -236,6 +247,7 @@ if { $message_p } {
            [simulation::ui::forms::document_upload::form_block]] \
         -on_request {
             set pretty_name $action(pretty_name)
+            set description [template::util::richtext::create $action(description) $action(description_mime_type)]
         } -validate {
 	    {document_file 
 		{[simulation::ui::forms::document_upload::check_mime -document_file $document_file]}
@@ -245,6 +257,7 @@ if { $message_p } {
 	    }
 	} -on_submit {
 	    
+
             db_transaction {
                 foreach one_action $common_enabled_action_ids {
                     set case_id [lindex $one_action 1]

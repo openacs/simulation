@@ -68,7 +68,7 @@ set elements {
     }
     title { 
         label "[_ simulation.Name]"
-        orderby title
+        orderby uptitle
         link_url_col view_url
     }
     description {
@@ -102,11 +102,14 @@ if { [exists_and_not_null search_terms] } {
     set where_clause(characters) [simulation::object::search_clause $search_columns(characters) $search_terms]
 }
 
+set ordering [template::list::orderby_clause -orderby -name "objects"]
+
 db_multirow -extend {view_url} objects select_objects "
    select sl.object_id,
           sl.object_type,
           ot.pretty_name as object_type_pretty,
           sl.title as title,
+          upper(sl.title) as uptitle,
           sl.mime_type,
           sl.name,
           sl.item_id,
@@ -125,6 +128,7 @@ db_multirow -extend {view_url} objects select_objects "
           sc.object_type,
           ot.pretty_name as object_type_pretty,
           sc.title as title,
+          upper(sc.title) as uptitle,
           sc.mime_type,
           sc.name,
           sc.item_id,
@@ -139,7 +143,7 @@ db_multirow -extend {view_url} objects select_objects "
       and sc.revision_id = cr.revision_id
       [ad_decode $where_clause(characters) "" "" "and $where_clause(characters)"]
 
-    [template::list::orderby_clause -orderby -name "objects"]
+      [ad_decode $ordering "" "order by uptitle" $ordering]
 " {
     set description [string_truncate -len 200 $description]
     switch -glob $mime_type {

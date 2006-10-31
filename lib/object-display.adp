@@ -6,6 +6,12 @@
 </else>
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
+  
+  <if @stylesheet_url@ not nil>
+    <property name="extra_css">
+      <link rel="stylesheet" type="text/css" href="@stylesheet_url@" media="all">
+    </property>
+  </if>
 
 <if @content_html@ not nil>@content_html;noquote@</if>
 
@@ -18,9 +24,11 @@
 </if>
 
 <if @simplay@>
+ <if @complete_p@ not true>
   <if @recipient_p@>
     <p>
     <a href="@message_url@">#simulation.Send_a_message_to# @page_title@</a>
     </p>
   </if>
+ </if>
 </if>

@@ -920,6 +920,50 @@ ad_proc -public simulation::template::cast {
             -users_not_in_groups_var users_to_cast_not_in_groups \
             -full_groups_array full_group_members \
             -multiple_case_groups $multiple_case_groups
+
+	# Send the notifications here manually, because
+	# otherwise notifications are not sent to right people
+	# since casting is incomplete before the above command
+	# has run.
+
+	db_transaction {
+	    
+	    set action_id [simulation::template::get_element \
+			       -workflow_id $workflow_id \
+			       -element initial_action_id]
+	    
+	    
+	    set comment ""
+	    set comment_mime_type "text/plain"
+	    set entry_id [db_string get_entry_id {
+		select max(entry_id)
+		from workflow_case_log
+		where case_id = :case_id
+	    } \
+			  -default ""]
+
+	    if {[empty_string_p $entry_id]} {
+		
+		# Insert activity log info if not found
+		set extra_vars [ns_set create]
+		oacs_util::vars_to_ns_set \
+		    -ns_set $extra_vars \
+		    -var_list { entry_id case_id action_id comment comment_mime_type }
+		
+		set entry_id [package_instantiate_object \
+				  -creation_user "" \
+				  -extra_vars $extra_vars \
+				  -package_name "workflow_case_log_entry" \
+				  "workflow_case_log_entry"]
+	    }
+
+	    workflow::case::action::notify \
+		-case_id $case_id \
+		-action_id $action_id \
+		-entry_id $entry_id \
+		-comment $comment \
+		-comment_mime_type $comment_mime_type
+	}
     }
 }
 

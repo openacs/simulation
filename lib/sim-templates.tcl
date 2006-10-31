@@ -113,10 +113,6 @@ template::list::create \
 # a list of templates
 #
 ######################################################################
-set filter_clause ""
-if { !$package_admin_p } {
-    set filter_clause "and a.creation_user = :user_id"
-}
 
 db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templates select_sim_templates "
     select w.workflow_id,
@@ -140,7 +136,6 @@ db_multirow -extend { edit_url view_url delete_url clone_url edit_p } sim_templa
        and ss.simulation_id = w.workflow_id
        and w.object_id = :package_id 
        and ss.sim_type in ('dev_template','ready_template')
-       $filter_clause
    [template::list::orderby_clause -orderby -name sim_templates]
 " {
     set description [ad_html_text_convert -from $description_mime_type -maxlen 200 -- $description]
