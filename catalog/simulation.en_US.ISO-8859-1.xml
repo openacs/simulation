@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="simulation" package_version="1.0.0b4" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="simulation" package_version="1.0.1" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Abort_the_session">Abort the session</msg>
   <msg key="Add_a_template">Add a template</msg>
@@ -18,6 +18,7 @@
   <msg key="case_admin_page_title">Messages for %role_array.pretty_name% in %case_array.label%</msg>
   <msg key="Case_History">Case History</msg>
   <msg key="Case_home">Case home</msg>
+  <msg key="Cases">Cases</msg>
   <msg key="CityBuild">CityBuild</msg>
   <msg key="CityBuild_Help">CityBuild Help</msg>
   <msg key="Clear_filter">Clear filter</msg>
@@ -100,6 +101,7 @@ this time. &lt;/blockquote&gt;</msg>
   <msg key="lt_Cannot_enroll_in_simu">Cannot enroll in simulation</msg>
   <msg key="lt_Cannot_enroll_in_simu_1">Cannot enroll in simulation &quot;%simulation.pretty_name%&quot;</msg>
   <msg key="lt_Case_caselabel_has_be">Case &quot;%case.label%&quot; has been deleted.</msg>
+  <msg key="lt_Cases_in_which_you_ar">Cases in which you are participating</msg>
   <msg key="lt_Choose_new_roles_for">Choose new roles for user %user.name%</msg>
   <msg key="lt_Choose_new_users_for">Choose new users for role %role.pretty_name%</msg>
   <msg key="lt_Create_new_simulation">Create new simulation templates or edit existing ones.</msg>
@@ -151,6 +153,7 @@ this time. &lt;/blockquote&gt;</msg>
   <msg key="lt_Return_to_SimBuild_Ho">Return to SimBuild Home</msg>
   <msg key="lt_Return_to_Simulation_">Return to Simulation root</msg>
   <msg key="lt_Return_to_Simulation__1">Return to Simulation Home</msg>
+  <msg key="lt_Return_to_Simulation__2">Return to Simulation home</msg>
   <msg key="lt_Return_to_template_li">Return to template list page</msg>
   <msg key="lt_Right-click_document_">Right-click document name and select &quot;Save as&quot; (or equiv.) to download a document to your computer.</msg>
   <msg key="lt_Roles_with_actions_on">Roles with actions only</msg>
@@ -173,6 +176,7 @@ administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_Simulations_in_Castin">Simulations in Casting</msg>
   <msg key="lt_Simulations_in_Develo">Simulations in Development</msg>
   <msg key="lt_Some_of_the_tasks_of">Some of the tasks of this simulation require attachments. However, there are no CityBuild props to select from.</msg>
+  <msg key="lt_Someone_was_probably_">Someone was probably faster than you and brought this session to a new state while you were reading the previous page.</msg>
   <msg key="lt_Start_a_simulation_wi">Start a simulation with this template</msg>
   <msg key="lt_Stop_notifying_me_of">Stop notifying me of changes to map XML</msg>
   <msg key="lt_Subscribe_to_pretty_n">Subscribe to %pretty_name%</msg>
@@ -183,7 +187,9 @@ administrator if you believe this is an error. Thank you!</msg>
 and %simulation.enroll_end% and you cannot enroll at this time.
 Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="lt_The_following_errors">The following errors were encountered:</msg>
+  <msg key="lt_The_item_you_requeste">The item you requested could not be found.</msg>
   <msg key="lt_The_mime_type_of_your">The mime type of your file was not recognised.</msg>
+  <msg key="lt_The_task_you_were_try">The task you were trying to perform is not valid in this state.</msg>
   <msg key="lt_The_template_simulati">The template &quot;%simulation.pretty_name%&quot; is not ready for casting.</msg>
   <msg key="lt_There_are_no_cases_in">There are no cases in this simulation yet</msg>
   <msg key="lt_There_are_no_document">There are no documents.</msg>
@@ -256,6 +262,7 @@ Thank you.</msg>
   <msg key="No_cancel">No, cancel</msg>
   <msg key="No_documents">No documents</msg>
   <msg key="No_messages">No messages.</msg>
+  <msg key="Not_found">Not found</msg>
   <msg key="Notifications">Notifications</msg>
   <msg key="Notifications_page_notification_type_header">Notifications for</msg>
   <msg key="Number">Number</msg>
@@ -300,6 +307,7 @@ simulation description:
 Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% to participate. Thank you!</msg>
   <msg key="simulation_started_email_subject">Simulation %simulation.pretty_name% has started</msg>
   <msg key="Simulation_Templates">Simulation Templates</msg>
+  <msg key="Sorry">Sorry!</msg>
   <msg key="States">States</msg>
   <msg key="Status">Status</msg>
   <msg key="Sub-States">Sub-States</msg>

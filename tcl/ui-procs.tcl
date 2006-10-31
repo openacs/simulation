@@ -145,7 +145,6 @@ ad_proc -public simulation::ui::forms::document_upload::insert_document {
     }
 }
 
-
 ad_proc -public simulation::ui::forms::document_upload::check_mime {
     -document_file
 } {
@@ -193,4 +192,4 @@ ad_proc -public simulation::ui::forms::document_upload::add_mime {
     # Use empty description because otherwise cr_create_mime_type bombs
     cr_create_mime_type -extension $extension -mime_type $orig_mime_type \
 	-description ""
-}>>>>>>> 1.5.2.4
+}

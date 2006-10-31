@@ -3,17 +3,14 @@
 <p>
 #simulation.You_are# <a href="@role.character_url@">@role.character_title@</a>
 (@role.role_pretty@)
-       
 </p>
 
 
-<div class="simplay_control-bar_thumbnail">
 <if @role.thumbnail_url@ not nil>
 <p>
   <img src="@role.thumbnail_url@" width="@role.thumbnail_width@" height="@role.thumbnail_height@">
 </p>
 </if>
-</div>
 
 <if @show_states_p@>
 <p><strong>@curr_state@:</strong> @state_name@</p>
@@ -58,3 +55,4 @@
   </multiple>
 </ul>
 </div>
+</if>

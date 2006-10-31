@@ -6,7 +6,7 @@
 </else>
   <property name="title">@page_title;noquote@</property>
   <property name="context">@context;noquote@</property>
-
+  
   <if @stylesheet_url@ not nil>
     <property name="extra_css">
       <link rel="stylesheet" type="text/css" href="@stylesheet_url@" media="all">
@@ -31,3 +31,4 @@
     </p>
   </if>
  </if>
+</if>
