@@ -42,3 +42,7 @@ if { [template::util::is_nil header_stuff] } {
 }
 
 append header_stuff "\n$stylesheet_link"
+
+if { [template::util::is_nil extra_css] } {
+    set extra_css ""
+}               

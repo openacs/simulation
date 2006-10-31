@@ -3,6 +3,7 @@
 <p>
 #simulation.You_are# <a href="@role.character_url@">@role.character_title@</a>
 (@role.role_pretty@)
+       
 </p>
 
 
@@ -57,4 +58,3 @@
   </multiple>
 </ul>
 </div>
-</if>
