@@ -95,12 +95,14 @@ create table sim_role_party_map (
 comment on table sim_role_party_map is 'Each record defines a group of users to be cast into a role';
 
 create table sim_tasks (
-    task_id             integer         constraint sim_tasks_fk
-                                        references workflow_actions
-                                        on delete cascade
-                                        constraint sim_tasks_pk
-                                        primary key,
-    attachment_num      integer         default 0
+    task_id                 integer         constraint sim_tasks_fk
+                                            references workflow_actions
+                                            on delete cascade
+                                            constraint sim_tasks_pk
+                                            primary key,
+    attachment_num          integer         default 0,
+    default_text		        text,
+    default_text_mime_type	varchar(200)
 );
 
 comment on table sim_tasks is 'A 1-1 extension of workflow_actions.  Each record is a task that a role must perform, possibly upon another role.';
@@ -202,3 +204,16 @@ create table sim_cases (
 
 comment on table sim_cases is 'The object behind a simulation case.';
 
+create table sim_trash (
+  message_id            integer         constraint sim_trash_id_nn
+                                        not null
+                                        constraint sim_trash_id_fk
+                                        references sim_messages,
+  role_id               integer         constraint sim_trash_role_nn
+                                        not null,
+  case_id               integer         constraint sim_trash_case_nn
+                                        not null,
+  PRIMARY KEY (message_id, role_id, case_id)
+);
+
+comment on table sim_trash is 'For storing trashed messages per role per case.';

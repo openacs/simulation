@@ -20,6 +20,15 @@ simulation::include_contract {
     show_body_p {
         default_value 0
     }
+    show_actions_p {
+        default_value 1
+    }
+    deleted_p {
+        default_value 0
+    }
+    direction {
+        default_value "both"
+    }
 }
 
 set package_id [ad_conn package_id]
@@ -75,6 +84,26 @@ if { $show_body_p } {
     lappend extend body
 }
 
+if { $deleted_p } {
+    lappend elements undelete
+    lappend elements {
+      link_url_col undelete_url
+      label {[_ simulation.Undelete]}
+    }
+    
+    lappend extend undelete
+    lappend extend undelete_url
+} else {
+    lappend elements delete
+    lappend elements {
+      link_url_col delete_url
+      label {[_ simulation.Delete]}
+    }
+    
+    lappend extend delete
+    lappend extend delete_url
+}
+
 if { [exists_and_not_null case_id] } {
     set num_enabled_actions [db_string select_num_enabled_actions { 
         select count(*) 
@@ -86,7 +115,7 @@ if { [exists_and_not_null case_id] } {
     set complete_p 0
 }
 
-if { [string match $complete_p "0"] && [exists_and_not_null role_id] } {
+if { [string match $complete_p "0"] && [exists_and_not_null role_id] && $show_actions_p } {
     set actions [list [_ simulation.Send_new_message] [export_vars -base message { case_id role_id }] {}]
 } else {
     set actions [list]
@@ -141,12 +170,22 @@ db_multirow -extend $extend messages select_messages "
            sim_cases sc
     where  cr.revision_id = sm.message_id
     and    wc.case_id = sm.case_id
-    [ad_decode $role_id "" "" "and    (sm.to_role_id = :role_id or sm.from_role_id = :role_id)"]
+    [ad_decode $role_id "" "" "and (
+      [ad_decode $direction "in" "sm.to_role_id = :role_id" \
+                            "out" "sm.from_role_id = :role_id" \
+                            "sm.to_role_id = :role_id or sm.from_role_id = :role_id"]
+    )"]
+    and [ad_decode $deleted_p 1 "" "not"] exists (
+      select 1 from sim_trash st where st.message_id = sm.message_id)
     and    wc.case_id = sm.case_id
     and    sc.sim_case_id = wc.object_id
     and    w.workflow_id = wc.workflow_id
     [ad_decode $case_id "" "" "and wc.case_id = :case_id"]
-    [ad_decode $user_id "" "" "and exists (select 1 from workflow_case_role_user_map where case_id = wc.case_id and (sm.to_role_id = role_id or sm.from_role_id = role_id) and user_id = :user_id)"]
+    [ad_decode $user_id "" "" "and exists (select 1 from workflow_case_role_user_map where case_id = wc.case_id and (
+      [ad_decode $direction "in" "sm.to_role_id = role_id" \
+                            "out" "sm.from_role_id = role_id" \
+                            "sm.to_role_id = role_id or sm.from_role_id = role_id"]
+    ) and user_id = :user_id)"]
     order  by sm.creation_date desc
     [ad_decode $limit "" "" "limit $limit"]
 " {
@@ -155,6 +194,16 @@ db_multirow -extend $extend messages select_messages "
     } else {
         set message_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message" { item_id { case_id $msg_case_id } { role_id $to_role_id } }]
     }
+    
+    if { $deleted_p } {
+      set undelete_p $deleted_p
+      set undelete [_ simulation.Undelete]
+      set undelete_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message-delete" { message_id case_id role_id undelete_p}]
+    } else {
+      set delete [_ simulation.Delete]
+      set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simplay/message-delete" { message_id case_id role_id }]
+    }
+    
     set creation_date_pretty [lc_time_fmt $creation_date_ansi "%x %X"]
 
     if { $show_body_p } {

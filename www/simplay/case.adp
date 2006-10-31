@@ -6,7 +6,7 @@
 <div class="simplay_case_block">
 
   <h3>#simulation.Recent_Messages#</h3>
-  <include src="/packages/simulation/lib/messages" case_id="@case_id@" role_id="@role_id@" limit="5">
+  <include src="/packages/simulation/lib/messages" case_id="@case_id@" role_id="@role_id@" limit="5" direction="in">
 
   <div class="simplay_case_action-links">
     <ul class="action-links">

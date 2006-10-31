@@ -144,3 +144,52 @@ ad_proc -public simulation::message::exclude_task_messages_sql {} {
                                              and str.recipient = sm.from_role_id)
                                       ))"
 }
+
+ad_proc -public simulation::message::delete {
+    -message_id:required
+    -role_id:required
+    -case_id:required
+} {
+    Set the status of a message to deleted.
+    
+    @return item_id of the deleted message
+} {        
+    return [delete_or_undelete -action "delete" -message_id $message_id -role_id $role_id -case_id $case_id]
+}
+
+ad_proc -public simulation::message::undelete {
+    -message_id:required
+    -role_id:required
+    -case_id:required
+} {
+    Set the status of a message to normal.
+    
+    @return item_id of the undeleted message
+} {        
+    return [delete_or_undelete -action "undelete" -message_id $message_id -role_id $role_id -case_id $case_id]
+}
+
+ad_proc -private simulation::message::delete_or_undelete {
+    -message_id:required
+    -role_id:required
+    -case_id:required
+    {-action "delete"}
+} {
+    Set the status of a message to either deleted or not deleted.
+    
+    @return item_id of the deleted/undeleted message
+} {
+    db_transaction {
+      if {[string equal $action "delete"]} {
+        db_dml delete "insert into sim_trash values (:message_id, :role_id, :case_id)"
+      } else {
+        db_dml undelete "
+            delete from sim_trash
+            where message_id = :message_id 
+            and role_id = :role_id
+            and case_id = :case_id"
+      }
+    }
+    
+    return $message_id
+}
