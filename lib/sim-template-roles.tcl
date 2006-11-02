@@ -62,6 +62,18 @@ template::list::create \
             display_col pretty_name
             link_url_col edit_url
         }
+        character {
+            label "Character"
+            display_template {
+              <if @roles.character_name@ eq "">
+              <em>Not selected</em>
+              </if>
+              <else>
+              @roles.character_name@
+              </else>
+            }
+            link_url_col char_url
+        }
         delete {
             sub_class narrow
             link_url_col delete_url
@@ -78,13 +90,19 @@ set counter 0
 db_multirow -extend { edit_url char_url delete_url up_url down_url } roles select_roles "
     select wr.role_id,
            wr.pretty_name,
-           wr.sort_order
-      from workflow_roles wr
+           wr.sort_order,
+           ci.name as character_name
+      from workflow_roles wr,
+           sim_roles sr
+      left join cr_items ci on (sr.character_id = ci.item_id)
      where wr.workflow_id = :workflow_id
+       and wr.role_id = sr.role_id
      order by wr.sort_order
 " {
     incr counter
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { role_id }]
+    set char_url [ad_decode $character_name "" "" "[apm_package_url_from_id $package_id]object/${character_name}"]
+    
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-delete" { role_id { return_url [ad_return_url] } }]
     if { $counter > 1 } {
         set up_url [export_vars -base "[ad_conn package_url]simbuild/template-object-reorder" { { type role } role_id { direction up } { return_url [ad_return_url] } }]

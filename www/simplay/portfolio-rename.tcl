@@ -34,6 +34,7 @@ ad_form -name document -export { case_id role_id workflow_id return_url } \
       {title:text(text),optional
           {label "Title"}
           {html {size 50}}
+          {help_text "[_ simulation.leave_blank]"}
       }
     } -select_query {
       select title 

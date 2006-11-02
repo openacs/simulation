@@ -39,12 +39,14 @@ if { $num_groups == "0" } {
 }
 
 foreach role_id [workflow::get_roles -workflow_id $workflow_id] {
-    set role_${role_id}_pretty_name [workflow::role::get_element -role_id $role_id -element pretty_name]
+    simulation::role::get -role_id $role_id -array role
+    set role_${role_id}_pretty_name $role(pretty_name)
+    set character_${role_id}_name [simulation::character::get_element -character_id $role(character_id) -element title]
 
     if { $num_groups > 0 } {
         lappend form [list \
                           users_per_case_${role_id}:integer \
-                          [list label "Number of users for <b>\$role_${role_id}_pretty_name</b>"] \
+                          [list label "Number of users for <b>\$role_${role_id}_pretty_name</b> (\$character_${role_id}_name)"] \
                           {value 1} \
                           {html {size 2}} \
                           [list section "\$role_${role_id}_pretty_name"]

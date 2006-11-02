@@ -81,6 +81,14 @@ ad_proc -public simulation::role::edit {
             set insert_names [list]
             set insert_values [list]
 
+            foreach attr {
+                character_name character_title character_item_id
+            } {
+              if {[info exists row($attr)]} {
+                unset row($attr)
+              }
+            }
+
             # Handle columns in the sim_roles table
             foreach attr { 
                 character_id users_per_case

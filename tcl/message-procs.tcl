@@ -184,7 +184,7 @@ ad_proc -private simulation::message::delete_or_undelete {
         db_dml delete "insert into sim_messages_trash values (:message_id, :role_id, :case_id)"
       } else {
         db_dml undelete "
-            delete from sim_trash
+            delete from sim_messages_trash
             where message_id = :message_id 
             and role_id = :role_id
             and case_id = :case_id"

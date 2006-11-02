@@ -12,7 +12,7 @@ ad_proc -public simulation::character::get {
     {-character_id:required}
     {-array:required}
 } {
-    Get basic information about a character. Gets the following attributes: uri, title.
+    Get basic information about a character. Gets the following attributes: title, description, in_directory_p.
 
     @param  array       The name of an array into which you want the information put. 
 
@@ -20,7 +20,13 @@ ad_proc -public simulation::character::get {
 } {
     upvar $array row
 
-    db_1row select_character_info {} -column_array row
+    db_1row select_character_info {
+      select sc.*, cr.title, cr.description
+      from sim_characters sc, cr_revisions cr, cr_items ci
+      where sc.character_id = cr.revision_id
+      and cr.item_id = ci.item_id
+      and (sc.character_id = :character_id or ci.item_id = :character_id)
+    } -column_array row
 }
 
 ad_proc -public simulation::character::get_element {

@@ -74,16 +74,20 @@ if { $deleted_p } {
 } else {
     lappend elements delete
     lappend elements {
-      link_url_col delete_url
       label {[_ simulation.Delete]}
+      display_template {
+        <a href="@documents.delete_url@" title="#simulation.Delete#"><img src="/resources/acs-subsite/Delete16.gif" alt="delete" /></a>
+      }
     }
     
 }
 
 lappend elements rename
 lappend elements {
-  link_url_col rename_url
   label {[_ simulation.Rename]}
+  display_template {
+    <a href="@documents.rename_url@" title="#simulation.Rename#"><img src="/resources/acs-subsite/Edit16.gif" alt="Rename" /></a>
+  }
 }
 
 template::list::create \

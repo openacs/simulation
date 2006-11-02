@@ -23,6 +23,21 @@ ad_page_contract {
 
 set package_key [ad_conn package_key]
 set package_id [ad_conn package_id]
+set user_id [ad_conn user_id]
+
+# Get the characters to show in a dropdown list
+set character_options [db_list_of_lists character_options {
+    select sc.title,
+           sc.item_id
+    from   sim_charactersx sc,
+           cr_items ci,
+           acs_objects ao
+    where  sc.item_id = ao.object_id
+    and    ci.item_id = sc.item_id 
+    and    ci.live_revision = sc.object_id
+    and    (sc.in_directory_p = 't' or ao.creation_user = :user_id)
+    order by sc.title
+}]
 
 ######################################################################
 #
@@ -45,6 +60,9 @@ ad_form -name role -form {
         {label "Role Name"}
         {html {size 20}}
     }
+    {character_id:text(select)
+        {label "Character"}
+        {options $character_options}}
 } -edit_request {
     simulation::role::get -role_id $role_id -array role_array
     set workflow_id $role_array(workflow_id)
@@ -52,6 +70,7 @@ ad_form -name role -form {
     permission::require_write_permission -object_id $workflow_id
 
     set pretty_name $role_array(pretty_name)
+    set character_id $role_array(character_id)
 
     workflow::get -workflow_id $workflow_id -array sim_template_array
 
@@ -80,6 +99,7 @@ ad_form -name role -form {
 } -after_submit {
 
     set row(pretty_name) $pretty_name
+    set row(character_id) $character_id
     set row(short_name) {}
 
     set role_id [simulation::role::edit \
@@ -91,7 +111,7 @@ ad_form -name role -form {
     # Let's mark this template edited
     set sim_type "dev_template"
 
-    ad_returnredirect [export_vars -base "template-sim-type-update" { workflow_id sim_type }]
+    ad_returnredirect -message [_ simulation.role_updated] [export_vars -base "template-sim-type-update" { workflow_id sim_type }]
     ad_script_abort
 }
 

@@ -1,11 +1,11 @@
 create table sim_messages_trash (
-  message_id            integer         constraint sim_trash_id_nn
+  message_id            integer         constraint sim_messages_trash_id_nn
                                         not null
-                                        constraint sim_trash_id_fk
+                                        constraint sim_messages_trash_id_fk
                                         references sim_messages,
-  role_id               integer         constraint sim_trash_role_nn
+  role_id               integer         constraint sim_messages_trash_role_nn
                                         not null,
-  case_id               integer         constraint sim_trash_case_nn
+  case_id               integer         constraint sim_messages_trash_case_nn
                                         not null,
   PRIMARY KEY (message_id, role_id, case_id)
 );
@@ -13,7 +13,7 @@ create table sim_messages_trash (
 comment on table sim_messages_trash is 'For storing trashed messages per role per case.';
 
 create table sim_portfolio_trash (
-  object_id             integer         constraint sim_trash_id_nn
+  object_id             integer         constraint sim_pt_id_nn
                                         not null
                                         constraint sim_pt_object_id_fk
                                         references acs_objects ON DELETE CASCADE,

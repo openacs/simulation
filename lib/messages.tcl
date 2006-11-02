@@ -96,8 +96,10 @@ if { $deleted_p } {
 } else {
     lappend elements delete
     lappend elements {
-      link_url_col delete_url
       label {[_ simulation.Delete]}
+      display_template {
+        <a href="@messages.delete_url@" title="#simulation.Delete#"><img src="/resources/acs-subsite/Delete16.gif" alt="delete" /></a>
+      }
     }
     
     lappend extend delete

@@ -11,10 +11,9 @@ permission::require_write_permission -object_id $workflow_id
 wizard create siminst \
     -steps {
         1 -label "Settings" -url "simulation-edit"
-        2 -label "Roles" -url "map-characters"
-        3 -label "Tasks" -url "map-tasks"
-        4 -label "Participants" -url "simulation-participants"
-        5 -label "Casting" -url "simulation-casting-3"
+        2 -label "Tasks" -url "map-tasks"
+        3 -label "Participants" -url "simulation-participants"
+        4 -label "Casting" -url "simulation-casting-3"
     } -params {
         workflow_id
     }
@@ -23,16 +22,15 @@ wizard set_finish_url [export_vars -base "simulation-casting" { workflow_id }]
 
 array set title {
     1 "Simulation Settings"
-    2 "Assign Characters to Roles"
-    3 "Populate Tasks"
-    4 "Select Participants"
-    5 "Define Casting Rules"
+    2 "Populate Tasks"
+    3 "Select Participants"
+    4 "Define Casting Rules"
 }
 
 wizard set_param workflow_id $workflow_id
 
 set lowest_available 1
-set highest_available 5
+set highest_available 4
 
 # Set information about which tabs are complete
 array set tab_complete_p [simulation::template::get_inst_state -workflow_id $workflow_id]

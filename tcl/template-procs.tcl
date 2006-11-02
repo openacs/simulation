@@ -1585,9 +1585,19 @@ ad_proc -public simulation::template::check_init_p {
                 where workflow_id = :workflow_id and
                       trigger_type = 'init' and
                       parent_action_id = :action_id"] } {
-	    set ret_val 0
-	    break
+	          return 0
         }
+    }
+    
+    if { [db_string get_empty_roles "
+        select count(*)
+        from sim_roles sr,
+             workflow_roles wr
+        where sr.character_id is null
+        and sr.role_id = wr.role_id
+        and wr.workflow_id = :workflow_id"]} {
+        
+        return 0
     }
     
     return $ret_val
