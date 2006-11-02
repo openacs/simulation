@@ -3,6 +3,8 @@
 -- @cvs-id $Id$
 
 --drop independent tables
+drop table sim_messages_trash;
+drop table sim_portfolio_trash;
 drop table sim_party_sim_map;
 drop table sim_task_recipients;
 drop table sim_tasks;

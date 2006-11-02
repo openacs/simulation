@@ -181,7 +181,7 @@ ad_proc -private simulation::message::delete_or_undelete {
 } {
     db_transaction {
       if {[string equal $action "delete"]} {
-        db_dml delete "insert into sim_trash values (:message_id, :role_id, :case_id)"
+        db_dml delete "insert into sim_messages_trash values (:message_id, :role_id, :case_id)"
       } else {
         db_dml undelete "
             delete from sim_trash

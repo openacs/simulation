@@ -176,7 +176,7 @@ db_multirow -extend $extend messages select_messages "
                             "sm.to_role_id = :role_id or sm.from_role_id = :role_id"]
     )"]
     and [ad_decode $deleted_p 1 "" "not"] exists (
-      select 1 from sim_trash st where st.message_id = sm.message_id)
+      select 1 from sim_messages_trash st where st.message_id = sm.message_id)
     and    wc.case_id = sm.case_id
     and    sc.sim_case_id = wc.object_id
     and    w.workflow_id = wc.workflow_id

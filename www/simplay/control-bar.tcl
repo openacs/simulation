@@ -33,6 +33,10 @@ set message_count [db_string message_count_sql "
       from sim_messagesx sm
      where (sm.to_role_id = :role_id or sm.from_role_id = :role_id)
        and sm.case_id = :case_id
+       and not exists (select 1 from sim_messages_trash st
+                       where st.message_id = sm.message_id and
+                         st.role_id = :role_id and
+                         st.case_id = :case_id)
 "]
 set messages_url [export_vars -base ${section_uri}messages { case_id role_id }]
 

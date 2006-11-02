@@ -162,6 +162,7 @@ create table sim_case_role_object_map (
                                         references workflow_cases
                                         on delete cascade,
     order_n             integer,
+    title               varchar(200)
     relation_tag        varchar(100),
     entry_id            integer         constraint scrom_case_log_fk
                                         references workflow_case_log,
@@ -204,7 +205,7 @@ create table sim_cases (
 
 comment on table sim_cases is 'The object behind a simulation case.';
 
-create table sim_trash (
+create table sim_messages_trash (
   message_id            integer         constraint sim_trash_id_nn
                                         not null
                                         constraint sim_trash_id_fk
@@ -216,4 +217,22 @@ create table sim_trash (
   PRIMARY KEY (message_id, role_id, case_id)
 );
 
-comment on table sim_trash is 'For storing trashed messages per role per case.';
+comment on table sim_messages_trash is 'For storing trashed messages per role per case.';
+
+create table sim_portfolio_trash (
+  object_id             integer         constraint sim_trash_id_nn
+                                        not null
+                                        constraint sim_pt_object_id_fk
+                                        references acs_objects ON DELETE CASCADE,
+  role_id               integer         constraint sim_pt_role_nn
+                                        not null
+                                        constraint sim_pt_role_fk
+                                        REFERENCES workflow_roles ON DELETE CASCADE,
+  case_id               integer         constraint sim_pt_case_nn
+                                        not null
+                                        constraint sim_pt_case_fk
+                                        REFERENCES workflow_cases ON DELETE CASCADE,
+  PRIMARY KEY (object_id, role_id, case_id)
+);
+
+comment on table sim_portfolio_trash is 'For storing trashed portfolio documents per role per case.';
