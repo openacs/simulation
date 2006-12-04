@@ -325,3 +325,18 @@ select content_type__register_relation_type (
     10                            -- max_n
 );
 
+
+create table sim_messages_trash (
+  message_id            integer         constraint sim_messages_trash_id_nn
+                                        not null
+                                        constraint sim_messages_trash_id_fk
+                                        references sim_messages,
+  role_id               integer         constraint sim_messages_trash_role_nn
+                                        not null,
+  case_id               integer         constraint sim_messages_trash_case_nn
+                                        not null,
+  PRIMARY KEY (message_id, role_id, case_id)
+);
+
+comment on table sim_messages_trash is 'For storing trashed messages per role per case.';
+
