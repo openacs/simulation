@@ -162,7 +162,7 @@ create table sim_case_role_object_map (
                                         references workflow_cases
                                         on delete cascade,
     order_n             integer,
-    title               varchar(200)
+    title               varchar(200),
     relation_tag        varchar(100),
     entry_id            integer         constraint scrom_case_log_fk
                                         references workflow_case_log,
@@ -206,13 +206,13 @@ create table sim_cases (
 comment on table sim_cases is 'The object behind a simulation case.';
 
 create table sim_messages_trash (
-  message_id            integer         constraint sim_messages_trash _id_nn
+  message_id            integer         constraint sim_messages_trash_id_nn
                                         not null
-                                        constraint sim_messages_trash _id_fk
+                                        constraint sim_messages_trash_id_fk
                                         references sim_messages,
-  role_id               integer         constraint sim_messages_trash _role_nn
+  role_id               integer         constraint sim_messages_trash_role_nn
                                         not null,
-  case_id               integer         constraint sim_messages_trash _case_nn
+  case_id               integer         constraint sim_messages_trash_case_nn
                                         not null,
   PRIMARY KEY (message_id, role_id, case_id)
 );
