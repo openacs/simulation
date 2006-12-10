@@ -98,7 +98,7 @@ ad_proc -public simulation::case::attachment_options {
     @author Peter Marklund
 } {
     return [db_list_of_lists attachment_for_role {
-        select cr.title as document_title,
+        select COALESCE(scrom.title, cr.title) as document_title,
                scrom.object_id as document_id
         from sim_case_role_object_map scrom,
              cr_items ci,

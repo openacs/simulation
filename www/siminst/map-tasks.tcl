@@ -97,7 +97,7 @@ db_foreach tasks {
                        {options $prop_options} \
                        {help_text "Select from existing attachments or <a
 href./citybuild/object-edit\">add a new prop</a> and refresh this page."}]]
-    }    
+    }
 
     lappend actions $row(action_id)
 }

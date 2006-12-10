@@ -9,7 +9,7 @@ simulation::include_contract {
     role_id {}
     deleted_p { default_value 0 }
     show_actions_p { default_value 1 }
-    portfolio_orderby { required_p 0 }
+    portfolio_orderby { default_value document_title }
 }
 
 
@@ -45,7 +45,7 @@ set elements {
   document_title {
     label {[_ simulation.Document]}
     link_url_col document_url
-	  orderby upper(cr.title)
+	  orderby "upper(COALESCE(scrom.title, cr.title))"
   }        
 	publish_date {
 	    label {[_ simulation.Upload_date]}
@@ -102,8 +102,7 @@ template::list::create \
 db_multirow -extend $extend documents select_documents "
     select scrom.object_id as document_id,
            ci.name  as document_name,
-           scrom.title as scrom_title,
-           cr.title as document_title,
+           COALESCE(scrom.title, cr.title) as document_title,
            wr.pretty_name as role_name,
            cr.publish_date as publish_date,
            cr.mime_type,
@@ -130,10 +129,6 @@ db_multirow -extend $extend documents select_documents "
       set delete [_ simulation.Undelete]
     } else {
       set delete [_ simulation.Delete]
-    }
-    
-    if { ![empty_string_p $scrom_title] } {
-      set document_title $scrom_title
     }
     
     set undelete_p $deleted_p

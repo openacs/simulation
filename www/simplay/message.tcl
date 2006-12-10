@@ -31,7 +31,7 @@ set to_role_options [list]
 foreach one_role_id [workflow::role::get_ids -workflow_id $workflow_id] {
     set character_title [simulation::role::get_element -role_id $one_role_id -element character_title]
     set pretty_name [simulation::role::get_element -role_id $one_role_id -element pretty_name]
-        lappend to_role_options [list "$pretty_name ($character_title)" $one_role_id]
+    lappend to_role_options [list "$pretty_name ($character_title)" $one_role_id]
 }
 
 set attachment_options [simulation::case::attachment_options -case_id $case_id -role_id $role_id]
@@ -48,6 +48,8 @@ if { [string equal $action "reply"] } {
         -array content
 
     set sender_role_id $content(from_role_id)
+    set recipient_role_id $sender_role_id
+    
     set subject "[_ simulation.Re] $content(title)"
     set sender_pretty_name [simulation::role::get_element -role_id $sender_role_id -element pretty_name]
     set sender_character_title [simulation::role::get_element -role_id $sender_role_id -element character_title]

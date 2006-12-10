@@ -20,4 +20,7 @@ set citybuild_p [permission::permission_p -object_id $package_id -privilege sim_
 set simbuild_p [permission::permission_p -object_id $package_id -privilege sim_template_read]
 set siminst_p [permission::permission_p -object_id $package_id -privilege sim_inst]
 
+set user [ad_conn user_id]
+set notification_url "/notifications"
+
 set curr_url [ad_conn url]

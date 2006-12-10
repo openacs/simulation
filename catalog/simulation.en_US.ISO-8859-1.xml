@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<message_catalog package_key="simulation" package_version="1.0.1" locale="en_US" charset="ISO-8859-1">
+<message_catalog package_key="simulation" package_version="1.0.4" locale="en_US" charset="ISO-8859-1">
 
   <msg key="Abort_the_session">Abort the session</msg>
   <msg key="Add_a_template">Add a template</msg>
@@ -12,6 +12,8 @@
   <msg key="and_rest_length_more">and %rest_length% more</msg>
   <msg key="Assigned_action">Assigned action</msg>
   <msg key="Attachments">Attachments</msg>
+  <msg key="back_to_messages">Back to Messages</msg>
+  <msg key="back_to_portfolio">Back to Portfolio</msg>
   <msg key="Body">Body</msg>
   <msg key="Cancel">Cancel</msg>
   <msg key="Case">Case</msg>
@@ -36,10 +38,13 @@
   <msg key="Delete">Delete</msg>
   <msg key="Delete_this_case">Delete this case</msg>
   <msg key="Delete_this_template">Delete this template</msg>
+  <msg key="Deleted_Messages">Deleted Messages</msg>
   <msg key="Description">Description</msg>
   <msg key="Display">Display</msg>
   <msg key="Document">Document</msg>
+  <msg key="document_moved_to_trash">Document was successfully moved to recycle bin.</msg>
   <msg key="Document_Portfolio">Document Portfolio</msg>
+  <msg key="document_undeleted">Document was successfully undeleted.</msg>
   <msg key="Documents">Documents</msg>
   <msg key="Edit">Edit</msg>
   <msg key="Edit_this_template">Edit this template</msg>
@@ -64,6 +69,7 @@ You have been invited to join simulation %sim_template.pretty_name%. Please visi
   <msg key="Join_a_Simulation">Join a Simulation</msg>
   <msg key="join_case">join case</msg>
   <msg key="join_role">join role</msg>
+  <msg key="leave_blank">Leave blank to return to the original name</msg>
   <msg key="Live_Simulations">Live Simulations</msg>
   <msg key="Log_in">Log in</msg>
   <msg key="lt_a_hreflink_targetClic">&lt;a href=&quot;%link_target%&quot;&gt;Click here&lt;/a&gt; to enroll now.</msg>
@@ -233,6 +239,7 @@ Contact your administrator if you believe this is an error. Thank you!</msg>
   <msg key="Max__users">Max # users</msg>
   <msg key="Message">Message</msg>
   <msg key="message">message</msg>
+  <msg key="message_moved_to_trash">Message was moved to trash.</msg>
   <msg key="message_notificaiton_email_subject">[SimPlay] New message in simulation %simulation_name%: %subject%</msg>
   <msg key="message_notification_email_body">You have just received the following message in simulation %simulation_name%:
 
@@ -247,6 +254,7 @@ body:
 Please visit %simplay_url% to continue playing the simulation.
 
 Thank you.</msg>
+  <msg key="message_undeleted">Message was undeleted</msg>
   <msg key="Messages">Messages</msg>
   <msg key="messages">messages</msg>
   <msg key="Mime_type">Mime type
@@ -272,7 +280,8 @@ Thank you.</msg>
   <msg key="Re">Re:</msg>
   <msg key="Ready">Ready</msg>
   <msg key="Received">Received</msg>
-  <msg key="Recent_Messages">Recent Messages</msg>
+  <msg key="Recent_Messages">Recent Incoming Messages</msg>
+  <msg key="Recycle_Bin">Recycle Bin</msg>
   <msg key="Related_Tasks">Related Tasks</msg>
   <msg key="reminder_email_body">Dear %user_name%,
 this email is sent to you as a reminder that you are participating in simulation %simulation_name% that will start on %simulation_start_date%. Here is the
@@ -281,9 +290,12 @@ simulation description:
 %simulation_description%</msg>
   <msg key="reminder_email_subject">Simulation %simulation_name% starts on %simulation_start_date%</msg>
   <msg key="Remove_user">Remove user</msg>
+  <msg key="Rename">Rename</msg>
+  <msg key="Rename_Document">Rename Document</msg>
   <msg key="Respond">Respond</msg>
   <msg key="Return_to_SimPlay">Return to SimPlay</msg>
   <msg key="Role">Role</msg>
+  <msg key="role_updated">The role details were successfully updated</msg>
   <msg key="Roles">Roles</msg>
   <msg key="Send_a_message_to">Send a message to</msg>
   <msg key="Send_new_message">Send new message</msg>
@@ -321,6 +333,7 @@ Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% 
   <msg key="tasks">tasks</msg>
   <msg key="Template">Template</msg>
   <msg key="Template_Description">Template Description</msg>
+  <msg key="template_marked_as_ready">The template was marked as ready for use.</msg>
   <msg key="Template_Name">Template Name</msg>
   <msg key="Thank_you">Thank you!</msg>
   <msg key="Time">Time</msg>
@@ -333,6 +346,7 @@ Simulation %simulation.pretty_name% has now started. Please visit %simplay_url% 
     href=&quot;%document_upload_url%&quot;&gt;upload a document&lt;/a&gt; to your
     portfolio before writing the message.</msg>
   <msg key="Type">Type</msg>
+  <msg key="Undelete">Undelete</msg>
   <msg key="Unknown_type">Unknown type</msg>
   <msg key="Unsubscribe">Unsubscribe</msg>
   <msg key="Upload_a_document">Upload a document</msg>

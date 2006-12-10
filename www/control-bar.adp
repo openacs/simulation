@@ -62,4 +62,8 @@
 	<else>
         <li>#simulation.Colophon#</li>
 	</else>
+	
+	<if @user@ ne 0>
+	  <li><a href="@notification_url@">#notifications.Notifications#</a></li>
+	</if>
 </ul>
