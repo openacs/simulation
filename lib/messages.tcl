@@ -178,15 +178,17 @@ db_multirow -extend $extend messages select_messages "
                             "sm.to_role_id = :role_id or sm.from_role_id = :role_id"]
     )"]
     and [ad_decode $deleted_p 1 "" "not"] exists (
-      select 1 from sim_messages_trash st where st.message_id = sm.message_id)
+      select 1 from sim_messages_trash st where st.message_id = sm.message_id
+      [ad_decode $case_id "" "" "and st.case_id = :case_id"]
+      [ad_decode $role_id "" "" "and st.role_id = :role_id"])
     and    wc.case_id = sm.case_id
     and    sc.sim_case_id = wc.object_id
     and    w.workflow_id = wc.workflow_id
     [ad_decode $case_id "" "" "and wc.case_id = :case_id"]
     [ad_decode $user_id "" "" "and exists (select 1 from workflow_case_role_user_map where case_id = wc.case_id and (
-      [ad_decode $direction "in" "sm.to_role_id = role_id" \
-                            "out" "sm.from_role_id = role_id" \
-                            "sm.to_role_id = role_id or sm.from_role_id = role_id"]
+      [ad_decode $direction "in" "sm.to_role_id = :role_id" \
+                            "out" "sm.from_role_id = :role_id" \
+                            "sm.to_role_id = :role_id or sm.from_role_id = :role_id"]
     ) and user_id = :user_id)"]
     order  by sm.creation_date desc
     [ad_decode $limit "" "" "limit $limit"]

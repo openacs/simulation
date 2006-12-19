@@ -91,17 +91,20 @@ db_multirow -extend { edit_url char_url delete_url up_url down_url } roles selec
     select wr.role_id,
            wr.pretty_name,
            wr.sort_order,
-           ci.name as character_name
+           sc.title as character_name,
+           ci.name as character_url
       from workflow_roles wr,
            sim_roles sr
       left join cr_items ci on (sr.character_id = ci.item_id)
+      join sim_charactersx sc on (ci.item_id = sc.item_id 
+                                and ci.live_revision = sc.object_id)
      where wr.workflow_id = :workflow_id
        and wr.role_id = sr.role_id
      order by wr.sort_order
 " {
     incr counter
     set edit_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-edit" { role_id }]
-    set char_url [ad_decode $character_name "" "" "[apm_package_url_from_id $package_id]object/${character_name}"]
+    set char_url [ad_decode $character_name "" "" "[apm_package_url_from_id $package_id]object/${character_url}"]
     
     set delete_url [export_vars -base "[apm_package_url_from_id $package_id]simbuild/role-delete" { role_id { return_url [ad_return_url] } }]
     if { $counter > 1 } {
