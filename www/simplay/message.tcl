@@ -138,11 +138,10 @@ ad_form -extend -name message -form {
 }
 
 if { !$form_new_p } {
-    set attachments_set_list [bcms::item::list_related_items \
-				  -revision live \
-				  -item_id $item_id \
-				  -relation_tag attachment \
-				  -return_list]
+    set attachments_set_list [simulation::message::list_attachments \
+				  -message_id $item_id \
+				  -case_id $case_id \
+				  -role_id $role_id]
 }
 
 if { ![string equal $form_mode "display"] } {
@@ -214,7 +213,7 @@ ad_form -extend -name message -new_request {
         set attachments ""
         foreach attachment_set $attachments_set_list {
             set object_url [simulation::object::content_url -name [ns_set get $attachment_set name]]
-            set object_title [ns_set get $attachment_set title].
+            set object_title [ns_set get $attachment_set title]
             set mime_type [ns_set get $attachment_set mime_type]
             append attachments "<a href=\"$object_url\">$object_title</a> ($mime_type)<br>"
         }

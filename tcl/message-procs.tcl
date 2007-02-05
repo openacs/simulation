@@ -169,6 +169,50 @@ ad_proc -public simulation::message::undelete {
     return [delete_or_undelete -action "undelete" -message_id $message_id -role_id $role_id -case_id $case_id]
 }
 
+ad_proc -public simulation::message::list_attachments {
+    -message_id:required
+    -role_id:required
+    -case_id:required
+} {
+    get the attachments of message_id.  
+
+    @param message_id        the id of the message
+    @param role_id           the id of the role
+    @param case_id           the id of the case
+
+    @return a list of attachments for a given message
+
+} {
+    return [db_list_of_ns_sets get_attachments {
+            select i.item_id, 
+                   COALESCE(scrom.title, r.title) as title, 
+                   i.live_revision, 
+                   i.latest_revision, 
+                   i.publish_status,
+                   i.content_type, 
+                   i.storage_type, 
+                   ir.rel_id, 
+                   ir.order_n,
+                   content_item__get_path(i.item_id, ir.item_id) as path,
+                   r.revision_id, 
+                   r.description, 
+                   r.publish_date, 
+                   r.mime_type
+            from   cr_items i, 
+                   cr_item_rels ir, 
+                   sim_case_role_object_map scrom,
+                   cr_revisions r
+            where  ir.item_id = :message_id
+                   and ir.related_object_id = i.item_id
+                   and ir.relation_tag = 'attachment'
+		               and scrom.case_id = :case_id
+		               and scrom.role_id = :role_id
+		               and scrom.object_id = i.item_id
+                   and i.live_revision = r.revision_id
+            order by order_n
+    }]
+}
+
 ad_proc -private simulation::message::delete_or_undelete {
     -message_id:required
     -role_id:required
