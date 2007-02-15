@@ -22,10 +22,11 @@ ad_proc -public simulation::character::get {
 
     db_1row select_character_info {
       select sc.*, cr.title, cr.description
-      from sim_characters sc, cr_revisions cr, cr_items ci
+      from sim_charactersx sc, cr_revisions cr, cr_items ci
       where sc.character_id = cr.revision_id
       and cr.item_id = ci.item_id
       and (sc.character_id = :character_id or ci.item_id = :character_id)
+      and ci.live_revision = sc.object_id
     } -column_array row
 }
 

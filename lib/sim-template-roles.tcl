@@ -96,7 +96,7 @@ db_multirow -extend { edit_url char_url delete_url up_url down_url } roles selec
       from workflow_roles wr,
            sim_roles sr
       left join cr_items ci on (sr.character_id = ci.item_id)
-      join sim_charactersx sc on (ci.item_id = sc.item_id 
+      left join sim_charactersx sc on (ci.item_id = sc.item_id 
                                 and ci.live_revision = sc.object_id)
      where wr.workflow_id = :workflow_id
        and wr.role_id = sr.role_id
