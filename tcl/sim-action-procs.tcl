@@ -126,7 +126,7 @@ ad_proc -public simulation::action::edit {
             # Handle auxillary rows
             array set aux [list]
             foreach attr { 
-                recipients
+                recipients attachments
             } {
                 if { [info exists row($attr)] } {
                     set aux($attr) $row($attr)
@@ -200,6 +200,26 @@ ad_proc -public simulation::action::edit {
                         }
                     }
                     unset aux(recipients)
+                }
+                
+                if { [info exists aux(attachments)] && [llength aux(attachments)] > 0 } {
+                 db_dml delete_old_attachments {
+                     delete from sim_task_object_map
+                     where  task_id = :action_id
+                 }
+                 set i 1
+                 foreach attachment $aux(attachments) {
+                   set attachment_id [db_string get_id {select item_id from cr_items where name = :attachment}]
+ 
+                   if { ![empty_string_p $attachment_id] } {
+                       db_dml insert_rel {
+                           insert into sim_task_object_map (task_id, object_id, order_n, relation_tag)
+                           values (:action_id, :attachment_id, :i, 'attachment')
+                       }
+                   }
+ 
+                   incr i
+                 }
                 }
             }
         }
@@ -306,6 +326,21 @@ ad_proc -private simulation::action::generate_spec {
         if { ![empty_string_p $row($name)] } {
             lappend spec $name $row($name)
         }
+    }
+    
+    set attachments [db_list attachments {
+                                      select ci.name as object_name
+                                      from   sim_task_object_map m,
+                                      cr_items ci,
+                                      cr_revisions cr
+                                      where  m.task_id = :action_id
+                                      and    m.relation_tag = 'attachment'
+                                      and    ci.item_id = m.object_id
+                                      and    cr.revision_id = ci.live_revision
+                                      order by m.order_n}]
+
+    if { [llength $attachments] > 0 } {
+      lappend spec attachments $attachments
     }
 
     return $spec

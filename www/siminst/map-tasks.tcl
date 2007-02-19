@@ -80,6 +80,15 @@ db_foreach tasks {
 	set default_text_$row(action_id) [template::util::richtext::create $row(default_text) $row(default_text_mime_type)]
     }
 
+    set current_action_id $row(action_id) 
+    set attachment_count_$row(action_id) [db_string att_count {select count(*) from sim_task_object_map
+                                               where  task_id = :current_action_id}]
+
+    if { $row(attachment_num) < [set attachment_count_$row(action_id)] } {
+      set row(attachment_num) [set attachment_count_$row(action_id)]
+    }
+
+
     # Save attachment_num for later
     ad_form -extend -name tasks -form \
         [list [list attachment_num_$row(action_id):integer(hidden),optional \

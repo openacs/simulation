@@ -52,12 +52,18 @@ if { ![ad_form_new_p -key action_id] } {
     }
 }
 
+set prop_options [simulation::object::get_object_type_options -object_type "sim_prop" -null_label "--Not Yet Selected--"]
+
+set prop_count [llength $prop_options]
+
 workflow::get -workflow_id $workflow_id -array sim_template_array
 
 if { ![ad_form_new_p -key action_id] } {
     set page_title "Edit Task $task_array(pretty_name)"
+    set attachment_count [db_string att_count {select count(*) + 5 from sim_task_object_map
+                                               where  task_id = :action_id}]
 } else {
-
+    set attachment_count 5
     set page_title "Add Task to $sim_template_array(pretty_name)"
 }
 
@@ -227,17 +233,33 @@ if { [string equal $trigger_type "user"] && [string equal $task_type "message"] 
     }
 }
 
-if { [string equal $trigger_type "user"] } {
-    ad_form -extend -name task -form {
-        {attachment_num:integer(text)
-            {label "Number of attachments"}
-            {help_text "These are placeholders that are matched to props by the case author during SimInst"}
-            {html {size 2}}
-        }
+if { [string equal $trigger_type "user"] } {    
+    if { ![ad_form_new_p -key action_id] } {
+    
+      db_foreach attachments {
+          select a.action_id,
+                 m.object_id,
+                 m.order_n
+          from   workflow_actions a,
+                 sim_task_object_map m
+          where  a.action_id = :action_id
+          and    m.task_id = a.action_id
+          and    m.relation_tag = 'attachment'
+      } {
+          set attachment_${order_n} $object_id
+      }
     }
-} else {
-    ad_form -extend -name task -form {
-        {attachment_num:integer(hidden) {value 0}}
+    for { set i 1 } { $i <= [set attachment_count] } { incr i } {
+      set help_text [ad_decode $i 1 "Select from existing attachments or <a
+href./citybuild/object-edit\">add a new prop</a> and refresh this page." \
+                                 5 "You can add more attachments by saving the task and returning to this form." \
+                                 ""]
+                            
+        ad_form -extend -name task -form \
+            [list [list attachment_${i}:integer(select),optional \
+                       {label "Attachment $i"} \
+                       {options $prop_options} \
+                       {help_text $help_text}]]
     }
 }
 
@@ -277,7 +299,7 @@ ad_form -extend -name task -edit_request {
     foreach elm { 
         pretty_name new_state_id 
         assigned_role recipient_roles
-        attachment_num trigger_type parent_action_id
+        trigger_type parent_action_id
     } {
         set $elm $task_array($elm)
     }
@@ -289,8 +311,6 @@ ad_form -extend -name task -edit_request {
 
 } -new_request {
     permission::require_write_permission -object_id $workflow_id
-
-    set attachment_num 0
 
     set trigger_type "user"
     set task_type "message"
@@ -371,6 +391,22 @@ ad_form -extend -name task -edit_request {
                        -action_id $action_id \
                        -array row]
 
+     db_dml delete_all_relations {
+         delete from sim_task_object_map
+         where  task_id = :action_id
+     }
+
+     for { set i 1 } { $i <= [set attachment_count] } { incr i } {
+         set elm "attachment_$i"
+         set related_object_id [set $elm]
+         
+         if { ![empty_string_p $related_object_id] } {
+             db_dml insert_rel {
+                 insert into sim_task_object_map (task_id, object_id, order_n, relation_tag)
+                 values (:action_id, :related_object_id, :i, 'attachment')
+             }
+         }
+     }
 
     # Let's mark this template edited
     set sim_type "dev_template"
