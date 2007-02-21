@@ -385,28 +385,35 @@ ad_form -extend -name task -edit_request {
 
 } -after_submit {
     
-    set action_id [simulation::action::edit \
-                       -operation $operation \
-                       -workflow_id $workflow_id \
-                       -action_id $action_id \
-                       -array row]
+    db_transaction {
+      set action_id [simulation::action::edit \
+                         -operation $operation \
+                         -workflow_id $workflow_id \
+                         -action_id $action_id \
+                         -array row]
 
-     db_dml delete_all_relations {
-         delete from sim_task_object_map
-         where  task_id = :action_id
-     }
+      if { [string equal $trigger_type "user"] } {
 
-     for { set i 1 } { $i <= [set attachment_count] } { incr i } {
-         set elm "attachment_$i"
-         set related_object_id [set $elm]
-         
-         if { ![empty_string_p $related_object_id] } {
-             db_dml insert_rel {
-                 insert into sim_task_object_map (task_id, object_id, order_n, relation_tag)
-                 values (:action_id, :related_object_id, :i, 'attachment')
-             }
+        db_dml delete_all_relations {
+           delete from sim_task_object_map
+           where  task_id = :action_id
+        }
+
+        for { set i 1 } { $i <= [set attachment_count] } { incr i } {
+            set elm "attachment_$i"
+            set related_object_id [set $elm]
+
+            if { ![empty_string_p $related_object_id] } {
+                db_dml insert_rel {
+                    insert into sim_task_object_map (task_id, object_id, order_n, relation_tag)
+                    values (:action_id, :related_object_id, :i, 'attachment')
+                }
+            }
          }
-     }
+      }
+    }
+    
+
 
     # Let's mark this template edited
     set sim_type "dev_template"
