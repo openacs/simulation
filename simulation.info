@@ -8,27 +8,28 @@
     <singleton-p>f</singleton-p>
     <auto-mount>simulation</auto-mount>
 
-    <version name="1.0.4" url="http://openacs.org/repository/download/apm/simulation-1.0.4.apm">
-        <owner url="mailto:team@collaboraid.biz">Collaboraid ApS</owner>
+    <version name="1.1" url="http://openacs.org/repository/download/apm/simulation-1.1.apm">
         <owner url="mailto:jarkko@jlaine.net">O'Design</owner>
+        <owner url="mailto:team@collaboraid.biz">Collaboraid ApS</owner>
         <summary>Workflow-based task simulator.  Build scenario
         templates in which various roles must complete tasks such as
         sending messages and uploading documents.  Then enroll groups
         of students into cases, cast the students into roles, and
         monitor progress.  Developed as a legal education tool for
         www.rechtenonline.nl.</summary>
-        <release-date>2005-12-01</release-date>
+        <release-date>2007-03-21</release-date>
+        <maturity>0</maturity>
 
-        <provides url="simulation" version="1.0.4"/>
+        <provides url="simulation" version="1.1"/>
         <requires url="acs-mail-lite" version="0.2a"/>
         <requires url="bcms" version="0.2"/>
         <requires url="workflow" version="2.0.0b3"/>
 
         <callbacks>
-            <callback type="before-unmount"  proc="simulation::apm::before_unmount"/>
-            <callback type="after-mount"  proc="simulation::apm::after_mount"/>
             <callback type="after-install"  proc="simulation::apm::after_install"/>
             <callback type="after-instantiate"  proc="simulation::apm::after_instantiate"/>
+            <callback type="after-mount"  proc="simulation::apm::after_mount"/>
+            <callback type="before-unmount"  proc="simulation::apm::before_unmount"/>
         </callbacks>
         <parameters>
             <parameter datatype="string"  min_n_values="1"  max_n_values="1"  name="AvailabilityInfoFile"  default="rc-004" description="File name of the availability info page. The file must exist in the directory."/>
