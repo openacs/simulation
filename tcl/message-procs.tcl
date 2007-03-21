@@ -185,7 +185,8 @@ ad_proc -public simulation::message::list_attachments {
 } {
     return [db_list_of_ns_sets get_attachments {
             select i.item_id, 
-                   COALESCE(scrom.title, r.title) as title, 
+                   COALESCE(scrom.title, r.title) as title,
+                   i.name as name, 
                    i.live_revision, 
                    i.latest_revision, 
                    i.publish_status,
@@ -199,15 +200,20 @@ ad_proc -public simulation::message::list_attachments {
                    r.publish_date, 
                    r.mime_type
             from   cr_items i, 
+                   cr_items i2,
                    cr_item_rels ir, 
                    sim_case_role_object_map scrom,
-                   cr_revisions r
+                   cr_revisions r,
+                   sim_messages sm
             where  ir.item_id = :message_id
+                   and ir.item_id = i2.item_id
+                   and sm.message_id = i2.live_revision
                    and ir.related_object_id = i.item_id
                    and ir.relation_tag = 'attachment'
-		               and scrom.case_id = :case_id
-		               and scrom.role_id = :role_id
-		               and scrom.object_id = i.item_id
+                   and scrom.case_id = :case_id
+                   and scrom.role_id = sm.from_role_id
+                   and (sm.from_role_id = :role_id or sm.to_role_id = :role_id)
+                   and scrom.object_id = i.item_id
                    and i.live_revision = r.revision_id
             order by order_n
     }]
