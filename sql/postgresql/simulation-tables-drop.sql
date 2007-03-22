@@ -10,6 +10,7 @@ drop table sim_task_recipients;
 drop table sim_tasks;
 drop table sim_role_party_map;
 drop table sim_roles;
+drop table sim_cases;
 drop table sim_simulation_emails;
 select acs_object_type__drop_type(
 	   'simulation',
