@@ -6,39 +6,37 @@
     </script>
   </property>
 
-<div id="tabs-div">
-  <div id="tabs-container">
-    <div id="tabs">
-      <multiple name="wizard">
-        <if "@wizard.id@" eq "@wizard:current_id@">
-          <div class="tab" id="tabs-here">
-            @wizard.id@. @wizard.label@
+<div id="main-navigation">
+  <ul>
+    <multiple name="wizard">
+      <if "@wizard.id@" eq "@wizard:current_id@">
+        <li id="main-navigation-active">
+           @wizard.id@. @wizard.label@
+           <if @wizard.complete_p@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
+        </li>
+      </if>
+      <else>
+        <if @wizard.id@ ge @lowest_available@ and @wizard.id@ le @highest_available@>
+          <li>
+            @wizard.id@. <a href="<%=[template::wizard get_forward_url @wizard.id@]%>">@wizard.label@</a>
             <if @wizard.complete_p@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
-          </div>
+          </li>
         </if>
         <else>
-          <if @wizard.id@ ge @lowest_available@ and @wizard.id@ le @highest_available@>
-            <div class="tab">
-              @wizard.id@. <a href="<%=[template::wizard get_forward_url @wizard.id@]%>">@wizard.label@</a>
-              <if @wizard.complete_p@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
-            </div>
-          </if>
-          <else>
-            <div class="tab disabled">
-              @wizard.id@. @wizard.label@
-              <if @wizard.complete_p@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
-            </div>
-          </else>
+          <li>
+            @wizard.id@. @wizard.label@
+            <if @wizard.complete_p@><img src="/resources/acs-subsite/checkboxchecked.gif"></if>
+          </li>
         </else>
-      </multiple>
-    </div>
-  </div>
+      </else>
+    </multiple>
+  
+  </ul>
 </div>
-<div id="tabs-body">
 
-  <h2>@sub_title@</h2>
+<div style="clear: both;"></div>
+<h2>@sub_title@</h2>
 
-  <include src="@wizard:current_url@">
+<include src="@wizard:current_url@">
 
-  <div style="clear: both;"></div>
-</div>
+<div style="clear: both;"></div>
