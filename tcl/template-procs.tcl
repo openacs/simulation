@@ -125,7 +125,7 @@ ad_proc -public simulation::template::edit {
                     unset row($attr)
                 }
             }
-            # Handle auxillary rows
+            # Handle auxiliary rows
             array set aux [list]
             foreach attr { 
                 enrolled invited auto_enroll

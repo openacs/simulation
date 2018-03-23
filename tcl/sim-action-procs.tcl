@@ -123,7 +123,7 @@ ad_proc -public simulation::action::edit {
                 unset row(recipient_roles)
             }
             
-            # Handle auxillary rows
+            # Handle auxiliary rows
             array set aux [list]
             foreach attr { 
                 recipients
@@ -183,7 +183,7 @@ ad_proc -public simulation::action::edit {
             }
         }
 
-        # Auxilliary rows
+        # Auxiliary rows
         switch $operation {
             insert - update {
                 if { [info exists aux(recipients)] } {
