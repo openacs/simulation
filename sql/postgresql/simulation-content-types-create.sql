@@ -57,7 +57,7 @@ select content_type__create_attribute(
     'sim_location',                -- content_type
     'address',                     -- attribute_name
     'string',                      -- datatype
-    'Addresss',                    -- pretty_name
+    'Address',                     -- pretty_name
     'Addresses',                   -- pretty_plural
     3,                             -- sort_order
     null,                          -- default_value
