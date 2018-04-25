@@ -18,7 +18,7 @@ set upload_url [export_vars -base document-upload { case_id role_id  }]
 if { [exists_and_not_null case_id] } {
     set user_roles [workflow::case::get_user_roles -case_id $case_id]
 } else {
-    set user_roles [list]
+    set user_roles {}
 }
 
 if { [exists_and_not_null case_id] } {
@@ -35,7 +35,7 @@ if { [exists_and_not_null case_id] } {
 if { [string match $complete_p "0"] && [exists_and_not_null role_id] } {
     set actions [list [_ simulation.Upload_a_document] $upload_url]
 } else {
-    set actions [list]
+    set actions {}
 }
 
 template::list::create \

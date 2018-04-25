@@ -170,7 +170,7 @@ ad_proc -private simulation::object::xml::generate_file {
 
     @author Peter Marklund
 } {
-    set errors [list]
+    set errors {}
 
     # file_path validity check
     set parameter_name [file_path_param_name]
@@ -372,7 +372,7 @@ ad_proc -private simulation::object::search_clause {
 } {
     set trimmed_search_string [string trim [string tolower $search_string]]
 
-    set where_clauses [list]
+    set where_clauses {}
     foreach column $search_columns {
         lappend where_clauses "lower($column) like '%$trimmed_search_string%'"
     }

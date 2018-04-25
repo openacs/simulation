@@ -203,7 +203,7 @@ ad_form -extend -name message -new_request {
 
     if { ![string equal $form_mode "display"] } {
         # edit/new mode - set checkbox integer values
-        set attachments [list]
+        set attachments {}
         foreach attachment_set $attachments_set_list {
             lappend attachments [ns_set get $attachment_set item_id]
         }

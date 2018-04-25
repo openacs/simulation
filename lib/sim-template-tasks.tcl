@@ -32,7 +32,7 @@ set package_id [ad_conn package_id]
 if { $display_mode == "edit"} {
     set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url "[ad_return_url]" } }] {}]
 } else {
-    set list_actions [list]
+    set list_actions {}
 }
 
 set show_states_p 1
@@ -107,7 +107,7 @@ lappend elements delete {
 }
 
 if { !$show_states_p } {
-    set states [list]
+    set states {}
 } else {
     lappend elements state_spacer { 
         label "<br />Enabled in States:"
@@ -116,7 +116,7 @@ if { !$show_states_p } {
         html { style "border-left: 2px dotted #A0BDEB;" }
     }
 
-    set states [list]
+    set states {}
 
     db_foreach select_states {
         select s.state_id,
@@ -176,7 +176,7 @@ foreach state_id $states {
     lappend extend state_${state_id}_url
 }
 
-array set enabled_in_state [list]
+array set enabled_in_state {}
 
 # Ordering by assigned_p, so we get assigned states ('t') last
 db_foreach select_enabled_in_states {

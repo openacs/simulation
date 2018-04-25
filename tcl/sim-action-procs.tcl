@@ -81,9 +81,9 @@ ad_proc -public simulation::action::edit {
     # Parse column values
     switch $operation {
         insert - update {
-            set update_clauses [list]
-            set insert_names [list]
-            set insert_values [list]
+            set update_clauses {}
+            set insert_names {}
+            set insert_values {}
 
             # Handle columns in the sim_tasks table
             foreach attr { 
@@ -114,7 +114,7 @@ ad_proc -public simulation::action::edit {
                 if { [info exists row(recipients)] } {
                     error "You cannot supply both recipient_roles (takes short_name) and recipient (takes role_id)"
                 }
-                set row(recipients) [list]
+                set row(recipients) {}
                 foreach recipient_short_name $row(recipient_roles) {
                     lappend row(recipients) [workflow::role::get_id \
                                                  -workflow_id $workflow_id \
@@ -124,7 +124,7 @@ ad_proc -public simulation::action::edit {
             }
             
             # Handle auxiliary rows
-            array set aux [list]
+            array set aux {}
             foreach attr { 
                 recipients
             } {
