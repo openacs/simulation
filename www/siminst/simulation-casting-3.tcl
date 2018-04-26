@@ -15,7 +15,7 @@ simulation::template::get -workflow_id $workflow_id -array sim_template
 set page_title "Set user casting rules"
 set context [list [list "." "SimInst"] $page_title]
 
-set form [list]
+set form {}
 
 lappend form {casting_type:text(radio)
     {label "Casting type"}
@@ -78,7 +78,7 @@ ad_form \
 
         simulation::template::role_party_mappings -workflow_id $workflow_id -array roles
 
-        set all_group_ids [list]
+        set all_group_ids {}
         foreach group_item $eligible_groups {
             lappend all_group_ids [lindex $group_item 1]
         }

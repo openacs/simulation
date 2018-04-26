@@ -21,7 +21,7 @@ set prop_options [simulation::object::get_object_type_options -object_type "sim_
 set prop_count [llength $prop_options]
 set missing_props_p 0
 
-set actions [list]
+set actions {}
 
 db_foreach tasks {
     select a.action_id,

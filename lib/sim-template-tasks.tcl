@@ -43,7 +43,7 @@ if { ![empty_string_p $parent_action_id] } {
     }
 }
 
-set elements [list]
+set elements {}
 lappend elements edit {
     hide_p {[ad_decode $display_mode edit 0 1]}
     sub_class narrow
@@ -167,7 +167,7 @@ template::list::create \
 # tasks db_multirow
 #-------------------------------------------------------------
 
-set extend [list]
+set extend {}
 lappend extend edit_url view_url delete_url assigned_role_edit_url up_url down_url add_child_action_url copy_url
 
 foreach state_id $states {
@@ -192,7 +192,7 @@ db_foreach select_enabled_in_states {
     set enabled_in_state($action_id,$state_id) $assigned_p
 }
 
-set actions [list]
+set actions {}
 set counter 0
 
 db_multirow -extend $extend tasks select_tasks "

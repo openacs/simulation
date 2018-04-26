@@ -35,7 +35,7 @@ ad_form -name simulation -form {
     {workflow_id:integer(hidden) {value $workflow_id}}
 }
 
-set groups [list]
+set groups {}
 
 db_multirow -extend { group_radio } participants select_participants {
     select g.group_name,
