@@ -32,7 +32,7 @@ set package_id [ad_conn package_id]
 if { $display_mode == "edit"} {
     set list_actions [list "Add a Task" [export_vars -base task-edit { workflow_id parent_action_id {return_url "[ad_return_url]" } }] {}]
 } else {
-    set list_actions {}
+    set list_actions [list]
 }
 
 set show_states_p 1
@@ -43,7 +43,7 @@ if { ![empty_string_p $parent_action_id] } {
     }
 }
 
-set elements {}
+set elements [list]
 lappend elements edit {
     hide_p {[ad_decode $display_mode edit 0 1]}
     sub_class narrow
@@ -107,7 +107,7 @@ lappend elements delete {
 }
 
 if { !$show_states_p } {
-    set states {}
+    set states [list]
 } else {
     lappend elements state_spacer { 
         label "<br />Enabled in States:"
@@ -116,7 +116,7 @@ if { !$show_states_p } {
         html { style "border-left: 2px dotted #A0BDEB;" }
     }
 
-    set states {}
+    set states [list]
 
     db_foreach select_states {
         select s.state_id,
@@ -167,7 +167,7 @@ template::list::create \
 # tasks db_multirow
 #-------------------------------------------------------------
 
-set extend {}
+set extend [list]
 lappend extend edit_url view_url delete_url assigned_role_edit_url up_url down_url add_child_action_url copy_url
 
 foreach state_id $states {
@@ -176,7 +176,7 @@ foreach state_id $states {
     lappend extend state_${state_id}_url
 }
 
-array set enabled_in_state {}
+array set enabled_in_state [list]
 
 # Ordering by assigned_p, so we get assigned states ('t') last
 db_foreach select_enabled_in_states {
@@ -192,7 +192,7 @@ db_foreach select_enabled_in_states {
     set enabled_in_state($action_id,$state_id) $assigned_p
 }
 
-set actions {}
+set actions [list]
 set counter 0
 
 db_multirow -extend $extend tasks select_tasks "

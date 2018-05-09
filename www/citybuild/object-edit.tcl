@@ -196,7 +196,7 @@ set content_metadata {
 #---------------------------------------------------------------------
 
 # Now munge the above spec into something more efficient to use
-array set content_metadata_struct {}
+array set content_metadata_struct [list]
 foreach { ct ct_spec } $content_metadata {
     foreach { prop prop_spec } $ct_spec {
         switch $prop {
@@ -255,7 +255,7 @@ ad_proc get_metadata_entries {
 } {
     set key $content_type,$entry_type
 
-    set result {}
+    set result [list]
     set skip_len [expr [string length $key]+1]
     foreach name [nsv_array names content_metadata_struct $key,*] {
         # The part of name after the key
@@ -550,7 +550,7 @@ ad_form -extend -name object -new_request {
         }
     }
 
-    set attributes {}
+    set attributes [list]
     foreach attribute_name $attr_names {
         set value [set attr__${content_type}__${attribute_name}]
         lappend attributes [list $attribute_name $value]

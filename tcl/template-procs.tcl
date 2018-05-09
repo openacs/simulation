@@ -65,9 +65,9 @@ ad_proc -public simulation::template::edit {
     # Parse column values
     switch $operation {
         insert - update {
-            set update_clauses {}
-            set insert_names {}
-            set insert_values {}
+            set update_clauses [list]
+            set insert_names [list]
+            set insert_values [list]
 
             # Handle columns in the sim_simulations table
             foreach attr { 
@@ -126,7 +126,7 @@ ad_proc -public simulation::template::edit {
                 }
             }
             # Handle auxiliary rows
-            array set aux {}
+            array set aux [list]
             foreach attr { 
                 enrolled invited auto_enroll
             } {
@@ -575,8 +575,8 @@ ad_proc -public simulation::template::enroll_and_invite_users {
     simulation::template::get -workflow_id $workflow_id -array sim_template
 
     set admin_user_id [ad_conn user_id]
-    set enroll_user_list {}
-    set invite_email_list {}
+    set enroll_user_list [list]
+    set invite_email_list [list]
     db_foreach select_enrolled_and_invited_users {
             select distinct pamm.member_id as user_id,
                    cu.email,
@@ -994,7 +994,7 @@ ad_proc -private simulation::template::cast_users_in_case {
 
     # Loop over each role in the case and decide which users to assign it
     array unset row
-    array set row {}
+    array set row [list]
     foreach role_id [array names roles] {
         array unset one_role
         array set one_role $roles($role_id)
@@ -1016,12 +1016,12 @@ ad_proc -private simulation::template::cast_users_in_case {
         
         #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - beginning of role loop role_id=$role_id n_users_to_assign=$n_users_to_assign group_members=[array get group_members]"
 
-        set assignees {}
+        set assignees [list]
         for { set i 0 } { $i < $n_users_to_assign } { incr i } {
             set user_was_cast_p 0
 
             # Get the list of users in groups mapped to this role
-            set role_group_users {}
+            set role_group_users [list]
             foreach group_id [util::randomize_list $one_role(parties)] {
                 set role_group_users [concat $role_group_users $group_members($group_id)]
             }

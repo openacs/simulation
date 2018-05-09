@@ -89,7 +89,7 @@ if { [exists_and_not_null case_id] } {
 if { [string match $complete_p "0"] && [exists_and_not_null role_id] } {
     set actions [list [_ simulation.Send_new_message] [export_vars -base message { case_id role_id }] {}]
 } else {
-    set actions {}
+    set actions [list]
 }
 
 template::list::create \
