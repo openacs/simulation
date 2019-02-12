@@ -82,7 +82,7 @@ ad_proc -public simulation::template::edit {
                     switch $attr {
                         suggested_duration {
                             if { [empty_string_p $row($attr)] } {
-                                set $varname [db_null]
+                                set $varname ""
                             } else {
                                 # TODO B: need better tests for duration before passing it into the database.
                                 set $varname "interval '[db_quote $row($attr)]'"
