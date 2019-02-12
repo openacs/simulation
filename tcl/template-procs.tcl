@@ -22,16 +22,16 @@ ad_proc -public simulation::template::edit {
 
     @param operation    insert, update, delete
 
-    @param workflow_id  For update/delete: The workflow to update or delete. 
+    @param workflow_id  For update/delete: The workflow to update or delete.
 
     @param array        For insert/update: Name of an array in the caller's namespace with attributes to insert/update.
 
-    @param internal     Set this flag if you're calling this proc from within the corresponding proc 
-                        for a particular workflow model. Will cause this proc to not flush the cache 
+    @param internal     Set this flag if you're calling this proc from within the corresponding proc
+                        for a particular workflow model. Will cause this proc to not flush the cache
                         or call workflow::definition_changed_handler, which the caller must then do.
 
     @return workflow_id
-    
+
     @see workflow::edit
 } {
     switch $operation {
@@ -70,7 +70,7 @@ ad_proc -public simulation::template::edit {
             set insert_values [list]
 
             # Handle columns in the sim_simulations table
-            foreach attr { 
+            foreach attr {
                 sim_type suggested_duration
                 enroll_type casting_type
                 enroll_start enroll_end send_start_note_date case_start case_end
@@ -127,7 +127,7 @@ ad_proc -public simulation::template::edit {
             }
             # Handle auxiliary rows
             array set aux [list]
-            foreach attr { 
+            foreach attr {
                 enrolled invited auto_enroll
             } {
                 if { [info exists row($attr)] } {
@@ -138,7 +138,7 @@ ad_proc -public simulation::template::edit {
 
         }
     }
-    
+
     db_transaction {
         # Base row
         set workflow_id [workflow::edit \
@@ -173,7 +173,7 @@ ad_proc -public simulation::template::edit {
                 # Handled through cascading delete
             }
         }
-        
+
         # Update sim_party_sim_map table
         foreach map_type { enrolled invited auto_enroll } {
             if { [info exists aux($map_type)] } {
@@ -213,7 +213,7 @@ ad_proc -public simulation::template::get {
     {-workflow_id:required}
     {-array:required}
 } {
-    Return information about a simulation template.  This is a wrapper around 
+    Return information about a simulation template.  This is a wrapper around
     workflow::get, supplementing it with the columns from sim_simulation.
 
     @param workflow_id ID of simulation template.
@@ -264,7 +264,7 @@ ad_proc -public simulation::template::get_options {
     if { ![exists_and_not_null package_id] } {
         set package_id [ad_conn package_id]
     }
-    
+
     return [db_list_of_lists workflows {
         select w.pretty_name, w.workflow_id
         from   workflows w,
@@ -308,7 +308,7 @@ ad_proc -public simulation::template::new_role_party_mappings {
     @param parties A list of party ids to map to the role
 
 } {
-    foreach party_id $parties {   
+    foreach party_id $parties {
         db_dml map_group_to_role {
             insert into sim_role_party_map (role_id, party_id)
             values (:role_id, :party_id)
@@ -337,9 +337,9 @@ ad_proc -public simulation::template::role_party_mappings {
                         parties {$group_id1 $group_id2 ...}
                         users_per_case $users_per_case2
                     }
-                }              
+                }
                </pre>
-} {    
+} {
     upvar $array roles
 
     array set roles {}
@@ -368,7 +368,7 @@ ad_proc -public simulation::template::role_party_mappings {
         set roles($role_id) [array get one_role]
     }
 }
- 
+
 ad_proc -public simulation::template::get_parties {
     {-members:boolean}
     {-workflow_id:required}
@@ -382,7 +382,7 @@ ad_proc -public simulation::template::get_parties {
     @param members  Provide this switch if you want all members of
                     the simulation parties rather than the parties
                     themselves.
-    
+
     @return A list of party_id:s
 } {
     ad_assert_arg_value_in_list rel_type { enrolled invited auto_enroll }
@@ -394,7 +394,7 @@ ad_proc -public simulation::template::get_parties {
                  party_approved_member_map pamm
             where spsm.simulation_id = :workflow_id
              and spsm.type = :rel_type
-             and pamm.party_id = spsm.party_id             
+             and pamm.party_id = spsm.party_id
              and pamm.party_id <> pamm.member_id
         }]
     } else {
@@ -414,7 +414,7 @@ ad_proc -public simulation::template::associate_object {
     Associate an object with a simulation template.  Succeeds if the record is added or already exists.
 } {
       set exists_p [db_string row_exists {
-          select count(*) 
+          select count(*)
             from sim_workflow_object_map
           where workflow_id =  :template_id
             and object_id = :object_id
@@ -475,8 +475,8 @@ ad_proc -public simulation::template::force_start {
     }
 }
 
-ad_proc -public simulation::template::enroll_user {    
-    {-workflow_id:required}    
+ad_proc -public simulation::template::enroll_user {
+    {-workflow_id:required}
     {-user_id:required}
     {-simulation_array ""}
     {-email ""}
@@ -486,7 +486,7 @@ ad_proc -public simulation::template::enroll_user {
     Enroll a user in a simulation. Sends out an email to the user for casting type
     open and group. Creates a SimPlay message notification for the user. Note: this proc
     will perform a check of whether the user is already enrolled and will do nothing if
-    that is the case.    
+    that is the case.
 
     @author Peter Marklund
 } {
@@ -506,7 +506,7 @@ ad_proc -public simulation::template::enroll_user {
 
     if { [empty_string_p $email] } {
         acs_user::get -user_id $user_id -array user
-        
+
         set email $user(email)
         set user_name $user(name)
     }
@@ -542,7 +542,7 @@ ad_proc -public simulation::template::enroll_user {
         -object_id [ad_conn package_id] \
         -interval_id [notification::get_interval_id -name "instant"] \
         -delivery_method_id [notification::get_delivery_method_id -name "email"]
-    
+
     if { $admin_p } {
         # Notify admin of all activity in the workflow. In particular this includes timed out tasks.
         notification::request::new \
@@ -551,7 +551,7 @@ ad_proc -public simulation::template::enroll_user {
             -object_id [ad_conn package_id] \
             -interval_id [notification::get_interval_id -name "instant"] \
             -delivery_method_id [notification::get_delivery_method_id -name "email"]
-        
+
     } else {
 
         # Sign up the user for email notification of assigned tasks
@@ -590,14 +590,14 @@ ad_proc -public simulation::template::enroll_and_invite_users {
              and pamm.party_id = spsm.party_id
              and pamm.member_id = cu.user_id
              and pamm.party_id <> pamm.member_id
-	     and pamm.member_id <> :admin_user_id
+             and pamm.member_id <> :admin_user_id
     } {
         if { [string equal $type "auto_enroll"] } {
             # enroll the user automatically
             lappend enroll_user_list [list $user_id $email $user_name]
         } else {
             # Invite the user
-            lappend invite_email_list [list $email $user_name]            
+            lappend invite_email_list [list $email $user_name]
         }
     }
     # Always enroll the admin creating the simulation
@@ -623,7 +623,7 @@ ad_proc -public simulation::template::enroll_and_invite_users {
     # Invite users
     foreach user $invite_email_list {
         set email [lindex $user 0]
-        set user_name [lindex $user 1]        
+        set user_name [lindex $user 1]
 
         set package_id [ad_conn package_id]
         set enrollment_page_url \
@@ -649,12 +649,12 @@ ad_proc -private simulation::template::sweeper {} {
         from sim_simulations
         where sim_type <> 'live_sim'
         and case_start < current_timestamp
-    }]    
+    }]
     foreach simulation_id $simulations_to_start {
         start -workflow_id $simulation_id
-    }    
+    }
 
-    # For simulations that are not live yet and have reached their send_start_note_date, 
+    # For simulations that are not live yet and have reached their send_start_note_date,
     # send notifications to users in simulations that have not already been emailed.
     set users_to_notify [db_list_of_lists select_simulations_to_start {
         select cu.user_id,
@@ -678,10 +678,10 @@ ad_proc -private simulation::template::sweeper {} {
                         from sim_simulation_emails sse
                         where sse.simulation_id = ss.simulation_id
                           and sse.user_id = spsm.party_id
-                          and sse.email_type = 'reminder')        
-    }]    
+                          and sse.email_type = 'reminder')
+    }]
     foreach row $users_to_notify {
-        set user_id [lindex $row 0]        
+        set user_id [lindex $row 0]
         set email [lindex $row 1]
         set user_name [lindex $row 2]
         set simulation_id [lindex $row 3]
@@ -697,7 +697,7 @@ ad_proc -private simulation::template::sweeper {} {
             -from_addr [ad_system_owner] \
             -subject $subject\
             -body $body
-        
+
         # Record that we sent email
         db_dml record_simulation_email {
             insert into sim_simulation_emails
@@ -725,7 +725,7 @@ ad_proc -public simulation::template::start {
     db_transaction {
         # Change sim_type to live_sim
         set simulation_edit(sim_type) live_sim
-            
+
         simulation::template::edit -workflow_id $workflow_id -array simulation_edit
 
         simulation::template::cast -workflow_id $workflow_id
@@ -746,8 +746,8 @@ ad_proc -public simulation::template::start {
     foreach user_item $enrolled_users {
         set user_id [lindex $user_item 0]
         set email [lindex $user_item 1]
-        set user_name [lindex $user_item 2]        
-        
+        set user_name [lindex $user_item 2]
+
         set package_id [ad_conn package_id]
         set simplay_url \
             [export_vars -base "[ad_url][apm_package_url_from_id $package_id]simplay/enroll" { workflow_id }]
@@ -759,7 +759,7 @@ ad_proc -public simulation::template::start {
             -from_addr [ad_system_owner] \
             -subject $subject\
             -body $body
-    }    
+    }
 }
 
 ad_proc -public simulation::template::cast {
@@ -770,13 +770,13 @@ ad_proc -public simulation::template::cast {
       with simulation cases. Casting means creating simulation cases and mapping each enrolled user
       to one role in a simulation case. This procedure expects to be called right before the simulation starts. The
       procedure works for all simulation casting types (auto, group, or open) and will complete
-      any casting that has already been begun (fill up roles in already created cases first). 
+      any casting that has already been begun (fill up roles in already created cases first).
     </p>
 
     <p>
       The algorithm
       used by the proc guarantees that all enrolled users will be cast to a role in a simulation case. However,
-      it does not guarantee that the target number of users per role in a case (column sim_roles.users_per_case) 
+      it does not guarantee that the target number of users per role in a case (column sim_roles.users_per_case)
       always will be met.
     </p>
 
@@ -844,7 +844,7 @@ ad_proc -public simulation::template::cast {
 
         foreach group_id $one_role(parties) {
             # Only create the group list once
-            if { ![info exists group_members($group_id)] } { 
+            if { ![info exists group_members($group_id)] } {
                 # Only select enrolled users from the group
                 set group_members($group_id) [db_list select_enrolled_group_members {
                     select q.member_id from
@@ -861,7 +861,7 @@ ad_proc -public simulation::template::cast {
                 }]
             }
         }
-    }    
+    }
     # We need to refill (re-initialize) the groups that should be in multiple (all) cases, so
     # keep the original group member array around
     array set full_group_members [array get group_members]
@@ -893,7 +893,7 @@ ad_proc -public simulation::template::cast {
             -full_groups_array full_group_members \
             -multiple_case_groups $multiple_case_groups
     }
-    
+
     # If there are users left to cast, create new cases for them and repeat the same
     # assignment procedure as above
     set case_counter [llength $current_cases]
@@ -921,49 +921,49 @@ ad_proc -public simulation::template::cast {
             -full_groups_array full_group_members \
             -multiple_case_groups $multiple_case_groups
 
-	# Send the notifications here manually, because
-	# otherwise notifications are not sent to right people
-	# since casting is incomplete before the above command
-	# has run.
+        # Send the notifications here manually, because
+        # otherwise notifications are not sent to right people
+        # since casting is incomplete before the above command
+        # has run.
 
-	db_transaction {
-	    
-	    set action_id [simulation::template::get_element \
-			       -workflow_id $workflow_id \
-			       -element initial_action_id]
-	    
-	    
-	    set comment ""
-	    set comment_mime_type "text/plain"
-	    set entry_id [db_string get_entry_id {
-		select max(entry_id)
-		from workflow_case_log
-		where case_id = :case_id
-	    } \
-			  -default ""]
+        db_transaction {
 
-	    if {[empty_string_p $entry_id]} {
-		
-		# Insert activity log info if not found
-		set extra_vars [ns_set create]
-		oacs_util::vars_to_ns_set \
-		    -ns_set $extra_vars \
-		    -var_list { entry_id case_id action_id comment comment_mime_type }
-		
-		set entry_id [package_instantiate_object \
-				  -creation_user "" \
-				  -extra_vars $extra_vars \
-				  -package_name "workflow_case_log_entry" \
-				  "workflow_case_log_entry"]
-	    }
+            set action_id [simulation::template::get_element \
+                       -workflow_id $workflow_id \
+                       -element initial_action_id]
 
-	    workflow::case::action::notify \
-		-case_id $case_id \
-		-action_id $action_id \
-		-entry_id $entry_id \
-		-comment $comment \
-		-comment_mime_type $comment_mime_type
-	}
+
+            set comment ""
+            set comment_mime_type "text/plain"
+            set entry_id [db_string get_entry_id {
+            select max(entry_id)
+            from workflow_case_log
+            where case_id = :case_id
+            } \
+                  -default ""]
+
+            if {[empty_string_p $entry_id]} {
+
+            # Insert activity log info if not found
+            set extra_vars [ns_set create]
+            oacs_util::vars_to_ns_set \
+                -ns_set $extra_vars \
+                -var_list { entry_id case_id action_id comment comment_mime_type }
+
+            set entry_id [package_instantiate_object \
+                      -creation_user "" \
+                      -extra_vars $extra_vars \
+                      -package_name "workflow_case_log_entry" \
+                      "workflow_case_log_entry"]
+            }
+
+            workflow::case::action::notify \
+            -case_id $case_id \
+            -action_id $action_id \
+            -entry_id $entry_id \
+            -comment $comment \
+            -comment_mime_type $comment_mime_type
+        }
     }
 }
 
@@ -1007,13 +1007,13 @@ ad_proc -private simulation::template::cast_users_in_case {
             where wcrpm.case_id = :case_id
               and wcrpm.role_id = :role_id
         }]
-          
+
         if { [expr $users_already_in_case >= $one_role(users_per_case)] } {
             set n_users_to_assign 0
         } else {
             set n_users_to_assign [expr $one_role(users_per_case) - $users_already_in_case]
         }
-        
+
         #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - beginning of role loop role_id=$role_id n_users_to_assign=$n_users_to_assign group_members=[array get group_members]"
 
         set assignees [list]
@@ -1029,10 +1029,10 @@ ad_proc -private simulation::template::cast_users_in_case {
             # 1. Get random user from users_to_cast list who fulfils either of:
             # a) User is in non-multiple case group mapped to role (group_members)
             # b) User is in multi case group mapped to role (group_members)
-            # c) User is not in any group (users_to_cast_not_in_groups)           
+            # c) User is not in any group (users_to_cast_not_in_groups)
             #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - before users_to_cast loop, users_to_cast=$users_to_cast role_group_users=$role_group_users"
             foreach user_id $users_to_cast {
-                
+
                 set cast_user_p 0
                 if { [lsearch $role_group_users $user_id] != -1 } {
                     # Case a) or b) - user is in a group mapped to the role
@@ -1081,10 +1081,10 @@ ad_proc -private simulation::template::cast_users_in_case {
                         set user_id [lindex $group_members($group_id) 0]
 
                         #ns_log Notice "simulation::template::cast_users_in_case case_id=$case_id - in users to assign loop, role_id=$role_id i=$i casting already cast user_id=$user_id from multi case group $group_id"
-        
+
                         set user_was_cast_p 1
                         lappend assignees $user_id
-                        
+
                         remove_user_from_casting_groups \
                             -user_id $user_id \
                             -role_groups $one_role(parties) \
@@ -1094,7 +1094,7 @@ ad_proc -private simulation::template::cast_users_in_case {
 
                         # Remove user from users_to_cast list
                         set cast_list_index [lsearch -exact $users_to_cast $user_id]
-                        set users_to_cast [lreplace $users_to_cast $cast_list_index $cast_list_index]                        
+                        set users_to_cast [lreplace $users_to_cast $cast_list_index $cast_list_index]
 
                         break
                     }
@@ -1108,7 +1108,7 @@ ad_proc -private simulation::template::cast_users_in_case {
                 lappend assignees $admin_user_id
                 # Only cast admin once
                 break
-            }        
+            }
         }
 
         # Keep track of which users we decided to assign to the role and move on to the next one
@@ -1134,7 +1134,7 @@ ad_proc -private simulation::template::remove_user_from_casting_groups {
 } {
     Remove a cast user from the groups data structure and refill and empty
     multicase groups. This is an internal proc used by the casting algorithm.
-    
+
     @author Peter Marklund
 } {
     upvar $groups_array group_members
@@ -1144,10 +1144,10 @@ ad_proc -private simulation::template::remove_user_from_casting_groups {
     foreach group_id $role_groups {
         set group_index [lsearch -exact $group_members($group_id) $user_id]
         set group_members($group_id) [lreplace $group_members($group_id) $group_index $group_index]
-        
+
         # Refill the group if it's now empty and multi-case
         if { [llength $group_members($group_id)] == 0 && [lsearch $multiple_case_groups $group_id] != -1 } {
-            set group_members($group_id) $full_group_members($group_id)            
+            set group_members($group_id) $full_group_members($group_id)
         }
     }
 }
@@ -1179,36 +1179,36 @@ ad_proc -public simulation::template::new {
     {-package_key:required}
     {-object_id:required}
 } {
-    Create a new simulation template.  
+    Create a new simulation template.
 
     @return The workflow_id of the created simulation.
 
     @author Peter Marklund
 } {
     # Wrapper for simulation::template::edit
-    
+
     foreach elm { pretty_name short_name sim_type suggested_duration package_key object_id } {
         set row($elm) [set $elm]
     }
-    
+
     set workflow_id [simulation::template::edit \
                          -operation "insert" \
                          -array row]
-                     
+
     return $workflow_id
 }
 
 ad_proc -public simulation::template::generate_spec {
     {-workflow_id:required}
     {-workflow_handler "simulation::template"}
-    {-handlers { 
-        roles "simulation::role" 
+    {-handlers {
+        roles "simulation::role"
         actions "simulation::action"
         states "workflow::state::fsm"
     }}
 } {
     Generate a spec for a workflow in array list style.
-    
+
     @param  workflow_id   The id of the workflow to generate a spec for.
     @return The spec for the workflow.
 
@@ -1221,7 +1221,7 @@ ad_proc -public simulation::template::generate_spec {
                   -handlers $handlers]
 
     simulation::template::get -workflow_id $workflow_id -array simulation
-    
+
     set inner_spec [lindex $spec 1]
 
     lappend inner_spec suggested_duration $simulation(suggested_duration)
@@ -1251,7 +1251,7 @@ ad_proc -public simulation::template::new_from_spec {
     if { ![empty_string_p $array] } {
         upvar 1 $array row
         set array row
-    } 
+    }
 
     return [workflow::new_from_spec \
                 -package_key $package_key \
@@ -1271,14 +1271,14 @@ ad_proc -public simulation::template::clone {
 } {
     Clones an existing simulation template. The clone must belong to either a package key or an object id.
 
-    @param object_id     The id of an ACS Object indicating the scope the workflow. 
+    @param object_id     The id of an ACS Object indicating the scope the workflow.
                          Typically this will be the id of a package type or a package instance
                          but it could also be some other type of ACS object within a package, for example
                          the id of a bug in the Bug Tracker application.
 
     @param package_key   A package to which this workflow belongs
 
-    @param array         The name of an array in the caller's namespace. Values in this array will 
+    @param array         The name of an array in the caller's namespace. Values in this array will
                          override workflow attributes of the workflow being cloned.
 
     @author Lars Pind (lars@collaboraid.biz)
@@ -1289,8 +1289,8 @@ ad_proc -public simulation::template::clone {
     if { ![empty_string_p $array] } {
         upvar 1 $array row
         set array row
-    } 
-    
+    }
+
     set workflow_id [workflow::clone \
                          -workflow_id $workflow_id \
                          -package_key $package_key \
@@ -1340,8 +1340,8 @@ ad_proc -private simulation::template::get_inst_state_not_cached {
 
     @author Peter Marklund
 } {
-    simulation::template::get -workflow_id $workflow_id -array sim_template    
-    
+    simulation::template::get -workflow_id $workflow_id -array sim_template
+
     foreach tab [get_wizard_tabs] {
         set tab_complete_p($tab) 0
     }
@@ -1353,10 +1353,10 @@ ad_proc -private simulation::template::get_inst_state_not_cached {
             if { ![empty_string_p $sim_template(case_start)] && ![empty_string_p $sim_template(send_start_note_date)] } {
                 set tab_complete_p(simulation-edit) 1
             }
-            
+
             # 2. Roles
             set role_empty_count [db_string role_empty_count {
-                select count(*) 
+                select count(*)
                 from   sim_roles sr,
                        workflow_roles wr
                 where  sr.role_id = wr.role_id
@@ -1365,23 +1365,23 @@ ad_proc -private simulation::template::get_inst_state_not_cached {
             }]
             if { $role_empty_count == 0 } {
                 set tab_complete_p(map-characters) 1
-            } 
+            }
 
             # 3. Tasks
 
             # Jarkko: I took away the check because the attachments shouldn't
-	    # be obligatory
-	    set tab_complete_p(map-tasks) 1
+            # be obligatory
+            set tab_complete_p(map-tasks) 1
 
 
             # 4. Participants
             set num_parties [db_string num_parties { select count(*) from sim_party_sim_map where simulation_id = :workflow_id}]
             if { [string equal $sim_template(enroll_type) "open"] || $num_parties > 0 } {
                 set tab_complete_p(simulation-participants) 1
-            } 
+            }
         }
         casting_sim {
-            
+
             set n_cases [db_string select_n_cases {
                 select count(*)
                 from   workflow_cases
@@ -1390,10 +1390,10 @@ ad_proc -private simulation::template::get_inst_state_not_cached {
 
             if { $n_cases > 0 } {
                 set tab_complete_p(simulation-casting-3) 1
-            } 
+            }
         }
     }
-    
+
     return [array get tab_complete_p]
 }
 
@@ -1423,7 +1423,7 @@ ad_proc -public simulation::template::ready_for_casting_p {
 
 ad_proc -public simulation::template::get_wizard_tabs {} {
     Return a list with the url:s (page script names) of the pages
-    in the instantiation wizard. 
+    in the instantiation wizard.
 
     @author Peter Marklund
 } {
@@ -1453,7 +1453,7 @@ ad_proc -public simulation::template::get_state_pretty {
         participants_complete    "Participants completed"
         simulation-casting-3     "Ready for casting"
     }
-    
+
     set next_index 0
     foreach url [get_wizard_tabs] {
         if { $state_array($url) } {
@@ -1471,14 +1471,14 @@ ad_proc -public simulation::template::pretty_name_unique_p {
     -pretty_name:required
     {-workflow_id {}}
 } {
-    Check if suggested pretty_name is unique. 
-    
+    Check if suggested pretty_name is unique.
+
     @return 1 if unique, 0 if not unique.
 } {
-    set exists_p [db_string name_exists { 
-        select count(*) 
-        from   workflows 
-        where  package_key = 'simulation' 
+    set exists_p [db_string name_exists {
+        select count(*)
+        from   workflows
+        where  package_key = 'simulation'
         and    object_id = :package_id
         and    pretty_name = :pretty_name
         and    (:workflow_id is null or workflow_id != :workflow_id)
@@ -1536,7 +1536,7 @@ ad_proc -public simulation::template::user_mapped_to_role_p {
 } {
     Return 1 if user is in a group mapped to the the given role
     and 0 otherwise.
-    
+
     @author Peter Marklund
 } {
     set user_id [ad_conn user_id]
@@ -1572,26 +1572,29 @@ ad_proc -public simulation::template::check_init_p {
               parent_action_id is null"] } {
         return 0
     }
-    
+
     db_foreach get_subworkflows {
-        select action_id 
+        select action_id
         from workflow_actions
-        where workflow_id = :workflow_id and
-	      trigger_type in ('workflow')
+        where workflow_id = :workflow_id
+        and trigger_type in ('workflow')
     } {
         if { ![db_string get_sub_init "
-                select count(*) 
+                select count(*)
                 from workflow_actions
                 where workflow_id = :workflow_id and
                       trigger_type = 'init' and
                       parent_action_id = :action_id"] } {
-	    set ret_val 0
-	    break
+            set ret_val 0
+            break
         }
     }
-    
+
     return $ret_val
 }
 
-
-
+# Local variables:
+#    mode: tcl
+#    tcl-indent-level: 4
+#    indent-tabs-mode: nil
+# End:
