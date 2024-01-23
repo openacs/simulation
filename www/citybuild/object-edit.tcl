@@ -773,7 +773,7 @@ foreach elm $rel_elements {
 
             if { ![string equal $relation_tag "stylesheet"] } {
                 append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
-                append elm_after_html {<a href="javascript:acs_CopyText('}
+                append elm_after_html {<a href="javascript:window.navigator.clipboard.writeText('}
                 append elm_after_html [ad_quotehtml "<relation tag=\"$relation_tag\" index=\"$order_n\" embed>"]
                 append elm_after_html {');" title="} 
                 append elm_after_html [ad_quotehtml "Copy a tag for this $relation_tag to the clipboard"]
